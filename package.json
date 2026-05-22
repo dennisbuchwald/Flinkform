@@ -1,0 +1,39 @@
+{
+	"name": "perform-forms",
+	"version": "0.1.0",
+	"description": "Beautiful, native WordPress forms built for the block editor — fast, accessible, free.",
+	"author": "dbw media <hallo@dbw-media.de>",
+	"homepage": "https://wordpress.org/plugins/perform-forms/",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress",
+		"gutenberg",
+		"block",
+		"forms",
+		"form-builder",
+		"contact-form",
+		"multi-step",
+		"webhooks",
+		"interactivity-api"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/dbw-media/perform-forms"
+	},
+	"engines": {
+		"node": ">=20.0.0",
+		"npm": ">=10.0.0"
+	},
+	"scripts": {
+		"build": "wp-scripts build",
+		"start": "wp-scripts start",
+		"lint:js": "wp-scripts lint-js",
+		"lint:css": "wp-scripts lint-style",
+		"format": "wp-scripts format",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^30.0.0"
+	}
+}
