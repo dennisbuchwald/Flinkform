@@ -1,0 +1,29 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "perform/section-heading",
+	"version": "0.1.0",
+	"title": "Section Heading",
+	"category": "perform",
+	"icon": "heading",
+	"description": "A visual divider with an optional title and description. Not a field — nothing is submitted.",
+	"keywords": ["heading", "divider", "section"],
+	"textdomain": "perform-forms",
+	"parent": ["perform/form"],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": "Section"
+		},
+		"description": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

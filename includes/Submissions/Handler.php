@@ -21,6 +21,7 @@ declare( strict_types = 1 );
 
 namespace PerForm\Submissions;
 
+use PerForm\Fields\HiddenResolver;
 use PerForm\Forms\Locator;
 
 defined( 'ABSPATH' ) || exit;
@@ -48,7 +49,10 @@ final class Handler {
 	/**
 	 * Submitted values for the form currently being rendered.
 	 *
-	 * @var array<string, string>
+	 * Values are either strings (scalar fields) or arrays of strings
+	 * (multi-value fields). Field render.php files normalise as needed.
+	 *
+	 * @var array<string, mixed>
 	 */
 	private static array $current_values = [];
 
@@ -159,20 +163,24 @@ final class Handler {
 
 	/**
 	 * Combine the form's field definition with the user's clean input into
-	 * the persisted "fields" array.
+	 * the persisted "fields" array. Multi-value fields preserve their
+	 * array shape in `value`; everything else stays a string.
 	 *
-	 * @param array<int, array{name: string, type: string, label: string, required: bool}> $fields
-	 * @param array<string, string>                                                        $clean
-	 * @return array<int, array{name: string, label: string, type: string, value: string}>
+	 * @param array<int, array<string, mixed>> $fields
+	 * @param array<string, mixed>             $clean
+	 * @return array<int, array<string, mixed>>
 	 */
 	private function compose_field_payload( array $fields, array $clean ): array {
 		$payload = [];
 		foreach ( $fields as $field ) {
+			$name  = (string) $field['name'];
+			$value = $clean[ $name ] ?? '';
+
 			$payload[] = [
-				'name'  => $field['name'],
-				'label' => $field['label'],
-				'type'  => $field['type'],
-				'value' => isset( $clean[ $field['name'] ] ) ? (string) $clean[ $field['name'] ] : '',
+				'name'  => $name,
+				'label' => (string) ( $field['label'] ?? $name ),
+				'type'  => (string) ( $field['type'] ?? 'text' ),
+				'value' => is_array( $value ) ? array_values( array_map( 'strval', $value ) ) : (string) $value,
 			];
 		}
 		return $payload;
@@ -181,8 +189,13 @@ final class Handler {
 	/**
 	 * Sanitize and validate POSTed field values against the form definition.
 	 *
-	 * @param array<int, array{name: string, type: string, label: string, required: bool}> $fields
-	 * @return array{0: array<string, string>, 1: array<string, string>} [clean, errors]
+	 * Scalar fields end up as strings in $clean; multi-value fields
+	 * (checkbox group, multi-select) as arrays of strings. The handler
+	 * persists whatever shape lands here, so the admin renders need to
+	 * cope with both.
+	 *
+	 * @param array<int, array<string, mixed>> $fields Field definitions from the Locator.
+	 * @return array{0: array<string, mixed>, 1: array<string, string>} [clean, errors]
 	 */
 	private function validate( array $fields ): array {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already validated by caller.
@@ -192,43 +205,158 @@ final class Handler {
 		$errors = [];
 
 		foreach ( $fields as $field ) {
-			$name     = $field['name'];
-			$type     = $field['type'];
-			$required = $field['required'];
-			$value    = isset( $raw[ $name ] ) ? (string) $raw[ $name ] : '';
+			$name     = (string) $field['name'];
+			$type     = (string) $field['type'];
+			$required = ! empty( $field['required'] );
+			$label    = (string) ( $field['label'] ?? $name );
+			$incoming = $raw[ $name ] ?? '';
 
-			// Type-specific sanitisation.
-			$sanitised = match ( $type ) {
-				'email'    => sanitize_email( $value ),
-				'textarea' => sanitize_textarea_field( $value ),
-				default    => sanitize_text_field( $value ),
-			};
-
-			// Required-check after sanitisation: "   " trimmed away is empty.
-			if ( $required && '' === trim( $sanitised ) ) {
-				$errors[ $name ] = sprintf(
-					/* translators: %s: field label */
-					__( '%s is required.', 'perform-forms' ),
-					$field['label']
+			// Hidden fields are computed server-side regardless of what
+			// the visitor sent — the source of truth is the form def.
+			if ( 'hidden' === $type ) {
+				$clean[ $name ] = HiddenResolver::resolve(
+					(string) ( $field['valueSource'] ?? 'static' ),
+					(string) ( $field['staticValue'] ?? '' )
 				);
+				continue;
+			}
+
+			$sanitised = $this->sanitise( $type, $incoming, $field );
+
+			if ( $required && $this->is_empty( $sanitised ) ) {
+				$errors[ $name ] = 'toggle' === $type
+					? sprintf(
+						/* translators: %s: field label */
+						__( '%s must be checked.', 'perform-forms' ),
+						$label
+					)
+					: sprintf(
+						/* translators: %s: field label */
+						__( '%s is required.', 'perform-forms' ),
+						$label
+					);
 				$clean[ $name ] = $sanitised;
 				continue;
 			}
 
-			// Type-specific validity check (after the required gate so
-			// an empty optional email field doesn't trigger "invalid").
-			if ( 'email' === $type && '' !== $sanitised && ! is_email( $sanitised ) ) {
-				$errors[ $name ] = sprintf(
-					/* translators: %s: field label */
-					__( '%s must be a valid email address.', 'perform-forms' ),
-					$field['label']
-				);
+			// Type-specific validity checks (after the required gate so
+			// an empty optional field doesn't trigger "invalid").
+			$type_error = $this->validate_type( $type, $sanitised, $field );
+			if ( '' !== $type_error ) {
+				$errors[ $name ] = sprintf( $type_error, $label );
 			}
 
 			$clean[ $name ] = $sanitised;
 		}
 
 		return [ $clean, $errors ];
+	}
+
+	/**
+	 * Type-specific sanitisation.
+	 *
+	 * @param string               $type
+	 * @param mixed                $value Raw POST value (string or array).
+	 * @param array<string, mixed> $field Field definition.
+	 * @return mixed Sanitised value, shape preserved.
+	 */
+	private function sanitise( string $type, $value, array $field ) {
+		switch ( $type ) {
+			case 'email':
+				return sanitize_email( (string) $value );
+			case 'textarea':
+				return sanitize_textarea_field( (string) $value );
+			case 'number':
+				$str = trim( (string) $value );
+				return '' === $str ? '' : $str;
+			case 'toggle':
+				return '1' === (string) $value ? '1' : '';
+			case 'radio':
+				return sanitize_text_field( (string) $value );
+			case 'select':
+				if ( ! empty( $field['multiple'] ) ) {
+					$arr = is_array( $value ) ? $value : ( '' === (string) $value ? [] : [ $value ] );
+					return array_values( array_filter( array_map( 'sanitize_text_field', array_map( 'strval', $arr ) ), static fn( $v ): bool => '' !== $v ) );
+				}
+				return sanitize_text_field( (string) $value );
+			case 'checkbox':
+				$arr = is_array( $value ) ? $value : ( '' === (string) $value ? [] : [ $value ] );
+				return array_values( array_filter( array_map( 'sanitize_text_field', array_map( 'strval', $arr ) ), static fn( $v ): bool => '' !== $v ) );
+			default:
+				return sanitize_text_field( (string) $value );
+		}
+	}
+
+	/**
+	 * Decide whether a sanitised value should count as "empty" for the
+	 * required-check. Arrays count as empty when they have no items.
+	 *
+	 * @param mixed $value
+	 * @return bool
+	 */
+	private function is_empty( $value ): bool {
+		if ( is_array( $value ) ) {
+			return empty( $value );
+		}
+		return '' === trim( (string) $value );
+	}
+
+	/**
+	 * Run the type-specific validity check on an already-sanitised value.
+	 * Returns an sprintf-ready error template (with one %s for the label)
+	 * or an empty string when the value is acceptable.
+	 *
+	 * @param string               $type
+	 * @param mixed                $value
+	 * @param array<string, mixed> $field
+	 * @return string
+	 */
+	private function validate_type( string $type, $value, array $field ): string {
+		switch ( $type ) {
+			case 'email':
+				if ( '' !== (string) $value && ! is_email( (string) $value ) ) {
+					/* translators: %s: field label */
+					return __( '%s must be a valid email address.', 'perform-forms' );
+				}
+				return '';
+			case 'number':
+				$str = (string) $value;
+				if ( '' === $str ) {
+					return '';
+				}
+				if ( ! is_numeric( $str ) ) {
+					/* translators: %s: field label */
+					return __( '%s must be a number.', 'perform-forms' );
+				}
+				$num = (float) $str;
+				$min = isset( $field['min'] ) && '' !== $field['min'] ? (float) $field['min'] : null;
+				$max = isset( $field['max'] ) && '' !== $field['max'] ? (float) $field['max'] : null;
+				if ( null !== $min && $num < $min ) {
+					/* translators: %s: field label */
+					return __( '%s is below the minimum.', 'perform-forms' );
+				}
+				if ( null !== $max && $num > $max ) {
+					/* translators: %s: field label */
+					return __( '%s is above the maximum.', 'perform-forms' );
+				}
+				return '';
+			case 'select':
+			case 'radio':
+			case 'checkbox':
+				$allowed = isset( $field['options'] ) && is_array( $field['options'] ) ? $field['options'] : [];
+				if ( empty( $allowed ) ) {
+					return '';
+				}
+				$values = is_array( $value ) ? $value : ( '' === (string) $value ? [] : [ (string) $value ] );
+				foreach ( $values as $v ) {
+					if ( ! in_array( (string) $v, $allowed, true ) ) {
+						/* translators: %s: field label */
+						return __( '%s contains an invalid choice.', 'perform-forms' );
+					}
+				}
+				return '';
+		}
+		return '';
 	}
 
 	/**
@@ -420,7 +548,7 @@ final class Handler {
 	 *
 	 * @param string                $form_id
 	 * @param array<string, string> $errors
-	 * @param array<string, string> $values
+	 * @param array<string, mixed>  $values Mixed: strings or arrays of strings.
 	 * @return void
 	 */
 	public static function set_render_state( string $form_id, array $errors, array $values ): void {
@@ -442,11 +570,18 @@ final class Handler {
 	/**
 	 * Read the flashed value for a single field, if any.
 	 *
+	 * Returns either a string (scalar fields) or an array of strings
+	 * (multi-value fields like checkbox group / multi-select).
+	 *
 	 * @param string $field_name
-	 * @return string
+	 * @return string|array<int, string>
 	 */
-	public static function flash_value( string $field_name ): string {
-		return isset( self::$current_values[ $field_name ] ) ? (string) self::$current_values[ $field_name ] : '';
+	public static function flash_value( string $field_name ) {
+		if ( ! isset( self::$current_values[ $field_name ] ) ) {
+			return '';
+		}
+		$value = self::$current_values[ $field_name ];
+		return is_array( $value ) ? array_values( array_map( 'strval', $value ) ) : (string) $value;
 	}
 
 	/**

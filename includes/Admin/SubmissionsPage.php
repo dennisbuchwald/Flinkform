@@ -253,8 +253,24 @@ final class SubmissionsPage {
 	 * @return string Already-escaped HTML.
 	 */
 	private function format_value( array $field ): string {
-		$value = isset( $field['value'] ) ? (string) $field['value'] : '';
+		$value = $field['value'] ?? '';
 		$type  = isset( $field['type'] ) ? (string) $field['type'] : 'text';
+
+		// Multi-value: comma-separated list of escaped items.
+		if ( is_array( $value ) ) {
+			if ( empty( $value ) ) {
+				return '<em>' . esc_html__( 'empty', 'perform-forms' ) . '</em>';
+			}
+			return implode( ', ', array_map( 'esc_html', array_map( 'strval', $value ) ) );
+		}
+
+		$value = (string) $value;
+
+		if ( 'toggle' === $type ) {
+			return '1' === $value
+				? esc_html__( 'Yes', 'perform-forms' )
+				: esc_html__( 'No', 'perform-forms' );
+		}
 
 		if ( '' === $value ) {
 			return '<em>' . esc_html__( 'empty', 'perform-forms' ) . '</em>';

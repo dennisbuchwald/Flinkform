@@ -7,6 +7,11 @@
  * block tree, find the `perform/form` block whose `formId` attribute
  * matches the submitted UUID, and extract its field children.
  *
+ * Phase 2b extends the field type map and carries per-type extras
+ * (options, multi, min/max/step, hidden source) through to the handler
+ * so server-side validation can lean on the authoritative definition
+ * rather than trusting the POST.
+ *
  * @package PerForm
  * @since 0.1.0
  */
@@ -29,6 +34,7 @@ final class Locator {
 
 	/**
 	 * Map of supported field block names to their canonical type.
+	 * Section heading is intentionally NOT here — it isn't a field.
 	 *
 	 * @var array<string, string>
 	 */
@@ -36,6 +42,12 @@ final class Locator {
 		'perform/field-text'     => 'text',
 		'perform/field-email'    => 'email',
 		'perform/field-textarea' => 'textarea',
+		'perform/field-number'   => 'number',
+		'perform/field-toggle'   => 'toggle',
+		'perform/field-hidden'   => 'hidden',
+		'perform/field-select'   => 'select',
+		'perform/field-radio'    => 'radio',
+		'perform/field-checkbox' => 'checkbox',
 	];
 
 	/**
@@ -47,7 +59,7 @@ final class Locator {
 	 * @param string $form_id UUID stored in the form block's `formId` attr.
 	 * @return array{
 	 *     attributes: array<string, mixed>,
-	 *     fields: array<int, array{name: string, type: string, label: string, required: bool}>
+	 *     fields: array<int, array<string, mixed>>
 	 * }|null
 	 */
 	public function locate( int $post_id, string $form_id ): ?array {
@@ -100,12 +112,15 @@ final class Locator {
 	/**
 	 * Reduce a form's inner blocks to a flat, validated field list.
 	 *
-	 * Unknown block types (e.g. a stray core/paragraph the user dropped in)
-	 * are skipped silently — they exist in the markup but are not part of
-	 * the submission contract.
+	 * Each returned record is the canonical contract handed to the
+	 * Handler: type, name, label, required, plus type-specific extras.
+	 *
+	 * Unknown block types (section headings, stray core blocks) are
+	 * skipped silently — they exist in the markup but don't take part
+	 * in the submission contract.
 	 *
 	 * @param array<int, array<string, mixed>> $inner_blocks Raw inner blocks.
-	 * @return array<int, array{name: string, type: string, label: string, required: bool}>
+	 * @return array<int, array<string, mixed>>
 	 */
 	private function collect_fields( array $inner_blocks ): array {
 		$fields = [];
@@ -122,12 +137,20 @@ final class Locator {
 				continue;
 			}
 
-			$fields[] = [
+			$type    = self::FIELD_BLOCKS[ $block_name ];
+			$record  = [
 				'name'     => $name,
-				'type'     => self::FIELD_BLOCKS[ $block_name ],
+				'type'     => $type,
 				'label'    => $this->resolve_label( $block_name, $attrs, $name ),
 				'required' => ! empty( $attrs['required'] ),
 			];
+
+			// Carry type-specific extras through to the handler. Defaults
+			// come from the registered block type so a user who never
+			// touched an attribute still gets the right behaviour.
+			$record += $this->type_extras( $block_name, $type, $attrs );
+
+			$fields[] = $record;
 		}
 
 		return $fields;
@@ -152,13 +175,86 @@ final class Locator {
 			return $attrs['label'];
 		}
 
-		$registry   = \WP_Block_Type_Registry::get_instance();
-		$block_type = $registry->get_registered( $block_name );
-
-		if ( $block_type && isset( $block_type->attributes['label']['default'] ) && is_string( $block_type->attributes['label']['default'] ) ) {
-			return $block_type->attributes['label']['default'];
+		$default = $this->default_attribute( $block_name, 'label' );
+		if ( is_string( $default ) && '' !== $default ) {
+			return $default;
 		}
 
 		return $field_name;
+	}
+
+	/**
+	 * Build the type-specific extras the handler needs for validation.
+	 *
+	 * @param string               $block_name
+	 * @param string               $type
+	 * @param array<string, mixed> $attrs
+	 * @return array<string, mixed>
+	 */
+	private function type_extras( string $block_name, string $type, array $attrs ): array {
+		switch ( $type ) {
+			case 'number':
+				return [
+					'min'  => isset( $attrs['min'] ) && '' !== $attrs['min'] ? (string) $attrs['min'] : '',
+					'max'  => isset( $attrs['max'] ) && '' !== $attrs['max'] ? (string) $attrs['max'] : '',
+					'step' => isset( $attrs['step'] ) && '' !== $attrs['step'] ? (string) $attrs['step'] : '',
+				];
+			case 'select':
+				return [
+					'multiple' => ! empty( $attrs['multiple'] ),
+					'options'  => $this->normalise_options( $attrs['options'] ?? $this->default_attribute( $block_name, 'options' ) ),
+				];
+			case 'radio':
+			case 'checkbox':
+				return [
+					'options' => $this->normalise_options( $attrs['options'] ?? $this->default_attribute( $block_name, 'options' ) ),
+				];
+			case 'hidden':
+				return [
+					'valueSource' => isset( $attrs['valueSource'] ) && is_string( $attrs['valueSource'] ) ? $attrs['valueSource'] : 'static',
+					'staticValue' => isset( $attrs['staticValue'] ) && is_string( $attrs['staticValue'] ) ? $attrs['staticValue'] : '',
+				];
+		}
+		return [];
+	}
+
+	/**
+	 * Coerce an options attribute into a list of string values for the
+	 * "allowed values" check, dropping any that aren't well-formed.
+	 *
+	 * @param mixed $raw
+	 * @return array<int, string>
+	 */
+	private function normalise_options( $raw ): array {
+		if ( ! is_array( $raw ) ) {
+			return [];
+		}
+		$values = [];
+		foreach ( $raw as $opt ) {
+			if ( ! is_array( $opt ) ) {
+				continue;
+			}
+			$value = isset( $opt['value'] ) ? (string) $opt['value'] : '';
+			if ( '' !== $value ) {
+				$values[] = $value;
+			}
+		}
+		return $values;
+	}
+
+	/**
+	 * Pull an attribute default off the registered block type.
+	 *
+	 * @param string $block_name
+	 * @param string $attr_name
+	 * @return mixed Null if the attribute or block type isn't registered.
+	 */
+	private function default_attribute( string $block_name, string $attr_name ) {
+		$registry   = \WP_Block_Type_Registry::get_instance();
+		$block_type = $registry->get_registered( $block_name );
+		if ( ! $block_type || ! isset( $block_type->attributes[ $attr_name ]['default'] ) ) {
+			return null;
+		}
+		return $block_type->attributes[ $attr_name ]['default'];
 	}
 }

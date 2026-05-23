@@ -30,9 +30,16 @@ final class Registry {
 	 */
 	private const BLOCKS = [
 		'form-container',
+		'section-heading',
 		'field-text',
 		'field-email',
 		'field-textarea',
+		'field-number',
+		'field-select',
+		'field-radio',
+		'field-checkbox',
+		'field-toggle',
+		'field-hidden',
 	];
 
 	/**

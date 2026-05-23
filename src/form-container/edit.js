@@ -15,9 +15,16 @@ import {
 import { PanelBody, TextControl, TextareaControl } from '@wordpress/components';
 
 const ALLOWED_BLOCKS = [
+	'perform/section-heading',
 	'perform/field-text',
 	'perform/field-email',
 	'perform/field-textarea',
+	'perform/field-number',
+	'perform/field-select',
+	'perform/field-radio',
+	'perform/field-checkbox',
+	'perform/field-toggle',
+	'perform/field-hidden',
 ];
 
 const TEMPLATE = [

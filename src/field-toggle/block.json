@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "perform/field-toggle",
+	"version": "0.1.0",
+	"title": "Toggle / Checkbox",
+	"category": "perform",
+	"icon": "yes",
+	"description": "A single checkbox — great for terms-of-service style consents.",
+	"keywords": ["toggle", "checkbox", "consent", "agree"],
+	"textdomain": "perform-forms",
+	"parent": ["perform/form"],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"label": { "type": "string", "default": "I agree" },
+		"required": { "type": "boolean", "default": false },
+		"helpText": { "type": "string", "default": "" },
+		"fieldName": { "type": "string", "default": "" }
+	},
+	"usesContext": ["perform/formId"],
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

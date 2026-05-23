@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "perform/field-hidden",
+	"version": "0.1.0",
+	"title": "Hidden Field",
+	"category": "perform",
+	"icon": "hidden",
+	"description": "An invisible field that records context with the submission (page URL, user, date, or a static value).",
+	"keywords": ["hidden", "meta", "context"],
+	"textdomain": "perform-forms",
+	"parent": ["perform/form"],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"label": { "type": "string", "default": "Hidden Field" },
+		"fieldName": { "type": "string", "default": "" },
+		"valueSource": { "type": "string", "default": "static" },
+		"staticValue": { "type": "string", "default": "" }
+	},
+	"usesContext": ["perform/formId"],
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

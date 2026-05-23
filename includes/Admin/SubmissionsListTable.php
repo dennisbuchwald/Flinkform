@@ -226,7 +226,8 @@ final class SubmissionsListTable extends \WP_List_Table {
 	}
 
 	/**
-	 * Preview column — first textual field, truncated.
+	 * Preview column — first non-empty field, truncated. Hidden fields
+	 * are skipped so a date/URL meta field doesn't dominate the preview.
 	 *
 	 * @param array<string, mixed> $item
 	 * @return string
@@ -238,12 +239,25 @@ final class SubmissionsListTable extends \WP_List_Table {
 			if ( ! is_array( $field ) ) {
 				continue;
 			}
-			$value = isset( $field['value'] ) ? (string) $field['value'] : '';
-			$label = isset( $field['label'] ) ? (string) $field['label'] : '';
-			if ( '' === trim( $value ) ) {
+			if ( 'hidden' === ( $field['type'] ?? '' ) ) {
 				continue;
 			}
-			$preview = wp_html_excerpt( $value, 60, '…' );
+			$value = $field['value'] ?? '';
+			$label = isset( $field['label'] ) ? (string) $field['label'] : '';
+
+			if ( is_array( $value ) ) {
+				if ( empty( $value ) ) {
+					continue;
+				}
+				$display = implode( ', ', array_map( 'strval', $value ) );
+			} else {
+				$display = (string) $value;
+				if ( '' === trim( $display ) ) {
+					continue;
+				}
+			}
+
+			$preview = wp_html_excerpt( $display, 60, '…' );
 			return sprintf( '<span class="perform-preview"><strong>%s:</strong> %s</span>', esc_html( $label ), esc_html( $preview ) );
 		}
 
