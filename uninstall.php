@@ -17,15 +17,13 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-// TODO (MVP §4.3): drop the custom submissions table.
-//
-// global $wpdb;
-// $table = $wpdb->prefix . 'perform_submissions';
-// $wpdb->query( "DROP TABLE IF EXISTS {$table}" );
-//
-// TODO: delete plugin options (db schema version, global settings, SMTP credentials).
-// delete_option( 'perform_db_version' );
-// delete_option( 'perform_settings' );
-//
-// TODO: clear any transients used for rate-limiting / spam protection.
-// delete_transient( 'perform_…' );
+// uninstall.php runs standalone — the main plugin bootstrap has not been
+// loaded. Define the path constant the autoloader expects, then wire it up.
+if ( ! defined( 'PERFORM_PLUGIN_DIR' ) ) {
+	define( 'PERFORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+}
+
+require_once __DIR__ . '/includes/Autoloader.php';
+\PerForm\Autoloader::register();
+
+\PerForm\Database\Schema::drop();

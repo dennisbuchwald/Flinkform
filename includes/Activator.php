@@ -25,10 +25,13 @@ final class Activator {
 	/**
 	 * Run the activation routine.
 	 *
+	 * Creates the submissions table via dbDelta and persists the schema
+	 * version so future releases can migrate cleanly without re-running
+	 * the full CREATE on every activation.
+	 *
 	 * @return void
 	 */
 	public static function activate(): void {
-		// Phase 1: create custom submissions table via dbDelta and persist
-		// the schema version so future releases can migrate cleanly.
+		Database\Schema::create();
 	}
 }

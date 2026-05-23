@@ -1,0 +1,98 @@
+/**
+ * PerForm — frontend base styles.
+ *
+ * Deliberately small. Inherits font, color and spacing from theme.json
+ * via CSS custom properties wherever WordPress exposes them; only adds
+ * the structural defaults a form needs to be usable out of the box.
+ */
+
+.perform-form {
+	&__form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--wp--preset--spacing--40, 1.25rem);
+	}
+
+	&__success {
+		padding: 1rem 1.25rem;
+		border-radius: var(--wp--custom--border--radius, 6px);
+		background: rgba(0, 128, 0, 0.08);
+		color: var(--wp--preset--color--foreground, currentColor);
+		border-left: 3px solid currentColor;
+	}
+
+	&__error--global {
+		padding: 0.75rem 1rem;
+		border-radius: var(--wp--custom--border--radius, 6px);
+		background: rgba(204, 0, 0, 0.08);
+		color: #cc0000;
+		border-left: 3px solid currentColor;
+	}
+
+	&__actions {
+		margin-top: 0.5rem;
+	}
+
+	&__submit {
+		font: inherit;
+		padding: 0.65em 1.5em;
+		border-radius: var(--wp--custom--border--radius, 6px);
+		border: 0;
+		background: var(--wp--preset--color--primary, currentColor);
+		color: var(--wp--preset--color--background, #fff);
+		cursor: pointer;
+		transition: opacity 0.15s ease;
+
+		&:hover,
+		&:focus-visible {
+			opacity: 0.9;
+		}
+	}
+}
+
+.perform-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+
+	&__label {
+		font-weight: 600;
+		font-size: 0.95em;
+	}
+
+	&__required {
+		color: #cc0000;
+	}
+
+	&__input {
+		font: inherit;
+		padding: 0.6em 0.75em;
+		border: 1px solid currentColor;
+		border-radius: var(--wp--custom--border--radius, 6px);
+		background: transparent;
+		color: inherit;
+		width: 100%;
+		box-sizing: border-box;
+
+		&:focus-visible {
+			outline: 2px solid var(--wp--preset--color--primary, currentColor);
+			outline-offset: 2px;
+		}
+	}
+
+	&__help {
+		font-size: 0.85em;
+		opacity: 0.75;
+		margin: 0;
+	}
+
+	&__error {
+		font-size: 0.85em;
+		color: #cc0000;
+		margin: 0;
+	}
+
+	&--has-error &__input {
+		border-color: #cc0000;
+	}
+}

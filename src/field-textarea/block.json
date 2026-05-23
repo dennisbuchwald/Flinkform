@@ -1,0 +1,46 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "perform/field-textarea",
+	"version": "0.1.0",
+	"title": "Textarea Field",
+	"category": "perform",
+	"icon": "editor-alignleft",
+	"description": "A multi-line text input.",
+	"keywords": ["textarea", "message", "field"],
+	"textdomain": "perform-forms",
+	"parent": ["perform/form"],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Message"
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"rows": {
+			"type": "number",
+			"default": 4
+		}
+	},
+	"usesContext": ["perform/formId"],
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

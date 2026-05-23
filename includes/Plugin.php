@@ -40,14 +40,21 @@ final class Plugin {
 	/**
 	 * Boot subsystems.
 	 *
-	 * Called once on `plugins_loaded`. Phase 0 is intentionally a no-op:
-	 * Phase 1 will register the Form Container block and its field blocks
-	 * here, Phase 2 the submissions admin pages, and so on.
+	 * Called once on `plugins_loaded`. Wires the block registry and the
+	 * submission handler — every other PerForm capability builds on top of
+	 * these two.
 	 *
 	 * @return void
 	 */
 	public function init(): void {
-		// Subsystems will be wired up here in subsequent phases.
+		( new Blocks\Registry() )->register();
+
+		(
+			new Submissions\Handler(
+				new Forms\Locator(),
+				new Submissions\Repository()
+			)
+		)->register();
 	}
 
 	/**

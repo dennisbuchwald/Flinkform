@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "perform/field-email",
+	"version": "0.1.0",
+	"title": "Email Field",
+	"category": "perform",
+	"icon": "email",
+	"description": "An email input with format validation.",
+	"keywords": ["email", "input", "field"],
+	"textdomain": "perform-forms",
+	"parent": ["perform/form"],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Email"
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"usesContext": ["perform/formId"],
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}
