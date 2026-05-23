@@ -131,9 +131,20 @@ final class Handler {
 			$this->redirect_error( $post_id, $form_id );
 		}
 
+		// Compose the self-contained payload. Storing labels and types
+		// alongside the values means each submission stays readable in the
+		// admin even if the source form is later edited or deleted.
+		$payload = [
+			'fields' => $this->compose_field_payload( $definition['fields'], $clean ),
+			'_meta'  => [
+				'post_id'  => $post_id,
+				'post_url' => get_permalink( $post_id ) ?: '',
+			],
+		];
+
 		// Persist. A storage failure surfaces as a generic form-level error
 		// rather than a silent drop — the user deserves to know.
-		$result = $this->repository->save( $form_id, $clean );
+		$result = $this->repository->save( $form_id, $payload );
 		if ( false === $result ) {
 			$this->flash(
 				$form_id,
@@ -144,6 +155,27 @@ final class Handler {
 		}
 
 		$this->redirect_success( $post_id, $form_id );
+	}
+
+	/**
+	 * Combine the form's field definition with the user's clean input into
+	 * the persisted "fields" array.
+	 *
+	 * @param array<int, array{name: string, type: string, label: string, required: bool}> $fields
+	 * @param array<string, string>                                                        $clean
+	 * @return array<int, array{name: string, label: string, type: string, value: string}>
+	 */
+	private function compose_field_payload( array $fields, array $clean ): array {
+		$payload = [];
+		foreach ( $fields as $field ) {
+			$payload[] = [
+				'name'  => $field['name'],
+				'label' => $field['label'],
+				'type'  => $field['type'],
+				'value' => isset( $clean[ $field['name'] ] ) ? (string) $clean[ $field['name'] ] : '',
+			];
+		}
+		return $payload;
 	}
 
 	/**

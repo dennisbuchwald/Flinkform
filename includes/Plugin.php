@@ -40,9 +40,9 @@ final class Plugin {
 	/**
 	 * Boot subsystems.
 	 *
-	 * Called once on `plugins_loaded`. Wires the block registry and the
-	 * submission handler — every other PerForm capability builds on top of
-	 * these two.
+	 * Called once on `plugins_loaded`. Wires the block registry, the
+	 * submission handler and the admin menu — every other PerForm
+	 * capability builds on top of these three.
 	 *
 	 * @return void
 	 */
@@ -55,6 +55,10 @@ final class Plugin {
 				new Submissions\Repository()
 			)
 		)->register();
+
+		if ( is_admin() ) {
+			( new Admin\Menu() )->register();
+		}
 	}
 
 	/**
