@@ -22,6 +22,7 @@ declare( strict_types = 1 );
 
 namespace PerForm\Admin;
 
+use PerForm\Forms\Indexer;
 use PerForm\Submissions\Exporter;
 use PerForm\Submissions\Repository;
 
@@ -162,6 +163,14 @@ final class SubmissionsPage {
 		$local_ts  = get_date_from_gmt( $submission['created_at'], 'Y-m-d H:i:s' );
 		$source_url = isset( $meta['post_url'] ) ? (string) $meta['post_url'] : '';
 
+		// Live title preferred over the snapshot — operator just renamed
+		// the form? We show the current name. Form was deleted? We fall
+		// back to whatever name we stored at submission time.
+		$live_form  = ( new Indexer() )->find( $submission['form_id'] );
+		$form_title = is_array( $live_form ) && ! empty( $live_form['title'] )
+			? (string) $live_form['title']
+			: (string) ( $meta['form_title'] ?? '' );
+
 		$delete_nonce = wp_create_nonce( 'perform_delete_' . $id );
 		$delete_url   = add_query_arg(
 			[
@@ -197,6 +206,12 @@ final class SubmissionsPage {
 					<strong><?php esc_html_e( 'Received:', 'perform-forms' ); ?></strong>
 					<?php echo esc_html( $local_ts ); ?>
 				</p>
+				<?php if ( '' !== $form_title ) : ?>
+					<p>
+						<strong><?php esc_html_e( 'Form:', 'perform-forms' ); ?></strong>
+						<?php echo esc_html( $form_title ); ?>
+					</p>
+				<?php endif; ?>
 				<p>
 					<strong><?php esc_html_e( 'Form ID:', 'perform-forms' ); ?></strong>
 					<code><?php echo esc_html( $submission['form_id'] ); ?></code>

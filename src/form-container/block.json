@@ -19,6 +19,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"title": {
+			"type": "string",
+			"default": ""
+		},
 		"submitLabel": {
 			"type": "string",
 			"default": "Send"

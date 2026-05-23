@@ -47,7 +47,7 @@ function generateUuid() {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { formId, submitLabel, successMessage } = attributes;
+	const { formId, title, submitLabel, successMessage } = attributes;
 	const blockProps = useBlockProps( { className: 'perform-form-editor' } );
 
 	useEffect( () => {
@@ -63,6 +63,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Form Settings', 'perform-forms' ) }>
+					<TextControl
+						label={ __( 'Form Title', 'perform-forms' ) }
+						help={ __( 'Internal name shown in the Forms admin overview. Not visible to visitors.', 'perform-forms' ) }
+						value={ title }
+						onChange={ ( value ) => setAttributes( { title: value } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<TextControl
 						label={ __( 'Submit Button Label', 'perform-forms' ) }
 						value={ submitLabel }

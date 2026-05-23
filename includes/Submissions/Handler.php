@@ -137,12 +137,18 @@ final class Handler {
 
 		// Compose the self-contained payload. Storing labels and types
 		// alongside the values means each submission stays readable in the
-		// admin even if the source form is later edited or deleted.
+		// admin even if the source form is later edited or deleted. The
+		// form_title snapshot keeps history-friendly: a later rename of
+		// the form doesn't retroactively change what this row says.
+		$form_attrs = isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [];
+		$form_title = isset( $form_attrs['title'] ) && is_string( $form_attrs['title'] ) ? trim( $form_attrs['title'] ) : '';
+
 		$payload = [
 			'fields' => $this->compose_field_payload( $definition['fields'], $clean ),
 			'_meta'  => [
-				'post_id'  => $post_id,
-				'post_url' => get_permalink( $post_id ) ?: '',
+				'post_id'    => $post_id,
+				'post_url'   => get_permalink( $post_id ) ?: '',
+				'form_title' => $form_title,
 			],
 		];
 

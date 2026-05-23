@@ -22,7 +22,9 @@ defined( 'ABSPATH' ) || exit;
 final class Menu {
 
 	/**
-	 * Slug of the top-level menu page (and the default submenu).
+	 * Slug of the top-level menu page (and the default submenu —
+	 * the Submissions list, since that's what site operators look at
+	 * most often).
 	 */
 	public const PARENT_SLUG = 'perform-submissions';
 
@@ -67,6 +69,15 @@ final class Menu {
 			self::PARENT_SLUG,
 			[ $this, 'render_submissions_page' ]
 		);
+
+		add_submenu_page(
+			self::PARENT_SLUG,
+			__( 'Forms', 'perform-forms' ),
+			__( 'Forms', 'perform-forms' ),
+			self::CAPABILITY,
+			FormsPage::SLUG,
+			[ $this, 'render_forms_page' ]
+		);
 	}
 
 	/**
@@ -79,6 +90,15 @@ final class Menu {
 	}
 
 	/**
+	 * Render the Forms overview page.
+	 *
+	 * @return void
+	 */
+	public function render_forms_page(): void {
+		( new FormsPage() )->render();
+	}
+
+	/**
 	 * Handle GET/POST actions for PerForm pages BEFORE wp-admin renders
 	 * its header (so we can redirect cleanly after bulk actions etc.).
 	 *
@@ -87,10 +107,14 @@ final class Menu {
 	public function dispatch_actions(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Page identifier, not security boundary.
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
-		if ( self::PARENT_SLUG !== $page ) {
-			return;
-		}
 
-		( new SubmissionsPage() )->dispatch();
+		switch ( $page ) {
+			case self::PARENT_SLUG:
+				( new SubmissionsPage() )->dispatch();
+				break;
+			case FormsPage::SLUG:
+				( new FormsPage() )->dispatch();
+				break;
+		}
 	}
 }

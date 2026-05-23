@@ -1,0 +1,152 @@
+<?php
+/**
+ * Forms admin page controller.
+ *
+ * Thin counterpart to SubmissionsPage — renders the Forms list and
+ * handles the one mutating action it offers: a manual "Refresh index"
+ * button that drops the cached scan in case it goes stale ahead of
+ * the auto-invalidation hooks (rare, but reassuring to have).
+ *
+ * @package PerForm
+ * @since 0.1.0
+ */
+
+declare( strict_types = 1 );
+
+namespace PerForm\Admin;
+
+use PerForm\Forms\Indexer;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Controller for the PerForm → Forms page.
+ */
+final class FormsPage {
+
+	public const SLUG = 'perform-forms';
+
+	private Indexer $indexer;
+
+	public function __construct( ?Indexer $indexer = null ) {
+		$this->indexer = $indexer ?? new Indexer();
+	}
+
+	/**
+	 * Pre-headers action dispatcher (called on admin_init).
+	 *
+	 * @return void
+	 */
+	public function dispatch(): void {
+		if ( ! current_user_can( Menu::CAPABILITY ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified inside.
+		$action = isset( $_GET['perform_action'] ) ? sanitize_key( wp_unslash( $_GET['perform_action'] ) ) : '';
+		if ( 'refresh' !== $action ) {
+			return;
+		}
+
+		check_admin_referer( 'perform_forms_refresh' );
+		$this->indexer->invalidate();
+		wp_safe_redirect( add_query_arg( 'perform_notice', rawurlencode( __( 'Forms index refreshed.', 'perform-forms' ) ), $this->list_url() ) );
+		exit;
+	}
+
+	/**
+	 * Render the Forms page.
+	 *
+	 * @return void
+	 */
+	public function render(): void {
+		if ( ! current_user_can( Menu::CAPABILITY ) ) {
+			wp_die( esc_html__( 'You do not have permission to view PerForm forms.', 'perform-forms' ) );
+		}
+
+		$this->print_inline_styles();
+
+		$table = new FormsListTable( $this->indexer );
+		$table->prepare_items();
+
+		$refresh_url = wp_nonce_url(
+			add_query_arg(
+				[
+					'page'           => self::SLUG,
+					'perform_action' => 'refresh',
+				],
+				admin_url( 'admin.php' )
+			),
+			'perform_forms_refresh'
+		);
+		?>
+		<div class="wrap">
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Forms', 'perform-forms' ); ?></h1>
+			<a href="<?php echo esc_url( $refresh_url ); ?>" class="page-title-action">
+				<?php esc_html_e( 'Refresh index', 'perform-forms' ); ?>
+			</a>
+			<hr class="wp-header-end" />
+
+			<?php $this->maybe_print_notice(); ?>
+
+			<form method="get">
+				<input type="hidden" name="page" value="<?php echo esc_attr( self::SLUG ); ?>" />
+				<?php
+				$table->search_box( __( 'Search forms', 'perform-forms' ), 'perform-forms-search' );
+				$table->display();
+				?>
+			</form>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Print a flash notice if one is queued in the URL.
+	 *
+	 * @return void
+	 */
+	private function maybe_print_notice(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only.
+		$notice = isset( $_GET['perform_notice'] ) ? sanitize_text_field( wp_unslash( $_GET['perform_notice'] ) ) : '';
+		if ( '' === $notice ) {
+			return;
+		}
+		printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', esc_html( $notice ) );
+	}
+
+	/**
+	 * URL of the list view.
+	 *
+	 * @return string
+	 */
+	private function list_url(): string {
+		return add_query_arg( 'page', self::SLUG, admin_url( 'admin.php' ) );
+	}
+
+	/**
+	 * Tiny stylesheet for the tag pill rendering inside the title column.
+	 *
+	 * @return void
+	 */
+	private function print_inline_styles(): void {
+		?>
+		<style>
+			.perform-tag {
+				display: inline-block;
+				margin-left: 6px;
+				padding: 1px 8px;
+				border-radius: 9999px;
+				font-size: 11px;
+				background: #f1f1f1;
+				color: #555;
+				font-weight: 400;
+				text-transform: lowercase;
+			}
+			.perform-tag--warning {
+				background: #fff4e5;
+				color: #b85c00;
+			}
+		</style>
+		<?php
+	}
+}

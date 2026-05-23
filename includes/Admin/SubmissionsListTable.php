@@ -14,6 +14,7 @@ declare( strict_types = 1 );
 
 namespace PerForm\Admin;
 
+use PerForm\Forms\Indexer;
 use PerForm\Submissions\Repository;
 
 defined( 'ABSPATH' ) || exit;
@@ -37,6 +38,14 @@ final class SubmissionsListTable extends \WP_List_Table {
 	 * @var array<string, string>
 	 */
 	private array $filters = [];
+
+	/**
+	 * uuid => title map, built once per request from the Forms\Indexer
+	 * so column_form_id can resolve without a lookup per row.
+	 *
+	 * @var array<string, string>
+	 */
+	private array $form_titles = [];
 
 	/**
 	 * @param Repository $repository
@@ -106,7 +115,8 @@ final class SubmissionsListTable extends \WP_List_Table {
 		$order    = isset( $_GET['order'] ) ? sanitize_key( wp_unslash( $_GET['order'] ) ) : 'desc';
 		// phpcs:enable
 
-		$this->filters = $this->read_filters();
+		$this->filters     = $this->read_filters();
+		$this->form_titles = $this->build_form_title_map();
 
 		$total = $this->repository->count( $this->filters );
 		$rows  = $this->repository->find_paginated( $this->filters, $page, $per_page, $orderby, $order );
@@ -208,7 +218,11 @@ final class SubmissionsListTable extends \WP_List_Table {
 	}
 
 	/**
-	 * Form-ID column (shortened UUID).
+	 * Form column — title (if known) plus shortened UUID.
+	 *
+	 * Title is preferred from the live index, then from the submission's
+	 * own `_meta.form_title` snapshot (so historic rows for renamed/
+	 * deleted forms still carry context).
 	 *
 	 * @param array<string, mixed> $item
 	 * @return string
@@ -218,11 +232,43 @@ final class SubmissionsListTable extends \WP_List_Table {
 		if ( '' === $uuid ) {
 			return '<em>' . esc_html__( 'unknown', 'perform-forms' ) . '</em>';
 		}
+
+		$short    = substr( $uuid, 0, 8 ) . '…';
+		$live     = $this->form_titles[ $uuid ] ?? '';
+		$snapshot = isset( $item['data']['_meta']['form_title'] ) ? (string) $item['data']['_meta']['form_title'] : '';
+		$title    = '' !== $live ? $live : $snapshot;
+
+		if ( '' !== $title ) {
+			return sprintf(
+				'<strong>%s</strong><br /><code title="%s">%s</code>',
+				esc_html( $title ),
+				esc_attr( $uuid ),
+				esc_html( $short )
+			);
+		}
+
 		return sprintf(
-			'<code title="%s">%s…</code>',
+			'<code title="%s">%s</code>',
 			esc_attr( $uuid ),
-			esc_html( substr( $uuid, 0, 8 ) )
+			esc_html( $short )
 		);
+	}
+
+	/**
+	 * Build uuid → title map for the current request.
+	 *
+	 * @return array<string, string>
+	 */
+	private function build_form_title_map(): array {
+		$map = [];
+		foreach ( ( new Indexer() )->all() as $form ) {
+			$uuid  = (string) ( $form['form_id'] ?? '' );
+			$title = (string) ( $form['title'] ?? '' );
+			if ( '' !== $uuid && '' !== $title ) {
+				$map[ $uuid ] = $title;
+			}
+		}
+		return $map;
 	}
 
 	/**
@@ -291,16 +337,16 @@ final class SubmissionsListTable extends \WP_List_Table {
 			return;
 		}
 
-		$form_ids = $this->repository->distinct_form_ids();
-		$current  = $this->filters;
+		$form_options = $this->resolve_form_options();
+		$current      = $this->filters;
 		?>
 		<div class="alignleft actions">
 			<label class="screen-reader-text" for="filter-form-id"><?php esc_html_e( 'Filter by form', 'perform-forms' ); ?></label>
 			<select name="form_id" id="filter-form-id">
 				<option value=""><?php esc_html_e( 'All forms', 'perform-forms' ); ?></option>
-				<?php foreach ( $form_ids as $uuid ) : ?>
+				<?php foreach ( $form_options as $uuid => $label ) : ?>
 					<option value="<?php echo esc_attr( $uuid ); ?>" <?php selected( $current['form_id'] ?? '', $uuid ); ?>>
-						<?php echo esc_html( substr( $uuid, 0, 8 ) . '…' ); ?>
+						<?php echo esc_html( $label ); ?>
 					</option>
 				<?php endforeach; ?>
 			</select>
@@ -347,6 +393,45 @@ final class SubmissionsListTable extends \WP_List_Table {
 			</a>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Build the form-filter dropdown options keyed by UUID. Pulls labels
+	 * from the Forms\Indexer (cached) so we show the user-set Form Title
+	 * instead of a cryptic UUID — and falls back to whatever distinct
+	 * UUIDs the submissions table knows about for forms whose source
+	 * page has been deleted.
+	 *
+	 * @return array<string, string> uuid => label
+	 */
+	private function resolve_form_options(): array {
+		$indexer  = new Indexer();
+		$forms    = $indexer->all();
+		$options  = [];
+
+		foreach ( $forms as $form ) {
+			$uuid  = (string) ( $form['form_id'] ?? '' );
+			if ( '' === $uuid ) {
+				continue;
+			}
+			$title = (string) ( $form['title'] ?? '' );
+			$short = substr( $uuid, 0, 8 ) . '…';
+			$label = '' !== $title ? sprintf( '%s (%s)', $title, $short ) : $short;
+			if ( empty( $form['sources'] ) ) {
+				$label .= ' ' . __( '(deleted)', 'perform-forms' );
+			}
+			$options[ $uuid ] = $label;
+		}
+
+		// Catch any UUIDs that exist in the submissions table but somehow
+		// aren't in the index (race condition during cache build, etc.).
+		foreach ( $this->repository->distinct_form_ids() as $uuid ) {
+			if ( ! isset( $options[ $uuid ] ) ) {
+				$options[ $uuid ] = substr( $uuid, 0, 8 ) . '…';
+			}
+		}
+
+		return $options;
 	}
 
 	/**

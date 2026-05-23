@@ -49,6 +49,11 @@ final class Plugin {
 	public function init(): void {
 		( new Blocks\Registry() )->register();
 
+		// Forms indexer registers its cache-invalidation hooks on both
+		// front and back ends — a save_post during a REST request needs
+		// to invalidate too.
+		( new Forms\Indexer() )->register();
+
 		(
 			new Submissions\Handler(
 				new Forms\Locator(),
