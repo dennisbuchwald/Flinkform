@@ -238,7 +238,10 @@ final class Handler {
 			return '';
 		}
 
-		$token = wp_generate_password( 24, false, false );
+		// Lowercase: sanitize_key() lowercases on read, so the original token
+		// must already be lowercase or the read-back token won't match the
+		// transient key we computed at write time.
+		$token = strtolower( wp_generate_password( 24, false, false ) );
 		setcookie(
 			self::FLASH_COOKIE_NAME,
 			$token,
