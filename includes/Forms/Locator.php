@@ -125,11 +125,40 @@ final class Locator {
 			$fields[] = [
 				'name'     => $name,
 				'type'     => self::FIELD_BLOCKS[ $block_name ],
-				'label'    => isset( $attrs['label'] ) && is_string( $attrs['label'] ) ? $attrs['label'] : $name,
+				'label'    => $this->resolve_label( $block_name, $attrs, $name ),
 				'required' => ! empty( $attrs['required'] ),
 			];
 		}
 
 		return $fields;
+	}
+
+	/**
+	 * Resolve the user-facing label for a field.
+	 *
+	 * Gutenberg only writes a block attribute into the post_content when it
+	 * differs from the block.json default — so a field whose label matches
+	 * the type's default ("Email", "Message") never carries an explicit
+	 * `label` in $attrs. We pull the default from the registered block type
+	 * before falling all the way back to the (cryptic) fieldName.
+	 *
+	 * @param string               $block_name e.g. "perform/field-email".
+	 * @param array<string, mixed> $attrs      Parsed attrs from post_content.
+	 * @param string               $field_name fieldName as last-resort label.
+	 * @return string
+	 */
+	private function resolve_label( string $block_name, array $attrs, string $field_name ): string {
+		if ( isset( $attrs['label'] ) && is_string( $attrs['label'] ) && '' !== $attrs['label'] ) {
+			return $attrs['label'];
+		}
+
+		$registry   = \WP_Block_Type_Registry::get_instance();
+		$block_type = $registry->get_registered( $block_name );
+
+		if ( $block_type && isset( $block_type->attributes['label']['default'] ) && is_string( $block_type->attributes['label']['default'] ) ) {
+			return $block_type->attributes['label']['default'];
+		}
+
+		return $field_name;
 	}
 }
