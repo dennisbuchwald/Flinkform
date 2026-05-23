@@ -55,8 +55,8 @@ info "Starting deployment for PerForm v$VERSION"
 info "Running pre-deployment checks..."
 
 # In richtigem Projektordner?
-if [ ! -f "perform.php" ]; then
-    error "Not in the correct project directory! perform.php not found."
+if [ ! -f "perform-forms.php" ]; then
+    error "Not in the correct project directory! perform-forms.php not found."
 fi
 
 # SVN Working Copy vorhanden?

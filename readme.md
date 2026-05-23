@@ -69,7 +69,7 @@ npm run format
 
 ```
 perform-forms/
-├── perform.php          # Main plugin file
+├── perform-forms.php    # Main plugin file
 ├── readme.txt           # WordPress.org documentation
 ├── readme.md            # GitHub documentation (this file)
 ├── uninstall.php        # Cleanup on uninstall

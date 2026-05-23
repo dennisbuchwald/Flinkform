@@ -34,45 +34,23 @@ define( 'PERFORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PERFORM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PERFORM_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
+// Register the PSR-4 autoloader before anything else touches the namespace.
+require_once PERFORM_PLUGIN_DIR . 'includes/Autoloader.php';
+\PerForm\Autoloader::register();
+
 /**
- * Bootstrap the plugin on `plugins_loaded`.
+ * Boot the plugin runtime on `plugins_loaded`.
  *
- * This is intentionally a placeholder for the scaffold release. The real
- * bootstrap will load the autoloader from `includes/` and instantiate the
- * service container (block registration, REST routes, admin pages, etc.).
+ * Kept as a thin wrapper around the Plugin singleton so WordPress only sees
+ * a plain callable on the hook — easier to unhook in tests and clearer in
+ * stack traces than a closure.
  *
  * @return void
  */
 function perform_bootstrap(): void {
-	// TODO: require_once PERFORM_PLUGIN_DIR . 'includes/Autoloader.php';
-	// TODO: \PerForm\Plugin::instance()->init();
+	\PerForm\Plugin::instance()->init();
 }
 add_action( 'plugins_loaded', 'perform_bootstrap' );
 
-/**
- * Activation hook.
- *
- * Will eventually create the `{prefix}_perform_submissions` table via
- * dbDelta (see PERFORM_SPEC.md §4.3 / §7 Database). For the scaffold this
- * is a no-op so an early "Activate" click does nothing destructive.
- *
- * @return void
- */
-function perform_activate(): void {
-	// TODO: create custom submissions table via dbDelta.
-	// TODO: store db schema version in an option for future migrations.
-}
-register_activation_hook( __FILE__, 'perform_activate' );
-
-/**
- * Deactivation hook.
- *
- * Deliberately a no-op. Deactivation must not destroy user data — that is
- * what `uninstall.php` is for.
- *
- * @return void
- */
-function perform_deactivate(): void {
-	// No-op.
-}
-register_deactivation_hook( __FILE__, 'perform_deactivate' );
+register_activation_hook( __FILE__, [ \PerForm\Activator::class, 'activate' ] );
+register_deactivation_hook( __FILE__, [ \PerForm\Deactivator::class, 'deactivate' ] );
