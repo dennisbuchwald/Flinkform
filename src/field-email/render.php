@@ -2,6 +2,9 @@
 /**
  * Server-side render for the Email Field block.
  *
+ * Output contract: ECHOES markup directly — see form-container/render.php
+ * for why nested ob_start() is unsafe here.
+ *
  * @var array<string, mixed> $attributes
  * @var string               $content
  * @var WP_Block             $block
@@ -22,7 +25,7 @@ $help_text   = isset( $attributes['helpText'] ) && is_string( $attributes['helpT
 $field_name  = isset( $attributes['fieldName'] ) && is_string( $attributes['fieldName'] ) ? $attributes['fieldName'] : '';
 
 if ( '' === $field_name || '' === $form_id ) {
-	return '';
+	return;
 }
 
 $value     = \PerForm\Submissions\Handler::flash_value( $field_name );
@@ -31,8 +34,6 @@ $field_uid = 'perform-field-' . md5( $form_id . '-' . $field_name );
 $help_id   = $help_text ? $field_uid . '-help' : '';
 $error_id  = $error ? $field_uid . '-error' : '';
 $described = trim( $help_id . ' ' . $error_id );
-
-ob_start();
 ?>
 <div class="perform-field perform-field--email<?php echo $error ? ' perform-field--has-error' : ''; ?>">
 	<label class="perform-field__label" for="<?php echo esc_attr( $field_uid ); ?>">
@@ -64,5 +65,3 @@ ob_start();
 		</p>
 	<?php endif; ?>
 </div>
-<?php
-return ob_get_clean() ?: '';

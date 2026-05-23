@@ -13,6 +13,11 @@
  * @var string               $content    Inner blocks rendered to HTML.
  * @var WP_Block             $block      Block instance.
  *
+ * Output contract: this file ECHOES its markup directly. WordPress wraps
+ * the require() in its own ob_start()/ob_get_clean() — do NOT add another
+ * output buffer here, or the output ends up in the wrong buffer and the
+ * frontend renders empty.
+ *
  * @package PerForm
  * @since 0.1.0
  */
@@ -28,7 +33,7 @@ $source_post_id = (int) get_the_ID();
 
 // Without a stable form ID we cannot save or validate — render nothing.
 if ( '' === $form_id ) {
-	return '';
+	return;
 }
 
 // Success state: a successful submission redirects back with this query arg
@@ -48,8 +53,6 @@ $wrapper_attrs = get_block_wrapper_attributes(
 	]
 );
 
-ob_start();
-
 if ( $is_success ) :
 	?>
 	<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
@@ -58,21 +61,18 @@ if ( $is_success ) :
 		</div>
 	</div>
 	<?php
-	return ob_get_clean() ?: '';
+	return;
 endif;
 
-// Re-populate field values + errors from the previous failed attempt.
+// Re-populate field values + errors from the previous failed attempt. The
+// flash state is consumed here (transient deleted) and stashed in static
+// state on the Handler so field renders can read it without re-fetching.
 $errors = \PerForm\Submissions\Handler::flash_errors_for( $form_id );
 $values = \PerForm\Submissions\Handler::flash_values_for( $form_id );
-
-// Make these accessible to nested field render.php files. Set BEFORE the
-// inner content (which was already rendered upstream into $content) — too
-// late for that pass; instead we use the static state for the NEXT inner
-// render that happens inside this output buffer via $block->inner_blocks.
-// For Phase 1, $content is already produced from inner blocks, so we
-// re-render inner blocks here manually so they can read the flashed state.
 \PerForm\Submissions\Handler::set_render_state( $form_id, $errors, $values );
 
+// Re-render inner blocks AFTER setting render state — $content was rendered
+// upstream before our flash state was available, so we redo it here.
 $inner_html = '';
 foreach ( $block->inner_blocks as $inner ) {
 	$inner_html .= $inner->render();
@@ -120,5 +120,3 @@ $timestamp_token = base64_encode( (string) time() );
 </div>
 <?php
 \PerForm\Submissions\Handler::clear_render_state();
-
-return ob_get_clean() ?: '';
