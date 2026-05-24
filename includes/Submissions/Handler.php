@@ -135,6 +135,25 @@ final class Handler {
 			$this->redirect_error( $post_id, $form_id );
 		}
 
+		/**
+		 * Fires after validation passes, before the submission is persisted.
+		 *
+		 * Pure action hook — no return value, the submit cannot be cancelled
+		 * from here. Use it to log, enrich a $_SERVER-derived context, or
+		 * fire pre-save side effects. Listeners that genuinely need to abort
+		 * must throw an exception or call wp_die() themselves; the handler
+		 * will not check a flag.
+		 *
+		 * Spam-rejected submissions (honeypot, time-check, missing nonce)
+		 * never reach this hook.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param string               $form_id UUID of the form.
+		 * @param array<string, mixed> $clean   Sanitised, validated values keyed by field name.
+		 */
+		do_action( 'perform_before_submission', $form_id, $clean );
+
 		// Compose the self-contained payload. Storing labels and types
 		// alongside the values means each submission stays readable in the
 		// admin even if the source form is later edited or deleted. The
@@ -163,6 +182,29 @@ final class Handler {
 			);
 			$this->redirect_error( $post_id, $form_id );
 		}
+
+		$submission_id = (int) $result;
+
+		/**
+		 * Fires after a submission has been persisted successfully.
+		 *
+		 * The primary integration point for notifications, webhooks, CRM
+		 * sync, and anything else that should happen exactly once per
+		 * accepted submission. Spam-rejected submissions never reach this
+		 * hook (see perform_before_submission for the same guarantee).
+		 *
+		 * Pure action hook — listeners cannot cancel the success redirect.
+		 * The submission row is already committed by the time this fires,
+		 * so even a throwing listener leaves the row in place.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param int                  $submission_id Newly inserted row ID.
+		 * @param string               $form_id       UUID of the form.
+		 * @param array<string, mixed> $clean         Sanitised values keyed by field name.
+		 * @param array{attributes: array<string, mixed>, fields: array<int, array<string, mixed>>} $form_def Authoritative form definition from the source post.
+		 */
+		do_action( 'perform_after_submission', $submission_id, $form_id, $clean, $definition );
 
 		$this->redirect_success( $post_id, $form_id );
 	}

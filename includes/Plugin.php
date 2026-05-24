@@ -61,6 +61,10 @@ final class Plugin {
 			)
 		)->register();
 
+		// Notifications subscribe to perform_after_submission. Registered
+		// unconditionally — even REST-context saves should mail the admin.
+		( new Notifications\Mailer() )->register();
+
 		if ( is_admin() ) {
 			( new Admin\Menu() )->register();
 		}
