@@ -62,10 +62,17 @@ final class MergeTags {
 			$field_labels[ $name ]   = (string) ( $field['label'] ?? $name );
 		}
 
+		// Form title falls back to "Untitled form" when unset. Without
+		// this, a default subject like "New submission: {form:title}"
+		// would render with a trailing colon and no value — ugly in the
+		// inbox and confusing in the admin list.
+		$raw_title  = isset( $attrs['title'] ) ? trim( (string) $attrs['title'] ) : '';
+		$form_title = '' !== $raw_title ? $raw_title : __( 'Untitled form', 'perform-forms' );
+
 		$context = [
 			'submission_id' => $submission_id,
 			'form_id'       => $form_id,
-			'form_title'    => (string) ( $attrs['title'] ?? '' ),
+			'form_title'    => $form_title,
 			'fields'        => $field_values,
 			'field_labels'  => $field_labels,
 			'field_defs'    => $fields,

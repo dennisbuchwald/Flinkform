@@ -30,6 +30,10 @@
 		"successMessage": {
 			"type": "string",
 			"default": "Thank you! Your message has been sent."
+		},
+		"notifications": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"providesContext": {
