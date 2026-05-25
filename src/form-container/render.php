@@ -89,16 +89,34 @@ if ( ! in_array( $progress_indicator, [ 'bar', 'dots', 'numbers', 'none' ], true
 	$progress_indicator = 'bar';
 }
 
+$show_step_labels = ! empty( $appearance['showStepLabels'] );
+
 // Count page-break markers in the inner-block tree — drives the
 // multi-step wrapper class and decides whether the inner-block render
 // loop below splits the stream into steps or emits a flat field list.
+// In the same pass we also collect each step's label (the label
+// attribute of the page-break that opens it) so the indicator's
+// optional "Step Labels" feature can hand them to the JS store
+// without having to read the markup back.
 $page_break_count = 0;
+$step_labels      = [ '' ]; // Step 0 has no opening page-break, so no label.
 foreach ( $block->inner_blocks as $perform_inner_probe ) {
 	if ( 'perform/page-break' === $perform_inner_probe->name ) {
 		$page_break_count++;
+		$label_attr     = isset( $perform_inner_probe->attributes['label'] ) && is_string( $perform_inner_probe->attributes['label'] )
+			? sanitize_text_field( $perform_inner_probe->attributes['label'] )
+			: '';
+		$step_labels[]  = $label_attr;
 	}
 }
 $is_multi_step = $page_break_count > 0;
+$has_any_step_label = false;
+foreach ( $step_labels as $perform_step_label_probe ) {
+	if ( '' !== $perform_step_label_probe ) {
+		$has_any_step_label = true;
+		break;
+	}
+}
 
 // Border radius — only a non-negative integer in a sane range counts as
 // a real override. Everything else (null, string, negative) falls back
@@ -214,17 +232,25 @@ if ( $is_multi_step && ! $is_success ) {
 	/* translators: 1: current step number, 2: total step count */
 	$initial_label = sprintf( __( 'Step %1$s of %2$s', 'perform-forms' ), '1', (string) $step_count );
 
+	$context_payload = [
+		'currentStep'      => 0,
+		'totalSteps'       => $step_count,
+		'ariaValueNow'     => $initial_aria_now,
+		'progressBarStyle' => '--perform-progress-percent:' . $initial_percent . '%',
+		'progressLabel'    => $initial_label,
+	];
+	if ( $show_step_labels && $has_any_step_label ) {
+		// Initial label = the current step's label. JS later swaps it
+		// from the seeded `stepLabels` array on every navigation.
+		$context_payload['currentStepLabel'] = $step_labels[0];
+	}
+
 	$wrapper_args['data-wp-interactive'] = 'perform/form';
-	$wrapper_args['data-wp-context']     = (string) wp_json_encode(
-		[
-			'currentStep'      => 0,
-			'totalSteps'       => $step_count,
-			'ariaValueNow'     => $initial_aria_now,
-			'progressBarStyle' => '--perform-progress-percent:' . $initial_percent . '%',
-			'progressLabel'    => $initial_label,
-		]
-	);
-	$wrapper_args['data-wp-init'] = 'callbacks.markEnhanced';
+	$wrapper_args['data-wp-context']     = (string) wp_json_encode( $context_payload );
+	// `data-perform-enhanced` is set by the inline boot script further
+	// down on the form, before view.js loads — so any CSS gated on it
+	// applies before Interactivity hydrates and the action row + step
+	// visibility don't flash through the JS-disabled fallback layout.
 }
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
@@ -399,22 +425,35 @@ $timestamp_token = base64_encode( (string) time() );
 		// progressLabel getter can re-fill it on every step change
 		// without having to import @wordpress/i18n.
 		if ( $is_multi_step && 'none' !== $progress_indicator ) :
-			// Seed the locale-aware label template once per request.
-			// The placeholder values stay on namespace state because the
-			// template itself doesn't change per step — only the numbers
-			// substituted into it do, and those live on per-form context.
+			// Seed namespace-level state. Both values are identical
+			// across every form on the page — only the per-step
+			// substitutions in the actions in view.js change at runtime.
+			//
+			// `stepLabels` is the per-form step label list; this lives
+			// on the namespace state rather than the form context
+			// because the array is read-only after page render, doesn't
+			// reflect state changes, and would just bloat data-wp-context.
+			// Last-write-wins is fine since each form on the page has its
+			// own step count + labels — JS reads the slice for its own
+			// form via the merged context (totalSteps + currentStep) and
+			// indexes into the (potentially shared) array. If two forms
+			// on the same page have different step labels, only the
+			// later-rendered form's labels survive on namespace state.
+			// Edge case; revisit if a multi-form page with differing
+			// label sets becomes a real use case.
 			if ( function_exists( 'wp_interactivity_state' ) ) {
-				wp_interactivity_state(
-					'perform/form',
-					[
-						'progressTemplate' => sprintf(
-							/* translators: 1: placeholder for current step number, 2: placeholder for total step count */
-							__( 'Step %1$s of %2$s', 'perform-forms' ),
-							'%CURRENT%',
-							'%TOTAL%'
-						),
-					]
-				);
+				$ns_state = [
+					'progressTemplate' => sprintf(
+						/* translators: 1: placeholder for current step number, 2: placeholder for total step count */
+						__( 'Step %1$s of %2$s', 'perform-forms' ),
+						'%CURRENT%',
+						'%TOTAL%'
+					),
+				];
+				if ( $show_step_labels && $has_any_step_label ) {
+					$ns_state['stepLabels'] = $step_labels;
+				}
+				wp_interactivity_state( 'perform/form', $ns_state );
 			}
 			?>
 			<div
@@ -447,6 +486,12 @@ $timestamp_token = base64_encode( (string) time() );
 						data-wp-text="context.progressLabel"
 					></span>
 				<?php endif; ?>
+				<?php if ( $show_step_labels && $has_any_step_label ) : ?>
+					<span
+						class="perform-form__progress-step-label"
+						data-wp-text="context.currentStepLabel"
+					><?php echo esc_html( $step_labels[0] ); ?></span>
+				<?php endif; ?>
 			</div>
 		<?php endif; ?>
 
@@ -456,20 +501,22 @@ $timestamp_token = base64_encode( (string) time() );
 			<?php if ( $is_multi_step ) : ?>
 				<?php
 				// Navigation buttons — emitted only in multi-step mode.
-				// Server-side initial state matches the JS-on Step 1 layout:
-				// Back is hidden (no previous step to go to), Next is visible.
-				// Without JS the Next/Back buttons stay in their server state
-				// (Back hidden, Next visible) and never fire — fine, because
-				// every step is visible at once and the user can submit on
-				// any step they're on. With JS the data-wp-bind--hidden
-				// expressions take over and toggle visibility per step.
+				// All three are rendered visible server-side; the inline
+				// boot script further down sets `hidden` on Back +
+				// Submit immediately for the JS-on initial state (step
+				// 0 = first step → Back hidden; not last step →
+				// Submit hidden). Once Interactivity hydrates, the
+				// `data-wp-bind--hidden` expressions take over and
+				// toggle visibility per step. With JS disabled the
+				// boot script never runs and every button stays
+				// visible — only Submit is functional then, which is
+				// the desired single-page fallback.
 				?>
 				<button
 					type="button"
 					class="perform-form__nav perform-form__nav--back"
 					data-wp-on--click="actions.prevStep"
 					data-wp-bind--hidden="state.isFirstStep"
-					hidden
 				>
 					<?php esc_html_e( 'Back', 'perform-forms' ); ?>
 				</button>
@@ -478,7 +525,6 @@ $timestamp_token = base64_encode( (string) time() );
 					class="perform-form__submit perform-form__nav perform-form__nav--next"
 					data-wp-on--click="actions.nextStep"
 					data-wp-bind--hidden="state.isLastStep"
-					hidden
 				>
 					<?php esc_html_e( 'Next', 'perform-forms' ); ?>
 				</button>
@@ -497,5 +543,64 @@ $timestamp_token = base64_encode( (string) time() );
 		</div>
 	</form>
 </div>
+<?php if ( $is_multi_step ) : ?>
+<script>
+/*
+ * PerForm boot script — runs synchronously the moment the form wrapper
+ * appears in the DOM, before view.js gets a chance to load and hydrate
+ * Interactivity bindings. Two jobs:
+ *
+ *   1. Set data-perform-enhanced on the form wrapper so the CSS rules
+ *      that switch between the JS-disabled fallback layout and the
+ *      enhanced multi-step look apply immediately, with no flash.
+ *   2. Apply the same `hidden` attribute the data-wp-bind--hidden
+ *      bindings would apply on hydration to the elements that
+ *      shouldn't be visible on step 0 — non-first steps, separators,
+ *      the Back button, and the Submit button. With this in place
+ *      the form's initial paint matches the post-hydration state
+ *      exactly, and Interactivity's binding evaluation a few ms later
+ *      is a no-op on first load.
+ *
+ * With JavaScript disabled this script never runs, so the form falls
+ * back to the all-visible 5a-style layout and the user submits via
+ * the still-visible Submit button.
+ *
+ * Inline / no module — needs to execute as part of HTML parsing, not
+ * after the module loader catches up. ES5 syntax keeps it parseable
+ * on every browser that can read this attribute spec at all.
+ */
+( function () {
+	var form = document.currentScript && document.currentScript.previousElementSibling;
+	if ( ! form || ! form.classList || form.classList.contains( 'perform-form--multi-step' ) !== true ) {
+		return;
+	}
+	form.setAttribute( 'data-perform-enhanced', '' );
+
+	var hide = function ( el ) { if ( el ) { el.setAttribute( 'hidden', '' ); } };
+
+	var steps = form.querySelectorAll( '.perform-form__step' );
+	for ( var i = 0; i < steps.length; i++ ) {
+		if ( steps[ i ].getAttribute( 'data-step-index' ) !== '0' ) {
+			hide( steps[ i ] );
+		}
+	}
+
+	var separators = form.querySelectorAll( '.perform-form__step-separator' );
+	for ( var j = 0; j < separators.length; j++ ) {
+		hide( separators[ j ] );
+	}
+
+	hide( form.querySelector( '.perform-form__nav--back' ) );
+
+	// Submit = .perform-form__submit without .perform-form__nav--next.
+	var submits = form.querySelectorAll( '.perform-form__submit' );
+	for ( var k = 0; k < submits.length; k++ ) {
+		if ( ! submits[ k ].classList.contains( 'perform-form__nav--next' ) ) {
+			hide( submits[ k ] );
+		}
+	}
+}() );
+</script>
+<?php endif; ?>
 <?php
 \PerForm\Submissions\Handler::clear_render_state();

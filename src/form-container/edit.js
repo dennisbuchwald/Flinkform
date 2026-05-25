@@ -73,6 +73,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const labelPosition = appearanceConfig.labelPosition ?? 'above';
 	const columns = appearanceConfig.columns === 2 ? 2 : 1;
 	const progressIndicator = appearanceConfig.progressIndicator ?? 'bar';
+	const showStepLabels = appearanceConfig.showStepLabels === true;
 	const borderRadius = typeof appearanceConfig.borderRadius === 'number'
 		? appearanceConfig.borderRadius
 		: undefined;
@@ -161,6 +162,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		return innerBlocks.filter( ( b ) => b.name === 'perform/page-break' ).length + 1;
 	}, [ innerBlocks ] );
 	const isMultiStep = stepCount > 1;
+
+	// Step labels mirror the same data render.php derives — first step
+	// has no opening page-break so its label is empty, the labels of
+	// subsequent steps come from the matching page-break's `label`
+	// attribute. Used to preview the Step Labels feature in the
+	// editor exactly as it'll appear on the frontend.
+	const stepLabels = useMemo( () => {
+		const labels = [ '' ];
+		if ( Array.isArray( innerBlocks ) ) {
+			innerBlocks.forEach( ( b ) => {
+				if ( b.name === 'perform/page-break' ) {
+					const raw = b.attributes?.label;
+					labels.push( typeof raw === 'string' ? raw : '' );
+				}
+			} );
+		}
+		return labels;
+	}, [ innerBlocks ] );
+	const hasAnyStepLabel = stepLabels.some( ( label ) => label !== '' );
 
 	// Patch a subset of admin notification config without losing siblings.
 	// setAttributes is shallow — without the spread we'd wipe other keys
@@ -382,6 +402,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleGroupControlOption value="numbers" label={ __( 'Numbers', 'perform-forms' ) } />
 						<ToggleGroupControlOption value="none" label={ __( 'None', 'perform-forms' ) } />
 					</ToggleGroupControl>
+					{ progressIndicator !== 'none' && (
+						<ToggleControl
+							label={ __( 'Show step labels', 'perform-forms' ) }
+							help={ __( 'Display the current step’s label (from the Page Break block) beneath the indicator. Only shows when at least one Page Break has a label.', 'perform-forms' ) }
+							checked={ showStepLabels }
+							onChange={ ( value ) => updateAppearance( { showStepLabels: value } ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</PanelBody>
 
 				<PanelBody
@@ -555,6 +584,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<span className="perform-form__progress-label">
 								{ /* translators: 1: current step number, 2: total step count */
 									sprintf( __( 'Step %1$s of %2$s', 'perform-forms' ), '1', String( stepCount ) ) }
+							</span>
+						) }
+						{ showStepLabels && hasAnyStepLabel && (
+							<span className="perform-form__progress-step-label">
+								{ stepLabels[ 0 ] }
 							</span>
 						) }
 					</div>

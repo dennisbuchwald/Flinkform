@@ -154,18 +154,6 @@ const { state } = store( NAMESPACE, {
 		},
 	},
 
-	callbacks: {
-		// Sets `data-perform-enhanced` on the form wrapper the moment
-		// Interactivity hydrates. CSS keys off this attribute to lay
-		// out the navigation row (margin-right:auto on the Back button
-		// only matters when JS is going to make Back appear); without
-		// it the form-actions row keeps its single-button look from
-		// pre-multi-step PerForm.
-		markEnhanced() {
-			const { ref } = getElement();
-			ref.setAttribute( 'data-perform-enhanced', '' );
-		},
-	},
 } );
 
 /**
@@ -199,6 +187,21 @@ function syncProgressContext( ctx ) {
 	} else {
 		// Fallback when the PHP-seeded template isn't present.
 		ctx.progressLabel = `Step ${ next } of ${ ctx.totalSteps }`;
+	}
+
+	// Optional step-label display (5d). Only updates the binding when
+	// the per-form context already has the field — server only seeds
+	// `currentStepLabel` when the author enabled Step Labels in the
+	// inspector and at least one page-break carries a label, so the
+	// guard keeps the binding inert on forms without the feature
+	// turned on.
+	if ( Object.prototype.hasOwnProperty.call( ctx, 'currentStepLabel' ) ) {
+		const labels = state.stepLabels;
+		if ( Array.isArray( labels ) && typeof labels[ ctx.currentStep ] === 'string' ) {
+			ctx.currentStepLabel = labels[ ctx.currentStep ];
+		} else {
+			ctx.currentStepLabel = '';
+		}
 	}
 }
 

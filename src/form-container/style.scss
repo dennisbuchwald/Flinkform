@@ -125,10 +125,41 @@
 	// `hidden` attribute Interactivity sets on non-current steps in
 	// 5b would have no effect. Guarding with :not([hidden]) makes the
 	// flex layout opt-out cleanly on hidden steps.
+	//
+	// 5d animation: when a step appears (going from `hidden` to
+	// rendered), it fades up from translateY(4px) + opacity 0 over
+	// 150 ms. The `@starting-style` rule supplies the initial state
+	// the transition animates from — without it the step would just
+	// appear instantly. Browser support for @starting-style is
+	// Chrome 117+, Safari 17.5+, Firefox 129+; older browsers ignore
+	// it and the step still appears (just without the animation),
+	// so graceful degradation is automatic.
 	&__step:not([hidden]) {
 		display: flex;
 		flex-direction: column;
 		gap: var(--perform-field-gap);
+		opacity: 1;
+		transform: translateY(0);
+		transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+
+		@starting-style {
+			opacity: 0;
+			transform: translateY(4px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		// Users who opted out of motion get an instant swap. Re-state
+		// the starting style as the steady state so the @starting-style
+		// rule above can't accidentally fade them in.
+		&__step:not([hidden]) {
+			transition: none;
+
+			@starting-style {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
 	}
 
 	/* Progress indicator (Slice 5c) — three variants of the same
@@ -202,6 +233,19 @@
 		font-weight: 600;
 		letter-spacing: 0.04em;
 		opacity: 0.75;
+	}
+
+	// Optional step label beneath any indicator variant (Slice 5d).
+	// Reads the current step's label from the page-break attribute and
+	// is shown only when the author opted in AND at least one
+	// page-break carries a non-empty label.
+	&__progress-step-label {
+		display: block;
+		margin-top: 0.5rem;
+		text-align: center;
+		font-size: 0.85em;
+		font-weight: 600;
+		opacity: 0.85;
 	}
 
 	// Multi-step navigation row (Slice 5b). The action row stays a
