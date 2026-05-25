@@ -78,6 +78,15 @@ final class Menu {
 			FormsPage::SLUG,
 			[ $this, 'render_forms_page' ]
 		);
+
+		add_submenu_page(
+			self::PARENT_SLUG,
+			__( 'Webhook Log', 'perform-forms' ),
+			__( 'Webhook Log', 'perform-forms' ),
+			self::CAPABILITY,
+			WebhookLogPage::SLUG,
+			[ $this, 'render_webhook_log_page' ]
+		);
 	}
 
 	/**
@@ -96,6 +105,15 @@ final class Menu {
 	 */
 	public function render_forms_page(): void {
 		( new FormsPage() )->render();
+	}
+
+	/**
+	 * Render the Webhook Log page.
+	 *
+	 * @return void
+	 */
+	public function render_webhook_log_page(): void {
+		( new WebhookLogPage() )->render();
 	}
 
 	/**

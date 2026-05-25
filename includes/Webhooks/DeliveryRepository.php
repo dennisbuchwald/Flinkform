@@ -211,6 +211,161 @@ final class DeliveryRepository {
 	}
 
 	/**
+	 * Fetch the recent delivery log for a single submission. Joins
+	 * the webhook config so the admin view can show URL + label
+	 * without a second query per row.
+	 *
+	 * @param int $submission_id Submission id.
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function find_for_submission( int $submission_id ): array {
+		global $wpdb;
+
+		$deliveries = Schema::webhook_deliveries_table_name();
+		$webhooks   = Schema::webhooks_table_name();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT d.*, w.label AS webhook_label, w.url AS webhook_url
+				 FROM {$deliveries} d
+				 LEFT JOIN {$webhooks} w ON w.id = d.webhook_id
+				 WHERE d.submission_id = %d
+				 ORDER BY d.id ASC",
+				$submission_id
+			),
+			ARRAY_A
+		);
+
+		if ( ! is_array( $rows ) ) {
+			return [];
+		}
+
+		return array_map( [ $this, 'hydrate' ], $rows );
+	}
+
+	/**
+	 * Paginated query for the global Webhook Log admin view.
+	 *
+	 * Filters supported: status (exact match), webhook_id (exact),
+	 * search (matches webhook URL or label, case-insensitive
+	 * substring via LIKE). Orderable by id / status / attempt /
+	 * created_at / updated_at — anything else collapses to created_at.
+	 *
+	 * @param array<string, mixed> $filters Filter map.
+	 * @param int                  $page Page (1-based).
+	 * @param int                  $per_page Items per page.
+	 * @param string               $orderby Sort column.
+	 * @param string               $order ASC|DESC.
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function find_paginated( array $filters, int $page, int $per_page, string $orderby = 'created_at', string $order = 'DESC' ): array {
+		global $wpdb;
+
+		$deliveries = Schema::webhook_deliveries_table_name();
+		$webhooks   = Schema::webhooks_table_name();
+
+		[ $where_sql, $where_args ] = $this->build_where_clause( $filters );
+
+		// Allow-list both sort column and direction — never pass user
+		// input straight into the SQL string for ORDER BY.
+		$allowed_orderby = [ 'id', 'status', 'attempt', 'created_at', 'updated_at' ];
+		if ( ! in_array( $orderby, $allowed_orderby, true ) ) {
+			$orderby = 'created_at';
+		}
+		$order = strtoupper( $order ) === 'ASC' ? 'ASC' : 'DESC';
+
+		$offset = max( 0, ( $page - 1 ) * $per_page );
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$sql = "SELECT d.*, w.label AS webhook_label, w.url AS webhook_url, w.form_id AS webhook_form_id
+			FROM {$deliveries} d
+			LEFT JOIN {$webhooks} w ON w.id = d.webhook_id
+			{$where_sql}
+			ORDER BY d.{$orderby} {$order}, d.id DESC
+			LIMIT %d OFFSET %d";
+
+		$args = array_merge( $where_args, [ $per_page, $offset ] );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+		$rows = $wpdb->get_results( $wpdb->prepare( $sql, $args ), ARRAY_A );
+
+		if ( ! is_array( $rows ) ) {
+			return [];
+		}
+
+		return array_map( [ $this, 'hydrate' ], $rows );
+	}
+
+	/**
+	 * Total delivery count matching the same filters used by
+	 * find_paginated. Used by the list table to compute pagination.
+	 *
+	 * @param array<string, mixed> $filters Filter map.
+	 * @return int
+	 */
+	public function count( array $filters = [] ): int {
+		global $wpdb;
+
+		$deliveries = Schema::webhook_deliveries_table_name();
+		$webhooks   = Schema::webhooks_table_name();
+
+		[ $where_sql, $where_args ] = $this->build_where_clause( $filters );
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$sql = "SELECT COUNT(*) FROM {$deliveries} d LEFT JOIN {$webhooks} w ON w.id = d.webhook_id {$where_sql}";
+
+		if ( empty( $where_args ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			return (int) $wpdb->get_var( $sql );
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+		return (int) $wpdb->get_var( $wpdb->prepare( $sql, $where_args ) );
+	}
+
+	/**
+	 * Build the parameterised WHERE clause used by both paginate and
+	 * count. Returns the SQL fragment and the value list ready for
+	 * `$wpdb->prepare()`.
+	 *
+	 * @param array<string, mixed> $filters Filter map.
+	 * @return array{0: string, 1: array<int, scalar>}
+	 */
+	private function build_where_clause( array $filters ): array {
+		$clauses = [];
+		$args    = [];
+
+		if ( ! empty( $filters['status'] ) && is_string( $filters['status'] ) ) {
+			$clauses[] = 'd.status = %s';
+			$args[]    = $filters['status'];
+		}
+
+		if ( ! empty( $filters['webhook_id'] ) ) {
+			$clauses[] = 'd.webhook_id = %d';
+			$args[]    = (int) $filters['webhook_id'];
+		}
+
+		if ( ! empty( $filters['form_id'] ) && is_string( $filters['form_id'] ) ) {
+			$clauses[] = 'w.form_id = %s';
+			$args[]    = $filters['form_id'];
+		}
+
+		if ( ! empty( $filters['search'] ) && is_string( $filters['search'] ) ) {
+			global $wpdb;
+			$like = '%' . $wpdb->esc_like( $filters['search'] ) . '%';
+			$clauses[] = '(w.url LIKE %s OR w.label LIKE %s)';
+			$args[]    = $like;
+			$args[]    = $like;
+		}
+
+		return [
+			empty( $clauses ) ? '' : 'WHERE ' . implode( ' AND ', $clauses ),
+			$args,
+		];
+	}
+
+	/**
 	 * Fetch a single delivery row by id.
 	 *
 	 * @param int $id Delivery row id.
