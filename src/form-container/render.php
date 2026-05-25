@@ -202,11 +202,26 @@ if ( ! empty( $inline_style_parts ) ) {
 // 5a, see the progressive-enhancement notes in view.js.
 $step_count = $page_break_count + 1;
 if ( $is_multi_step && ! $is_success ) {
+	// Per-form context — every value the indicator bindings consume
+	// lives here, not on the namespace state, so WP Interactivity's
+	// server-side directive processing can resolve them against the
+	// JSON payload in this attribute and emit the right initial
+	// attribute values for JS-disabled visitors. Pure JS getters like
+	// `state.alwaysTrue` (which depend on no PHP-resolvable input)
+	// stay where they are and the SSR-strip on those is intentional.
+	$initial_aria_now = 1;
+	$initial_percent  = round( ( 1 / $step_count ) * 100, 2 );
+	/* translators: 1: current step number, 2: total step count */
+	$initial_label = sprintf( __( 'Step %1$s of %2$s', 'perform-forms' ), '1', (string) $step_count );
+
 	$wrapper_args['data-wp-interactive'] = 'perform/form';
 	$wrapper_args['data-wp-context']     = (string) wp_json_encode(
 		[
-			'currentStep' => 0,
-			'totalSteps'  => $step_count,
+			'currentStep'      => 0,
+			'totalSteps'       => $step_count,
+			'ariaValueNow'     => $initial_aria_now,
+			'progressBarStyle' => '--perform-progress-percent:' . $initial_percent . '%',
+			'progressLabel'    => $initial_label,
 		]
 	);
 	$wrapper_args['data-wp-init'] = 'callbacks.markEnhanced';
@@ -384,7 +399,10 @@ $timestamp_token = base64_encode( (string) time() );
 		// progressLabel getter can re-fill it on every step change
 		// without having to import @wordpress/i18n.
 		if ( $is_multi_step && 'none' !== $progress_indicator ) :
-			$initial_percent = round( ( 1 / $step_count ) * 100, 2 );
+			// Seed the locale-aware label template once per request.
+			// The placeholder values stay on namespace state because the
+			// template itself doesn't change per step — only the numbers
+			// substituted into it do, and those live on per-form context.
 			if ( function_exists( 'wp_interactivity_state' ) ) {
 				wp_interactivity_state(
 					'perform/form',
@@ -398,23 +416,19 @@ $timestamp_token = base64_encode( (string) time() );
 					]
 				);
 			}
-			/* translators: 1: current step number, 2: total step count */
-			$initial_label = sprintf( __( 'Step %1$s of %2$s', 'perform-forms' ), '1', (string) $step_count );
 			?>
 			<div
 				class="perform-form__progress perform-form__progress--<?php echo esc_attr( $progress_indicator ); ?>"
 				role="progressbar"
 				aria-valuemin="1"
 				aria-valuemax="<?php echo esc_attr( (string) $step_count ); ?>"
-				aria-valuenow="1"
-				data-wp-bind--aria-valuenow="state.ariaValueNow"
+				data-wp-bind--aria-valuenow="context.ariaValueNow"
 			>
 				<?php if ( 'bar' === $progress_indicator ) : ?>
 					<div class="perform-form__progress-track">
 						<div
 							class="perform-form__progress-fill"
-							style="--perform-progress-percent:<?php echo esc_attr( (string) $initial_percent ); ?>%"
-							data-wp-bind--style="state.progressBarStyle"
+							data-wp-bind--style="context.progressBarStyle"
 						></div>
 					</div>
 				<?php elseif ( 'dots' === $progress_indicator ) : ?>
@@ -430,8 +444,8 @@ $timestamp_token = base64_encode( (string) time() );
 				<?php elseif ( 'numbers' === $progress_indicator ) : ?>
 					<span
 						class="perform-form__progress-label"
-						data-wp-text="state.progressLabel"
-					><?php echo esc_html( $initial_label ); ?></span>
+						data-wp-text="context.progressLabel"
+					></span>
 				<?php endif; ?>
 			</div>
 		<?php endif; ?>
