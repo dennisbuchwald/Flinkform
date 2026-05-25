@@ -12,7 +12,8 @@
 	"supports": {
 		"html": false,
 		"align": ["wide", "full"],
-		"anchor": true
+		"anchor": true,
+		"interactivity": true
 	},
 	"attributes": {
 		"formId": {
@@ -49,6 +50,7 @@
 		"perform/appearance": "appearance"
 	},
 	"editorScript": "file:./index.js",
+	"viewScriptModule": "file:./view.js",
 	"style": "file:./style-index.css",
 	"render": "file:./render.php"
 }

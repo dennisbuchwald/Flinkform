@@ -119,19 +119,80 @@
 	 * in the browser without any JavaScript. Slice 5b will hide all
 	 * non-current steps via the Interactivity API and the separator
 	 * will be removed at that point. */
-	&__step {
+	// :not([hidden]) is on purpose — without it our `display: flex`
+	// rule (`.perform-form .perform-form__step`, specificity 0,2,0)
+	// outranks the UA `[hidden] { display: none }` (0,1,0), so the
+	// `hidden` attribute Interactivity sets on non-current steps in
+	// 5b would have no effect. Guarding with :not([hidden]) makes the
+	// flex layout opt-out cleanly on hidden steps.
+	&__step:not([hidden]) {
 		display: flex;
 		flex-direction: column;
 		gap: var(--perform-field-gap);
 	}
 
-	&__step-separator {
+	// Multi-step navigation row (Slice 5b). The action row stays a
+	// simple single-button block until Interactivity has hydrated and
+	// flagged the form with `data-perform-enhanced`; that's the
+	// reliable "JS is on, the bindings are wired up" signal. From
+	// that point on it becomes a flex row with the Back button pushed
+	// to the left and Next/Submit anchored to the right.
+	&[data-perform-enhanced] &__actions {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	// Back button — secondary, ghost-like, always neutral. The submit
+	// button's style-panel variants (fill/outline/ghost) intentionally
+	// don't apply here: Back is the de-emphasised path back, so a
+	// constant low-contrast look reads better than mirroring whatever
+	// the primary submit looks like.
+	&__nav--back {
+		font: inherit;
+		padding: 0.65em 1.25em;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+		opacity: 0.7;
+		border-radius: var(--perform-border-radius);
+		transition: opacity 0.15s ease;
+
+		// margin-right:auto pushes Back to the far left of the action
+		// row and lets Next/Submit anchor at the right edge. When
+		// Back is hidden (first step) the rule simply doesn't apply,
+		// and the remaining buttons stay flex-end aligned.
+		margin-right: auto;
+
+		&:hover,
+		&:focus-visible {
+			opacity: 1;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--perform-color-primary);
+			outline-offset: 2px;
+		}
+	}
+
+	// Same :not([hidden]) reasoning as on __step above — the binding
+	// in 5b adds `hidden` to every separator on JS hydration, and our
+	// explicit `display: flex` needs to step aside when that happens.
+	// Sass doesn't allow combining the `:not([hidden])` suffix with
+	// nested BEM children via `&-rule`, so the parent's display rules
+	// and the BEM children sit in two adjacent blocks.
+	&__step-separator:not([hidden]) {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
 		margin: 0.5rem 0;
 		opacity: 0.75;
+	}
 
+	&__step-separator {
 		&-rule {
 			flex: 1;
 			height: 1px;
@@ -483,8 +544,13 @@
 	 * in multi-step mode. The same full-width rules above continue to
 	 * apply because they target descendants, not direct children, so
 	 * `.perform-field--full-width` inside a step still resolves to
-	 * `grid-column: 1 / -1` against the step's grid context. */
-	.perform-form__step {
+	 * `grid-column: 1 / -1` against the step's grid context.
+	 *
+	 * `:not([hidden])` mirrors the same UA-specificity dance as the
+	 * base step rule — without it the (0,4,0) grid declaration here
+	 * would outrank `[hidden]` (0,1,0) and keep non-current steps
+	 * visible in 2-column multi-step mode. */
+	.perform-form__step:not([hidden]) {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		column-gap: var(--perform-field-gap);
@@ -492,7 +558,7 @@
 	}
 
 	@media (max-width: 600px) {
-		.perform-form__step {
+		.perform-form__step:not([hidden]) {
 			display: flex;
 			flex-direction: column;
 			gap: var(--perform-field-gap);

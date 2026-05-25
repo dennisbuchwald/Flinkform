@@ -187,6 +187,23 @@ $wrapper_args = [
 if ( ! empty( $inline_style_parts ) ) {
 	$wrapper_args['style'] = implode( ';', $inline_style_parts ) . ';';
 }
+// Interactivity API wiring — only emitted on multi-step renders.
+// The success branch deliberately skips this (no form, nothing to
+// drive). With JavaScript disabled these attributes sit dormant in
+// the HTML and the form falls back to its single-page rendering —
+// every step visible, every required field server-validated as in
+// 5a, see the progressive-enhancement notes in view.js.
+$step_count = $page_break_count + 1;
+if ( $is_multi_step && ! $is_success ) {
+	$wrapper_args['data-wp-interactive'] = 'perform/form';
+	$wrapper_args['data-wp-context']     = (string) wp_json_encode(
+		[
+			'currentStep' => 0,
+			'totalSteps'  => $step_count,
+		]
+	);
+	$wrapper_args['data-wp-init'] = 'callbacks.markEnhanced';
+}
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
 // Custom CSS — same <style> block goes out in both the success view and
@@ -263,9 +280,18 @@ if ( 1 === $step_count ) {
 } else {
 	$step_chunks = [];
 	foreach ( $steps as $step_index => $step_data ) {
-		$step_attr = sprintf(
-			'class="perform-form__step" data-step-index="%d"',
-			$step_index
+		// Per-step nested context — merges with the wrapper's
+		// {currentStep, totalSteps} so state.isCurrentStep can pick the
+		// right step out by comparing stepIndex to currentStep. The
+		// data-wp-bind--hidden binding then either adds or removes the
+		// `hidden` attribute on hydration; the server-side render
+		// emits every step unhidden so the form keeps working with
+		// JavaScript disabled.
+		$step_context = (string) wp_json_encode( [ 'stepIndex' => $step_index ] );
+		$step_attr    = sprintf(
+			'class="perform-form__step" data-step-index="%d" data-wp-context="%s" data-wp-bind--hidden="state.isNotCurrentStep"',
+			$step_index,
+			esc_attr( $step_context )
 		);
 		if ( '' !== $step_data['label'] ) {
 			$step_attr .= ' data-step-label="' . esc_attr( $step_data['label'] ) . '"';
@@ -285,7 +311,12 @@ if ( 1 === $step_count ) {
 			$separator_text = sprintf( __( 'Step %d', 'perform-forms' ), $next_number );
 		}
 
-		$inner_html .= '<div class="perform-form__step-separator" aria-hidden="true">'
+		// The separator only makes sense when every step is visible at
+		// once (the JS-disabled fallback). data-wp-bind--hidden bound
+		// to a constant-true getter fires as soon as Interactivity
+		// hydrates, removing the separator from the layout. Without
+		// JS the binding never runs and it stays as the 5a divider.
+		$inner_html .= '<div class="perform-form__step-separator" aria-hidden="true" data-wp-bind--hidden="state.alwaysTrue">'
 			. '<span class="perform-form__step-separator-rule"></span>'
 			. '<span class="perform-form__step-separator-label">' . esc_html( $separator_text ) . '</span>'
 			. '<span class="perform-form__step-separator-rule"></span>'
@@ -305,6 +336,9 @@ $timestamp_token = base64_encode( (string) time() );
 		method="post"
 		action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"
 		novalidate
+		<?php if ( $is_multi_step ) : ?>
+			data-wp-on--submit="actions.submitGuard"
+		<?php endif; ?>
 	>
 		<?php wp_nonce_field( 'perform_submit_' . $form_id, '_perform_nonce' ); ?>
 		<input type="hidden" name="action" value="perform_submit" />
@@ -329,9 +363,47 @@ $timestamp_token = base64_encode( (string) time() );
 		<?php echo $inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks output, fields escape themselves. ?>
 
 		<div class="perform-form__actions">
-			<button type="submit" class="perform-form__submit">
-				<?php echo esc_html( $submit_label ); ?>
-			</button>
+			<?php if ( $is_multi_step ) : ?>
+				<?php
+				// Navigation buttons — emitted only in multi-step mode.
+				// Server-side initial state matches the JS-on Step 1 layout:
+				// Back is hidden (no previous step to go to), Next is visible.
+				// Without JS the Next/Back buttons stay in their server state
+				// (Back hidden, Next visible) and never fire — fine, because
+				// every step is visible at once and the user can submit on
+				// any step they're on. With JS the data-wp-bind--hidden
+				// expressions take over and toggle visibility per step.
+				?>
+				<button
+					type="button"
+					class="perform-form__nav perform-form__nav--back"
+					data-wp-on--click="actions.prevStep"
+					data-wp-bind--hidden="state.isFirstStep"
+					hidden
+				>
+					<?php esc_html_e( 'Back', 'perform-forms' ); ?>
+				</button>
+				<button
+					type="button"
+					class="perform-form__submit perform-form__nav perform-form__nav--next"
+					data-wp-on--click="actions.nextStep"
+					data-wp-bind--hidden="state.isLastStep"
+					hidden
+				>
+					<?php esc_html_e( 'Next', 'perform-forms' ); ?>
+				</button>
+				<button
+					type="submit"
+					class="perform-form__submit"
+					data-wp-bind--hidden="state.isNotLastStep"
+				>
+					<?php echo esc_html( $submit_label ); ?>
+				</button>
+			<?php else : ?>
+				<button type="submit" class="perform-form__submit">
+					<?php echo esc_html( $submit_label ); ?>
+				</button>
+			<?php endif; ?>
 		</div>
 	</form>
 </div>
