@@ -124,7 +124,7 @@ const { state } = store( NAMESPACE, {
 			if ( ctx.currentStep < ctx.totalSteps - 1 ) {
 				ctx.currentStep += 1;
 				syncProgressContext( ctx );
-				focusFirstFieldOfStep( wrapper, ctx.currentStep );
+				deferFocus( wrapper, ctx.currentStep );
 			}
 		},
 
@@ -137,7 +137,7 @@ const { state } = store( NAMESPACE, {
 			ctx.currentStep -= 1;
 			syncProgressContext( ctx );
 			if ( wrapper ) {
-				focusFirstFieldOfStep( wrapper, ctx.currentStep );
+				deferFocus( wrapper, ctx.currentStep );
 			}
 		},
 
@@ -203,6 +203,36 @@ function syncProgressContext( ctx ) {
 			ctx.currentStepLabel = '';
 		}
 	}
+}
+
+/**
+ * Schedule a focus move to the new step after Interactivity has
+ * finished reconciling the DOM.
+ *
+ * WP Interactivity uses Preact signals internally; mutating
+ * `ctx.currentStep` triggers a reactive re-render that flushes via
+ * the microtask queue, not synchronously. Calling `focus()` right
+ * after the mutation lands on a step element that still carries the
+ * `hidden` attribute from the previous tick — and the browser
+ * silently drops a focus() call on a `display:none` element, leaving
+ * focus on the Next button instead of the new step's first field.
+ *
+ * `requestAnimationFrame` runs after all pending microtasks and after
+ * the browser has applied DOM changes for the next paint, so by the
+ * time the callback fires the new step is visible and `focus()`
+ * lands where it's supposed to.
+ *
+ * @param {HTMLElement} wrapper   The form wrapper element.
+ * @param {number}      stepIndex Zero-based index of the now-current step.
+ */
+function deferFocus( wrapper, stepIndex ) {
+	if ( typeof window.requestAnimationFrame === 'function' ) {
+		window.requestAnimationFrame( () => focusFirstFieldOfStep( wrapper, stepIndex ) );
+		return;
+	}
+	// Ancient-browser fallback — should never run on any environment
+	// the plugin actually supports, but better than swallowing the call.
+	focusFirstFieldOfStep( wrapper, stepIndex );
 }
 
 /**

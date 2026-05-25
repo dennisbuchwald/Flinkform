@@ -461,7 +461,9 @@ $timestamp_token = base64_encode( (string) time() );
 				role="progressbar"
 				aria-valuemin="1"
 				aria-valuemax="<?php echo esc_attr( (string) $step_count ); ?>"
+				aria-label="<?php echo esc_attr( $initial_label ); ?>"
 				data-wp-bind--aria-valuenow="context.ariaValueNow"
+				data-wp-bind--aria-label="context.progressLabel"
 			>
 				<?php if ( 'bar' === $progress_indicator ) : ?>
 					<div class="perform-form__progress-track">
