@@ -38,6 +38,10 @@
 		"appearance": {
 			"type": "object",
 			"default": {}
+		},
+		"customCSS": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"providesContext": {

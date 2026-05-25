@@ -93,6 +93,42 @@ if ( isset( $appearance['borderRadius'] ) && is_numeric( $appearance['borderRadi
 	}
 }
 
+/**
+ * Sanitise an author-supplied Custom CSS string before it lands in a
+ * <style> block on the page.
+ *
+ * Inspector access is gated by the `edit_posts` capability, so the
+ * threat model is "trusted user", not "drive-by attacker" — but we
+ * still defend in depth:
+ *
+ *   1. wp_strip_all_tags() — removes any <script> / <style> blocks
+ *      the author tries to embed (also strips raw HTML tags, which
+ *      have no business in a CSS textarea).
+ *   2. preg_replace() of the three legacy IE vectors that survive
+ *      strip_all_tags:
+ *        - expression(…)   — old IE-only CSS expression evaluator
+ *        - behavior:       — IE-only binding to an HTC behaviour file
+ *        - javascript:     — only meaningful in url() values; tiny
+ *                            attack surface but cheap to neutralise
+ *      All three are dead in every supported browser today (the
+ *      plugin requires WP 7.0 + PHP 8.1, which target evergreen
+ *      browsers anyway) but neutralising them costs us nothing.
+ *
+ * @param string $css Raw CSS from the block attribute.
+ * @return string Sanitised CSS, safe to echo into <style>…</style>.
+ */
+$perform_sanitize_custom_css = static function ( string $css ): string {
+	$css = wp_strip_all_tags( $css );
+	$css = (string) preg_replace( '/expression\s*\(/i', '', $css );
+	$css = (string) preg_replace( '/behavior\s*:/i', '', $css );
+	$css = (string) preg_replace( '/javascript\s*:/i', '', $css );
+	return trim( $css );
+};
+
+$custom_css = isset( $attributes['customCSS'] ) && is_string( $attributes['customCSS'] )
+	? $perform_sanitize_custom_css( $attributes['customCSS'] )
+	: '';
+
 // Without a stable form ID we cannot save or validate — render nothing.
 if ( '' === $form_id ) {
 	return;
@@ -134,7 +170,17 @@ if ( ! empty( $inline_style_parts ) ) {
 }
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
+// Custom CSS — same <style> block goes out in both the success view and
+// the normal form render so author rules survive past submission. ID is
+// derived from the form UUID so multiple forms on one page don't clash
+// on the element id and a single rule-set is reused if the page caches.
+$custom_css_block = '';
+if ( '' !== $custom_css ) {
+	$custom_css_block = '<style id="perform-custom-css-' . esc_attr( $form_id ) . '">' . $custom_css . '</style>';
+}
+
 if ( $is_success ) :
+	echo $custom_css_block; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitised above.
 	?>
 	<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 		<div class="perform-form__success" role="status" aria-live="polite">
@@ -163,6 +209,7 @@ foreach ( $block->inner_blocks as $inner ) {
 // catch bots that submit a form within microseconds of rendering it.
 $timestamp_token = base64_encode( (string) time() );
 ?>
+<?php echo $custom_css_block; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitised above. ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<form
 		class="perform-form__form"

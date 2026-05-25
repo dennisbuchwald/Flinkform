@@ -60,7 +60,7 @@ function generateUuid() {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { formId, title, submitLabel, successMessage, notifications, appearance } = attributes;
+	const { formId, title, submitLabel, successMessage, notifications, appearance, customCSS } = attributes;
 
 	const adminConfig = notifications?.admin ?? {};
 	const submitterConfig = notifications?.submitter ?? {};
@@ -100,6 +100,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const blockProps = useBlockProps( {
 		className: editorClassName,
 		style: editorStyle,
+		// Mirror the frontend's data-perform-id so Custom CSS rules
+		// scoped to [data-perform-id="…"] take effect in the editor too.
+		'data-perform-id': formId || undefined,
 	} );
 
 	useEffect( () => {
@@ -453,9 +456,41 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</>
 					) }
 				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Custom CSS', 'perform-forms' ) }
+					initialOpen={ false }
+				>
+					<TextareaControl
+						label={ __( 'CSS rules', 'perform-forms' ) }
+						help={ __( 'Scope rules to this form by prefixing selectors with [data-perform-id="<id>"]. Otherwise the rules apply to every PerForm on the page.', 'perform-forms' ) }
+						value={ customCSS ?? '' }
+						onChange={ ( value ) => setAttributes( { customCSS: value } ) }
+						rows={ 10 }
+						className="perform-custom-css-input"
+						__nextHasNoMarginBottom
+					/>
+					{ formId && (
+						<p style={ { fontSize: '12px', opacity: 0.7, marginTop: '8px' } }>
+							{ __( 'Form ID for scoping:', 'perform-forms' ) }
+							<br />
+							<code style={ { userSelect: 'all', wordBreak: 'break-all' } }>
+								{ `[data-perform-id="${ formId }"]` }
+							</code>
+						</p>
+					) }
+				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ customCSS && (
+					/* Editor live-preview: render the same <style> tag the
+					 * frontend gets. dangerouslySetInnerHTML is fine here — the
+					 * only writer is the editing user (capability edit_posts),
+					 * and the frontend output applies an extra sanitisation
+					 * pass before echoing. */
+					<style dangerouslySetInnerHTML={ { __html: customCSS } } />
+				) }
 				<InnerBlocks
 					allowedBlocks={ ALLOWED_BLOCKS }
 					template={ TEMPLATE }
