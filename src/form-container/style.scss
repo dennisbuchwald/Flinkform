@@ -379,6 +379,39 @@
 	}
 }
 
+/* Two-column layout — CSS Grid on the inner <form>. Collapses to a
+ * single column under 600 px so mobile users always see a stacked
+ * form, regardless of what the desktop layout says. Individual fields
+ * can opt out of the 1fr cell via the per-field "Full width" toggle,
+ * which writes `fullWidth: true` into the field attribute and
+ * renders `.perform-field--full-width` on the wrapper. That class
+ * is a no-op in 1-column mode (no grid running), so a user can flip
+ * a form back and forth without losing per-field choices. */
+.perform-form.perform-form--columns-2 {
+	.perform-form__form {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		column-gap: var(--perform-field-gap);
+		row-gap: var(--perform-field-gap);
+	}
+
+	.perform-field--full-width,
+	.perform-section-heading--full-width,
+	.perform-form__error--global,
+	.perform-form__actions,
+	.perform-form__hp {
+		grid-column: 1 / -1;
+	}
+
+	@media (max-width: 600px) {
+		.perform-form__form {
+			display: flex;
+			flex-direction: column;
+			gap: var(--perform-field-gap);
+		}
+	}
+}
+
 /* Floating labels — CSS-only via :placeholder-shown + :focus-within +
  * :has(). Inputs without a placeholder fall back to a static "label
  * always lifted" look (visually identical to Above — no animation but
@@ -435,6 +468,44 @@
 			&:has(.perform-field__input:not(:placeholder-shown)) > .perform-field__label {
 				top: 0.35em;
 			}
+		}
+	}
+}
+
+/* ---------------------------------------------------------------------
+ * Dark mode
+ *
+ * Most modern themes that publish a theme.json already swap their
+ * `--wp--preset--color--*` variables under prefers-color-scheme; in
+ * those cases our --perform-* cascade picks up the dark values for
+ * free (no override here needed). The block below covers themes
+ * without that — it nudges our hard-coded fallbacks and the
+ * minimal-field tint to land readable on a dark background instead
+ * of inheriting their light-mode look.
+ *
+ * We only override the FALLBACK values, never the theme-supplied
+ * ones. The cascade order var(--perform-X, var(--wp--preset--Y,
+ * fallback)) means that as long as the theme supplies its own value,
+ * our `prefers-color-scheme: dark` re-declaration of the fallback
+ * doesn't change anything — but on themes that don't, the form
+ * survives without us shipping a separate dark stylesheet.
+ * ------------------------------------------------------------------ */
+@media (prefers-color-scheme: dark) {
+	.perform-form {
+		// Same cascade as the default block, with dark-mode-readable
+		// hard-coded fallbacks for themes that don't redeclare their
+		// presets under prefers-color-scheme.
+		--perform-color-primary: var(--wp--preset--color--primary, #7eb6ff);
+		--perform-color-on-primary: var(--wp--preset--color--background, #1a1a1a);
+	}
+
+	.perform-form.perform-form--field-style-minimal {
+		.perform-field__input {
+			// On dark themes the 6% currentColor tint over the page
+			// background gets too dim — bump to 10% so the field
+			// still reads as a separate surface.
+			background: color-mix(in srgb, currentColor 10%, transparent);
+			background-color: color-mix(in srgb, currentColor 10%, transparent);
 		}
 	}
 }

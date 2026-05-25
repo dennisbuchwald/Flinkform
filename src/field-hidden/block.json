@@ -18,9 +18,13 @@
 		"label": { "type": "string", "default": "Hidden Field" },
 		"fieldName": { "type": "string", "default": "" },
 		"valueSource": { "type": "string", "default": "static" },
-		"staticValue": { "type": "string", "default": "" }
+		"staticValue": { "type": "string", "default": "" },
+		"fullWidth": {
+			"type": "boolean",
+			"default": false
+		}
 	},
-	"usesContext": ["perform/formId"],
+	"usesContext": ["perform/formId", "perform/appearance"],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

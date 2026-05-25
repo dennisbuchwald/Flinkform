@@ -80,6 +80,8 @@ if ( ! in_array( $label_position, [ 'above', 'beside', 'floating' ], true ) ) {
 	$label_position = 'above';
 }
 
+$columns = isset( $appearance['columns'] ) && (int) $appearance['columns'] === 2 ? 2 : 1;
+
 // Border radius — only a non-negative integer in a sane range counts as
 // a real override. Everything else (null, string, negative) falls back
 // to the SCSS-level default.
@@ -112,6 +114,7 @@ $wrapper_classes = [
 	'perform-form--field-style-' . $field_style,
 	'perform-form--spacing-' . $field_spacing,
 	'perform-form--labels-' . $label_position,
+	'perform-form--columns-' . $columns,
 ];
 
 $inline_style_parts = [];

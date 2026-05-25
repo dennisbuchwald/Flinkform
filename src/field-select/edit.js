@@ -5,8 +5,9 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 
 import { generateFieldName } from '../shared/field-name';
 import { OptionsEditor } from '../shared/options-editor';
+import FullWidthPanel from '../shared/full-width-panel';
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, context } ) {
 	const { label, placeholder, required, helpText, fieldName, multiple, options } = attributes;
 	const blockProps = useBlockProps( { className: 'perform-field perform-field--select' } );
 
@@ -70,6 +71,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( next ) => setAttributes( { options: next } ) }
 					/>
 				</PanelBody>
+				<FullWidthPanel attributes={ attributes } setAttributes={ setAttributes } context={ context } />
 			</InspectorControls>
 
 			<div { ...blockProps }>

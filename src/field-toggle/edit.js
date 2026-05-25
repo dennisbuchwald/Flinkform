@@ -4,8 +4,9 @@ import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody, TextControl, TextareaControl, ToggleControl } from '@wordpress/components';
 
 import { generateFieldName } from '../shared/field-name';
+import FullWidthPanel from '../shared/full-width-panel';
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, context } ) {
 	const { label, required, helpText, fieldName } = attributes;
 	const blockProps = useBlockProps( { className: 'perform-field perform-field--toggle' } );
 
@@ -49,6 +50,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<FullWidthPanel attributes={ attributes } setAttributes={ setAttributes } context={ context } />
 			</InspectorControls>
 
 			<div { ...blockProps }>

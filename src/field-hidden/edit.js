@@ -13,8 +13,9 @@ const SOURCE_OPTIONS = [
 	{ label: __( 'Current date (Y-m-d)', 'perform-forms' ), value: 'current_date' },
 	{ label: __( 'Current date + time (ISO)', 'perform-forms' ), value: 'current_datetime' },
 ];
+import FullWidthPanel from '../shared/full-width-panel';
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, context } ) {
 	const { label, fieldName, valueSource, staticValue } = attributes;
 	const blockProps = useBlockProps( { className: 'perform-field perform-field--hidden' } );
 
@@ -68,6 +69,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<FullWidthPanel attributes={ attributes } setAttributes={ setAttributes } context={ context } />
 			</InspectorControls>
 
 			<div { ...blockProps } style={ { padding: '8px 12px', background: '#f0f0f1', borderRadius: '4px', fontSize: '12px' } }>

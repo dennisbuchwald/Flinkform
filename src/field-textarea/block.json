@@ -38,9 +38,13 @@
 		"rows": {
 			"type": "number",
 			"default": 4
+		},
+		"fullWidth": {
+			"type": "boolean",
+			"default": false
 		}
 	},
-	"usesContext": ["perform/formId"],
+	"usesContext": ["perform/formId", "perform/appearance"],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

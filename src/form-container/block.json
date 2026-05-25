@@ -41,7 +41,8 @@
 		}
 	},
 	"providesContext": {
-		"perform/formId": "formId"
+		"perform/formId": "formId",
+		"perform/appearance": "appearance"
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

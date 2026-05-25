@@ -1,8 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, RichText, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody, TextareaControl } from '@wordpress/components';
+import FullWidthPanel from '../shared/full-width-panel';
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, context } ) {
 	const { title, description } = attributes;
 	const blockProps = useBlockProps( { className: 'perform-section-heading' } );
 
@@ -17,6 +18,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+				<FullWidthPanel attributes={ attributes } setAttributes={ setAttributes } context={ context } />
 			</InspectorControls>
 			<div { ...blockProps }>
 				<RichText

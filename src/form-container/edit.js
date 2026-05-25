@@ -70,6 +70,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const fieldStyle = appearanceConfig.fieldStyle ?? 'bordered';
 	const fieldSpacing = appearanceConfig.fieldSpacing ?? 'normal';
 	const labelPosition = appearanceConfig.labelPosition ?? 'above';
+	const columns = appearanceConfig.columns === 2 ? 2 : 1;
 	const borderRadius = typeof appearanceConfig.borderRadius === 'number'
 		? appearanceConfig.borderRadius
 		: undefined;
@@ -93,6 +94,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		`perform-form--field-style-${ fieldStyle }`,
 		`perform-form--spacing-${ fieldSpacing }`,
 		`perform-form--labels-${ labelPosition }`,
+		`perform-form--columns-${ columns }`,
 	].join( ' ' );
 
 	const blockProps = useBlockProps( {
@@ -323,6 +325,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleGroupControlOption value="above" label={ __( 'Above', 'perform-forms' ) } />
 						<ToggleGroupControlOption value="beside" label={ __( 'Beside', 'perform-forms' ) } />
 						<ToggleGroupControlOption value="floating" label={ __( 'Floating', 'perform-forms' ) } />
+					</ToggleGroupControl>
+					<ToggleGroupControl
+						label={ __( 'Columns', 'perform-forms' ) }
+						help={ __( 'Two-column layout collapses to a single column on mobile. Individual fields can be set to span both columns via their own inspector.', 'perform-forms' ) }
+						value={ columns }
+						onChange={ ( value ) => updateAppearance( { columns: value === 2 ? 2 : 1 } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value={ 1 } label={ __( '1 column', 'perform-forms' ) } />
+						<ToggleGroupControlOption value={ 2 } label={ __( '2 columns', 'perform-forms' ) } />
 					</ToggleGroupControl>
 					<ToggleGroupControl
 						label={ __( 'Submit button style', 'perform-forms' ) }

@@ -27,9 +27,13 @@
 				{ "label": "Option 1", "value": "option-1" },
 				{ "label": "Option 2", "value": "option-2" }
 			]
+		},
+		"fullWidth": {
+			"type": "boolean",
+			"default": false
 		}
 	},
-	"usesContext": ["perform/formId"],
+	"usesContext": ["perform/formId", "perform/appearance"],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

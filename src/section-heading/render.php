@@ -16,12 +16,18 @@ defined( 'ABSPATH' ) || exit;
 
 $title       = isset( $attributes['title'] ) && is_string( $attributes['title'] ) ? $attributes['title'] : '';
 $description = isset( $attributes['description'] ) && is_string( $attributes['description'] ) ? $attributes['description'] : '';
+$full_width  = ! empty( $attributes['fullWidth'] );
 
 if ( '' === $title && '' === $description ) {
 	return;
 }
+
+$heading_class = 'perform-section-heading';
+if ( $full_width ) {
+	$heading_class .= ' perform-section-heading--full-width';
+}
 ?>
-<div class="perform-section-heading">
+<div class="<?php echo esc_attr( $heading_class ); ?>">
 	<?php if ( '' !== $title ) : ?>
 		<h2 class="perform-section-heading__title"><?php echo wp_kses_post( $title ); ?></h2>
 	<?php endif; ?>

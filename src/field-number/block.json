@@ -22,9 +22,13 @@
 		"fieldName": { "type": "string", "default": "" },
 		"min": { "type": "string", "default": "" },
 		"max": { "type": "string", "default": "" },
-		"step": { "type": "string", "default": "" }
+		"step": { "type": "string", "default": "" },
+		"fullWidth": {
+			"type": "boolean",
+			"default": false
+		}
 	},
-	"usesContext": ["perform/formId"],
+	"usesContext": ["perform/formId", "perform/appearance"],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

@@ -22,8 +22,13 @@
 		"description": {
 			"type": "string",
 			"default": ""
+		},
+		"fullWidth": {
+			"type": "boolean",
+			"default": true
 		}
 	},
+	"usesContext": ["perform/formId", "perform/appearance"],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

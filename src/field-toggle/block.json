@@ -18,9 +18,13 @@
 		"label": { "type": "string", "default": "I agree" },
 		"required": { "type": "boolean", "default": false },
 		"helpText": { "type": "string", "default": "" },
-		"fieldName": { "type": "string", "default": "" }
+		"fieldName": { "type": "string", "default": "" },
+		"fullWidth": {
+			"type": "boolean",
+			"default": false
+		}
 	},
-	"usesContext": ["perform/formId"],
+	"usesContext": ["perform/formId", "perform/appearance"],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }
