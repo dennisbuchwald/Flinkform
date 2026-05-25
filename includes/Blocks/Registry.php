@@ -31,6 +31,7 @@ final class Registry {
 	private const BLOCKS = [
 		'form-container',
 		'section-heading',
+		'page-break',
 		'field-text',
 		'field-email',
 		'field-textarea',

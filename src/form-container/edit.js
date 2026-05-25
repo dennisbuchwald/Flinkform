@@ -29,6 +29,7 @@ import {
 
 const ALLOWED_BLOCKS = [
 	'perform/section-heading',
+	'perform/page-break',
 	'perform/field-text',
 	'perform/field-email',
 	'perform/field-textarea',

@@ -82,6 +82,17 @@ if ( ! in_array( $label_position, [ 'above', 'beside', 'floating' ], true ) ) {
 
 $columns = isset( $appearance['columns'] ) && (int) $appearance['columns'] === 2 ? 2 : 1;
 
+// Count page-break markers in the inner-block tree — drives the
+// multi-step wrapper class and decides whether the inner-block render
+// loop below splits the stream into steps or emits a flat field list.
+$page_break_count = 0;
+foreach ( $block->inner_blocks as $perform_inner_probe ) {
+	if ( 'perform/page-break' === $perform_inner_probe->name ) {
+		$page_break_count++;
+	}
+}
+$is_multi_step = $page_break_count > 0;
+
 // Border radius — only a non-negative integer in a sane range counts as
 // a real override. Everything else (null, string, negative) falls back
 // to the SCSS-level default.
@@ -152,6 +163,14 @@ $wrapper_classes = [
 	'perform-form--labels-' . $label_position,
 	'perform-form--columns-' . $columns,
 ];
+// Multi-step modifier — added only when the form actually renders fields
+// (skipped on the success branch, which replaces the form with a single
+// status message and has no steps to lay out). The class drives the
+// step-aware CSS overrides further down style.scss and will be the hook
+// Slice 5b's Interactivity-API script binds to.
+if ( $is_multi_step && ! $is_success ) {
+	$wrapper_classes[] = 'perform-form--multi-step';
+}
 
 $inline_style_parts = [];
 if ( '' !== $primary_color ) {
@@ -200,9 +219,79 @@ $values = \PerForm\Submissions\Handler::flash_values_for( $form_id );
 
 // Re-render inner blocks AFTER setting render state — $content was rendered
 // upstream before our flash state was available, so we redo it here.
-$inner_html = '';
+//
+// While iterating we also split the inner-block stream at every
+// `perform/page-break` marker into separate steps. A form with zero
+// page-breaks produces a single step ($steps has length 1) and we emit
+// the inner HTML directly with no extra wrapper — backwards-compatible
+// with every existing PerForm in the wild and with any author CSS that
+// targets fields as direct children of `.perform-form__form`.
+//
+// A form with at least one page-break enters multi-step mode: each step's
+// inner HTML is wrapped in a `<div class="perform-form__step"
+// data-step-index="N" data-step-label="L">` and a visible separator is
+// emitted between every adjacent pair of steps. The separator is a 5a
+// affordance — it makes the server-side step splitting verifiable in the
+// browser without JS — and will be removed in 5b once the Interactivity
+// API hides non-current steps and drives Next/Back navigation.
+$steps = [
+	[
+		'label' => '',
+		'html'  => '',
+	],
+];
 foreach ( $block->inner_blocks as $inner ) {
-	$inner_html .= $inner->render();
+	if ( 'perform/page-break' === $inner->name ) {
+		$break_label  = isset( $inner->attributes['label'] ) && is_string( $inner->attributes['label'] )
+			? sanitize_text_field( $inner->attributes['label'] )
+			: '';
+		$steps[]      = [
+			'label' => $break_label,
+			'html'  => '',
+		];
+		continue;
+	}
+
+	$last_index                     = count( $steps ) - 1;
+	$steps[ $last_index ]['html']  .= $inner->render();
+}
+
+$step_count = count( $steps );
+
+if ( 1 === $step_count ) {
+	$inner_html = $steps[0]['html'];
+} else {
+	$step_chunks = [];
+	foreach ( $steps as $step_index => $step_data ) {
+		$step_attr = sprintf(
+			'class="perform-form__step" data-step-index="%d"',
+			$step_index
+		);
+		if ( '' !== $step_data['label'] ) {
+			$step_attr .= ' data-step-label="' . esc_attr( $step_data['label'] ) . '"';
+		}
+		$step_chunks[ $step_index ] = '<div ' . $step_attr . '>' . $step_data['html'] . '</div>';
+	}
+
+	$inner_html = $step_chunks[0];
+	for ( $i = 1; $i < $step_count; $i++ ) {
+		$next_label   = $steps[ $i ]['label'];
+		$next_number  = $i + 1;
+		if ( '' !== $next_label ) {
+			/* translators: 1: step number, 2: author-supplied step label */
+			$separator_text = sprintf( __( 'Step %1$d — %2$s', 'perform-forms' ), $next_number, $next_label );
+		} else {
+			/* translators: %d: step number */
+			$separator_text = sprintf( __( 'Step %d', 'perform-forms' ), $next_number );
+		}
+
+		$inner_html .= '<div class="perform-form__step-separator" aria-hidden="true">'
+			. '<span class="perform-form__step-separator-rule"></span>'
+			. '<span class="perform-form__step-separator-label">' . esc_html( $separator_text ) . '</span>'
+			. '<span class="perform-form__step-separator-rule"></span>'
+			. '</div>';
+		$inner_html .= $step_chunks[ $i ];
+	}
 }
 
 // Timestamp token — base64 of `time()`, validated server-side on submit to

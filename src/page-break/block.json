@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "perform/page-break",
+	"version": "0.1.0",
+	"title": "Page Break",
+	"category": "perform",
+	"icon": "minus",
+	"description": "Splits the form into steps. Place between field blocks to start a new step in a multi-step form.",
+	"keywords": ["page break", "step", "multi-step", "wizard", "funnel"],
+	"textdomain": "perform-forms",
+	"parent": ["perform/form"],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"usesContext": ["perform/formId"],
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

@@ -110,6 +110,44 @@
 		margin-top: 0.5rem;
 	}
 
+	/* Multi-step layout — emitted only when the form contains at least
+	 * one `perform/page-break` block. Single-step forms keep the legacy
+	 * flat field list and never see `.perform-form__step` markup.
+	 *
+	 * Slice 5a renders every step visibly with a separator between
+	 * adjacent pairs so the server-side step splitting is verifiable
+	 * in the browser without any JavaScript. Slice 5b will hide all
+	 * non-current steps via the Interactivity API and the separator
+	 * will be removed at that point. */
+	&__step {
+		display: flex;
+		flex-direction: column;
+		gap: var(--perform-field-gap);
+	}
+
+	&__step-separator {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin: 0.5rem 0;
+		opacity: 0.75;
+
+		&-rule {
+			flex: 1;
+			height: 1px;
+			background: currentColor;
+			opacity: 0.3;
+		}
+
+		&-label {
+			font-size: 0.75em;
+			font-weight: 600;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+			white-space: nowrap;
+		}
+	}
+
 	// Submit-button base — shared across all three style variants.
 	// The variant modifiers below (.perform-form--button-*) layer their
 	// background/border/colour rules on top.
@@ -399,7 +437,15 @@
  * which writes `fullWidth: true` into the field attribute and
  * renders `.perform-field--full-width` on the wrapper. That class
  * is a no-op in 1-column mode (no grid running), so a user can flip
- * a form back and forth without losing per-field choices. */
+ * a form back and forth without losing per-field choices.
+ *
+ * Multi-step forms move the grid one level down: the form itself
+ * stacks step wrappers vertically while each `.perform-form__step`
+ * becomes its own 2-column grid. Without this carve-out a step would
+ * occupy a single 1fr grid cell and its fields would lay out inside
+ * that one cell — visibly broken. The `--multi-step` modifier class
+ * is appended by render.php so the switch is explicit (no `:has()`
+ * tightrope) and 5b's JS can also key off it. */
 .perform-form.perform-form--columns-2 {
 	.perform-form__form {
 		display: grid;
@@ -418,6 +464,35 @@
 
 	@media (max-width: 600px) {
 		.perform-form__form {
+			display: flex;
+			flex-direction: column;
+			gap: var(--perform-field-gap);
+		}
+	}
+}
+
+.perform-form.perform-form--columns-2.perform-form--multi-step {
+	/* Form-level layout: stack steps + step-separators + actions vertically. */
+	.perform-form__form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--perform-field-gap);
+	}
+
+	/* Per-step layout: this is where the 2-column grid actually lives
+	 * in multi-step mode. The same full-width rules above continue to
+	 * apply because they target descendants, not direct children, so
+	 * `.perform-field--full-width` inside a step still resolves to
+	 * `grid-column: 1 / -1` against the step's grid context. */
+	.perform-form__step {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		column-gap: var(--perform-field-gap);
+		row-gap: var(--perform-field-gap);
+	}
+
+	@media (max-width: 600px) {
+		.perform-form__step {
 			display: flex;
 			flex-direction: column;
 			gap: var(--perform-field-gap);
@@ -508,6 +583,42 @@
 				transform: translateY(-50%) scale(0.85);
 			}
 		}
+	}
+}
+
+/* ---------------------------------------------------------------------
+ * Page Break — editor-only divider
+ *
+ * The `perform/page-break` block has no frontend output (its render.php
+ * returns nothing — the form container slices steps based on inner-block
+ * positions). The rules below style its in-editor appearance: a slim
+ * horizontal rule with an inline step label so authors can see step
+ * boundaries inside the block canvas while editing.
+ *
+ * Scoped on a single class because no theme targets `.perform-page-break`;
+ * the doubled-class pattern from the strategy comment is reserved for
+ * field-level selectors that themes do touch.
+ * ------------------------------------------------------------------ */
+.perform-page-break {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 0.5rem 0;
+	opacity: 0.75;
+
+	&__rule {
+		flex: 1;
+		height: 1px;
+		background: currentColor;
+		opacity: 0.3;
+	}
+
+	&__label {
+		font-size: 0.75em;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		white-space: nowrap;
 	}
 }
 
