@@ -71,10 +71,17 @@
 	--perform-border-radius: var(--wp--custom--border--radius, 6px);
 	--perform-field-gap: var(--wp--preset--spacing--40, 1.25rem);
 	// Page background colour the floating-label "notch" overlay paints
-	// itself with. Pulls from theme.json by default so light/dark themes
-	// hit the right value automatically; the dark-mode block at the
-	// bottom of this file supplies a usable fallback for themes without
-	// a dark-mode theme.json.
+	// itself with. Pulls from theme.json so the value tracks the active
+	// theme's actual page colour (light/dark mode included). This is the
+	// ONE variable we deliberately do NOT override under
+	// `prefers-color-scheme: dark`: that media query reflects the OS
+	// preference, not the theme's actual rendered background, and many
+	// themes (GeneratePress, classic themes) keep their page light even
+	// when the OS is dark. Forcing a dark fallback there would paint a
+	// dark notch onto a light page — a much worse visual bug than the
+	// rare reverse case (theme manually goes dark without exposing
+	// --wp--preset--color--background, leaving us with the #fff fallback
+	// against a dark page).
 	--perform-page-background: var(--wp--preset--color--background, #fff);
 
 	&__form {
@@ -526,10 +533,11 @@
 	.perform-form {
 		// Same cascade as the default block, with dark-mode-readable
 		// hard-coded fallbacks for themes that don't redeclare their
-		// presets under prefers-color-scheme.
+		// presets under prefers-color-scheme. The page-background
+		// variable deliberately stays out of this block — see its
+		// definition in the base for why.
 		--perform-color-primary: var(--wp--preset--color--primary, #7eb6ff);
 		--perform-color-on-primary: var(--wp--preset--color--background, #1a1a1a);
-		--perform-page-background: var(--wp--preset--color--background, #1a1a1a);
 	}
 
 	.perform-form.perform-form--field-style-minimal {
