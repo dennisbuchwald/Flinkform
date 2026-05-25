@@ -313,7 +313,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Label position', 'perform-forms' ) }
 						help={
 							labelPosition === 'floating'
-								? __( 'Tip: add a placeholder to your text fields for the floating-label animation. Without one the label stays at the top.', 'perform-forms' )
+								? __( 'Material-style notched label: rests inside the input, then slides onto the top border on focus, cutting a notch through it. Applies to text-style fields.', 'perform-forms' )
 								: __( 'Beside and Floating apply to text-style fields only.', 'perform-forms' )
 						}
 						value={ labelPosition }

@@ -70,6 +70,12 @@
 	--perform-color-on-primary: var(--wp--preset--color--background, #fff);
 	--perform-border-radius: var(--wp--custom--border--radius, 6px);
 	--perform-field-gap: var(--wp--preset--spacing--40, 1.25rem);
+	// Page background colour the floating-label "notch" overlay paints
+	// itself with. Pulls from theme.json by default so light/dark themes
+	// hit the right value automatically; the dark-mode block at the
+	// bottom of this file supplies a usable fallback for themes without
+	// a dark-mode theme.json.
+	--perform-page-background: var(--wp--preset--color--background, #fff);
 
 	&__form {
 		display: flex;
@@ -412,11 +418,30 @@
 	}
 }
 
-/* Floating labels — CSS-only via :placeholder-shown + :focus-within +
- * :has(). Inputs without a placeholder fall back to a static "label
- * always lifted" look (visually identical to Above — no animation but
- * no broken layout). Authors who want the lift animation set a
- * placeholder on the field; the inspector hints this in its help text. */
+/* Floating labels — Material-Design "Outlined TextField" look.
+ *
+ * In the resting state the label sits inside the input, vertically
+ * centred. Once the input receives focus or carries a value, the label
+ * slides up so its vertical midpoint sits on the top border, then paints
+ * a `--perform-page-background`-coloured strip behind itself that visually
+ * cuts a notch through the border. The cascade for that variable falls
+ * through theme.json (so it matches dark/light themes automatically),
+ * with a sensible hard-coded fallback for themes without theme.json.
+ *
+ * Mechanics — pure CSS, no JS:
+ *   - Label is position:absolute over the input.
+ *   - State triggers: `:focus-within` (input has focus) OR
+ *     `:has(.perform-field__input:not(:placeholder-shown))` (input has
+ *     a value). Inputs without a placeholder always count as "filled"
+ *     under :placeholder-shown semantics, so for them the label simply
+ *     starts in the lifted position rather than animating from resting.
+ *     We render a space-placeholder via render.php-side help isn't
+ *     necessary because :has() handles the no-placeholder edge case
+ *     gracefully — the label still notches the border, just without
+ *     the resting-state animation.
+ *
+ * Textareas pin the resting label to the top of the input instead of
+ * vertically centring it, so multi-line content doesn't slide under it. */
 .perform-form.perform-form--labels-floating {
 	.perform-field--text,
 	.perform-field--email,
@@ -424,49 +449,56 @@
 	.perform-field--number {
 		position: relative;
 		gap: 0;
+		margin-top: 0.5em; // breathing room for the lifted label
 
 		> .perform-field__input {
-			padding-top: 1.5em;
-			padding-bottom: 0.35em;
+			padding-top: 1em;
+			padding-bottom: 0.6em;
 		}
 
 		> .perform-field__label {
 			position: absolute;
 			top: 50%;
-			left: 0.75em;
+			left: 0.55em;
 			margin: 0;
-			padding: 0 0.2em;
+			padding: 0 0.4em;
 			pointer-events: none;
 			font-weight: normal;
-			opacity: 0.75;
+			opacity: 0.7;
 			background: transparent;
 			transform: translateY(-50%);
-			transform-origin: left top;
-			transition: top 0.15s ease, transform 0.15s ease, opacity 0.15s ease, font-weight 0.15s ease;
+			transform-origin: left center;
+			transition: top 0.15s ease, transform 0.15s ease, opacity 0.15s ease, font-weight 0.15s ease, background 0.15s ease;
 		}
 
 		&:focus-within > .perform-field__label,
 		&:has(.perform-field__input:not(:placeholder-shown)) > .perform-field__label {
-			top: 0.35em;
-			transform: translateY(0) scale(0.85);
+			top: 0;
+			transform: translateY(-50%) scale(0.85);
 			opacity: 1;
 			font-weight: 600;
+			// The notch: this background paints over the input's top
+			// border at exactly the spot the label is sitting on.
+			background: var(--perform-page-background);
 		}
 
-		// Textareas float the label to the very top so the multi-line
-		// content doesn't slide under it on focus.
+		// Textareas pin the resting label near the top so multi-line
+		// content doesn't slide under it. The lifted position is the
+		// same as for single-line fields (sitting on the top border).
 		&.perform-field--textarea {
 			> .perform-field__input {
-				padding-top: 1.75em;
+				padding-top: 1.2em;
 			}
 
 			> .perform-field__label {
-				top: 1.2em;
+				top: 1em;
+				transform: translateY(0);
 			}
 
 			&:focus-within > .perform-field__label,
 			&:has(.perform-field__input:not(:placeholder-shown)) > .perform-field__label {
-				top: 0.35em;
+				top: 0;
+				transform: translateY(-50%) scale(0.85);
 			}
 		}
 	}
@@ -497,6 +529,7 @@
 		// presets under prefers-color-scheme.
 		--perform-color-primary: var(--wp--preset--color--primary, #7eb6ff);
 		--perform-color-on-primary: var(--wp--preset--color--background, #1a1a1a);
+		--perform-page-background: var(--wp--preset--color--background, #1a1a1a);
 	}
 
 	.perform-form.perform-form--field-style-minimal {
