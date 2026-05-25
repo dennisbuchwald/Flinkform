@@ -27,6 +27,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import IntegrationsPanel from './integrations-panel';
+import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 const ALLOWED_BLOCKS = [
 	'perform/section-heading',
@@ -534,6 +535,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 
 				<IntegrationsPanel formId={ formId } formFields={ formFields } />
+
+				<ConditionalLogicPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					clientId={ clientId }
+					attributeName="submitCondition"
+					fieldSource="inner"
+					title={ __( 'Submit Condition', 'perform-forms' ) }
+					toggleLabel={ __( 'Gate the submit button', 'perform-forms' ) }
+					toggleHelp={ __( 'Disable the submit button until the rules below match. Useful for "I agree to terms" checkboxes.', 'perform-forms' ) }
+				/>
 
 				<PanelBody
 					title={ __( 'Custom CSS', 'perform-forms' ) }

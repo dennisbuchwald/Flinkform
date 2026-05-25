@@ -43,6 +43,10 @@
 		"customCSS": {
 			"type": "string",
 			"default": ""
+		},
+		"submitCondition": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"providesContext": {

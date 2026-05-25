@@ -180,6 +180,23 @@ $status_for = isset( $_GET['perform_form'] ) ? sanitize_text_field( wp_unslash( 
 
 $is_success = ( 'success' === $status && $status_for === $form_id );
 
+// Submit condition (Phase 7d) — block attribute → optional rule set
+// that disables the Submit button until the rules match (typical
+// example: "I agree to terms" checkbox). The data attribute itself
+// is added to every Submit-button render below; the standalone JS
+// listener picks it up and toggles `disabled` reactively. Server-
+// side enforcement happens in Submissions\Handler::handle().
+$submit_condition_attrs   = '';
+$submit_condition_hint_id = '';
+if ( ! $is_success ) {
+	$submit_condition = isset( $attributes['submitCondition'] ) && is_array( $attributes['submitCondition'] ) ? $attributes['submitCondition'] : [];
+	if ( ! empty( $submit_condition['enabled'] ) && ! empty( $submit_condition['rules'] ) ) {
+		$submit_condition_attrs   = \PerForm\Conditions\Wrapper::data_attribute( $submit_condition, 'data-perform-submit-condition' );
+		$submit_condition_hint_id = 'perform-submit-hint-' . md5( $form_id );
+		$submit_condition_attrs  .= ' aria-describedby="' . esc_attr( $submit_condition_hint_id ) . '"';
+	}
+}
+
 $wrapper_classes = [
 	'perform-form',
 	'perform-form--button-' . $submit_btn_style,
@@ -552,13 +569,27 @@ $timestamp_token = base64_encode( (string) time() );
 					type="submit"
 					class="perform-form__submit"
 					data-wp-bind--hidden="state.isNotLastStep"
+					<?php echo $submit_condition_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute set built with esc_attr. ?>
 				>
 					<?php echo esc_html( $submit_label ); ?>
 				</button>
 			<?php else : ?>
-				<button type="submit" class="perform-form__submit">
+				<button
+					type="submit"
+					class="perform-form__submit"
+					<?php echo $submit_condition_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute set built with esc_attr. ?>
+				>
 					<?php echo esc_html( $submit_label ); ?>
 				</button>
+			<?php endif; ?>
+			<?php if ( '' !== $submit_condition_hint_id ) : ?>
+				<span
+					class="perform-form__submit-hint"
+					id="<?php echo esc_attr( $submit_condition_hint_id ); ?>"
+					hidden
+				>
+					<?php esc_html_e( 'Please complete the required selection above to enable submission.', 'perform-forms' ); ?>
+				</span>
 			<?php endif; ?>
 		</div>
 	</form>

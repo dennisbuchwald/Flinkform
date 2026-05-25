@@ -262,6 +262,19 @@
 		flex-wrap: wrap;
 	}
 
+	// Submit-condition hint — sits beneath the Submit button when the
+	// author has gated the button on a rule that's currently
+	// unmet (Phase 7d). Visible state is driven by the `hidden`
+	// attribute the JS layer toggles; the styling here only paints
+	// the message when it's actually rendered.
+	&__submit-hint:not([hidden]) {
+		display: block;
+		margin-top: 0.5rem;
+		font-size: 0.85em;
+		opacity: 0.8;
+		text-align: center;
+	}
+
 	// Back button — secondary, ghost-like, always neutral. The submit
 	// button's style-panel variants (fill/outline/ghost) intentionally
 	// don't apply here: Back is the de-emphasised path back, so a

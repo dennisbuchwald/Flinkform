@@ -64,25 +64,43 @@ const EMPTY_STATE_OPERATORS = new Set( [ 'is_empty', 'is_not_empty' ] );
  * @param {object}   props
  * @param {object}   props.attributes
  * @param {Function} props.setAttributes
- * @param {string}   props.clientId — current block's clientId; needed to filter the current block out of its own sibling list.
+ * @param {string}   props.clientId       — current block's clientId.
+ * @param {string}   [props.attributeName='conditionalLogic'] — block attribute key the panel reads/writes.
+ * @param {string}   [props.fieldSource='siblings']           — `'siblings'` walks the parent's inner blocks (field + page-break case); `'inner'` walks the block's own inner blocks (form-container submit-condition case).
+ * @param {string}   [props.title]        — panel title, defaults to "Conditional Logic".
+ * @param {string}   [props.toggleLabel]  — main toggle label, defaults to "Enable conditional logic".
+ * @param {string}   [props.toggleHelp]   — help text under the main toggle.
  */
-export default function ConditionalLogicPanel( { attributes, setAttributes, clientId } ) {
-	const ruleSet = normaliseRuleSet( attributes.conditionalLogic );
+export default function ConditionalLogicPanel( {
+	attributes,
+	setAttributes,
+	clientId,
+	attributeName = 'conditionalLogic',
+	fieldSource = 'siblings',
+	title,
+	toggleLabel,
+	toggleHelp,
+} ) {
+	const ruleSet = normaliseRuleSet( attributes[ attributeName ] );
 
-	// Walk the parent form-container's inner-block tree, filtering down
-	// to blocks that carry a `fieldName` attribute (= submittable
-	// fields). useSelect re-runs whenever the inner-block tree
-	// changes, so the rule editor stays in sync with the form as the
-	// author adds / renames / removes fields.
-	const siblingFields = useSelect(
+	// Field list source: `siblings` for field + page-break blocks
+	// (walk the parent form's inner blocks, filter to fields,
+	// filter out self). `inner` for the form-container itself
+	// (walk our own inner blocks, no self-filter needed because
+	// the form-container isn't a submittable field).
+	const fieldList = useSelect(
 		( select ) => {
 			const { getBlockRootClientId, getBlocks } = select( 'core/block-editor' );
-			const parentClientId = getBlockRootClientId( clientId );
-			if ( ! parentClientId ) {
+
+			const scopeClientId = fieldSource === 'inner'
+				? clientId
+				: getBlockRootClientId( clientId );
+
+			if ( ! scopeClientId ) {
 				return [];
 			}
-			const siblings = getBlocks( parentClientId );
-			return siblings
+			const blocks = getBlocks( scopeClientId );
+			return blocks
 				.filter( ( b ) => b.clientId !== clientId )
 				.filter( ( b ) => typeof b.attributes?.fieldName === 'string' && b.attributes.fieldName !== '' )
 				.map( ( b ) => ( {
@@ -90,8 +108,9 @@ export default function ConditionalLogicPanel( { attributes, setAttributes, clie
 					label: typeof b.attributes?.label === 'string' ? b.attributes.label : '',
 				} ) );
 		},
-		[ clientId ]
+		[ clientId, fieldSource ]
 	);
+	const siblingFields = fieldList;
 
 	const fieldOptions = useMemo(
 		() => [
@@ -106,7 +125,7 @@ export default function ConditionalLogicPanel( { attributes, setAttributes, clie
 
 	const update = ( patch ) => {
 		setAttributes( {
-			conditionalLogic: {
+			[ attributeName ]: {
 				...ruleSet,
 				...patch,
 			},
@@ -139,11 +158,11 @@ export default function ConditionalLogicPanel( { attributes, setAttributes, clie
 
 	const toggleEnabled = ( on ) => {
 		if ( ! on ) {
-			setAttributes( { conditionalLogic: { ...DEFAULT_RULE_SET } } );
+			setAttributes( { [ attributeName ]: { ...DEFAULT_RULE_SET } } );
 			return;
 		}
 		setAttributes( {
-			conditionalLogic: {
+			[ attributeName ]: {
 				enabled: true,
 				logic: 'all',
 				rules: ruleSet.rules.length > 0
@@ -157,12 +176,12 @@ export default function ConditionalLogicPanel( { attributes, setAttributes, clie
 
 	return (
 		<PanelBody
-			title={ __( 'Conditional Logic', 'perform-forms' ) }
+			title={ title ?? __( 'Conditional Logic', 'perform-forms' ) }
 			initialOpen={ false }
 		>
 			<ToggleControl
-				label={ __( 'Enable conditional logic', 'perform-forms' ) }
-				help={ __( 'Show this only when the rules below match. Hidden fields are excluded from the submission, both client- and server-side.', 'perform-forms' ) }
+				label={ toggleLabel ?? __( 'Enable conditional logic', 'perform-forms' ) }
+				help={ toggleHelp ?? __( 'Show this only when the rules below match. Hidden fields are excluded from the submission, both client- and server-side.', 'perform-forms' ) }
 				checked={ ruleSet.enabled }
 				onChange={ toggleEnabled }
 				__nextHasNoMarginBottom

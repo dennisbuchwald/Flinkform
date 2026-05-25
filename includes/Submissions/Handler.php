@@ -147,6 +147,23 @@ final class Handler {
 			}
 		}
 
+		// Submit-button condition (Phase 7d). Server-side enforcement
+		// is the safety net for JS-disabled visitors who don't see the
+		// button disabled in the first place — without it, a no-JS
+		// visitor could submit a form whose submit-condition the
+		// author meant to gate (e.g. "I agree to terms" never ticked).
+		// Evaluated against $clean post-strip so a hidden field can't
+		// satisfy the condition.
+		$submit_condition = isset( $definition['attributes']['submitCondition'] ) && is_array( $definition['attributes']['submitCondition'] )
+			? $definition['attributes']['submitCondition']
+			: [];
+		if ( ! empty( $submit_condition['enabled'] ) && ! empty( $submit_condition['rules'] ) ) {
+			$evaluator = new \PerForm\Conditions\RuleEvaluator();
+			if ( ! $evaluator->should_show( $submit_condition, $clean ) ) {
+				$errors['_form'] = __( 'Please complete the required selection before submitting.', 'perform-forms' );
+			}
+		}
+
 		if ( ! empty( $errors ) ) {
 			$this->flash( $form_id, $errors, $clean );
 			$this->redirect_error( $post_id, $form_id );

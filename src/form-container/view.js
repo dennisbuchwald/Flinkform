@@ -63,25 +63,56 @@ if ( typeof document !== 'undefined' ) {
 function initConditionalLogic() {
 	const forms = document.querySelectorAll( '.perform-form__form' );
 	forms.forEach( ( form ) => {
-		const fieldWrappers = form.querySelectorAll( '[data-perform-condition]' );
-		const stepWrappers  = form.querySelectorAll( '.perform-form__step[data-perform-step-condition]' );
+		const fieldWrappers   = form.querySelectorAll( '[data-perform-condition]' );
+		const stepWrappers    = form.querySelectorAll( '.perform-form__step[data-perform-step-condition]' );
+		const submitButtons   = form.querySelectorAll( '.perform-form__submit[data-perform-submit-condition]' );
 
-		if ( fieldWrappers.length === 0 && stepWrappers.length === 0 ) {
+		if ( fieldWrappers.length === 0 && stepWrappers.length === 0 && submitButtons.length === 0 ) {
 			return;
 		}
 
 		// Initial pass — apply visibility before the user types
 		// anything, in case server-render already had values from a
 		// repopulated submission (flash state).
-		evaluateAll( form, fieldWrappers, stepWrappers );
+		evaluateAll( form, fieldWrappers, stepWrappers, submitButtons );
 
 		// `input` covers text fields, textareas, selects (modern
 		// browsers fire input on select change), and number/email/
 		// password. `change` covers radio/checkbox toggles where
 		// input doesn't fire. Both bubble, so a single listener on
 		// the form catches everything.
-		form.addEventListener( 'input', () => evaluateAll( form, fieldWrappers, stepWrappers ) );
-		form.addEventListener( 'change', () => evaluateAll( form, fieldWrappers, stepWrappers ) );
+		form.addEventListener( 'input', () => evaluateAll( form, fieldWrappers, stepWrappers, submitButtons ) );
+		form.addEventListener( 'change', () => evaluateAll( form, fieldWrappers, stepWrappers, submitButtons ) );
+
+		// Submit-guard against the submit-condition (Phase 7d) — the
+		// existing multi-step `submitGuard` action only fires on
+		// multi-step forms via its data-wp-on--submit binding. This
+		// vanilla `submit` listener covers single-step forms too and
+		// runs first via the `capture` phase so it can preventDefault
+		// before the multi-step guard sees the event.
+		if ( submitButtons.length > 0 ) {
+			form.addEventListener( 'submit', ( event ) => {
+				const values = gatherFormValues( form );
+				for ( const btn of submitButtons ) {
+					const raw = btn.getAttribute( 'data-perform-submit-condition' );
+					if ( ! raw ) {
+						continue;
+					}
+					try {
+						const ruleSet = JSON.parse( raw );
+						if ( ! evaluateRuleSet( ruleSet, values ) ) {
+							event.preventDefault();
+							btn.focus();
+							return;
+						}
+					} catch ( _ ) {
+						// Malformed JSON — let the submit proceed; the
+						// server-side enforcement will catch this if it
+						// matters.
+					}
+				}
+			}, true );
+		}
 	} );
 }
 
@@ -94,7 +125,7 @@ function initConditionalLogic() {
  * @param {HTMLFormElement} form
  * @param {NodeListOf<Element>} wrappers
  */
-function evaluateAll( form, fieldWrappers, stepWrappers ) {
+function evaluateAll( form, fieldWrappers, stepWrappers, submitButtons = [] ) {
 	const values = gatherFormValues( form );
 
 	// Field-level conditions: toggle wrapper hidden + disable inputs.
@@ -174,6 +205,43 @@ function evaluateAll( form, fieldWrappers, stepWrappers ) {
 		if ( wrapper ) {
 			wrapper.dispatchEvent( new CustomEvent( 'perform-skipped-changed', { bubbles: false } ) );
 		}
+	}
+
+	// Submit-button conditions (Phase 7d): each Submit button can
+	// carry its own rule set; when the rule says "don't enable",
+	// the button gets `disabled` + an explanatory hint span becomes
+	// visible (the hint's id is already wired through aria-describedby
+	// on the button so screen readers announce the reason every time
+	// focus lands on the button).
+	if ( submitButtons && submitButtons.length > 0 ) {
+		submitButtons.forEach( ( btn ) => {
+			const raw = btn.getAttribute( 'data-perform-submit-condition' );
+			if ( ! raw ) {
+				return;
+			}
+
+			let ruleSet;
+			try {
+				ruleSet = JSON.parse( raw );
+			} catch ( _ ) {
+				return;
+			}
+
+			const shouldEnable = evaluateRuleSet( ruleSet, values );
+			btn.disabled       = ! shouldEnable;
+
+			const hintId = btn.getAttribute( 'aria-describedby' );
+			if ( hintId ) {
+				const hint = document.getElementById( hintId );
+				if ( hint ) {
+					if ( shouldEnable ) {
+						hint.setAttribute( 'hidden', '' );
+					} else {
+						hint.removeAttribute( 'hidden' );
+					}
+				}
+			}
+		} );
 	}
 }
 
