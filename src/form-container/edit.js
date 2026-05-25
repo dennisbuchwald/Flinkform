@@ -20,6 +20,7 @@ import {
 	BaseControl,
 	Notice,
 	PanelBody,
+	RangeControl,
 	SelectControl,
 	TextControl,
 	TextareaControl,
@@ -66,18 +67,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const appearanceConfig = appearance ?? {};
 	const primaryColor = appearanceConfig.primaryColor;
 	const submitButtonStyle = appearanceConfig.submitButtonStyle ?? 'fill';
+	const fieldStyle = appearanceConfig.fieldStyle ?? 'bordered';
+	const fieldSpacing = appearanceConfig.fieldSpacing ?? 'normal';
+	const labelPosition = appearanceConfig.labelPosition ?? 'above';
+	const borderRadius = typeof appearanceConfig.borderRadius === 'number'
+		? appearanceConfig.borderRadius
+		: undefined;
 
-	// Editor preview: emit the same --perform-* override the frontend gets
-	// so the in-editor block visually mirrors the saved settings. Without
-	// this the inspector previewing a custom primary colour wouldn't show
-	// it on the canvas.
+	// Editor preview: emit the same --perform-* overrides + modifier
+	// classes the frontend gets so the in-editor block visually mirrors
+	// the saved settings. Without this the inspector previewing a custom
+	// primary colour or spacing wouldn't show it on the canvas.
 	const editorStyle = {};
 	if ( typeof primaryColor === 'string' && primaryColor !== '' ) {
 		editorStyle[ '--perform-color-primary' ] = primaryColor;
 	}
+	if ( typeof borderRadius === 'number' ) {
+		editorStyle[ '--perform-border-radius' ] = `${ borderRadius }px`;
+	}
+
+	const editorClassName = [
+		'perform-form-editor',
+		'perform-form',
+		`perform-form--button-${ submitButtonStyle }`,
+		`perform-form--field-style-${ fieldStyle }`,
+		`perform-form--spacing-${ fieldSpacing }`,
+		`perform-form--labels-${ labelPosition }`,
+	].join( ' ' );
 
 	const blockProps = useBlockProps( {
-		className: `perform-form-editor perform-form perform-form--button-${ submitButtonStyle }`,
+		className: editorClassName,
 		style: editorStyle,
 	} );
 
@@ -248,6 +267,63 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							enableAlpha={ false }
 						/>
 					</BaseControl>
+					<ToggleGroupControl
+						label={ __( 'Field style', 'perform-forms' ) }
+						help={ __( 'Bordered: full outline. Underline: bottom border only. Minimal: no border, subtle background.', 'perform-forms' ) }
+						value={ fieldStyle }
+						onChange={ ( value ) => updateAppearance( { fieldStyle: value } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="bordered" label={ __( 'Bordered', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="underline" label={ __( 'Underline', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="minimal" label={ __( 'Minimal', 'perform-forms' ) } />
+					</ToggleGroupControl>
+					<RangeControl
+						label={ __( 'Border radius', 'perform-forms' ) }
+						help={ __( 'Applies to fields and the submit button. Leave at the default to inherit from your theme.', 'perform-forms' ) }
+						value={ borderRadius }
+						onChange={ ( value ) => updateAppearance( {
+							borderRadius: typeof value === 'number' ? value : undefined,
+						} ) }
+						min={ 0 }
+						max={ 32 }
+						step={ 1 }
+						allowReset
+						resetFallbackValue={ undefined }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ToggleGroupControl
+						label={ __( 'Field spacing', 'perform-forms' ) }
+						value={ fieldSpacing }
+						onChange={ ( value ) => updateAppearance( { fieldSpacing: value } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="compact" label={ __( 'Compact', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="normal" label={ __( 'Normal', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="relaxed" label={ __( 'Relaxed', 'perform-forms' ) } />
+					</ToggleGroupControl>
+					<ToggleGroupControl
+						label={ __( 'Label position', 'perform-forms' ) }
+						help={
+							labelPosition === 'floating'
+								? __( 'Tip: add a placeholder to your text fields for the floating-label animation. Without one the label stays at the top.', 'perform-forms' )
+								: __( 'Beside and Floating apply to text-style fields only.', 'perform-forms' )
+						}
+						value={ labelPosition }
+						onChange={ ( value ) => updateAppearance( { labelPosition: value } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="above" label={ __( 'Above', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="beside" label={ __( 'Beside', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="floating" label={ __( 'Floating', 'perform-forms' ) } />
+					</ToggleGroupControl>
 					<ToggleGroupControl
 						label={ __( 'Submit button style', 'perform-forms' ) }
 						value={ submitButtonStyle }

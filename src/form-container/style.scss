@@ -202,3 +202,152 @@
 		opacity: 0.8;
 	}
 }
+
+/* -----------------------------------------------------------------------
+ * Style panel modifiers (Phase 4b)
+ *
+ * Each control on the Form block's Style panel toggles a single class on
+ * .perform-form. The classes only override the variables (or compose new
+ * rules) — the structural defaults defined above stay intact, so a form
+ * with no modifiers applied renders identically to the pre-4b baseline.
+ * -------------------------------------------------------------------- */
+
+/* Field style — bordered (default) | underline | minimal. */
+.perform-form--field-style-underline {
+	.perform-field__input {
+		border-width: 0 0 1px 0;
+		border-radius: 0;
+		padding-left: 0;
+		padding-right: 0;
+	}
+}
+
+.perform-form--field-style-minimal {
+	.perform-field__input {
+		border: 0;
+		// 6% currentColor on top of nothing — works on light and dark
+		// theme backgrounds without us having to know either of them.
+		background: color-mix(in srgb, currentColor 6%, transparent);
+	}
+
+	.perform-field--has-error .perform-field__input {
+		// Errors still need a visible cue without a border to colour.
+		box-shadow: inset 0 0 0 1px #cc0000;
+	}
+}
+
+/* Field spacing — compact | normal (default) | relaxed.
+ * Overrides --perform-field-gap, which feeds both the form gap and the
+ * radio/checkbox option spacing below. */
+.perform-form--spacing-compact {
+	--perform-field-gap: 0.75rem;
+
+	.perform-field {
+		gap: 0.3rem;
+	}
+}
+
+.perform-form--spacing-relaxed {
+	--perform-field-gap: 2rem;
+
+	.perform-field {
+		gap: 0.6rem;
+	}
+}
+
+/* Label position — above (default) | beside | floating.
+ *
+ * Both alternative modes only apply to text-flavoured fields (text,
+ * email, number, textarea, select). Radio/checkbox/toggle remain in
+ * the default block layout because a side-by-side or floating legend
+ * doesn't translate semantically. */
+
+.perform-form--labels-beside {
+	.perform-field--text,
+	.perform-field--email,
+	.perform-field--textarea,
+	.perform-field--number,
+	.perform-field--select {
+		flex-direction: row;
+		align-items: baseline;
+		gap: 1rem;
+
+		> .perform-field__label {
+			flex: 0 0 30%;
+			min-width: 6rem;
+			margin: 0;
+		}
+
+		> .perform-field__input,
+		> select.perform-field__input {
+			flex: 1;
+		}
+
+		> .perform-field__help,
+		> .perform-field__error {
+			flex-basis: 100%;
+			margin-left: calc(30% + 1rem);
+		}
+	}
+}
+
+/* Floating labels — CSS-only via :placeholder-shown + :focus-within +
+ * :has(). Inputs without a placeholder fall back to a static "label
+ * always lifted" look, which is visually identical to the above-default
+ * (no animation, but no broken layout). Authors who want the lift
+ * animation set a placeholder on the field — the inspector hints this
+ * in its help text. */
+.perform-form--labels-floating {
+	.perform-field--text,
+	.perform-field--email,
+	.perform-field--textarea,
+	.perform-field--number {
+		position: relative;
+		gap: 0;
+
+		> .perform-field__input {
+			padding-top: 1.5em;
+			padding-bottom: 0.35em;
+		}
+
+		> .perform-field__label {
+			position: absolute;
+			top: 50%;
+			left: 0.75em;
+			margin: 0;
+			padding: 0 0.2em;
+			pointer-events: none;
+			font-weight: normal;
+			opacity: 0.75;
+			background: transparent;
+			transform: translateY(-50%);
+			transform-origin: left top;
+			transition: top 0.15s ease, transform 0.15s ease, opacity 0.15s ease, font-weight 0.15s ease;
+		}
+
+		&:focus-within > .perform-field__label,
+		&:has(.perform-field__input:not(:placeholder-shown)) > .perform-field__label {
+			top: 0.35em;
+			transform: translateY(0) scale(0.85);
+			opacity: 1;
+			font-weight: 600;
+		}
+
+		// Textareas float the label to the very top so the multi-line
+		// content doesn't slide under it on focus.
+		&.perform-field--textarea {
+			> .perform-field__input {
+				padding-top: 1.75em;
+			}
+
+			> .perform-field__label {
+				top: 1.2em;
+			}
+
+			&:focus-within > .perform-field__label,
+			&:has(.perform-field__input:not(:placeholder-shown)) > .perform-field__label {
+				top: 0.35em;
+			}
+		}
+	}
+}

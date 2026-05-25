@@ -65,6 +65,32 @@ if ( ! in_array( $submit_btn_style, [ 'fill', 'outline', 'ghost' ], true ) ) {
 	$submit_btn_style = 'fill';
 }
 
+$field_style = isset( $appearance['fieldStyle'] ) && is_string( $appearance['fieldStyle'] ) ? $appearance['fieldStyle'] : 'bordered';
+if ( ! in_array( $field_style, [ 'bordered', 'underline', 'minimal' ], true ) ) {
+	$field_style = 'bordered';
+}
+
+$field_spacing = isset( $appearance['fieldSpacing'] ) && is_string( $appearance['fieldSpacing'] ) ? $appearance['fieldSpacing'] : 'normal';
+if ( ! in_array( $field_spacing, [ 'compact', 'normal', 'relaxed' ], true ) ) {
+	$field_spacing = 'normal';
+}
+
+$label_position = isset( $appearance['labelPosition'] ) && is_string( $appearance['labelPosition'] ) ? $appearance['labelPosition'] : 'above';
+if ( ! in_array( $label_position, [ 'above', 'beside', 'floating' ], true ) ) {
+	$label_position = 'above';
+}
+
+// Border radius — only a non-negative integer in a sane range counts as
+// a real override. Everything else (null, string, negative) falls back
+// to the SCSS-level default.
+$border_radius_px = null;
+if ( isset( $appearance['borderRadius'] ) && is_numeric( $appearance['borderRadius'] ) ) {
+	$radius = (int) $appearance['borderRadius'];
+	if ( $radius >= 0 && $radius <= 64 ) {
+		$border_radius_px = $radius;
+	}
+}
+
 // Without a stable form ID we cannot save or validate — render nothing.
 if ( '' === $form_id ) {
 	return;
@@ -80,12 +106,28 @@ $status_for = isset( $_GET['perform_form'] ) ? sanitize_text_field( wp_unslash( 
 
 $is_success = ( 'success' === $status && $status_for === $form_id );
 
+$wrapper_classes = [
+	'perform-form',
+	'perform-form--button-' . $submit_btn_style,
+	'perform-form--field-style-' . $field_style,
+	'perform-form--spacing-' . $field_spacing,
+	'perform-form--labels-' . $label_position,
+];
+
+$inline_style_parts = [];
+if ( '' !== $primary_color ) {
+	$inline_style_parts[] = '--perform-color-primary:' . $primary_color;
+}
+if ( null !== $border_radius_px ) {
+	$inline_style_parts[] = '--perform-border-radius:' . $border_radius_px . 'px';
+}
+
 $wrapper_args = [
-	'class'           => 'perform-form perform-form--button-' . $submit_btn_style,
+	'class'           => implode( ' ', $wrapper_classes ),
 	'data-perform-id' => $form_id,
 ];
-if ( '' !== $primary_color ) {
-	$wrapper_args['style'] = '--perform-color-primary:' . $primary_color . ';';
+if ( ! empty( $inline_style_parts ) ) {
+	$wrapper_args['style'] = implode( ';', $inline_style_parts ) . ';';
 }
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
