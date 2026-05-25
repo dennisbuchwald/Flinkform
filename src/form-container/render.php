@@ -245,8 +245,14 @@ if ( $is_multi_step && ! $is_success ) {
 		$context_payload['currentStepLabel'] = $step_labels[0];
 	}
 
-	$wrapper_args['data-wp-interactive'] = 'perform/form';
-	$wrapper_args['data-wp-context']     = (string) wp_json_encode( $context_payload );
+	$wrapper_args['data-wp-interactive']                  = 'perform/form';
+	$wrapper_args['data-wp-context']                      = (string) wp_json_encode( $context_payload );
+	// `perform-skipped-changed` is a custom event the conditional-
+	// logic DOM listener dispatches on this wrapper whenever the set
+	// of step-skip rules changes which steps are skipped (Phase 7c).
+	// The action lives in view.js and reads the DOM markers to
+	// recompute the progress indicator's totals + position.
+	$wrapper_args['data-wp-on--perform-skipped-changed'] = 'actions.onSkippedChanged';
 	// `data-perform-enhanced` is set by the inline boot script further
 	// down on the form, before view.js loads — so any CSS gated on it
 	// applies before Interactivity hydrates and the action row + step
@@ -301,18 +307,23 @@ $values = \PerForm\Submissions\Handler::flash_values_for( $form_id );
 // API hides non-current steps and drives Next/Back navigation.
 $steps = [
 	[
-		'label' => '',
-		'html'  => '',
+		'label'            => '',
+		'html'             => '',
+		'conditionalLogic' => [], // Step 0 has no opening page-break → no rule set.
 	],
 ];
 foreach ( $block->inner_blocks as $inner ) {
 	if ( 'perform/page-break' === $inner->name ) {
-		$break_label  = isset( $inner->attributes['label'] ) && is_string( $inner->attributes['label'] )
+		$break_label = isset( $inner->attributes['label'] ) && is_string( $inner->attributes['label'] )
 			? sanitize_text_field( $inner->attributes['label'] )
 			: '';
-		$steps[]      = [
-			'label' => $break_label,
-			'html'  => '',
+		$break_rules = isset( $inner->attributes['conditionalLogic'] ) && is_array( $inner->attributes['conditionalLogic'] )
+			? $inner->attributes['conditionalLogic']
+			: [];
+		$steps[]     = [
+			'label'            => $break_label,
+			'html'             => '',
+			'conditionalLogic' => $break_rules,
 		];
 		continue;
 	}
@@ -344,6 +355,13 @@ if ( 1 === $step_count ) {
 		if ( '' !== $step_data['label'] ) {
 			$step_attr .= ' data-step-label="' . esc_attr( $step_data['label'] ) . '"';
 		}
+		// Step-skipping conditional logic (Phase 7c). When the
+		// page-break that opens this step carries a rule set, we
+		// append a `data-perform-step-condition` attribute that
+		// view.js reads to decide whether to skip the step during
+		// Next/Back navigation + the progress total. Step 0 never
+		// carries one — it's the form's landing step.
+		$step_attr .= \PerForm\Conditions\Wrapper::data_attribute( $step_data['conditionalLogic'], 'data-perform-step-condition' );
 		$step_chunks[ $step_index ] = '<div ' . $step_attr . '>' . $step_data['html'] . '</div>';
 	}
 

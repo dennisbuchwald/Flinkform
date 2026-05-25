@@ -59,7 +59,8 @@ final class Locator {
 	 * @param string $form_id UUID stored in the form block's `formId` attr.
 	 * @return array{
 	 *     attributes: array<string, mixed>,
-	 *     fields: array<int, array<string, mixed>>
+	 *     fields: array<int, array<string, mixed>>,
+	 *     steps:  array<int, array<string, mixed>>
 	 * }|null
 	 */
 	public function locate( int $post_id, string $form_id ): ?array {
@@ -75,9 +76,12 @@ final class Locator {
 			return null;
 		}
 
+		$inner_blocks = $found['innerBlocks'] ?? [];
+
 		return [
 			'attributes' => isset( $found['attrs'] ) && is_array( $found['attrs'] ) ? $found['attrs'] : [],
-			'fields'     => $this->collect_fields( $found['innerBlocks'] ?? [] ),
+			'fields'     => $this->collect_fields( $inner_blocks ),
+			'steps'      => $this->collect_steps( $inner_blocks ),
 		];
 	}
 
@@ -123,10 +127,17 @@ final class Locator {
 	 * @return array<int, array<string, mixed>>
 	 */
 	private function collect_fields( array $inner_blocks ): array {
-		$fields = [];
+		$fields      = [];
+		$step_index  = 0; // Step 0 is everything before the first page-break.
 
 		foreach ( $inner_blocks as $block ) {
 			$block_name = $block['blockName'] ?? '';
+
+			if ( 'perform/page-break' === $block_name ) {
+				$step_index++;
+				continue;
+			}
+
 			if ( ! isset( self::FIELD_BLOCKS[ $block_name ] ) ) {
 				continue;
 			}
@@ -143,6 +154,10 @@ final class Locator {
 				'type'             => $type,
 				'label'            => $this->resolve_label( $block_name, $attrs, $name ),
 				'required'         => ! empty( $attrs['required'] ),
+				// Step index this field belongs to (0-based). Phase 7c
+				// uses this to strip values when the containing step's
+				// page-break condition skips the step entirely.
+				'step'             => $step_index,
 				// Carries the conditional-logic rule set as-stored on
 				// the block so Handler::handle() can re-evaluate it
 				// server-side and strip hidden field values from
@@ -161,6 +176,36 @@ final class Locator {
 		}
 
 		return $fields;
+	}
+
+	/**
+	 * Build a per-step rule-set list. Step 0 (everything before the
+	 * first page-break) is always present with an empty rule set; each
+	 * subsequent step carries the conditional-logic configured on the
+	 * page-break that opens it.
+	 *
+	 * Mirrors the structure form-container/render.php emits, and gives
+	 * the submission handler what it needs to strip every field in a
+	 * skipped step (not just the field's own conditional).
+	 *
+	 * @param array<int, array<string, mixed>> $inner_blocks Raw inner blocks.
+	 * @return array<int, array{index: int, conditionalLogic: array<string, mixed>}>
+	 */
+	private function collect_steps( array $inner_blocks ): array {
+		$steps = [ [ 'index' => 0, 'conditionalLogic' => [] ] ];
+
+		foreach ( $inner_blocks as $block ) {
+			if ( ( $block['blockName'] ?? '' ) !== 'perform/page-break' ) {
+				continue;
+			}
+			$attrs = $block['attrs'] ?? [];
+			$steps[] = [
+				'index'            => count( $steps ),
+				'conditionalLogic' => isset( $attrs['conditionalLogic'] ) && is_array( $attrs['conditionalLogic'] ) ? $attrs['conditionalLogic'] : [],
+			];
+		}
+
+		return $steps;
 	}
 
 	/**

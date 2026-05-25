@@ -38,7 +38,7 @@ final class Wrapper {
 	 * @param mixed $rule_set The block's `conditionalLogic` attribute (object-shaped array, or anything).
 	 * @return string `' data-perform-condition="..."'` or `''`.
 	 */
-	public static function data_attribute( $rule_set ): string {
+	public static function data_attribute( $rule_set, string $attr_name = 'data-perform-condition' ): string {
 		if ( ! is_array( $rule_set ) || empty( $rule_set['enabled'] ) ) {
 			return '';
 		}
@@ -71,6 +71,6 @@ final class Wrapper {
 			) ),
 		];
 
-		return ' data-perform-condition="' . esc_attr( (string) wp_json_encode( $payload ) ) . '"';
+		return ' ' . $attr_name . '="' . esc_attr( (string) wp_json_encode( $payload ) ) . '"';
 	}
 }

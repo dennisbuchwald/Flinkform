@@ -63,23 +63,25 @@ if ( typeof document !== 'undefined' ) {
 function initConditionalLogic() {
 	const forms = document.querySelectorAll( '.perform-form__form' );
 	forms.forEach( ( form ) => {
-		const wrappers = form.querySelectorAll( '[data-perform-condition]' );
-		if ( wrappers.length === 0 ) {
+		const fieldWrappers = form.querySelectorAll( '[data-perform-condition]' );
+		const stepWrappers  = form.querySelectorAll( '.perform-form__step[data-perform-step-condition]' );
+
+		if ( fieldWrappers.length === 0 && stepWrappers.length === 0 ) {
 			return;
 		}
 
 		// Initial pass — apply visibility before the user types
 		// anything, in case server-render already had values from a
 		// repopulated submission (flash state).
-		evaluateAll( form, wrappers );
+		evaluateAll( form, fieldWrappers, stepWrappers );
 
 		// `input` covers text fields, textareas, selects (modern
 		// browsers fire input on select change), and number/email/
 		// password. `change` covers radio/checkbox toggles where
 		// input doesn't fire. Both bubble, so a single listener on
 		// the form catches everything.
-		form.addEventListener( 'input', () => evaluateAll( form, wrappers ) );
-		form.addEventListener( 'change', () => evaluateAll( form, wrappers ) );
+		form.addEventListener( 'input', () => evaluateAll( form, fieldWrappers, stepWrappers ) );
+		form.addEventListener( 'change', () => evaluateAll( form, fieldWrappers, stepWrappers ) );
 	} );
 }
 
@@ -92,10 +94,11 @@ function initConditionalLogic() {
  * @param {HTMLFormElement} form
  * @param {NodeListOf<Element>} wrappers
  */
-function evaluateAll( form, wrappers ) {
+function evaluateAll( form, fieldWrappers, stepWrappers ) {
 	const values = gatherFormValues( form );
 
-	wrappers.forEach( ( wrapper ) => {
+	// Field-level conditions: toggle wrapper hidden + disable inputs.
+	fieldWrappers.forEach( ( wrapper ) => {
 		const raw = wrapper.getAttribute( 'data-perform-condition' );
 		if ( ! raw ) {
 			return;
@@ -118,6 +121,60 @@ function evaluateAll( form, wrappers ) {
 			toggleInputs( wrapper, true );
 		}
 	} );
+
+	// Step-level conditions (Phase 7c): set a `data-perform-skipped`
+	// marker on the wrapper so the Interactivity action can read the
+	// up-to-date skip state when the user clicks Next / Back. The
+	// step's own visibility is still driven by the multi-step
+	// `state.isNotCurrentStep` binding — skipping plus current-step
+	// matching are two independent toggles.
+	let skippedChanged = false;
+	stepWrappers.forEach( ( wrapper ) => {
+		const raw = wrapper.getAttribute( 'data-perform-step-condition' );
+		if ( ! raw ) {
+			return;
+		}
+
+		let ruleSet;
+		try {
+			ruleSet = JSON.parse( raw );
+		} catch ( _ ) {
+			return;
+		}
+
+		const shouldShow = evaluateRuleSet( ruleSet, values );
+		const isSkipped  = wrapper.getAttribute( 'data-perform-skipped' ) === 'true';
+
+		if ( ! shouldShow ) {
+			if ( ! isSkipped ) {
+				wrapper.setAttribute( 'data-perform-skipped', 'true' );
+				skippedChanged = true;
+			}
+			// Disable inputs in skipped steps — same reasoning as
+			// hidden fields: a skipped step's values must not reach
+			// the server through the form's native submit.
+			toggleInputs( wrapper, true );
+		} else {
+			if ( isSkipped ) {
+				wrapper.removeAttribute( 'data-perform-skipped' );
+				skippedChanged = true;
+			}
+			toggleInputs( wrapper, false );
+		}
+	} );
+
+	// Notify the Interactivity store that the skipped-set has shifted
+	// so it can recompute the progress indicator. The wrapper-level
+	// `data-wp-on--perform-skipped-changed` binding turns this custom
+	// event into a call to `actions.onSkippedChanged`, where the
+	// progress context values get re-derived inside an element-scope
+	// that getContext() can actually resolve.
+	if ( skippedChanged ) {
+		const wrapper = form.closest( '.perform-form' );
+		if ( wrapper ) {
+			wrapper.dispatchEvent( new CustomEvent( 'perform-skipped-changed', { bubbles: false } ) );
+		}
+	}
 }
 
 /**
@@ -401,9 +458,10 @@ const { state } = store( NAMESPACE, {
 				return;
 			}
 
-			if ( ctx.currentStep < ctx.totalSteps - 1 ) {
-				ctx.currentStep += 1;
-				syncProgressContext( ctx );
+			const target = findNextVisibleStep( wrapper, ctx.currentStep, ctx.totalSteps );
+			if ( null !== target ) {
+				ctx.currentStep = target;
+				syncProgressContext( ctx, wrapper );
 				deferFocus( wrapper, ctx.currentStep );
 			}
 		},
@@ -414,11 +472,27 @@ const { state } = store( NAMESPACE, {
 				return;
 			}
 			const wrapper = getElement().ref.closest( '.perform-form' );
-			ctx.currentStep -= 1;
-			syncProgressContext( ctx );
+			const target  = findPrevVisibleStep( wrapper, ctx.currentStep );
+			if ( null === target ) {
+				return;
+			}
+			ctx.currentStep = target;
+			syncProgressContext( ctx, wrapper );
 			if ( wrapper ) {
 				deferFocus( wrapper, ctx.currentStep );
 			}
+		},
+
+		// Called from the standalone DOM listener via a custom event
+		// when step-skip conditions change mid-form (e.g. user typed
+		// a value that newly satisfies a skip rule). Recomputes the
+		// progress-indicator context against the now-current skipped
+		// set so totalSteps / currentStep counters stay accurate
+		// without waiting for the user to hit Next.
+		onSkippedChanged() {
+			const ctx     = getContext();
+			const wrapper = getElement().ref;
+			syncProgressContext( ctx, wrapper );
 		},
 
 		// Submit guard — intercepts the form's submit event and blocks
@@ -454,19 +528,40 @@ const { state } = store( NAMESPACE, {
  *
  * @param {object} ctx The merged context object for this form.
  */
-function syncProgressContext( ctx ) {
-	const next = ctx.currentStep + 1;
-	ctx.ariaValueNow = next;
-	ctx.progressBarStyle = `--perform-progress-percent:${ ( ( next / ctx.totalSteps ) * 100 ).toFixed( 2 ) }%`;
+function syncProgressContext( ctx, wrapper = null ) {
+	// Step-skipping awareness (Phase 7c). When the wrapper is in scope
+	// we count the `data-perform-skipped="true"` markers the
+	// standalone listener leaves on currently-skipped steps and
+	// adjust the indicator's totals + position so the user sees
+	// "Step 2 of 3" turn into "Step 2 of 2" the moment a step drops
+	// out of the flow. Without the wrapper (calls predating 7c) we
+	// fall back to the raw markup totals.
+	let totalSkipped         = 0;
+	let skippedBeforeCurrent = 0;
+	if ( wrapper ) {
+		wrapper.querySelectorAll( '.perform-form__step[data-perform-skipped="true"]' ).forEach( ( s ) => {
+			totalSkipped += 1;
+			const idx = parseInt( s.getAttribute( 'data-step-index' ) || '0', 10 );
+			if ( idx < ctx.currentStep ) {
+				skippedBeforeCurrent += 1;
+			}
+		} );
+	}
+
+	const effectiveTotal   = Math.max( 1, ctx.totalSteps - totalSkipped );
+	const effectiveCurrent = Math.max( 1, ctx.currentStep + 1 - skippedBeforeCurrent );
+
+	ctx.ariaValueNow     = effectiveCurrent;
+	ctx.progressBarStyle = `--perform-progress-percent:${ ( ( effectiveCurrent / effectiveTotal ) * 100 ).toFixed( 2 ) }%`;
 
 	const template = state.progressTemplate;
 	if ( typeof template === 'string' && template !== '' ) {
 		ctx.progressLabel = template
-			.replace( '%CURRENT%', String( next ) )
-			.replace( '%TOTAL%', String( ctx.totalSteps ) );
+			.replace( '%CURRENT%', String( effectiveCurrent ) )
+			.replace( '%TOTAL%', String( effectiveTotal ) );
 	} else {
 		// Fallback when the PHP-seeded template isn't present.
-		ctx.progressLabel = `Step ${ next } of ${ ctx.totalSteps }`;
+		ctx.progressLabel = `Step ${ effectiveCurrent } of ${ effectiveTotal }`;
 	}
 
 	// Optional step-label display (5d). Only updates the binding when
@@ -483,6 +578,53 @@ function syncProgressContext( ctx ) {
 			ctx.currentStepLabel = '';
 		}
 	}
+}
+
+/**
+ * Find the next visible step index strictly after `current`, skipping
+ * over any `[data-perform-skipped="true"]` step. Returns null when
+ * there's no visible step left (= we're already on the last visible
+ * step).
+ *
+ * @param {Element} wrapper Form wrapper element.
+ * @param {number}  current Current step index (0-based).
+ * @param {number}  total   Total markup steps.
+ * @returns {number|null}
+ */
+function findNextVisibleStep( wrapper, current, total ) {
+	if ( ! wrapper ) {
+		return current < total - 1 ? current + 1 : null;
+	}
+	for ( let i = current + 1; i < total; i++ ) {
+		const step = wrapper.querySelector( `.perform-form__step[data-step-index="${ i }"]` );
+		if ( step && step.getAttribute( 'data-perform-skipped' ) === 'true' ) {
+			continue;
+		}
+		return i;
+	}
+	return null;
+}
+
+/**
+ * Find the previous visible step strictly before `current`. Same
+ * skipping rules as findNextVisibleStep, walking backwards.
+ *
+ * @param {Element} wrapper Form wrapper.
+ * @param {number}  current Current step index (0-based).
+ * @returns {number|null}
+ */
+function findPrevVisibleStep( wrapper, current ) {
+	if ( ! wrapper ) {
+		return current > 0 ? current - 1 : null;
+	}
+	for ( let i = current - 1; i >= 0; i-- ) {
+		const step = wrapper.querySelector( `.perform-form__step[data-step-index="${ i }"]` );
+		if ( step && step.getAttribute( 'data-perform-skipped' ) === 'true' ) {
+			continue;
+		}
+		return i;
+	}
+	return null;
 }
 
 /**

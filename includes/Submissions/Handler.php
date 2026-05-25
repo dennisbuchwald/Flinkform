@@ -139,7 +139,8 @@ final class Handler {
 		// every input change for the live UX — this server pass is the
 		// authoritative one, so DOM-manipulated visible fields can't
 		// smuggle data through.
-		$hidden_fields = $this->resolve_hidden_fields( $definition['fields'], $clean );
+		$skipped_steps = $this->resolve_skipped_steps( $definition['steps'] ?? [], $clean );
+		$hidden_fields = $this->resolve_hidden_fields( $definition['fields'], $clean, $skipped_steps );
 		if ( ! empty( $hidden_fields ) ) {
 			foreach ( $hidden_fields as $hidden_name ) {
 				unset( $clean[ $hidden_name ], $errors[ $hidden_name ] );
@@ -268,11 +269,21 @@ final class Handler {
 	 * @param array<string, mixed>             $clean  Sanitised values keyed by field name.
 	 * @return array<int, string> Field names that should be treated as hidden.
 	 */
-	private function resolve_hidden_fields( array $fields, array $clean ): array {
-		$evaluator = new \PerForm\Conditions\RuleEvaluator();
-		$hidden    = [];
+	private function resolve_hidden_fields( array $fields, array $clean, array $skipped_steps = [] ): array {
+		$evaluator    = new \PerForm\Conditions\RuleEvaluator();
+		$hidden       = [];
+		$skipped_set  = array_flip( array_map( 'intval', $skipped_steps ) );
 
 		foreach ( $fields as $field ) {
+			$field_step = isset( $field['step'] ) ? (int) $field['step'] : 0;
+
+			// Field lives inside a step the page-break condition skipped —
+			// drop it irrespective of the field's own rule set.
+			if ( isset( $skipped_set[ $field_step ] ) ) {
+				$hidden[] = (string) $field['name'];
+				continue;
+			}
+
 			$rule_set = isset( $field['conditionalLogic'] ) && is_array( $field['conditionalLogic'] )
 				? $field['conditionalLogic']
 				: [];
@@ -285,6 +296,35 @@ final class Handler {
 		}
 
 		return $hidden;
+	}
+
+	/**
+	 * Walk the form's step list and return the indices of steps whose
+	 * page-break conditional-logic rules say "skip". Step 0 has no
+	 * opening page-break and therefore no rules of its own — it never
+	 * appears in the skipped set.
+	 *
+	 * @param array<int, array<string, mixed>> $steps Step records from Locator::collect_steps.
+	 * @param array<string, mixed>             $clean Sanitised values keyed by field name.
+	 * @return array<int, int> Step indices that should be treated as skipped.
+	 */
+	private function resolve_skipped_steps( array $steps, array $clean ): array {
+		$evaluator = new \PerForm\Conditions\RuleEvaluator();
+		$skipped   = [];
+
+		foreach ( $steps as $step ) {
+			$rule_set = isset( $step['conditionalLogic'] ) && is_array( $step['conditionalLogic'] )
+				? $step['conditionalLogic']
+				: [];
+			if ( empty( $rule_set ) ) {
+				continue;
+			}
+			if ( ! $evaluator->should_show( $rule_set, $clean ) ) {
+				$skipped[] = (int) ( $step['index'] ?? 0 );
+			}
+		}
+
+		return $skipped;
 	}
 
 	/**
