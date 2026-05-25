@@ -14,7 +14,9 @@ import {
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
+	Notice,
 	PanelBody,
+	SelectControl,
 	TextControl,
 	TextareaControl,
 	ToggleControl,
@@ -57,6 +59,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const blockProps = useBlockProps( { className: 'perform-form-editor' } );
 
 	const adminConfig = notifications?.admin ?? {};
+	const submitterConfig = notifications?.submitter ?? {};
 
 	useEffect( () => {
 		if ( ! formId ) {
@@ -77,25 +80,50 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		[ clientId ]
 	);
 
-	const firstEmailFieldName = useMemo( () => {
+	// All email fields in this form, in document order. Powers the
+	// submitter-confirmation field picker and feeds the firstEmailFieldName
+	// used by the admin Reply-To auto-fill.
+	const emailFieldOptions = useMemo( () => {
 		if ( ! Array.isArray( innerBlocks ) ) {
-			return '';
+			return [];
 		}
-		const emailBlock = innerBlocks.find( ( b ) => b.name === 'perform/field-email' );
-		const fieldName = emailBlock?.attributes?.fieldName;
-		return typeof fieldName === 'string' ? fieldName : '';
+		return innerBlocks
+			.filter( ( b ) => b.name === 'perform/field-email' )
+			.map( ( b ) => {
+				const fieldName = b.attributes?.fieldName;
+				const fieldLabel = b.attributes?.label;
+				const value = typeof fieldName === 'string' ? fieldName : '';
+				const label = typeof fieldLabel === 'string' && fieldLabel
+					? `${ fieldLabel } (${ value })`
+					: value;
+				return { value, label };
+			} )
+			.filter( ( opt ) => opt.value !== '' );
 	}, [ innerBlocks ] );
+
+	const firstEmailFieldName = emailFieldOptions[ 0 ]?.value ?? '';
 
 	// Patch a subset of admin notification config without losing siblings.
 	// setAttributes is shallow — without the spread we'd wipe other keys
-	// inside `notifications.admin` (and `notifications.submitter` once 3c
-	// lands).
+	// inside `notifications.admin` and `notifications.submitter`.
 	const updateAdminConfig = ( patch ) => {
 		setAttributes( {
 			notifications: {
 				...notifications,
 				admin: {
 					...adminConfig,
+					...patch,
+				},
+			},
+		} );
+	};
+
+	const updateSubmitterConfig = ( patch ) => {
+		setAttributes( {
+			notifications: {
+				...notifications,
+				submitter: {
+					...submitterConfig,
 					...patch,
 				},
 			},
@@ -121,6 +149,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}, [ firstEmailFieldName, adminConfig.replyTo ] );
 
 	const adminEnabled = adminConfig.enabled !== false;
+	const submitterEnabled = submitterConfig.enabled === true;
+	const hasEmailFields = emailFieldOptions.length > 0;
+
+	// Submitter email-field auto-fill: the first time confirmations are
+	// turned on (and at least one email field exists), pre-select the
+	// first email field. The user can switch via the SelectControl below.
+	// Once `emailField` is a string the effect leaves it alone — even an
+	// empty string counts as touched, mirroring the admin Reply-To rule.
+	useEffect( () => {
+		if ( ! submitterEnabled ) {
+			return;
+		}
+		if ( submitterConfig.emailField !== undefined ) {
+			return;
+		}
+		if ( ! firstEmailFieldName ) {
+			return;
+		}
+		updateSubmitterConfig( { emailField: firstEmailFieldName } );
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ submitterEnabled, submitterConfig.emailField, firstEmailFieldName ] );
 
 	return (
 		<>
@@ -201,6 +250,55 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange={ ( value ) => updateAdminConfig( { replyTo: value } ) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
+							/>
+						</>
+					) }
+
+					<hr style={ { margin: '16px 0', opacity: 0.25 } } />
+
+					<ToggleControl
+						label={ __( 'Send confirmation to submitter', 'perform-forms' ) }
+						help={ __( 'Email a copy of the submission back to the person who filled out the form.', 'perform-forms' ) }
+						checked={ submitterEnabled }
+						onChange={ ( value ) => updateSubmitterConfig( { enabled: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ submitterEnabled && ! hasEmailFields && (
+						<Notice status="warning" isDismissible={ false }>
+							{ __( 'Add an email field to this form to enable submitter confirmations.', 'perform-forms' ) }
+						</Notice>
+					) }
+					{ submitterEnabled && hasEmailFields && (
+						<>
+							<SelectControl
+								label={ __( 'Email field', 'perform-forms' ) }
+								help={ __( 'Which field contains the submitter’s email address.', 'perform-forms' ) }
+								value={ submitterConfig.emailField ?? '' }
+								options={ [
+									{ value: '', label: __( '— Select a field —', 'perform-forms' ) },
+									...emailFieldOptions,
+								] }
+								onChange={ ( value ) => updateSubmitterConfig( { emailField: value } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<TextControl
+								label={ __( 'Subject', 'perform-forms' ) }
+								help={ __( 'Supports merge tags. Leave empty for the default.', 'perform-forms' ) }
+								value={ submitterConfig.subject ?? '' }
+								placeholder={ __( 'We received your submission', 'perform-forms' ) }
+								onChange={ ( value ) => updateSubmitterConfig( { subject: value } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<TextareaControl
+								label={ __( 'Body', 'perform-forms' ) }
+								help={ __( 'Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Leave empty for an auto-generated thank-you with the submitted values.', 'perform-forms' ) }
+								value={ submitterConfig.body ?? '' }
+								placeholder={ __( 'Auto-generated thank-you with submitted values', 'perform-forms' ) }
+								onChange={ ( value ) => updateSubmitterConfig( { body: value } ) }
+								rows={ 8 }
+								__nextHasNoMarginBottom
 							/>
 						</>
 					) }
