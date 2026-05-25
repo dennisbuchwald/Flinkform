@@ -25,6 +25,7 @@ import {
 	Button,
 	Notice,
 	PanelBody,
+	SelectControl,
 	Spinner,
 	TextControl,
 	ToggleControl,
@@ -43,7 +44,7 @@ const BLANK_WEBHOOK = {
 	is_active: true,
 };
 
-export default function IntegrationsPanel( { formId } ) {
+export default function IntegrationsPanel( { formId, formFields = [] } ) {
 	const [ webhooks, setWebhooks ] = useState( [] );
 	const [ status, setStatus ] = useState( 'loading' ); // loading | ready | error
 	const [ error, setError ] = useState( '' );
@@ -148,6 +149,7 @@ export default function IntegrationsPanel( { formId } ) {
 				<WebhookCard
 					key={ webhook.id }
 					webhook={ webhook }
+					formFields={ formFields }
 					onChange={ ( patch ) => updateWebhook( webhook.id, patch ) }
 					onDelete={ () => deleteWebhook( webhook.id ) }
 				/>
@@ -172,7 +174,7 @@ export default function IntegrationsPanel( { formId } ) {
  * the form fields are tucked behind a single click and the inspector
  * doesn't drown when an author has three or four webhooks set up.
  */
-function WebhookCard( { webhook, onChange, onDelete } ) {
+function WebhookCard( { webhook, formFields, onChange, onDelete } ) {
 	// Send-test state. Reset to null whenever the URL changes so an
 	// old response doesn't sit there misleadingly while the author
 	// is typing a new endpoint.
@@ -257,6 +259,18 @@ function WebhookCard( { webhook, onChange, onDelete } ) {
 			<HeadersEditor
 				headers={ webhook.headers ?? {} }
 				onChange={ ( headers ) => onChange( { headers } ) }
+			/>
+
+			<ConditionEditor
+				webhook={ webhook }
+				formFields={ formFields }
+				onChange={ onChange }
+			/>
+
+			<FieldMappingEditor
+				mapping={ webhook.field_mapping ?? {} }
+				formFields={ formFields }
+				onChange={ ( field_mapping ) => onChange( { field_mapping } ) }
 			/>
 
 			<ToggleControl
@@ -446,6 +460,187 @@ function HeadersEditor( { headers, onChange } ) {
 			>
 				{ __( '+ Add header', 'perform-forms' ) }
 			</Button>
+		</div>
+	);
+}
+
+/**
+ * Trigger-condition editor. A single rule of the form
+ *
+ *   IF <field> <operator> [<value>]
+ *
+ * The author picks the field from the list of submitting field
+ * blocks on this form, an operator from a fixed allow-list, and —
+ * for value-based operators — types the comparison value. The
+ * empty-state operators (is_empty / is_not_empty) hide the value
+ * input because it would be meaningless. Saving an empty condition
+ * reads server-side as "always fire", so toggling the rule off
+ * doesn't need a separate "active" switch.
+ */
+function ConditionEditor( { webhook, formFields, onChange } ) {
+	const isEnabled = ( webhook.condition_field ?? '' ) !== '' && ( webhook.condition_operator ?? '' ) !== '';
+	const operator = webhook.condition_operator ?? '';
+	const usesValue = operator !== 'is_empty' && operator !== 'is_not_empty';
+
+	const operatorOptions = [
+		{ value: '', label: __( '— Select operator —', 'perform-forms' ) },
+		{ value: 'equals', label: __( 'equals', 'perform-forms' ) },
+		{ value: 'not_equals', label: __( 'does not equal', 'perform-forms' ) },
+		{ value: 'contains', label: __( 'contains', 'perform-forms' ) },
+		{ value: 'not_contains', label: __( 'does not contain', 'perform-forms' ) },
+		{ value: 'is_empty', label: __( 'is empty', 'perform-forms' ) },
+		{ value: 'is_not_empty', label: __( 'is not empty', 'perform-forms' ) },
+	];
+
+	const fieldOptions = [
+		{ value: '', label: __( '— Select a field —', 'perform-forms' ) },
+		...formFields.map( ( f ) => ( {
+			value: f.name,
+			label: f.label ? `${ f.label } (${ f.name })` : f.name,
+		} ) ),
+	];
+
+	const handleToggle = ( on ) => {
+		if ( on ) {
+			// Pre-fill with the first field if available, so the
+			// condition state isn't half-empty after enabling.
+			onChange( {
+				condition_field: formFields[ 0 ]?.name ?? '',
+				condition_operator: 'equals',
+				condition_value: webhook.condition_value ?? '',
+			} );
+		} else {
+			onChange( {
+				condition_field: '',
+				condition_operator: '',
+				condition_value: '',
+			} );
+		}
+	};
+
+	return (
+		<div style={ { marginBottom: '12px' } }>
+			<ToggleControl
+				label={ __( 'Conditional delivery', 'perform-forms' ) }
+				help={ __( 'Only send this webhook when the submission matches the rule below.', 'perform-forms' ) }
+				checked={ isEnabled }
+				onChange={ handleToggle }
+				__nextHasNoMarginBottom
+			/>
+
+			{ isEnabled && (
+				<div style={ { paddingLeft: '12px', borderLeft: '2px solid #ddd', marginTop: '8px' } }>
+					{ formFields.length === 0 && (
+						<Notice status="warning" isDismissible={ false }>
+							{ __( 'Add at least one field block to this form to use conditional delivery.', 'perform-forms' ) }
+						</Notice>
+					) }
+
+					<SelectControl
+						label={ __( 'Field', 'perform-forms' ) }
+						value={ webhook.condition_field ?? '' }
+						options={ fieldOptions }
+						onChange={ ( value ) => onChange( { condition_field: value } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+
+					<SelectControl
+						label={ __( 'Operator', 'perform-forms' ) }
+						value={ operator }
+						options={ operatorOptions }
+						onChange={ ( value ) => {
+							const patch = { condition_operator: value };
+							// Clear the value when switching to an
+							// empty-state operator so the persisted
+							// row doesn't carry a stale comparison.
+							if ( value === 'is_empty' || value === 'is_not_empty' ) {
+								patch.condition_value = '';
+							}
+							onChange( patch );
+						} }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+
+					{ usesValue && (
+						<TextControl
+							label={ __( 'Value', 'perform-forms' ) }
+							value={ webhook.condition_value ?? '' }
+							onChange={ ( value ) => onChange( { condition_value: value } ) }
+							help={ __( 'Comparison is case-insensitive for contains / not contains.', 'perform-forms' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</div>
+			) }
+		</div>
+	);
+}
+
+/**
+ * Field-name mapping editor. Optional rename map — internal field
+ * name → external payload key — applied by the server before the
+ * webhook fires. Missing or empty entries leave the field untouched,
+ * so partial mappings are fine.
+ */
+function FieldMappingEditor( { mapping, formFields, onChange } ) {
+	const hasAnyMapping = Object.keys( mapping ).some( ( k ) => ( mapping[ k ] ?? '' ) !== '' );
+
+	const handleToggle = ( on ) => {
+		if ( ! on ) {
+			onChange( {} );
+		} else if ( ! hasAnyMapping && formFields.length > 0 ) {
+			// Seed the first field with an empty target so the editor
+			// has a visible row to work with — author edits the value
+			// and the persistence flow picks it up.
+			onChange( { [ formFields[ 0 ].name ]: '' } );
+		}
+	};
+
+	const setTarget = ( fieldName, target ) => {
+		const next = { ...mapping };
+		if ( ! target || target.trim() === '' ) {
+			delete next[ fieldName ];
+		} else {
+			next[ fieldName ] = target;
+		}
+		onChange( next );
+	};
+
+	return (
+		<div style={ { marginBottom: '12px' } }>
+			<ToggleControl
+				label={ __( 'Rename fields in payload', 'perform-forms' ) }
+				help={ __( 'Send fields under different keys than their internal names. Leave a target empty to pass that field through unchanged.', 'perform-forms' ) }
+				checked={ hasAnyMapping || ( formFields.length > 0 && Object.keys( mapping ).length > 0 ) }
+				onChange={ handleToggle }
+				__nextHasNoMarginBottom
+			/>
+
+			{ ( hasAnyMapping || Object.keys( mapping ).length > 0 ) && formFields.length > 0 && (
+				<div style={ { paddingLeft: '12px', borderLeft: '2px solid #ddd', marginTop: '8px' } }>
+					{ formFields.map( ( field ) => (
+						<div
+							key={ field.name }
+							style={ { display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '4px' } }
+						>
+							<code style={ { flex: '0 0 40%', fontSize: '11px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }>
+								{ field.name }
+							</code>
+							<span style={ { opacity: 0.5 } }>→</span>
+							<input
+								type="text"
+								value={ mapping[ field.name ] ?? '' }
+								placeholder={ field.name }
+								onChange={ ( e ) => setTarget( field.name, e.target.value ) }
+								style={ { flex: 1, minWidth: 0 } }
+							/>
+						</div>
+					) ) }
+				</div>
+			) }
 		</div>
 	);
 }

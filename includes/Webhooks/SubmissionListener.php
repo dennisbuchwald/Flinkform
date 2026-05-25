@@ -30,10 +30,12 @@ final class SubmissionListener {
 
 	private Repository $webhooks;
 	private DeliveryRepository $deliveries;
+	private ConditionEvaluator $conditions;
 
-	public function __construct( Repository $webhooks, DeliveryRepository $deliveries ) {
+	public function __construct( Repository $webhooks, DeliveryRepository $deliveries, ?ConditionEvaluator $conditions = null ) {
 		$this->webhooks   = $webhooks;
 		$this->deliveries = $deliveries;
+		$this->conditions = $conditions ?? new ConditionEvaluator();
 	}
 
 	/**
@@ -58,7 +60,7 @@ final class SubmissionListener {
 	 * @return void
 	 */
 	public function on_submission( int $submission_id, string $form_id, array $clean, array $definition ): void {
-		unset( $clean, $definition ); // Reserved for Phase 6d (condition + mapping eval).
+		unset( $definition ); // Reserved for future use (field-type aware condition checks).
 
 		$active_webhooks = $this->webhooks->find_active_for_form( $form_id );
 		if ( empty( $active_webhooks ) ) {
@@ -67,6 +69,14 @@ final class SubmissionListener {
 
 		$queued_anything = false;
 		foreach ( $active_webhooks as $webhook ) {
+			// Per-webhook trigger condition (Phase 6d). An unconfigured
+			// or empty condition reads as "always fire"; a misconfigured
+			// one (unknown operator, missing field name) fails closed
+			// from inside the evaluator.
+			if ( ! $this->conditions->should_fire( $webhook, $clean ) ) {
+				continue;
+			}
+
 			$delivery_id = $this->deliveries->enqueue( (int) $webhook['id'], $submission_id );
 			if ( null !== $delivery_id ) {
 				$queued_anything = true;

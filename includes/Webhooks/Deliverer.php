@@ -150,9 +150,48 @@ final class Deliverer {
 				$fields[ $name ] = $field['value'] ?? '';
 			}
 		}
-		$payload['fields'] = $fields;
+
+		// Field mapping (Phase 6d) — optional per-webhook rename map.
+		// Authors set this to translate internal field names into
+		// whatever shape their receiver expects. An empty entry on the
+		// right side passes the field through unrenamed (a UI quirk we
+		// could trim out in the inspector but it's harmless server-
+		// side). A missing entry leaves the original name in place, so
+		// partial mappings are safe.
+		$payload['fields'] = $this->apply_field_mapping( $fields, $webhook );
 
 		return $payload;
+	}
+
+	/**
+	 * Rename a flat field map according to a webhook's `field_mapping`
+	 * config. Authors configure these as `internal_name => external_name`
+	 * pairs; absent + empty target both pass the field through
+	 * unchanged.
+	 *
+	 * @param array<string, mixed> $fields  Flat name=>value map.
+	 * @param array<string, mixed> $webhook Hydrated webhook config row.
+	 * @return array<string, mixed>
+	 */
+	private function apply_field_mapping( array $fields, array $webhook ): array {
+		$mapping = isset( $webhook['field_mapping'] ) && is_array( $webhook['field_mapping'] )
+			? $webhook['field_mapping']
+			: [];
+		if ( empty( $mapping ) ) {
+			return $fields;
+		}
+
+		$mapped = [];
+		foreach ( $fields as $name => $value ) {
+			$target = isset( $mapping[ $name ] ) ? trim( (string) $mapping[ $name ] ) : '';
+			if ( '' === $target ) {
+				$mapped[ $name ] = $value;
+				continue;
+			}
+			$mapped[ $target ] = $value;
+		}
+
+		return $mapped;
 	}
 
 	/**

@@ -183,6 +183,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}, [ innerBlocks ] );
 	const hasAnyStepLabel = stepLabels.some( ( label ) => label !== '' );
 
+	// Flat list of all submitting field blocks in this form — feeds
+	// the webhook condition / field-mapping selectors so the author
+	// can pick from real field names rather than typing UUIDs.
+	// Excludes the page-break + section-heading blocks (no `fieldName`
+	// attribute, nothing to map).
+	const formFields = useMemo( () => {
+		if ( ! Array.isArray( innerBlocks ) ) {
+			return [];
+		}
+		return innerBlocks
+			.filter( ( b ) => typeof b.attributes?.fieldName === 'string' && b.attributes.fieldName !== '' )
+			.map( ( b ) => ( {
+				name: String( b.attributes.fieldName ),
+				label: typeof b.attributes?.label === 'string' ? b.attributes.label : '',
+			} ) );
+	}, [ innerBlocks ] );
+
 	// Patch a subset of admin notification config without losing siblings.
 	// setAttributes is shallow — without the spread we'd wipe other keys
 	// inside `notifications.admin` and `notifications.submitter`.
@@ -516,7 +533,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					) }
 				</PanelBody>
 
-				<IntegrationsPanel formId={ formId } />
+				<IntegrationsPanel formId={ formId } formFields={ formFields } />
 
 				<PanelBody
 					title={ __( 'Custom CSS', 'perform-forms' ) }
