@@ -1,21 +1,70 @@
 /**
  * PerForm — frontend base styles.
  *
- * The whole stylesheet pulls its values from CSS custom properties scoped
- * to `.perform-form`. Each `--perform-*` variable resolves through the
- * cascade `User-Override → theme.json → hard-coded fallback`, so:
+ * SPECIFICITY STRATEGY
+ * --------------------
+ * WordPress themes commonly attach colour, background and border rules
+ * to form inputs via selectors with rising specificity:
  *
- *   1. If render.php emits an inline `style="--perform-color-primary:…"`
- *      override (from the Style panel), that wins.
- *   2. Otherwise the var() lookup falls back to the active theme's
- *      `--wp--preset--*` variable, picked up automatically from
- *      theme.json.
- *   3. Failing both, the hard-coded fallback baked into the var() call
- *      keeps the form usable on themes without theme.json.
+ *   input[type="text"]                              (0,1,1)  GeneratePress, Kadence, Blocksy, OceanWP
+ *   input[type="text"]:focus                        (0,2,1)  same themes' :focus rules
+ *   .ast-input-fields input[type="text"]            (0,2,1)  Astra
+ *   body.some-theme input[type="text"]              (0,2,2)  legacy themes
  *
- * New phase-4 variables join this section as further controls land.
+ * A plain `.perform-field__input` selector lands at (0,1,0) and loses
+ * to every one of those. That produces forms whose text inputs render
+ * in the theme's flat style while textareas — which most themes target
+ * with weaker selectors — render with our intended border/radius. The
+ * result is a single form with two visibly different field styles, as
+ * seen on GeneratePress (sandbox.dbw-development.de) with field style
+ * "Bordered" + 32 px radius.
+ *
+ * To beat the entire observed range without resorting to !important,
+ * every field-level rule is scoped under `.perform-form.perform-form`
+ * — a deliberate selector-doubling. Both classes resolve to the same
+ * wrapper element (it really only has one class with that name), but
+ * the compiled selector counts as two classes, lifting specificity to
+ * (0,2,0). Combined with `.perform-field` or `.perform-field__input`
+ * the rule lands at (0,3,0), which outranks every common theme pattern
+ * including the focus-state ones. Our compiled `:focus-visible` rule
+ * goes one further to (0,4,0).
+ *
+ * Form-chrome selectors (`&__form`, `&__success`, `&__submit`) keep
+ * their normal `.perform-form` scope. They use unique BEM names that
+ * no theme targets directly, so the spec bump would be specificity
+ * debt for the variants without any compatibility win.
+ *
+ * Modifier rules at the bottom of the file all use the same
+ * `.perform-form.perform-form--X` doubled-class wrapper so they sit at
+ * the same (0,3,0) specificity as the base and win conflicts via
+ * source order (modifiers appear after base).
+ *
+ * PROPERTY COVERAGE
+ * -----------------
+ * Selector specificity alone isn't enough — a theme might still set a
+ * property we don't explicitly override, which then leaks through. The
+ * input base rule below sets every property a theme has been observed
+ * to touch: background, background-color (explicit longhand for themes
+ * that set only one), border, color, box-shadow, outline, padding,
+ * font, line-height, width, box-sizing. Focus states get an explicit
+ * second pass so theme :focus rules can't recolour the field on click.
+ *
+ * CASCADE
+ * -------
+ * Visual values resolve through `--perform-*` custom properties with
+ * this fallback chain:
+ *
+ *   1. Inline style="--perform-X: …" from render.php (Style panel)
+ *   2. theme.json `--wp--preset--*` / `--wp--custom--*` defaults
+ *   3. Hard-coded fallback baked into var() for non-theme.json themes
  */
 
+/* ---------------------------------------------------------------------
+ * Block-level chrome
+ *
+ * Form, success/error banners, actions row, submit button. Selectors
+ * use unique BEM names; plain .perform-form specificity is enough.
+ * ------------------------------------------------------------------ */
 .perform-form {
 	--perform-color-primary: var(--wp--preset--color--primary, currentColor);
 	--perform-color-on-primary: var(--wp--preset--color--background, #fff);
@@ -97,15 +146,16 @@
 			opacity: 1;
 		}
 	}
+}
 
-	// .perform-field and .perform-section-heading are nested INSIDE
-	// .perform-form so their selectors compile with a `.perform-form`
-	// ancestor. That bumps specificity from (0,1,0) to (0,2,0) — enough
-	// to beat the input[type="text|email|…"] (0,1,1) rules popular
-	// themes (GeneratePress, Astra, Kadence) attach to text inputs but
-	// not always to <textarea>. Without this, theme background and
-	// border-color overrides land on inputs but not textareas, giving
-	// inconsistent rendering across field types.
+/* ---------------------------------------------------------------------
+ * Field-level rules
+ *
+ * Wrapped in `.perform-form.perform-form` (selector doubled — same
+ * element, two class matches) to lift specificity to (0,3,0) and beat
+ * the theme input rules documented in the strategy comment above.
+ * ------------------------------------------------------------------ */
+.perform-form.perform-form {
 	.perform-field {
 		display: flex;
 		flex-direction: column;
@@ -121,14 +171,42 @@
 		}
 
 		&__input {
+			/* Layout — explicit so theme rules with matching
+			 * specificity but different focus can't shift the
+			 * geometry of the field. */
 			font: inherit;
+			line-height: 1.5;
+			margin: 0;
 			padding: 0.6em 0.75em;
-			border: 1px solid currentColor;
-			border-radius: var(--perform-border-radius);
-			background: transparent;
-			color: inherit;
 			width: 100%;
 			box-sizing: border-box;
+			min-height: auto;
+
+			/* Visual — every property a theme has been observed to
+			 * touch. Background is set as both shorthand and
+			 * longhand because themes commonly target only
+			 * background-color while leaving background-image alone;
+			 * specifying both makes the override total. */
+			background: transparent;
+			background-color: transparent;
+			color: inherit;
+			border: 1px solid currentColor;
+			border-radius: var(--perform-border-radius);
+			box-shadow: none;
+			outline: 0;
+
+			/* Focus — theme :focus rules can sit at (0,2,1); our
+			 * compiled selector lands at (0,4,0) which outranks
+			 * them, but we also need to explicitly re-set every
+			 * property the theme :focus touches so the field
+			 * doesn't repaint on click. */
+			&:focus,
+			&:focus-visible {
+				background: transparent;
+				background-color: transparent;
+				border-color: currentColor;
+				box-shadow: none;
+			}
 
 			&:focus-visible {
 				outline: 2px solid var(--perform-color-primary);
@@ -211,17 +289,18 @@
 	}
 }
 
-/* -----------------------------------------------------------------------
+/* ---------------------------------------------------------------------
  * Style panel modifiers (Phase 4b)
  *
- * Each control on the Form block's Style panel toggles a single class on
- * .perform-form. The classes only override the variables (or compose new
- * rules) — the structural defaults defined above stay intact, so a form
- * with no modifiers applied renders identically to the pre-4b baseline.
- * -------------------------------------------------------------------- */
+ * Each control on the Form block's Style panel toggles a single class
+ * on .perform-form. All modifier rules scope through the same
+ * `.perform-form.perform-form--X` doubled-class wrapper so they sit
+ * at the same (0,3,0) specificity as the base block — and win on
+ * conflict via source order since they appear after base.
+ * ------------------------------------------------------------------ */
 
 /* Field style — bordered (default) | underline | minimal. */
-.perform-form--field-style-underline {
+.perform-form.perform-form--field-style-underline {
 	.perform-field__input {
 		border-width: 0 0 1px 0;
 		border-radius: 0;
@@ -230,12 +309,13 @@
 	}
 }
 
-.perform-form--field-style-minimal {
+.perform-form.perform-form--field-style-minimal {
 	.perform-field__input {
 		border: 0;
 		// 6% currentColor on top of nothing — works on light and dark
 		// theme backgrounds without us having to know either of them.
 		background: color-mix(in srgb, currentColor 6%, transparent);
+		background-color: color-mix(in srgb, currentColor 6%, transparent);
 	}
 
 	.perform-field--has-error .perform-field__input {
@@ -245,9 +325,9 @@
 }
 
 /* Field spacing — compact | normal (default) | relaxed.
- * Overrides --perform-field-gap, which feeds both the form gap and the
- * radio/checkbox option spacing below. */
-.perform-form--spacing-compact {
+ * Overrides --perform-field-gap, which feeds both the form gap and
+ * the per-field internal gap below. */
+.perform-form.perform-form--spacing-compact {
 	--perform-field-gap: 0.75rem;
 
 	.perform-field {
@@ -255,7 +335,7 @@
 	}
 }
 
-.perform-form--spacing-relaxed {
+.perform-form.perform-form--spacing-relaxed {
 	--perform-field-gap: 2rem;
 
 	.perform-field {
@@ -270,7 +350,7 @@
  * the default block layout because a side-by-side or floating legend
  * doesn't translate semantically. */
 
-.perform-form--labels-beside {
+.perform-form.perform-form--labels-beside {
 	.perform-field--text,
 	.perform-field--email,
 	.perform-field--textarea,
@@ -301,11 +381,10 @@
 
 /* Floating labels — CSS-only via :placeholder-shown + :focus-within +
  * :has(). Inputs without a placeholder fall back to a static "label
- * always lifted" look, which is visually identical to the above-default
- * (no animation, but no broken layout). Authors who want the lift
- * animation set a placeholder on the field — the inspector hints this
- * in its help text. */
-.perform-form--labels-floating {
+ * always lifted" look (visually identical to Above — no animation but
+ * no broken layout). Authors who want the lift animation set a
+ * placeholder on the field; the inspector hints this in its help text. */
+.perform-form.perform-form--labels-floating {
 	.perform-field--text,
 	.perform-field--email,
 	.perform-field--textarea,
