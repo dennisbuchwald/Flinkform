@@ -33,5 +33,31 @@ final class Activator {
 	 */
 	public static function activate(): void {
 		Database\Schema::create();
+
+		// Webhook dispatcher cron — every-minute schedule. The
+		// `perform_every_minute` schedule is normally added to
+		// wp_get_schedules() by Dispatcher::register_schedule() on the
+		// `cron_schedules` filter. That filter is registered inside
+		// Plugin::init(), which runs on `plugins_loaded` — and
+		// `plugins_loaded` does NOT fire during plugin activation
+		// requests. So we add the same filter inline here, just for
+		// the activation tick, so wp_schedule_event sees the schedule
+		// it needs.
+		add_filter(
+			'cron_schedules',
+			static function ( array $schedules ): array {
+				if ( ! isset( $schedules[ Webhooks\Dispatcher::CRON_SCHEDULE ] ) ) {
+					$schedules[ Webhooks\Dispatcher::CRON_SCHEDULE ] = [
+						'interval' => 60,
+						'display'  => __( 'Every Minute (PerForm)', 'perform-forms' ),
+					];
+				}
+				return $schedules;
+			}
+		);
+
+		if ( ! wp_next_scheduled( Webhooks\Dispatcher::CRON_HOOK ) ) {
+			wp_schedule_event( time() + 60, Webhooks\Dispatcher::CRON_SCHEDULE, Webhooks\Dispatcher::CRON_HOOK );
+		}
 	}
 }

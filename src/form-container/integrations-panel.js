@@ -173,6 +173,35 @@ export default function IntegrationsPanel( { formId } ) {
  * doesn't drown when an author has three or four webhooks set up.
  */
 function WebhookCard( { webhook, onChange, onDelete } ) {
+	// Send-test state. Reset to null whenever the URL changes so an
+	// old response doesn't sit there misleadingly while the author
+	// is typing a new endpoint.
+	const [ testState, setTestState ] = useState( null ); // null | "running" | { ok, code, body }
+
+	useEffect( () => {
+		setTestState( null );
+	}, [ webhook.url ] );
+
+	const runTest = async () => {
+		setTestState( 'running' );
+		try {
+			const result = await apiFetch( {
+				path: `/perform/v1/webhooks/${ webhook.id }/test`,
+				method: 'POST',
+			} );
+			setTestState( {
+				ok: !! result.ok,
+				code: result.response_code,
+				body: result.response_body ?? '',
+			} );
+		} catch ( err ) {
+			setTestState( {
+				ok: false,
+				code: null,
+				body: err?.message ?? __( 'Test request failed.', 'perform-forms' ),
+			} );
+		}
+	};
 	const title = webhook.label
 		? webhook.label
 		: ( webhook.url ? truncateUrl( webhook.url ) : __( 'Untitled webhook', 'perform-forms' ) );
@@ -241,6 +270,23 @@ function WebhookCard( { webhook, onChange, onDelete } ) {
 			<hr style={ { margin: '12px 0', opacity: 0.25 } } />
 
 			<Button
+				variant="secondary"
+				onClick={ runTest }
+				disabled={ testState === 'running' || ! webhook.url || webhook.url === 'https://' }
+				__next40pxDefaultSize
+			>
+				{ testState === 'running'
+					? __( 'Sending test…', 'perform-forms' )
+					: __( 'Send test', 'perform-forms' ) }
+			</Button>
+
+			{ testState && testState !== 'running' && (
+				<TestResult result={ testState } />
+			) }
+
+			<hr style={ { margin: '12px 0', opacity: 0.25 } } />
+
+			<Button
 				variant="link"
 				isDestructive
 				onClick={ onDelete }
@@ -249,6 +295,62 @@ function WebhookCard( { webhook, onChange, onDelete } ) {
 				{ __( 'Delete this webhook', 'perform-forms' ) }
 			</Button>
 		</PanelBody>
+	);
+}
+
+/**
+ * Inline rendering of a Send-test response. Green for 2xx, red for
+ * everything else. Response body shown truncated in a scrollable
+ * pre-block so authors can verify the receiver actually saw the
+ * payload they expected.
+ */
+function TestResult( { result } ) {
+	const isOk = result.ok;
+	const codeLabel = null === result.code
+		? __( 'no response', 'perform-forms' )
+		: String( result.code );
+
+	return (
+		<div
+			style={ {
+				marginTop: '8px',
+				padding: '8px 10px',
+				border: '1px solid',
+				borderColor: isOk ? '#28a745' : '#cc0000',
+				borderRadius: '4px',
+				background: isOk ? 'rgba(40, 167, 69, 0.08)' : 'rgba(204, 0, 0, 0.08)',
+				fontSize: '12px',
+			} }
+		>
+			<strong>
+				{ isOk
+					? sprintf(
+						/* translators: %s: HTTP status code */
+						__( '✓ HTTP %s', 'perform-forms' ),
+						codeLabel
+					)
+					: sprintf(
+						/* translators: %s: HTTP status code or "no response" */
+						__( '✕ HTTP %s', 'perform-forms' ),
+						codeLabel
+					) }
+			</strong>
+			{ result.body && (
+				<pre
+					style={ {
+						marginTop: '6px',
+						maxHeight: '120px',
+						overflow: 'auto',
+						whiteSpace: 'pre-wrap',
+						wordBreak: 'break-word',
+						background: 'transparent',
+						margin: '6px 0 0',
+						fontFamily: 'monospace',
+						fontSize: '11px',
+					} }
+				>{ result.body }</pre>
+			) }
+		</div>
 	);
 }
 

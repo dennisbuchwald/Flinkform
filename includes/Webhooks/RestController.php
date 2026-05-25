@@ -36,12 +36,15 @@ final class RestController {
 	public const REST_BASE = 'webhooks';
 
 	private Repository $repository;
+	private Deliverer $deliverer;
 
 	/**
 	 * @param Repository $repository Injected for unit-testing.
+	 * @param Deliverer  $deliverer  Used by the test endpoint to fire a sample-payload request synchronously.
 	 */
-	public function __construct( Repository $repository ) {
+	public function __construct( Repository $repository, Deliverer $deliverer ) {
 		$this->repository = $repository;
+		$this->deliverer  = $deliverer;
 	}
 
 	/**
@@ -102,6 +105,22 @@ final class RestController {
 				[
 					'methods'             => 'DELETE',
 					'callback'            => [ $this, 'delete_webhook' ],
+					'permission_callback' => [ $this, 'check_permission' ],
+				],
+			]
+		);
+
+		// Send-test endpoint — fires the configured webhook with a
+		// synthetic sample payload and returns the receiver's
+		// response inline. Synchronous on purpose: authors need to
+		// see the result while they're still on the inspector page.
+		register_rest_route(
+			self::NAMESPACE,
+			'/' . self::REST_BASE . '/(?P<id>\d+)/test',
+			[
+				[
+					'methods'             => 'POST',
+					'callback'            => [ $this, 'test_webhook' ],
 					'permission_callback' => [ $this, 'check_permission' ],
 				],
 			]
@@ -199,6 +218,36 @@ final class RestController {
 		}
 
 		return new WP_REST_Response( $this->repository->find( $id ), 200 );
+	}
+
+	/**
+	 * POST /webhooks/{id}/test
+	 *
+	 * Fires a synthetic Send-test request against the configured
+	 * webhook receiver and returns the HTTP status + (truncated)
+	 * response body for the inspector to display inline. Doesn't
+	 * touch the delivery log table — test sends are one-shot.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function test_webhook( WP_REST_Request $request ) {
+		$id      = (int) $request->get_param( 'id' );
+		$webhook = $this->repository->find( $id );
+		if ( null === $webhook ) {
+			return new WP_Error( 'perform_webhook_not_found', __( 'Webhook not found.', 'perform-forms' ), [ 'status' => 404 ] );
+		}
+
+		$result = $this->deliverer->send_test( $webhook );
+
+		return new WP_REST_Response(
+			[
+				'response_code' => $result['code'],
+				'response_body' => $result['body'],
+				'ok'            => ( null !== $result['code'] && $result['code'] >= 200 && $result['code'] < 300 ),
+			],
+			200
+		);
 	}
 
 	/**

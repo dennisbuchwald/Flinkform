@@ -77,10 +77,38 @@ final class Plugin {
 		// unconditionally — even REST-context saves should mail the admin.
 		( new Notifications\Mailer() )->register();
 
-		// Webhook REST controller is editor-facing only but registers
-		// itself via the rest_api_init hook, so it's safe to wire up
-		// on both admin and frontend bootstraps.
-		( new Webhooks\RestController( new Webhooks\Repository() ) )->register();
+		// Webhook subsystem (Phase 6). Three pieces:
+		//
+		//   1. REST controller — editor-facing CRUD via /perform/v1/webhooks
+		//   2. Dispatcher — drains the delivery queue on the cron hook
+		//      and registers the every-minute schedule. Must run on both
+		//      front and back ends because the cron hook can fire from
+		//      either context.
+		//   3. SubmissionListener — bridges perform_after_submission
+		//      into the delivery queue + schedules a single-event cron
+		//      tick for fast first dispatch.
+		//
+		// Wired up as a unit so the wp_clear_scheduled_hook in
+		// Deactivator stays the only place that touches cron state
+		// outside of normal flow.
+		$webhook_repo     = new Webhooks\Repository();
+		$delivery_repo    = new Webhooks\DeliveryRepository();
+		$webhook_deliverer = new Webhooks\Deliverer( new Submissions\Repository() );
+
+		( new Webhooks\RestController( $webhook_repo, $webhook_deliverer ) )->register();
+		( new Webhooks\Dispatcher( $webhook_repo, $delivery_repo, $webhook_deliverer ) )->register();
+		( new Webhooks\SubmissionListener( $webhook_repo, $delivery_repo ) )->register();
+
+		// Self-heal the dispatcher schedule when the plugin was
+		// already active before the Phase-6 update landed. Activator
+		// runs once on the activation click; an FTP-update of files
+		// for an already-active plugin would otherwise leave the
+		// every-minute schedule unregistered. Idempotent — the if
+		// guard means the hot path costs one db get_option lookup
+		// (wp_next_scheduled hits the cron transient).
+		if ( ! wp_next_scheduled( Webhooks\Dispatcher::CRON_HOOK ) ) {
+			wp_schedule_event( time() + 60, Webhooks\Dispatcher::CRON_SCHEDULE, Webhooks\Dispatcher::CRON_HOOK );
+		}
 
 		if ( is_admin() ) {
 			( new Admin\Menu() )->register();
