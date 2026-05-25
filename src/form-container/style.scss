@@ -131,6 +131,79 @@
 		gap: var(--perform-field-gap);
 	}
 
+	/* Progress indicator (Slice 5c) — three variants of the same
+	 * underlying state. The chosen variant sits in the form chrome
+	 * above the active step; per-element bindings update fill width
+	 * (bar), per-dot active/completed classes (dots) and the
+	 * "Step X of Y" text (numbers) reactively as the user navigates.
+	 *
+	 * Single-class selectors throughout: this is form chrome with
+	 * unique BEM names that no theme targets, so the doubled-class
+	 * specificity strategy from the field rules doesn't apply. */
+	&__progress {
+		margin-bottom: var(--perform-field-gap);
+	}
+
+	&__progress--bar {
+		.perform-form__progress-track {
+			height: 4px;
+			border-radius: 999px;
+			background: color-mix(in srgb, currentColor 12%, transparent);
+			overflow: hidden;
+		}
+
+		.perform-form__progress-fill {
+			height: 100%;
+			width: var(--perform-progress-percent, 0%);
+			background: var(--perform-color-primary);
+			border-radius: 999px;
+			// Reactive width updates from the Interactivity binding
+			// look better as a smooth slide than a hard jump. Limited
+			// to the width property only — easing other CSS-var swaps
+			// on the form (e.g. primary colour) could feel laggy.
+			transition: width 0.25s ease;
+		}
+	}
+
+	&__progress--dots {
+		display: flex;
+		gap: 0.5rem;
+		justify-content: center;
+		align-items: center;
+	}
+
+	&__progress-dot {
+		width: 0.6rem;
+		height: 0.6rem;
+		border-radius: 50%;
+		background: color-mix(in srgb, currentColor 20%, transparent);
+		transition: background 0.15s ease, transform 0.15s ease;
+
+		&.is-completed {
+			background: var(--perform-color-primary);
+			opacity: 0.7;
+		}
+
+		&.is-current {
+			background: var(--perform-color-primary);
+			// Tiny scale-up makes "you are here" obvious without
+			// adding extra DOM (no inset ring, no glow) — works on
+			// both light and dark themes.
+			transform: scale(1.4);
+		}
+	}
+
+	&__progress--numbers {
+		text-align: center;
+	}
+
+	&__progress-label {
+		font-size: 0.85em;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		opacity: 0.75;
+	}
+
 	// Multi-step navigation row (Slice 5b). The action row stays a
 	// simple single-button block until Interactivity has hydrated and
 	// flagged the form with `data-perform-enhanced`; that's the

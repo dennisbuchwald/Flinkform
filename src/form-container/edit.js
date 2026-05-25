@@ -7,7 +7,7 @@
  */
 import { useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	ColorPalette,
 	InnerBlocks,
@@ -72,6 +72,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const fieldSpacing = appearanceConfig.fieldSpacing ?? 'normal';
 	const labelPosition = appearanceConfig.labelPosition ?? 'above';
 	const columns = appearanceConfig.columns === 2 ? 2 : 1;
+	const progressIndicator = appearanceConfig.progressIndicator ?? 'bar';
 	const borderRadius = typeof appearanceConfig.borderRadius === 'number'
 		? appearanceConfig.borderRadius
 		: undefined;
@@ -147,6 +148,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}, [ innerBlocks ] );
 
 	const firstEmailFieldName = emailFieldOptions[ 0 ]?.value ?? '';
+
+	// Step count from page-break markers — feeds the editor's preview
+	// rendering of the progress indicator. Matches the same `count + 1`
+	// derivation render.php uses on the server. A form with no
+	// page-breaks is single-step and the indicator stays hidden, mirroring
+	// the server-side `$is_multi_step` gate.
+	const stepCount = useMemo( () => {
+		if ( ! Array.isArray( innerBlocks ) ) {
+			return 1;
+		}
+		return innerBlocks.filter( ( b ) => b.name === 'perform/page-break' ).length + 1;
+	}, [ innerBlocks ] );
+	const isMultiStep = stepCount > 1;
 
 	// Patch a subset of admin notification config without losing siblings.
 	// setAttributes is shallow — without the spread we'd wipe other keys
@@ -354,6 +368,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleGroupControlOption value="outline" label={ __( 'Outline', 'perform-forms' ) } />
 						<ToggleGroupControlOption value="ghost" label={ __( 'Ghost', 'perform-forms' ) } />
 					</ToggleGroupControl>
+					<ToggleGroupControl
+						label={ __( 'Progress indicator', 'perform-forms' ) }
+						help={ __( 'Shown on multi-step forms only. Bar fills as the user advances; Dots marks each step; Numbers reads "Step X of Y".', 'perform-forms' ) }
+						value={ progressIndicator }
+						onChange={ ( value ) => updateAppearance( { progressIndicator: value } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="bar" label={ __( 'Bar', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="dots" label={ __( 'Dots', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="numbers" label={ __( 'Numbers', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="none" label={ __( 'None', 'perform-forms' ) } />
+					</ToggleGroupControl>
 				</PanelBody>
 
 				<PanelBody
@@ -491,6 +519,45 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					 * and the frontend output applies an extra sanitisation
 					 * pass before echoing. */
 					<style dangerouslySetInnerHTML={ { __html: customCSS } } />
+				) }
+				{ isMultiStep && progressIndicator !== 'none' && (
+					/* Editor preview of the progress indicator. Mirrors
+					 * the server-rendered markup with currentStep = 0
+					 * (Step 1 of N) so authors can see the chosen
+					 * variant without leaving the editor. Class names
+					 * are identical to render.php's output so the same
+					 * SCSS styles them in both places. */
+					<div
+						className={ `perform-form__progress perform-form__progress--${ progressIndicator }` }
+						role="progressbar"
+						aria-valuemin={ 1 }
+						aria-valuemax={ stepCount }
+						aria-valuenow={ 1 }
+					>
+						{ progressIndicator === 'bar' && (
+							<div className="perform-form__progress-track">
+								<div
+									className="perform-form__progress-fill"
+									style={ { '--perform-progress-percent': `${ ( ( 1 / stepCount ) * 100 ).toFixed( 2 ) }%` } }
+								/>
+							</div>
+						) }
+						{ progressIndicator === 'dots' && (
+							Array.from( { length: stepCount } ).map( ( _, i ) => (
+								<span
+									key={ i }
+									className={ `perform-form__progress-dot${ i === 0 ? ' is-current' : '' }` }
+									aria-hidden="true"
+								/>
+							) )
+						) }
+						{ progressIndicator === 'numbers' && (
+							<span className="perform-form__progress-label">
+								{ /* translators: 1: current step number, 2: total step count */
+									sprintf( __( 'Step %1$s of %2$s', 'perform-forms' ), '1', String( stepCount ) ) }
+							</span>
+						) }
+					</div>
 				) }
 				<InnerBlocks
 					allowedBlocks={ ALLOWED_BLOCKS }

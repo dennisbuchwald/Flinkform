@@ -82,6 +82,13 @@ if ( ! in_array( $label_position, [ 'above', 'beside', 'floating' ], true ) ) {
 
 $columns = isset( $appearance['columns'] ) && (int) $appearance['columns'] === 2 ? 2 : 1;
 
+$progress_indicator = isset( $appearance['progressIndicator'] ) && is_string( $appearance['progressIndicator'] )
+	? $appearance['progressIndicator']
+	: 'bar';
+if ( ! in_array( $progress_indicator, [ 'bar', 'dots', 'numbers', 'none' ], true ) ) {
+	$progress_indicator = 'bar';
+}
+
 // Count page-break markers in the inner-block tree — drives the
 // multi-step wrapper class and decides whether the inner-block render
 // loop below splits the stream into steps or emits a flat field list.
@@ -357,6 +364,75 @@ $timestamp_token = base64_encode( (string) time() );
 		<?php if ( ! empty( $errors['_form'] ) ) : ?>
 			<div class="perform-form__error perform-form__error--global" role="alert">
 				<?php echo esc_html( $errors['_form'] ); ?>
+			</div>
+		<?php endif; ?>
+
+		<?php
+		// Progress indicator (Slice 5c) — only in multi-step mode and
+		// only when the author has chosen one of the three variants. The
+		// markup sits above the step content so screen readers announce
+		// the new progress position the moment focus moves into the
+		// next step. Bar / dots / numbers are three layouts of the same
+		// underlying state; the bar fill width, dot states and label
+		// text are all server-rendered for the initial step + reactively
+		// updated via Interactivity bindings when the user navigates.
+		//
+		// The label template is the only string we hand off to the JS
+		// store explicitly: PHP renders 'Step %1$s of %2$s' through
+		// gettext for the initial display, and we also stash the
+		// placeholder-form on the namespace state so the client-side
+		// progressLabel getter can re-fill it on every step change
+		// without having to import @wordpress/i18n.
+		if ( $is_multi_step && 'none' !== $progress_indicator ) :
+			$initial_percent = round( ( 1 / $step_count ) * 100, 2 );
+			if ( function_exists( 'wp_interactivity_state' ) ) {
+				wp_interactivity_state(
+					'perform/form',
+					[
+						'progressTemplate' => sprintf(
+							/* translators: 1: placeholder for current step number, 2: placeholder for total step count */
+							__( 'Step %1$s of %2$s', 'perform-forms' ),
+							'%CURRENT%',
+							'%TOTAL%'
+						),
+					]
+				);
+			}
+			/* translators: 1: current step number, 2: total step count */
+			$initial_label = sprintf( __( 'Step %1$s of %2$s', 'perform-forms' ), '1', (string) $step_count );
+			?>
+			<div
+				class="perform-form__progress perform-form__progress--<?php echo esc_attr( $progress_indicator ); ?>"
+				role="progressbar"
+				aria-valuemin="1"
+				aria-valuemax="<?php echo esc_attr( (string) $step_count ); ?>"
+				aria-valuenow="1"
+				data-wp-bind--aria-valuenow="state.ariaValueNow"
+			>
+				<?php if ( 'bar' === $progress_indicator ) : ?>
+					<div class="perform-form__progress-track">
+						<div
+							class="perform-form__progress-fill"
+							style="--perform-progress-percent:<?php echo esc_attr( (string) $initial_percent ); ?>%"
+							data-wp-bind--style="state.progressBarStyle"
+						></div>
+					</div>
+				<?php elseif ( 'dots' === $progress_indicator ) : ?>
+					<?php for ( $dot_index = 0; $dot_index < $step_count; $dot_index++ ) : ?>
+						<span
+							class="perform-form__progress-dot<?php echo 0 === $dot_index ? ' is-current' : ''; ?>"
+							data-wp-context="<?php echo esc_attr( (string) wp_json_encode( [ 'dotIndex' => $dot_index ] ) ); ?>"
+							data-wp-class--is-current="state.isCurrentDot"
+							data-wp-class--is-completed="state.isPastDot"
+							aria-hidden="true"
+						></span>
+					<?php endfor; ?>
+				<?php elseif ( 'numbers' === $progress_indicator ) : ?>
+					<span
+						class="perform-form__progress-label"
+						data-wp-text="state.progressLabel"
+					><?php echo esc_html( $initial_label ); ?></span>
+				<?php endif; ?>
 			</div>
 		<?php endif; ?>
 

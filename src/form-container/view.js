@@ -62,6 +62,63 @@ const { state } = store( NAMESPACE, {
 		get alwaysTrue() {
 			return true;
 		},
+
+		// Progress-indicator state (Slice 5c). All getters here drive
+		// the three indicator variants (bar / dots / numbers) and the
+		// progressbar's aria-valuenow attribute. The aria value is
+		// 1-indexed to match the way the indicator's aria-valuemin /
+		// aria-valuemax are set in PHP (1..N inclusive), keeping the
+		// screen-reader announcement aligned with the human-readable
+		// "Step 1 of 3" label.
+		get ariaValueNow() {
+			return getContext().currentStep + 1;
+		},
+
+		// Fill width for the bar variant. Returned as a full `style`
+		// attribute payload because data-wp-bind--style swaps the entire
+		// attribute — wrapping the value in `--perform-progress-percent`
+		// keeps the CSS-var cascade consistent with the rest of the
+		// plugin (every Style-panel value flows through a perform-* var
+		// before bottoming out at a hard-coded fallback).
+		get progressBarStyle() {
+			const { currentStep, totalSteps } = getContext();
+			const percent = ( ( currentStep + 1 ) / totalSteps ) * 100;
+			return `--perform-progress-percent:${ percent.toFixed( 2 ) }%`;
+		},
+
+		// Locale-aware "Step X of Y" text for the numbers variant. The
+		// localised template lives on the namespace state (seeded from
+		// PHP via wp_interactivity_state) with %CURRENT% / %TOTAL%
+		// placeholders we replace here. Doing the substitution
+		// client-side keeps the @wordpress/i18n module off the bundle.
+		get progressLabel() {
+			const { currentStep, totalSteps } = getContext();
+			const template = state.progressTemplate;
+			if ( typeof template !== 'string' || template === '' ) {
+				// Fallback when the PHP-seeded template isn't present
+				// (e.g. older WP without wp_interactivity_state). The
+				// hard-coded English form ships in the source already,
+				// gettext on the PHP side covers actual translation.
+				return `Step ${ currentStep + 1 } of ${ totalSteps }`;
+			}
+			return template
+				.replace( '%CURRENT%', String( currentStep + 1 ) )
+				.replace( '%TOTAL%', String( totalSteps ) );
+		},
+
+		// Per-dot booleans for the dots variant. Each dot element has
+		// its own nested {dotIndex} context that merges with the
+		// wrapper's {currentStep, totalSteps}; the getters resolve
+		// against the merged shape and produce one answer per dot.
+		get isCurrentDot() {
+			const { dotIndex, currentStep } = getContext();
+			return dotIndex === currentStep;
+		},
+
+		get isPastDot() {
+			const { dotIndex, currentStep } = getContext();
+			return dotIndex < currentStep;
+		},
 	},
 
 	actions: {
