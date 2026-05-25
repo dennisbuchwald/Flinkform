@@ -73,7 +73,17 @@ final class Dispatcher {
 		if ( ! isset( $schedules[ self::CRON_SCHEDULE ] ) ) {
 			$schedules[ self::CRON_SCHEDULE ] = [
 				'interval' => 60,
-				'display'  => __( 'Every Minute (PerForm)', 'perform-forms' ),
+				// Display string stays untranslated on purpose. The
+				// `cron_schedules` filter fires well before the `init`
+				// hook on every page load (WP triggers it from inside
+				// the cron-event pipeline that wakes up during
+				// plugins_loaded), and calling __() against our text
+				// domain that early trips WordPress 6.7+'s
+				// `_load_textdomain_just_in_time` notice. The display
+				// string only ever surfaces in admin diagnostic UIs
+				// (WP-Crontrol etc.); the translation loss is
+				// acceptable for the safer load order.
+				'display'  => 'Every Minute (PerForm)',
 			];
 		}
 		return $schedules;

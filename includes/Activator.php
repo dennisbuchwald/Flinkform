@@ -49,7 +49,12 @@ final class Activator {
 				if ( ! isset( $schedules[ Webhooks\Dispatcher::CRON_SCHEDULE ] ) ) {
 					$schedules[ Webhooks\Dispatcher::CRON_SCHEDULE ] = [
 						'interval' => 60,
-						'display'  => __( 'Every Minute (PerForm)', 'perform-forms' ),
+						// Untranslated for the same reason as in
+						// Dispatcher::register_schedule(): cron_schedules
+						// fires before init, and __() against our text
+						// domain at that point trips WP 6.7+'s
+						// just-in-time loading notice.
+						'display'  => 'Every Minute (PerForm)',
 					];
 				}
 				return $schedules;
