@@ -32,6 +32,286 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 
 const NAMESPACE = 'perform/form';
 
+// ---------------------------------------------------------------------
+// Conditional-logic frontend evaluator (Phase 7b)
+//
+// Independent of the Interactivity store because conditional logic
+// applies to every PerForm form on the page, including single-step
+// forms that never set up the multi-step context. Wiring it through
+// the store would gate the feature on the wrapper carrying
+// `data-wp-interactive`; doing it as a free-standing module-init means
+// any form with a `[data-perform-condition]` wrapper inside it works.
+//
+// On module load we walk every `.perform-form__form`, build a list of
+// its conditional wrappers, bind a single `input` listener per form,
+// and on every change re-evaluate every wrapper's rule set against
+// the form's current values. The server runs the same rule set in
+// `Submissions\Handler` so a DOM-manipulated visible field can't
+// smuggle data through — client-side is UX, server-side is truth.
+// ---------------------------------------------------------------------
+
+const EMPTY_OPERATORS = new Set( [ 'is_empty', 'is_not_empty' ] );
+
+if ( typeof document !== 'undefined' ) {
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', initConditionalLogic );
+	} else {
+		initConditionalLogic();
+	}
+}
+
+function initConditionalLogic() {
+	const forms = document.querySelectorAll( '.perform-form__form' );
+	forms.forEach( ( form ) => {
+		const wrappers = form.querySelectorAll( '[data-perform-condition]' );
+		if ( wrappers.length === 0 ) {
+			return;
+		}
+
+		// Initial pass — apply visibility before the user types
+		// anything, in case server-render already had values from a
+		// repopulated submission (flash state).
+		evaluateAll( form, wrappers );
+
+		// `input` covers text fields, textareas, selects (modern
+		// browsers fire input on select change), and number/email/
+		// password. `change` covers radio/checkbox toggles where
+		// input doesn't fire. Both bubble, so a single listener on
+		// the form catches everything.
+		form.addEventListener( 'input', () => evaluateAll( form, wrappers ) );
+		form.addEventListener( 'change', () => evaluateAll( form, wrappers ) );
+	} );
+}
+
+/**
+ * Re-evaluate every conditional wrapper inside the given form and
+ * toggle its `hidden` attribute + (when applicable) its inputs'
+ * `disabled` state — disabled hidden inputs aren't submitted, which
+ * is what we want for fields that aren't supposed to be visible.
+ *
+ * @param {HTMLFormElement} form
+ * @param {NodeListOf<Element>} wrappers
+ */
+function evaluateAll( form, wrappers ) {
+	const values = gatherFormValues( form );
+
+	wrappers.forEach( ( wrapper ) => {
+		const raw = wrapper.getAttribute( 'data-perform-condition' );
+		if ( ! raw ) {
+			return;
+		}
+
+		let ruleSet;
+		try {
+			ruleSet = JSON.parse( raw );
+		} catch ( _ ) {
+			return; // Malformed JSON — leave the wrapper alone.
+		}
+
+		const shouldShow = evaluateRuleSet( ruleSet, values );
+
+		if ( shouldShow ) {
+			wrapper.removeAttribute( 'hidden' );
+			toggleInputs( wrapper, false );
+		} else {
+			wrapper.setAttribute( 'hidden', '' );
+			toggleInputs( wrapper, true );
+		}
+	} );
+}
+
+/**
+ * Disable every named input inside a wrapper (or undo that). Disabled
+ * inputs aren't included in the form's submission, which lines up
+ * with the server-side stripping: a hidden field's value never
+ * reaches the database in either direction.
+ *
+ * @param {Element} wrapper
+ * @param {boolean} disable
+ */
+function toggleInputs( wrapper, disable ) {
+	wrapper.querySelectorAll( 'input, textarea, select' ).forEach( ( el ) => {
+		// Don't override aria-hidden honeypot inputs etc. — they don't
+		// live inside conditional wrappers anyway, but defensive.
+		if ( disable ) {
+			el.setAttribute( 'data-perform-was-disabled', el.disabled ? '1' : '0' );
+			el.disabled = true;
+		} else {
+			// Only re-enable if WE disabled it (not if the markup
+			// shipped it as disabled, e.g. read-only state from the
+			// server). The marker tells us which.
+			if ( el.getAttribute( 'data-perform-was-disabled' ) === '0' ) {
+				el.disabled = false;
+			}
+			el.removeAttribute( 'data-perform-was-disabled' );
+		}
+	} );
+}
+
+/**
+ * Build a `{ fieldName: value }` map from the form's submittable
+ * inputs. Multi-value inputs (radio groups, multi-select, checkbox
+ * groups) collapse to an array of selected values; toggles + single
+ * checkboxes return their `value` attribute when checked, or null
+ * when unchecked.
+ *
+ * @param {HTMLFormElement} form
+ * @returns {Object<string, string|string[]|null>}
+ */
+function gatherFormValues( form ) {
+	const values = {};
+
+	form.querySelectorAll( 'input[name], textarea[name], select[name]' ).forEach( ( el ) => {
+		const rawName = el.getAttribute( 'name' );
+		// Field inputs are emitted as `perform_field[<name>]` — extract
+		// the inner name so the values map matches the field-name shape
+		// the conditional-logic rules reference (and the server's
+		// `$clean` map uses too).
+		const match = rawName.match( /^perform_field\[([^\]]+)\](\[\])?$/ );
+		if ( ! match ) {
+			return;
+		}
+		const name = match[ 1 ];
+
+		if ( el.tagName === 'SELECT' && el.multiple ) {
+			values[ name ] = Array.from( el.selectedOptions ).map( ( o ) => o.value );
+			return;
+		}
+
+		if ( el.type === 'checkbox' ) {
+			// Multi-value checkbox group: name ends with `[]`.
+			if ( match[ 2 ] ) {
+				if ( ! Array.isArray( values[ name ] ) ) {
+					values[ name ] = [];
+				}
+				if ( el.checked ) {
+					values[ name ].push( el.value );
+				}
+				return;
+			}
+			// Single toggle / boolean checkbox.
+			values[ name ] = el.checked ? el.value : '';
+			return;
+		}
+
+		if ( el.type === 'radio' ) {
+			if ( el.checked ) {
+				values[ name ] = el.value;
+			} else if ( ! ( name in values ) ) {
+				values[ name ] = '';
+			}
+			return;
+		}
+
+		values[ name ] = el.value;
+	} );
+
+	return values;
+}
+
+/**
+ * Mirror of `PerForm\Conditions\RuleEvaluator::should_show()` in JS.
+ *
+ * @param {object} ruleSet
+ * @param {Object<string, any>} values
+ * @returns {boolean}
+ */
+function evaluateRuleSet( ruleSet, values ) {
+	if ( ! ruleSet || ! ruleSet.enabled ) {
+		return true;
+	}
+	const rules = Array.isArray( ruleSet.rules ) ? ruleSet.rules : [];
+	if ( rules.length === 0 ) {
+		return true;
+	}
+	const mode = ruleSet.logic === 'any' ? 'any' : 'all';
+
+	for ( const rule of rules ) {
+		const match = evaluateRule( rule, values );
+		if ( mode === 'any' && match ) {
+			return true;
+		}
+		if ( mode === 'all' && ! match ) {
+			return false;
+		}
+	}
+	return mode === 'all';
+}
+
+function evaluateRule( rule, values ) {
+	if ( ! rule || typeof rule !== 'object' ) {
+		return false;
+	}
+	const field = String( rule.field ?? '' );
+	const operator = String( rule.operator ?? '' );
+	const value = String( rule.value ?? '' );
+
+	if ( field === '' || operator === '' ) {
+		return false;
+	}
+
+	const fieldValue = values[ field ] ?? null;
+
+	if ( EMPTY_OPERATORS.has( operator ) ) {
+		const empty = isEmptyValue( fieldValue );
+		return operator === 'is_empty' ? empty : ! empty;
+	}
+
+	const fieldString = toComparableString( fieldValue );
+
+	switch ( operator ) {
+		case 'is':
+			return fieldString === value;
+		case 'is_not':
+			return fieldString !== value;
+		case 'contains':
+			return value !== '' && fieldString.toLowerCase().includes( value.toLowerCase() );
+		case 'not_contains':
+			return value === '' || ! fieldString.toLowerCase().includes( value.toLowerCase() );
+		case 'greater_than':
+			if ( fieldString === '' || isNaN( Number( fieldString ) ) || isNaN( Number( value ) ) ) {
+				return false;
+			}
+			return Number( fieldString ) > Number( value );
+		case 'less_than':
+			if ( fieldString === '' || isNaN( Number( fieldString ) ) || isNaN( Number( value ) ) ) {
+				return false;
+			}
+			return Number( fieldString ) < Number( value );
+		default:
+			return false;
+	}
+}
+
+function toComparableString( v ) {
+	if ( v === null || v === undefined ) {
+		return '';
+	}
+	if ( Array.isArray( v ) ) {
+		return v.map( ( x ) => String( x ) ).join( ', ' );
+	}
+	if ( typeof v === 'boolean' ) {
+		return v ? '1' : '';
+	}
+	return String( v );
+}
+
+function isEmptyValue( v ) {
+	if ( v === null || v === undefined ) {
+		return true;
+	}
+	if ( Array.isArray( v ) ) {
+		return v.length === 0;
+	}
+	if ( typeof v === 'string' ) {
+		return v.trim() === '';
+	}
+	if ( typeof v === 'boolean' ) {
+		return ! v;
+	}
+	return false;
+}
+
 const { state } = store( NAMESPACE, {
 	state: {
 		get isFirstStep() {

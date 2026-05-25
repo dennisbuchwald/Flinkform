@@ -36,7 +36,7 @@ $help_id   = $help_text ? $field_uid . '-help' : '';
 $error_id  = $error ? $field_uid . '-error' : '';
 $described = trim( $help_id . ' ' . $error_id );
 ?>
-<div class="perform-field perform-field--textarea<?php echo $error ? ' perform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' perform-field--full-width' : ''; ?>">
+<div class="perform-field perform-field--textarea<?php echo $error ? ' perform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' perform-field--full-width' : ''; ?>"<?php echo \PerForm\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); ?> data-perform-field-name="<?php echo esc_attr( $field_name ); ?>">
 	<label class="perform-field__label" for="<?php echo esc_attr( $field_uid ); ?>">
 		<?php echo esc_html( $label ); ?>
 		<?php if ( $required ) : ?>

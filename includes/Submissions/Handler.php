@@ -130,6 +130,22 @@ final class Handler {
 		// Sanitize + validate user input against that definition.
 		[ $clean, $errors ] = $this->validate( $definition['fields'] );
 
+		// Conditional logic — server-side re-evaluation (Phase 7b).
+		// Walks every field's `conditionalLogic` rule set against the
+		// sanitised values we just collected; fields whose rules say
+		// "don't show" get stripped from $clean and have their
+		// validation errors dropped so a hidden-required field doesn't
+		// block submission. The same evaluator runs in view.js on
+		// every input change for the live UX — this server pass is the
+		// authoritative one, so DOM-manipulated visible fields can't
+		// smuggle data through.
+		$hidden_fields = $this->resolve_hidden_fields( $definition['fields'], $clean );
+		if ( ! empty( $hidden_fields ) ) {
+			foreach ( $hidden_fields as $hidden_name ) {
+				unset( $clean[ $hidden_name ], $errors[ $hidden_name ] );
+			}
+		}
+
 		if ( ! empty( $errors ) ) {
 			$this->flash( $form_id, $errors, $clean );
 			$this->redirect_error( $post_id, $form_id );
@@ -221,8 +237,15 @@ final class Handler {
 	private function compose_field_payload( array $fields, array $clean ): array {
 		$payload = [];
 		foreach ( $fields as $field ) {
-			$name  = (string) $field['name'];
-			$value = $clean[ $name ] ?? '';
+			$name = (string) $field['name'];
+			// Fields that conditional logic stripped from $clean don't
+			// belong in the persisted payload either — the submission
+			// should reflect what was actually submitted, not the
+			// shape of the form template.
+			if ( ! array_key_exists( $name, $clean ) ) {
+				continue;
+			}
+			$value = $clean[ $name ];
 
 			$payload[] = [
 				'name'  => $name,
@@ -232,6 +255,36 @@ final class Handler {
 			];
 		}
 		return $payload;
+	}
+
+	/**
+	 * Walk the form's field list and return the names of fields whose
+	 * conditional-logic rules say "don't show". Hidden fields will be
+	 * stripped from $clean before persistence + validation-error
+	 * surfacing, so a hidden required field doesn't block submission
+	 * and a hidden data field doesn't leak into the saved row.
+	 *
+	 * @param array<int, array<string, mixed>> $fields Field records from the Locator.
+	 * @param array<string, mixed>             $clean  Sanitised values keyed by field name.
+	 * @return array<int, string> Field names that should be treated as hidden.
+	 */
+	private function resolve_hidden_fields( array $fields, array $clean ): array {
+		$evaluator = new \PerForm\Conditions\RuleEvaluator();
+		$hidden    = [];
+
+		foreach ( $fields as $field ) {
+			$rule_set = isset( $field['conditionalLogic'] ) && is_array( $field['conditionalLogic'] )
+				? $field['conditionalLogic']
+				: [];
+			if ( empty( $rule_set ) ) {
+				continue;
+			}
+			if ( ! $evaluator->should_show( $rule_set, $clean ) ) {
+				$hidden[] = (string) $field['name'];
+			}
+		}
+
+		return $hidden;
 	}
 
 	/**

@@ -139,10 +139,17 @@ final class Locator {
 
 			$type    = self::FIELD_BLOCKS[ $block_name ];
 			$record  = [
-				'name'     => $name,
-				'type'     => $type,
-				'label'    => $this->resolve_label( $block_name, $attrs, $name ),
-				'required' => ! empty( $attrs['required'] ),
+				'name'             => $name,
+				'type'             => $type,
+				'label'            => $this->resolve_label( $block_name, $attrs, $name ),
+				'required'         => ! empty( $attrs['required'] ),
+				// Carries the conditional-logic rule set as-stored on
+				// the block so Handler::handle() can re-evaluate it
+				// server-side and strip hidden field values from
+				// $clean before validation + persistence. Empty when
+				// no rule was configured — the evaluator reads that
+				// as "always visible" and the strip is a no-op.
+				'conditionalLogic' => isset( $attrs['conditionalLogic'] ) && is_array( $attrs['conditionalLogic'] ) ? $attrs['conditionalLogic'] : [],
 			];
 
 			// Carry type-specific extras through to the handler. Defaults

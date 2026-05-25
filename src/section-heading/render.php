@@ -27,7 +27,7 @@ if ( $full_width ) {
 	$heading_class .= ' perform-section-heading--full-width';
 }
 ?>
-<div class="<?php echo esc_attr( $heading_class ); ?>">
+<div class="<?php echo esc_attr( $heading_class ); ?>"<?php echo \PerForm\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); ?>>
 	<?php if ( '' !== $title ) : ?>
 		<h2 class="perform-section-heading__title"><?php echo wp_kses_post( $title ); ?></h2>
 	<?php endif; ?>
