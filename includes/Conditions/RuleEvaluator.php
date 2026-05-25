@@ -127,9 +127,16 @@ final class RuleEvaluator {
 
 		switch ( $operator ) {
 			case 'is':
-				return $field_string === $value;
+				// Case-insensitive on purpose. `contains` /
+				// `not_contains` already match case-insensitively, and
+				// the editor's slugify helper lowercases auto-derived
+				// option values ("Skip" → "skip"); a strict-equality
+				// `is` would silently fail when the form builder
+				// types "Skip" in the rule UI to match a label they
+				// wrote as "Skip" but ended up serialised as "skip".
+				return 0 === strcasecmp( $field_string, $value );
 			case 'is_not':
-				return $field_string !== $value;
+				return 0 !== strcasecmp( $field_string, $value );
 			case 'contains':
 				return '' !== $value && false !== stripos( $field_string, $value );
 			case 'not_contains':

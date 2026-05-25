@@ -259,7 +259,17 @@ function toggleInputs( wrapper, disable ) {
 		// Don't override aria-hidden honeypot inputs etc. — they don't
 		// live inside conditional wrappers anyway, but defensive.
 		if ( disable ) {
-			el.setAttribute( 'data-perform-was-disabled', el.disabled ? '1' : '0' );
+			// Record the ORIGINAL (pre-our-touch) disabled state, but
+			// only once — on the first disable call. Subsequent
+			// disable calls (e.g. user keeps typing in a different
+			// field while this wrapper stays hidden) must not
+			// overwrite the marker with the currently-disabled state
+			// we ourselves set on the previous tick, or `false`
+			// branch below would treat all inputs as "was already
+			// disabled" and leak the disabled state forward forever.
+			if ( ! el.hasAttribute( 'data-perform-was-disabled' ) ) {
+				el.setAttribute( 'data-perform-was-disabled', el.disabled ? '1' : '0' );
+			}
 			el.disabled = true;
 		} else {
 			// Only re-enable if WE disabled it (not if the markup
@@ -386,9 +396,14 @@ function evaluateRule( rule, values ) {
 
 	switch ( operator ) {
 		case 'is':
-			return fieldString === value;
+			// Case-insensitive on purpose — matches the PHP-side
+			// RuleEvaluator::evaluate_rule(). See the long comment
+			// there for the slugify rationale; in short: "Skip" in
+			// the rule UI must match "skip" in the serialised option
+			// value the editor's slugify helper produced.
+			return fieldString.toLowerCase() === value.toLowerCase();
 		case 'is_not':
-			return fieldString !== value;
+			return fieldString.toLowerCase() !== value.toLowerCase();
 		case 'contains':
 			return value !== '' && fieldString.toLowerCase().includes( value.toLowerCase() );
 		case 'not_contains':
@@ -557,9 +572,30 @@ const { state } = store( NAMESPACE, {
 		// progress-indicator context against the now-current skipped
 		// set so totalSteps / currentStep counters stay accurate
 		// without waiting for the user to hit Next.
+		//
+		// Plus: when the user is currently sitting on a step that
+		// itself just became skipped, bump them forward to the next
+		// visible step (or backward, if forward isn't possible) so
+		// the form doesn't strand them on an invisible step.
 		onSkippedChanged() {
-			const ctx     = getContext();
-			const wrapper = getElement().ref;
+			const ctx        = getContext();
+			const wrapper    = getElement().ref;
+			const currentEl  = wrapper.querySelector(
+				`.perform-form__step[data-step-index="${ ctx.currentStep }"]`
+			);
+			const isCurrentNowSkipped = currentEl && currentEl.getAttribute( 'data-perform-skipped' ) === 'true';
+
+			if ( isCurrentNowSkipped ) {
+				let target = findNextVisibleStep( wrapper, ctx.currentStep, ctx.totalSteps );
+				if ( null === target ) {
+					target = findPrevVisibleStep( wrapper, ctx.currentStep );
+				}
+				if ( null !== target ) {
+					ctx.currentStep = target;
+					deferFocus( wrapper, ctx.currentStep );
+				}
+			}
+
 			syncProgressContext( ctx, wrapper );
 		},
 
