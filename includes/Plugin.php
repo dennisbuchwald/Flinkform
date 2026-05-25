@@ -47,6 +47,18 @@ final class Plugin {
 	 * @return void
 	 */
 	public function init(): void {
+		// Auto-migrate the DB schema when the installed version is
+		// older than the bundled one. Covers the file-update path
+		// (FTP upload) where register_activation_hook never fires.
+		// dbDelta inside Schema::create() is idempotent, so the
+		// upgrade is safe to call on every page load — but the
+		// option-version check keeps the actual SQL off the hot
+		// path once the install is current.
+		$installed_version = (string) get_option( Database\Schema::OPTION_DB_VERSION, '0' );
+		if ( $installed_version !== Database\Schema::DB_VERSION ) {
+			Database\Schema::create();
+		}
+
 		( new Blocks\Registry() )->register();
 
 		// Forms indexer registers its cache-invalidation hooks on both
@@ -64,6 +76,11 @@ final class Plugin {
 		// Notifications subscribe to perform_after_submission. Registered
 		// unconditionally — even REST-context saves should mail the admin.
 		( new Notifications\Mailer() )->register();
+
+		// Webhook REST controller is editor-facing only but registers
+		// itself via the rest_api_init hook, so it's safe to wire up
+		// on both admin and frontend bootstraps.
+		( new Webhooks\RestController( new Webhooks\Repository() ) )->register();
 
 		if ( is_admin() ) {
 			( new Admin\Menu() )->register();

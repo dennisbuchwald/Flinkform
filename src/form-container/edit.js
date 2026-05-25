@@ -26,6 +26,7 @@ import {
 	TextareaControl,
 	ToggleControl,
 } from '@wordpress/components';
+import IntegrationsPanel from './integrations-panel';
 
 const ALLOWED_BLOCKS = [
 	'perform/section-heading',
@@ -514,6 +515,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</>
 					) }
 				</PanelBody>
+
+				<IntegrationsPanel formId={ formId } />
 
 				<PanelBody
 					title={ __( 'Custom CSS', 'perform-forms' ) }
