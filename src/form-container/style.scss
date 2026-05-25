@@ -1,21 +1,36 @@
 /**
  * PerForm — frontend base styles.
  *
- * Deliberately small. Inherits font, color and spacing from theme.json
- * via CSS custom properties wherever WordPress exposes them; only adds
- * the structural defaults a form needs to be usable out of the box.
+ * The whole stylesheet pulls its values from CSS custom properties scoped
+ * to `.perform-form`. Each `--perform-*` variable resolves through the
+ * cascade `User-Override → theme.json → hard-coded fallback`, so:
+ *
+ *   1. If render.php emits an inline `style="--perform-color-primary:…"`
+ *      override (from the Style panel), that wins.
+ *   2. Otherwise the var() lookup falls back to the active theme's
+ *      `--wp--preset--*` variable, picked up automatically from
+ *      theme.json.
+ *   3. Failing both, the hard-coded fallback baked into the var() call
+ *      keeps the form usable on themes without theme.json.
+ *
+ * New phase-4 variables join this section as further controls land.
  */
 
 .perform-form {
+	--perform-color-primary: var(--wp--preset--color--primary, currentColor);
+	--perform-color-on-primary: var(--wp--preset--color--background, #fff);
+	--perform-border-radius: var(--wp--custom--border--radius, 6px);
+	--perform-field-gap: var(--wp--preset--spacing--40, 1.25rem);
+
 	&__form {
 		display: flex;
 		flex-direction: column;
-		gap: var(--wp--preset--spacing--40, 1.25rem);
+		gap: var(--perform-field-gap);
 	}
 
 	&__success {
 		padding: 1rem 1.25rem;
-		border-radius: var(--wp--custom--border--radius, 6px);
+		border-radius: var(--perform-border-radius);
 		background: rgba(0, 128, 0, 0.08);
 		color: var(--wp--preset--color--foreground, currentColor);
 		border-left: 3px solid currentColor;
@@ -23,7 +38,7 @@
 
 	&__error--global {
 		padding: 0.75rem 1rem;
-		border-radius: var(--wp--custom--border--radius, 6px);
+		border-radius: var(--perform-border-radius);
 		background: rgba(204, 0, 0, 0.08);
 		color: #cc0000;
 		border-left: 3px solid currentColor;
@@ -33,19 +48,53 @@
 		margin-top: 0.5rem;
 	}
 
+	// Submit-button base — shared across all three style variants.
+	// The variant modifiers below (.perform-form--button-*) layer their
+	// background/border/colour rules on top.
 	&__submit {
 		font: inherit;
 		padding: 0.65em 1.5em;
-		border-radius: var(--wp--custom--border--radius, 6px);
-		border: 0;
-		background: var(--wp--preset--color--primary, currentColor);
-		color: var(--wp--preset--color--background, #fff);
+		border-radius: var(--perform-border-radius);
 		cursor: pointer;
-		transition: opacity 0.15s ease;
+		transition: opacity 0.15s ease, background-color 0.15s ease;
 
 		&:hover,
 		&:focus-visible {
 			opacity: 0.9;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--perform-color-primary);
+			outline-offset: 2px;
+		}
+	}
+
+	// Variant: filled (default). Primary colour fill, contrast text, no border.
+	&--button-fill &__submit {
+		border: 0;
+		background: var(--perform-color-primary);
+		color: var(--perform-color-on-primary);
+	}
+
+	// Variant: outline. Transparent fill, primary border + text.
+	&--button-outline &__submit {
+		border: 1px solid var(--perform-color-primary);
+		background: transparent;
+		color: var(--perform-color-primary);
+	}
+
+	// Variant: ghost. Transparent everything, primary text. Subtle hover
+	// tint compensates for the missing border so the click target is
+	// still discoverable.
+	&--button-ghost &__submit {
+		border: 0;
+		background: transparent;
+		color: var(--perform-color-primary);
+
+		&:hover,
+		&:focus-visible {
+			background: color-mix(in srgb, var(--perform-color-primary) 10%, transparent);
+			opacity: 1;
 		}
 	}
 }
@@ -68,14 +117,14 @@
 		font: inherit;
 		padding: 0.6em 0.75em;
 		border: 1px solid currentColor;
-		border-radius: var(--wp--custom--border--radius, 6px);
+		border-radius: var(--perform-border-radius);
 		background: transparent;
 		color: inherit;
 		width: 100%;
 		box-sizing: border-box;
 
 		&:focus-visible {
-			outline: 2px solid var(--wp--preset--color--primary, currentColor);
+			outline: 2px solid var(--perform-color-primary);
 			outline-offset: 2px;
 		}
 	}

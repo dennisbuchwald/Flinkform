@@ -9,11 +9,15 @@ import { useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import {
+	ColorPalette,
 	InnerBlocks,
 	InspectorControls,
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
+	BaseControl,
 	Notice,
 	PanelBody,
 	SelectControl,
@@ -55,11 +59,27 @@ function generateUuid() {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { formId, title, submitLabel, successMessage, notifications } = attributes;
-	const blockProps = useBlockProps( { className: 'perform-form-editor' } );
+	const { formId, title, submitLabel, successMessage, notifications, appearance } = attributes;
 
 	const adminConfig = notifications?.admin ?? {};
 	const submitterConfig = notifications?.submitter ?? {};
+	const appearanceConfig = appearance ?? {};
+	const primaryColor = appearanceConfig.primaryColor;
+	const submitButtonStyle = appearanceConfig.submitButtonStyle ?? 'fill';
+
+	// Editor preview: emit the same --perform-* override the frontend gets
+	// so the in-editor block visually mirrors the saved settings. Without
+	// this the inspector previewing a custom primary colour wouldn't show
+	// it on the canvas.
+	const editorStyle = {};
+	if ( typeof primaryColor === 'string' && primaryColor !== '' ) {
+		editorStyle[ '--perform-color-primary' ] = primaryColor;
+	}
+
+	const blockProps = useBlockProps( {
+		className: `perform-form-editor perform-form perform-form--button-${ submitButtonStyle }`,
+		style: editorStyle,
+	} );
 
 	useEffect( () => {
 		if ( ! formId ) {
@@ -126,6 +146,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					...submitterConfig,
 					...patch,
 				},
+			},
+		} );
+	};
+
+	const updateAppearance = ( patch ) => {
+		setAttributes( {
+			appearance: {
+				...appearanceConfig,
+				...patch,
 			},
 		} );
 	};
@@ -200,6 +229,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<p style={ { fontSize: '12px', opacity: 0.7, marginTop: '12px' } }>
 						{ __( 'Form ID:', 'perform-forms' ) } <code>{ formId || '…' }</code>
 					</p>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Style', 'perform-forms' ) }
+					initialOpen={ false }
+				>
+					<BaseControl
+						label={ __( 'Primary color', 'perform-forms' ) }
+						help={ __( 'Used for submit button, focus rings, and accent details. Leave unset to inherit from your theme.', 'perform-forms' ) }
+						id="perform-style-primary-color"
+						__nextHasNoMarginBottom
+					>
+						<ColorPalette
+							value={ primaryColor }
+							onChange={ ( value ) => updateAppearance( { primaryColor: value || undefined } ) }
+							clearable
+							enableAlpha={ false }
+						/>
+					</BaseControl>
+					<ToggleGroupControl
+						label={ __( 'Submit button style', 'perform-forms' ) }
+						value={ submitButtonStyle }
+						onChange={ ( value ) => updateAppearance( { submitButtonStyle: value } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="fill" label={ __( 'Fill', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="outline" label={ __( 'Outline', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="ghost" label={ __( 'Ghost', 'perform-forms' ) } />
+					</ToggleGroupControl>
 				</PanelBody>
 
 				<PanelBody

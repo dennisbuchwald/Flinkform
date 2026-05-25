@@ -31,6 +31,40 @@ $submit_label   = isset( $attributes['submitLabel'] ) && is_string( $attributes[
 $success_msg    = isset( $attributes['successMessage'] ) && is_string( $attributes['successMessage'] ) ? $attributes['successMessage'] : __( 'Thank you!', 'perform-forms' );
 $source_post_id = (int) get_the_ID();
 
+// Appearance overrides (Style panel). Unset values leave the SCSS-level
+// defaults intact, which fall back through theme.json before bottoming
+// out at the hard-coded values — see style.scss for the full cascade.
+$appearance     = isset( $attributes['appearance'] ) && is_array( $attributes['appearance'] ) ? $attributes['appearance'] : [];
+
+/**
+ * Whitelist a CSS-colour string to a safe character set before echoing it
+ * into an inline style attribute. Hex, rgb/rgba, hsl/hsla, named colours
+ * and CSS var() references all pass; semicolons, braces, quotes, angle
+ * brackets are stripped. Returns an empty string when nothing valid is left.
+ *
+ * @param string $color Raw colour from the block attribute.
+ * @return string
+ */
+$perform_sanitize_color = static function ( string $color ): string {
+	$trimmed = trim( $color );
+	if ( '' === $trimmed ) {
+		return '';
+	}
+	// Allow letters, digits, #, parens, commas, percent, dots, spaces, dashes.
+	if ( ! preg_match( '/^[a-zA-Z0-9_#(), .%\-]+$/', $trimmed ) ) {
+		return '';
+	}
+	return $trimmed;
+};
+
+$primary_color    = isset( $appearance['primaryColor'] ) && is_string( $appearance['primaryColor'] )
+	? $perform_sanitize_color( $appearance['primaryColor'] )
+	: '';
+$submit_btn_style = isset( $appearance['submitButtonStyle'] ) && is_string( $appearance['submitButtonStyle'] ) ? $appearance['submitButtonStyle'] : 'fill';
+if ( ! in_array( $submit_btn_style, [ 'fill', 'outline', 'ghost' ], true ) ) {
+	$submit_btn_style = 'fill';
+}
+
 // Without a stable form ID we cannot save or validate — render nothing.
 if ( '' === $form_id ) {
 	return;
@@ -46,12 +80,14 @@ $status_for = isset( $_GET['perform_form'] ) ? sanitize_text_field( wp_unslash( 
 
 $is_success = ( 'success' === $status && $status_for === $form_id );
 
-$wrapper_attrs = get_block_wrapper_attributes(
-	[
-		'class'           => 'perform-form',
-		'data-perform-id' => $form_id,
-	]
-);
+$wrapper_args = [
+	'class'           => 'perform-form perform-form--button-' . $submit_btn_style,
+	'data-perform-id' => $form_id,
+];
+if ( '' !== $primary_color ) {
+	$wrapper_args['style'] = '--perform-color-primary:' . $primary_color . ';';
+}
+$wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
 if ( $is_success ) :
 	?>
