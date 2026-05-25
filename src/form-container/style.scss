@@ -97,109 +97,117 @@
 			opacity: 1;
 		}
 	}
-}
 
-.perform-field {
-	display: flex;
-	flex-direction: column;
-	gap: 0.4rem;
-
-	&__label {
-		font-weight: 600;
-		font-size: 0.95em;
-	}
-
-	&__required {
-		color: #cc0000;
-	}
-
-	&__input {
-		font: inherit;
-		padding: 0.6em 0.75em;
-		border: 1px solid currentColor;
-		border-radius: var(--perform-border-radius);
-		background: transparent;
-		color: inherit;
-		width: 100%;
-		box-sizing: border-box;
-
-		&:focus-visible {
-			outline: 2px solid var(--perform-color-primary);
-			outline-offset: 2px;
-		}
-	}
-
-	&__help {
-		font-size: 0.85em;
-		opacity: 0.75;
-		margin: 0;
-	}
-
-	&__error {
-		font-size: 0.85em;
-		color: #cc0000;
-		margin: 0;
-	}
-
-	&--has-error &__input {
-		border-color: #cc0000;
-	}
-
-	// Fieldset-based fields (radio + checkbox group) reset browser defaults.
-	&--radio,
-	&--checkbox {
-		border: 0;
-		margin: 0;
-		padding: 0;
-
-		legend.perform-field__label {
-			padding: 0;
-			margin-bottom: 0.4rem;
-		}
-	}
-
-	&__option {
+	// .perform-field and .perform-section-heading are nested INSIDE
+	// .perform-form so their selectors compile with a `.perform-form`
+	// ancestor. That bumps specificity from (0,1,0) to (0,2,0) — enough
+	// to beat the input[type="text|email|…"] (0,1,1) rules popular
+	// themes (GeneratePress, Astra, Kadence) attach to text inputs but
+	// not always to <textarea>. Without this, theme background and
+	// border-color overrides land on inputs but not textareas, giving
+	// inconsistent rendering across field types.
+	.perform-field {
 		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		margin: 0.25rem 0;
-		font: inherit;
-		cursor: pointer;
+		flex-direction: column;
+		gap: 0.4rem;
 
-		input {
+		&__label {
+			font-weight: 600;
+			font-size: 0.95em;
+		}
+
+		&__required {
+			color: #cc0000;
+		}
+
+		&__input {
+			font: inherit;
+			padding: 0.6em 0.75em;
+			border: 1px solid currentColor;
+			border-radius: var(--perform-border-radius);
+			background: transparent;
+			color: inherit;
+			width: 100%;
+			box-sizing: border-box;
+
+			&:focus-visible {
+				outline: 2px solid var(--perform-color-primary);
+				outline-offset: 2px;
+			}
+		}
+
+		&__help {
+			font-size: 0.85em;
+			opacity: 0.75;
 			margin: 0;
-			width: auto;
+		}
+
+		&__error {
+			font-size: 0.85em;
+			color: #cc0000;
+			margin: 0;
+		}
+
+		&--has-error &__input {
+			border-color: #cc0000;
+		}
+
+		// Fieldset-based fields (radio + checkbox group) reset browser defaults.
+		&--radio,
+		&--checkbox {
+			border: 0;
+			margin: 0;
+			padding: 0;
+
+			legend.perform-field__label {
+				padding: 0;
+				margin-bottom: 0.4rem;
+			}
+		}
+
+		&__option {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			margin: 0.25rem 0;
+			font: inherit;
+			cursor: pointer;
+
+			input {
+				margin: 0;
+				width: auto;
+			}
+		}
+
+		// Single-checkbox / toggle layout.
+		&--toggle &__toggle-label {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.5rem;
+			cursor: pointer;
+			font: inherit;
+			font-weight: normal;
+
+			input {
+				margin-top: 0.2em;
+			}
+		}
+
+		// Multi-select gets a sane height so it doesn't look like a one-line dropdown.
+		&--select select[multiple] {
+			min-height: 6rem;
 		}
 	}
 
-	// Single-checkbox / toggle layout.
-	&--toggle &__toggle-label {
-		display: flex;
-		align-items: flex-start;
-		gap: 0.5rem;
-		cursor: pointer;
-		font: inherit;
-		font-weight: normal;
-
-		input {
-			margin-top: 0.2em;
+	.perform-section-heading {
+		&__title {
+			margin: 1.5rem 0 0.25rem;
 		}
-	}
 
-	// Multi-select gets a sane height so it doesn't look like a one-line dropdown.
-	&--select select[multiple] {
-		min-height: 6rem;
-	}
-}
-
-.perform-section-heading {
-	&__title {
-		margin: 1.5rem 0 0.25rem;
-	}
-
-	&__description {
-		margin: 0 0 0.5rem;
-		opacity: 0.8;
+		&__description {
+			margin: 0 0 0.5rem;
+			opacity: 0.8;
+		}
 	}
 }
 
