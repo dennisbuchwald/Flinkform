@@ -16,6 +16,8 @@ import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody, TextControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 
+import ConditionalLogicPanel from '../shared/conditional-logic-panel';
+
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { label } = attributes;
 	const blockProps = useBlockProps( { className: 'perform-page-break' } );
@@ -76,6 +78,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<ConditionalLogicPanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
 			</InspectorControls>
 			<div { ...blockProps }>
 				<span className="perform-page-break__rule" aria-hidden="true" />

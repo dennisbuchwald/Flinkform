@@ -2,8 +2,9 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls, RichText, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody, TextareaControl } from '@wordpress/components';
 import FullWidthPanel from '../shared/full-width-panel';
+import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
-export default function Edit( { attributes, setAttributes, context } ) {
+export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { title, description } = attributes;
 	const blockProps = useBlockProps( { className: 'perform-section-heading' } );
 
@@ -19,6 +20,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					/>
 				</PanelBody>
 				<FullWidthPanel attributes={ attributes } setAttributes={ setAttributes } context={ context } />
+				<ConditionalLogicPanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
 			</InspectorControls>
 			<div { ...blockProps }>
 				<RichText

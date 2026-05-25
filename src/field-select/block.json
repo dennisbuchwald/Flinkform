@@ -6,34 +6,71 @@
 	"title": "Dropdown",
 	"category": "perform",
 	"icon": "menu-alt",
-	"description": "A dropdown — single or multi-select.",
-	"keywords": ["select", "dropdown", "field"],
+	"description": "A dropdown \u2014 single or multi-select.",
+	"keywords": [
+		"select",
+		"dropdown",
+		"field"
+	],
 	"textdomain": "perform-forms",
-	"parent": ["perform/form"],
+	"parent": [
+		"perform/form"
+	],
 	"supports": {
 		"html": false,
 		"reusable": false
 	},
 	"attributes": {
-		"label": { "type": "string", "default": "Choose one" },
-		"placeholder": { "type": "string", "default": "" },
-		"required": { "type": "boolean", "default": false },
-		"helpText": { "type": "string", "default": "" },
-		"fieldName": { "type": "string", "default": "" },
-		"multiple": { "type": "boolean", "default": false },
+		"label": {
+			"type": "string",
+			"default": "Choose one"
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"multiple": {
+			"type": "boolean",
+			"default": false
+		},
 		"options": {
 			"type": "array",
 			"default": [
-				{ "label": "Option 1", "value": "option-1" },
-				{ "label": "Option 2", "value": "option-2" }
+				{
+					"label": "Option 1",
+					"value": "option-1"
+				},
+				{
+					"label": "Option 2",
+					"value": "option-2"
+				}
 			]
 		},
 		"fullWidth": {
 			"type": "boolean",
 			"default": false
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
 		}
 	},
-	"usesContext": ["perform/formId", "perform/appearance"],
+	"usesContext": [
+		"perform/formId",
+		"perform/appearance"
+	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

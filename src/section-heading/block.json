@@ -26,6 +26,10 @@
 		"fullWidth": {
 			"type": "boolean",
 			"default": true
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"usesContext": ["perform/formId", "perform/appearance"],

@@ -6,8 +6,9 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { generateFieldName } from '../shared/field-name';
 import { OptionsEditor } from '../shared/options-editor';
 import FullWidthPanel from '../shared/full-width-panel';
+import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
-export default function Edit( { attributes, setAttributes, context } ) {
+export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, required, helpText, fieldName, options } = attributes;
 	const blockProps = useBlockProps( { className: 'perform-field perform-field--checkbox' } );
 
@@ -59,6 +60,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					/>
 				</PanelBody>
 				<FullWidthPanel attributes={ attributes } setAttributes={ setAttributes } context={ context } />
+				<ConditionalLogicPanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
 			</InspectorControls>
 
 			<fieldset { ...blockProps }>

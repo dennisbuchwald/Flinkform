@@ -6,25 +6,51 @@
 	"title": "Toggle / Checkbox",
 	"category": "perform",
 	"icon": "yes",
-	"description": "A single checkbox — great for terms-of-service style consents.",
-	"keywords": ["toggle", "checkbox", "consent", "agree"],
+	"description": "A single checkbox \u2014 great for terms-of-service style consents.",
+	"keywords": [
+		"toggle",
+		"checkbox",
+		"consent",
+		"agree"
+	],
 	"textdomain": "perform-forms",
-	"parent": ["perform/form"],
+	"parent": [
+		"perform/form"
+	],
 	"supports": {
 		"html": false,
 		"reusable": false
 	},
 	"attributes": {
-		"label": { "type": "string", "default": "I agree" },
-		"required": { "type": "boolean", "default": false },
-		"helpText": { "type": "string", "default": "" },
-		"fieldName": { "type": "string", "default": "" },
+		"label": {
+			"type": "string",
+			"default": "I agree"
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
 		"fullWidth": {
 			"type": "boolean",
 			"default": false
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
 		}
 	},
-	"usesContext": ["perform/formId", "perform/appearance"],
+	"usesContext": [
+		"perform/formId",
+		"perform/appearance"
+	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

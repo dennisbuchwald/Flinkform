@@ -18,6 +18,10 @@
 		"label": {
 			"type": "string",
 			"default": ""
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"usesContext": ["perform/formId"],

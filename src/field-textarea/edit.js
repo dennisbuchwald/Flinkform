@@ -13,8 +13,9 @@ import {
 
 import { generateFieldName } from '../shared/field-name';
 import FullWidthPanel from '../shared/full-width-panel';
+import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
-export default function Edit( { attributes, setAttributes, context } ) {
+export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, placeholder, required, helpText, fieldName, rows } = attributes;
 	const blockProps = useBlockProps( { className: 'perform-field perform-field--textarea' } );
 
@@ -75,6 +76,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					/>
 				</PanelBody>
 				<FullWidthPanel attributes={ attributes } setAttributes={ setAttributes } context={ context } />
+				<ConditionalLogicPanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
 			</InspectorControls>
 
 			<div { ...blockProps }>

@@ -7,9 +7,15 @@
 	"category": "perform",
 	"icon": "email",
 	"description": "An email input with format validation.",
-	"keywords": ["email", "input", "field"],
+	"keywords": [
+		"email",
+		"input",
+		"field"
+	],
 	"textdomain": "perform-forms",
-	"parent": ["perform/form"],
+	"parent": [
+		"perform/form"
+	],
 	"supports": {
 		"html": false,
 		"reusable": false
@@ -38,9 +44,16 @@
 		"fullWidth": {
 			"type": "boolean",
 			"default": false
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
 		}
 	},
-	"usesContext": ["perform/formId", "perform/appearance"],
+	"usesContext": [
+		"perform/formId",
+		"perform/appearance"
+	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

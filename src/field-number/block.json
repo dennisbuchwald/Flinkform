@@ -7,28 +7,65 @@
 	"category": "perform",
 	"icon": "calculator",
 	"description": "A numeric input with optional min, max and step.",
-	"keywords": ["number", "numeric", "field"],
+	"keywords": [
+		"number",
+		"numeric",
+		"field"
+	],
 	"textdomain": "perform-forms",
-	"parent": ["perform/form"],
+	"parent": [
+		"perform/form"
+	],
 	"supports": {
 		"html": false,
 		"reusable": false
 	},
 	"attributes": {
-		"label": { "type": "string", "default": "Number" },
-		"placeholder": { "type": "string", "default": "" },
-		"required": { "type": "boolean", "default": false },
-		"helpText": { "type": "string", "default": "" },
-		"fieldName": { "type": "string", "default": "" },
-		"min": { "type": "string", "default": "" },
-		"max": { "type": "string", "default": "" },
-		"step": { "type": "string", "default": "" },
+		"label": {
+			"type": "string",
+			"default": "Number"
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"min": {
+			"type": "string",
+			"default": ""
+		},
+		"max": {
+			"type": "string",
+			"default": ""
+		},
+		"step": {
+			"type": "string",
+			"default": ""
+		},
 		"fullWidth": {
 			"type": "boolean",
 			"default": false
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
 		}
 	},
-	"usesContext": ["perform/formId", "perform/appearance"],
+	"usesContext": [
+		"perform/formId",
+		"perform/appearance"
+	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

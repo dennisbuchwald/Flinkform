@@ -7,24 +7,49 @@
 	"category": "perform",
 	"icon": "hidden",
 	"description": "An invisible field that records context with the submission (page URL, user, date, or a static value).",
-	"keywords": ["hidden", "meta", "context"],
+	"keywords": [
+		"hidden",
+		"meta",
+		"context"
+	],
 	"textdomain": "perform-forms",
-	"parent": ["perform/form"],
+	"parent": [
+		"perform/form"
+	],
 	"supports": {
 		"html": false,
 		"reusable": false
 	},
 	"attributes": {
-		"label": { "type": "string", "default": "Hidden Field" },
-		"fieldName": { "type": "string", "default": "" },
-		"valueSource": { "type": "string", "default": "static" },
-		"staticValue": { "type": "string", "default": "" },
+		"label": {
+			"type": "string",
+			"default": "Hidden Field"
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"valueSource": {
+			"type": "string",
+			"default": "static"
+		},
+		"staticValue": {
+			"type": "string",
+			"default": ""
+		},
 		"fullWidth": {
 			"type": "boolean",
 			"default": false
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
 		}
 	},
-	"usesContext": ["perform/formId", "perform/appearance"],
+	"usesContext": [
+		"perform/formId",
+		"perform/appearance"
+	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

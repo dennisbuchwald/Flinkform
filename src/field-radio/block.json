@@ -7,31 +7,62 @@
 	"category": "perform",
 	"icon": "marker",
 	"description": "A single choice from a list of options.",
-	"keywords": ["radio", "choice", "field"],
+	"keywords": [
+		"radio",
+		"choice",
+		"field"
+	],
 	"textdomain": "perform-forms",
-	"parent": ["perform/form"],
+	"parent": [
+		"perform/form"
+	],
 	"supports": {
 		"html": false,
 		"reusable": false
 	},
 	"attributes": {
-		"label": { "type": "string", "default": "Choose one" },
-		"required": { "type": "boolean", "default": false },
-		"helpText": { "type": "string", "default": "" },
-		"fieldName": { "type": "string", "default": "" },
+		"label": {
+			"type": "string",
+			"default": "Choose one"
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
 		"options": {
 			"type": "array",
 			"default": [
-				{ "label": "Option 1", "value": "option-1" },
-				{ "label": "Option 2", "value": "option-2" }
+				{
+					"label": "Option 1",
+					"value": "option-1"
+				},
+				{
+					"label": "Option 2",
+					"value": "option-2"
+				}
 			]
 		},
 		"fullWidth": {
 			"type": "boolean",
 			"default": false
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
 		}
 	},
-	"usesContext": ["perform/formId", "perform/appearance"],
+	"usesContext": [
+		"perform/formId",
+		"perform/appearance"
+	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

@@ -14,8 +14,9 @@ const SOURCE_OPTIONS = [
 	{ label: __( 'Current date + time (ISO)', 'perform-forms' ), value: 'current_datetime' },
 ];
 import FullWidthPanel from '../shared/full-width-panel';
+import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
-export default function Edit( { attributes, setAttributes, context } ) {
+export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, fieldName, valueSource, staticValue } = attributes;
 	const blockProps = useBlockProps( { className: 'perform-field perform-field--hidden' } );
 
@@ -70,6 +71,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					/>
 				</PanelBody>
 				<FullWidthPanel attributes={ attributes } setAttributes={ setAttributes } context={ context } />
+				<ConditionalLogicPanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
 			</InspectorControls>
 
 			<div { ...blockProps } style={ { padding: '8px 12px', background: '#f0f0f1', borderRadius: '4px', fontSize: '12px' } }>
