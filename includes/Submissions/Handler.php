@@ -253,7 +253,7 @@ final class Handler {
 		 */
 		do_action( 'perform_after_submission', $submission_id, $form_id, $clean, $definition );
 
-		$this->redirect_success( $post_id, $form_id );
+		$this->redirect_success( $post_id, $form_id, $form_attrs, $submission_id );
 	}
 
 	/**
@@ -611,13 +611,66 @@ final class Handler {
 	}
 
 	/**
-	 * Redirect to the source post with success status.
+	 * Redirect to the source post with success status (default), or
+	 * to a per-form custom URL if the form-container's `afterSubmit`
+	 * attribute configured one (Phase C).
 	 *
-	 * @param int    $post_id
-	 * @param string $form_id
+	 * Routing rules:
+	 *
+	 *   1. afterSubmit.behaviour === 'redirect' AND a non-empty
+	 *      redirectUrl is set:
+	 *        a. Build URL with optional `?perform_submission_id` /
+	 *           `?perform_form_id` query args.
+	 *        b. Run through wp_safe_redirect() — same-origin-only by
+	 *           default; external URLs are silently filtered to the
+	 *           home URL by WordPress core. The author-facing copy in
+	 *           the inspector documents this so it's not a surprise.
+	 *        c. On success, exit.
+	 *   2. Fall through to the legacy "redirect back to source post
+	 *      with ?perform_status=success" behaviour. Used when the
+	 *      author kept the default behaviour, when a redirect URL
+	 *      was rejected by safe-redirect (returns false), or when the
+	 *      handler runs from a code path that didn't pass form
+	 *      attributes (honeypot hits, time-check failures —
+	 *      intentionally use legacy redirect so a bot doesn't get
+	 *      to learn the configured thank-you URL).
+	 *
+	 * @param int                       $post_id        Source-page ID for the legacy redirect.
+	 * @param string                    $form_id        UUID of the submitted form.
+	 * @param array<string, mixed>      $form_attrs     Block attributes from the form-container (empty array = legacy callers).
+	 * @param int|null                  $submission_id  ID of the just-persisted submission, when applicable.
 	 * @return never
 	 */
-	private function redirect_success( int $post_id, string $form_id ): void {
+	private function redirect_success( int $post_id, string $form_id, array $form_attrs = [], ?int $submission_id = null ): void {
+		$after_submit = isset( $form_attrs['afterSubmit'] ) && is_array( $form_attrs['afterSubmit'] )
+			? $form_attrs['afterSubmit']
+			: [];
+		$behaviour   = isset( $after_submit['behaviour'] ) ? (string) $after_submit['behaviour'] : 'message';
+		$redirect_to = isset( $after_submit['redirectUrl'] ) ? (string) $after_submit['redirectUrl'] : '';
+
+		if ( 'redirect' === $behaviour && '' !== trim( $redirect_to ) ) {
+			$target = $this->build_redirect_url(
+				trim( $redirect_to ),
+				(array) $after_submit,
+				$form_id,
+				$submission_id
+			);
+
+			// wp_safe_redirect returns false when the target is not
+			// on the allowed-hosts list AND no $fallback is supplied.
+			// We pass '' as fallback so the function bails to '' on
+			// rejection; an empty value means "fall through to legacy
+			// success redirect" below.
+			$safe = wp_validate_redirect( $target, '' );
+			if ( '' !== $safe ) {
+				wp_safe_redirect( $safe );
+				exit;
+			}
+			// else: external URL got filtered out — fall through to
+			// the legacy redirect so the visitor still lands on a
+			// success state and doesn't see a blank page.
+		}
+
 		$url = add_query_arg(
 			[
 				'perform_status' => 'success',
@@ -627,6 +680,38 @@ final class Handler {
 		);
 		wp_safe_redirect( $url . '#perform-form-' . $form_id );
 		exit;
+	}
+
+	/**
+	 * Build the final redirect URL: bare path/URL + optional
+	 * submission_id + optional form_id query args.
+	 *
+	 * Leaves the URL alone if it already contains the metadata
+	 * args — defensive against an author who hand-rolled the URL
+	 * with `?perform_submission_id=` already in it (rare but
+	 * possible) so we don't end up with `?perform_submission_id=1&perform_submission_id=2`.
+	 *
+	 * @param string                 $raw_url
+	 * @param array<string, mixed>   $after_submit
+	 * @param string                 $form_id
+	 * @param int|null               $submission_id
+	 * @return string
+	 */
+	private function build_redirect_url( string $raw_url, array $after_submit, string $form_id, ?int $submission_id ): string {
+		$args = [];
+
+		if ( ! empty( $after_submit['appendSubmissionId'] ) && null !== $submission_id && ! str_contains( $raw_url, 'perform_submission_id=' ) ) {
+			$args['perform_submission_id'] = $submission_id;
+		}
+		if ( ! empty( $after_submit['appendFormId'] ) && ! str_contains( $raw_url, 'perform_form_id=' ) ) {
+			$args['perform_form_id'] = $form_id;
+		}
+
+		if ( empty( $args ) ) {
+			return $raw_url;
+		}
+
+		return add_query_arg( $args, $raw_url );
 	}
 
 	/**

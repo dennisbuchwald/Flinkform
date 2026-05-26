@@ -12,6 +12,7 @@ import {
 	ColorPalette,
 	InnerBlocks,
 	InspectorControls,
+	URLInput,
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
@@ -63,7 +64,12 @@ function generateUuid() {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { formId, title, submitLabel, successMessage, notifications, appearance, customCSS, spamProtection } = attributes;
+	const { formId, title, submitLabel, successMessage, notifications, appearance, customCSS, spamProtection, afterSubmit } = attributes;
+
+	const afterSubmitConfig = afterSubmit ?? {};
+	const afterSubmitBehaviour = afterSubmitConfig.behaviour === 'redirect' ? 'redirect' : 'message';
+	const updateAfterSubmit = ( patch ) =>
+		setAttributes( { afterSubmit: { ...afterSubmitConfig, ...patch } } );
 
 	const adminConfig = notifications?.admin ?? {};
 	const submitterConfig = notifications?.submitter ?? {};
@@ -297,16 +303,71 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TextareaControl
-						label={ __( 'Success Message', 'perform-forms' ) }
-						help={ __( 'Shown after a successful submission.', 'perform-forms' ) }
-						value={ successMessage }
-						onChange={ ( value ) => setAttributes( { successMessage: value } ) }
-						__nextHasNoMarginBottom
-					/>
 					<p style={ { fontSize: '12px', opacity: 0.7, marginTop: '12px' } }>
 						{ __( 'Form ID:', 'perform-forms' ) } <code>{ formId || '…' }</code>
 					</p>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'After Submit', 'perform-forms' ) }
+					initialOpen={ false }
+				>
+					<ToggleGroupControl
+						label={ __( 'On successful submission', 'perform-forms' ) }
+						value={ afterSubmitBehaviour }
+						onChange={ ( value ) => updateAfterSubmit( { behaviour: value } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="message" label={ __( 'Show message', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="redirect" label={ __( 'Redirect to URL', 'perform-forms' ) } />
+					</ToggleGroupControl>
+
+					{ afterSubmitBehaviour === 'message' && (
+						<TextareaControl
+							label={ __( 'Success Message', 'perform-forms' ) }
+							help={ __( 'Shown in place of the form after a successful submission.', 'perform-forms' ) }
+							value={ successMessage }
+							onChange={ ( value ) => setAttributes( { successMessage: value } ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
+
+					{ afterSubmitBehaviour === 'redirect' && (
+						<>
+							<BaseControl
+								label={ __( 'Redirect URL', 'perform-forms' ) }
+								help={ __( 'Same-origin only. Enter a path (/danke) or a full URL on this site. External URLs are silently rejected by the safe-redirect filter — operators who need cross-domain thank-you pages get a site-wide opt-in toggle in a later release.', 'perform-forms' ) }
+								id="perform-after-submit-url"
+								__nextHasNoMarginBottom
+							>
+								<URLInput
+									id="perform-after-submit-url"
+									value={ afterSubmitConfig.redirectUrl ?? '' }
+									onChange={ ( value ) => updateAfterSubmit( { redirectUrl: value } ) }
+									placeholder={ __( 'https://example.com/danke', 'perform-forms' ) }
+									className="perform-after-submit__url"
+								/>
+							</BaseControl>
+
+							<ToggleControl
+								label={ __( 'Append submission ID', 'perform-forms' ) }
+								help={ __( 'Adds ?perform_submission_id=N to the redirect URL — useful for analytics events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off because submission IDs are PII-adjacent and end up in browser history.', 'perform-forms' ) }
+								checked={ !! afterSubmitConfig.appendSubmissionId }
+								onChange={ ( value ) => updateAfterSubmit( { appendSubmissionId: value } ) }
+								__nextHasNoMarginBottom
+							/>
+
+							<ToggleControl
+								label={ __( 'Append form ID', 'perform-forms' ) }
+								help={ __( 'Adds ?perform_form_id=UUID — lets a shared thank-you page differentiate conversions by source form.', 'perform-forms' ) }
+								checked={ !! afterSubmitConfig.appendFormId }
+								onChange={ ( value ) => updateAfterSubmit( { appendFormId: value } ) }
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
 				</PanelBody>
 
 				<PanelBody

@@ -52,6 +52,15 @@
 			"type": "string",
 			"default": "auto",
 			"enum": ["auto", "builtin", "none"]
+		},
+		"afterSubmit": {
+			"type": "object",
+			"default": {
+				"behaviour": "message",
+				"redirectUrl": "",
+				"appendSubmissionId": false,
+				"appendFormId": false
+			}
 		}
 	},
 	"providesContext": {
