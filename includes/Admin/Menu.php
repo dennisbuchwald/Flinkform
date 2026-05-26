@@ -87,6 +87,15 @@ final class Menu {
 			WebhookLogPage::SLUG,
 			[ $this, 'render_webhook_log_page' ]
 		);
+
+		add_submenu_page(
+			self::PARENT_SLUG,
+			__( 'SMTP', 'perform-forms' ),
+			__( 'SMTP', 'perform-forms' ),
+			self::CAPABILITY,
+			SmtpPage::SLUG,
+			[ $this, 'render_smtp_page' ]
+		);
 	}
 
 	/**
@@ -117,6 +126,15 @@ final class Menu {
 	}
 
 	/**
+	 * Render the SMTP settings page.
+	 *
+	 * @return void
+	 */
+	public function render_smtp_page(): void {
+		( new SmtpPage() )->render();
+	}
+
+	/**
 	 * Handle GET/POST actions for PerForm pages BEFORE wp-admin renders
 	 * its header (so we can redirect cleanly after bulk actions etc.).
 	 *
@@ -132,6 +150,9 @@ final class Menu {
 				break;
 			case FormsPage::SLUG:
 				( new FormsPage() )->dispatch();
+				break;
+			case SmtpPage::SLUG:
+				( new SmtpPage() )->dispatch();
 				break;
 		}
 	}
