@@ -93,6 +93,29 @@ final class SmtpPage {
 	private const NONCE_ACTION = 'perform_smtp_save';
 
 	/**
+	 * Nonce action for the test-email button.
+	 *
+	 * @var string
+	 */
+	private const TEST_NONCE_ACTION = 'perform_smtp_test';
+
+	/**
+	 * wp_options key recording the last test-email outcome.
+	 * Read by the status block to show "Last test" row;
+	 * written by handle_test_send().
+	 *
+	 * Shape:
+	 *   [ *     'timestamp' => int,             // UTC unix ts
+	 *     'success'   => bool,
+	 *     'recipient' => string,
+	 *     'error'     => string,           // empty on success
+	 *   ]
+	 *
+	 * @var string
+	 */
+	public const LAST_TEST_OPTION_KEY = 'perform_smtp_last_test';
+
+	/**
 	 * Default settings — applied with array_merge() on every read so
 	 * partial / legacy option shapes still produce a complete config.
 	 *
@@ -282,12 +305,29 @@ final class SmtpPage {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified in next line.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified per action.
 		$action = isset( $_POST['perform_smtp_action'] ) ? sanitize_key( wp_unslash( $_POST['perform_smtp_action'] ) ) : '';
-		if ( 'save' !== $action ) {
-			return;
-		}
 
+		switch ( $action ) {
+			case 'save':
+				$this->handle_save();
+				break;
+			case 'send_test':
+				$this->handle_test_send();
+				break;
+		}
+	}
+
+	/**
+	 * Persist a submitted settings form.
+	 *
+	 * Extracted from dispatch() so the dispatch() switch reads
+	 * symmetrically with handle_test_send() — same nonce check
+	 * shape, same redirect-with-notice exit.
+	 *
+	 * @return void
+	 */
+	private function handle_save(): void {
 		check_admin_referer( self::NONCE_ACTION );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
@@ -306,6 +346,119 @@ final class SmtpPage {
 			)
 		);
 		exit;
+	}
+
+	/**
+	 * Send a one-shot test email to the current admin user.
+	 *
+	 * Hooks wp_mail_failed temporarily so we can capture the
+	 * PHPMailer error string. wp_mail() itself only tells us
+	 * "true | false" — the WP_Error passed into wp_mail_failed
+	 * carries the actual SMTP-level message (auth failed, host
+	 * unreachable, TLS handshake failed, etc.) which is what
+	 * operators actually need to debug a misconfig.
+	 *
+	 * Result is persisted to wp_options (LAST_TEST_OPTION_KEY) so
+	 * the status block can show a "Last test" row on subsequent
+	 * page loads, AND stashed in a per-user transient so the
+	 * post-redirect notice can show the full message inline.
+	 *
+	 * @return never  Always redirects + exits.
+	 */
+	private function handle_test_send(): void {
+		check_admin_referer( self::TEST_NONCE_ACTION );
+
+		$user = wp_get_current_user();
+		if ( ! $user || ! is_email( (string) $user->user_email ) ) {
+			$this->finish_test_send( [
+				'success'   => false,
+				'recipient' => '',
+				'error'     => __( 'Could not determine a recipient — your WordPress user has no email address on file.', 'perform-forms' ),
+			] );
+			return;
+		}
+
+		$recipient = (string) $user->user_email;
+		$subject   = __( 'PerForm SMTP test email', 'perform-forms' );
+		$body      = sprintf(
+			/* translators: 1: site name, 2: ISO timestamp */
+			__( "This is a test email from PerForm SMTP on %1\$s.\n\nIf you can read this, your SMTP configuration is working — PerForm form submissions will be delivered via this configured server.\n\nTimestamp: %2\$s\n", 'perform-forms' ),
+			get_bloginfo( 'name' ),
+			gmdate( 'Y-m-d H:i:s' ) . ' UTC'
+		);
+
+		// Capture the WP_Error wp_mail() fires on failure. PHPMailer
+		// passes the SMTP-level message into the error's data array
+		// AND the message string — we collect both so the operator
+		// gets the most informative possible single line.
+		$captured = '';
+		$capture  = static function ( \WP_Error $err ) use ( &$captured ): void {
+			$captured = (string) $err->get_error_message();
+		};
+		add_action( 'wp_mail_failed', $capture );
+
+		$sent = wp_mail( $recipient, $subject, $body );
+
+		remove_action( 'wp_mail_failed', $capture );
+
+		$this->finish_test_send( [
+			'success'   => (bool) $sent,
+			'recipient' => $recipient,
+			'error'     => $sent ? '' : ( '' !== $captured ? $captured : __( 'wp_mail() returned false but no error detail was reported. Check the SMTP host, port, and credentials.', 'perform-forms' ) ),
+		] );
+	}
+
+	/**
+	 * Persist + stash + redirect after a test send.
+	 *
+	 * Split out so handle_test_send() has a single happy-path /
+	 * sad-path tail.
+	 *
+	 * @param array{success: bool, recipient: string, error: string} $result
+	 * @return never
+	 */
+	private function finish_test_send( array $result ): void {
+		$record = [
+			'timestamp' => time(),
+			'success'   => (bool) $result['success'],
+			'recipient' => (string) $result['recipient'],
+			// Keep the persistent record small — truncate the error
+			// to the same 500-char limit we show inline. Long PHPMailer
+			// traces are not useful 2 hours later.
+			'error'     => mb_substr( (string) $result['error'], 0, 500 ),
+		];
+		update_option( self::LAST_TEST_OPTION_KEY, $record, false );
+
+		// Stash the full result in a per-user transient so the
+		// post-redirect notice can render the untruncated error
+		// for the operator who just clicked. 60s lifetime — long
+		// enough to survive a slow redirect, short enough that a
+		// stale notice never resurfaces.
+		set_transient(
+			$this->test_transient_key(),
+			$record,
+			60
+		);
+
+		wp_safe_redirect(
+			add_query_arg(
+				'perform_smtp_test_result',
+				$record['success'] ? 'success' : 'fail',
+				$this->page_url()
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Per-user transient key for the freshly-completed test-send
+	 * result. Per-user so two operators clicking the test button
+	 * simultaneously don't see each other's results.
+	 *
+	 * @return string
+	 */
+	private function test_transient_key(): string {
+		return 'perform_smtp_test_result_' . get_current_user_id();
 	}
 
 	/**
@@ -329,12 +482,14 @@ final class SmtpPage {
 			<hr class="wp-header-end" />
 
 			<?php $this->maybe_print_notice(); ?>
+			<?php $this->maybe_print_test_result(); ?>
 
 			<p class="description" style="max-width: 720px;">
 				<?php esc_html_e( 'Configure an SMTP server so PerForm can deliver admin notifications and submitter confirmations through your own mail provider instead of the WordPress default. The status panel below shows whether the configured override is actually in effect for the next wp_mail() call.', 'perform-forms' ); ?>
 			</p>
 
 			<?php $this->render_status_block(); ?>
+			<?php $this->render_test_button_form(); ?>
 
 			<form method="post" action="<?php echo esc_url( $this->page_url() ); ?>" class="perform-smtp__form">
 				<?php wp_nonce_field( self::NONCE_ACTION ); ?>
@@ -662,10 +817,197 @@ final class SmtpPage {
 							</td>
 						<?php endif; ?>
 					</tr>
+
+					<?php $this->render_last_test_row(); ?>
 				</tbody>
 			</table>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render the "Last test" row of the status block.
+	 *
+	 * Reads the LAST_TEST_OPTION_KEY record handle_test_send() writes.
+	 * Three states:
+	 *   - never tested → grey "Never" + hint to use the button below
+	 *   - last success → green "OK" + recipient + relative timestamp
+	 *   - last fail    → red "Failed" + truncated error + relative timestamp
+	 *
+	 * Separate method (not inline in the status table) so the
+	 * timestamp formatting and the badge-modifier logic stay in one
+	 * place instead of cluttering the status-table markup.
+	 *
+	 * @return void
+	 */
+	private function render_last_test_row(): void {
+		$record = get_option( self::LAST_TEST_OPTION_KEY, [] );
+
+		if ( ! is_array( $record ) || empty( $record['timestamp'] ) ) {
+			?>
+			<tr>
+				<td class="perform-smtp__status-label"><?php esc_html_e( 'Last test', 'perform-forms' ); ?></td>
+				<td><span class="perform-smtp__status-badge perform-smtp__status-badge--neutral"><?php esc_html_e( 'Never', 'perform-forms' ); ?></span></td>
+				<td class="perform-smtp__status-detail">
+					<?php esc_html_e( 'No test email has been sent yet. Use the button below to verify your configuration end-to-end.', 'perform-forms' ); ?>
+				</td>
+			</tr>
+			<?php
+			return;
+		}
+
+		$timestamp = (int) $record['timestamp'];
+		$relative  = human_time_diff( $timestamp, time() );
+		$absolute  = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $timestamp );
+		$success   = ! empty( $record['success'] );
+		$recipient = (string) ( $record['recipient'] ?? '' );
+		$error     = (string) ( $record['error'] ?? '' );
+
+		?>
+		<tr>
+			<td class="perform-smtp__status-label"><?php esc_html_e( 'Last test', 'perform-forms' ); ?></td>
+			<?php if ( $success ) : ?>
+				<td><span class="perform-smtp__status-badge perform-smtp__status-badge--ok"><?php esc_html_e( 'OK', 'perform-forms' ); ?></span></td>
+				<td class="perform-smtp__status-detail" title="<?php echo esc_attr( $absolute ); ?>">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: 1: recipient, 2: relative time like "3 minutes" */
+							__( 'Sent to %1$s, %2$s ago.', 'perform-forms' ),
+							$recipient,
+							$relative
+						)
+					);
+					?>
+				</td>
+			<?php else : ?>
+				<td><span class="perform-smtp__status-badge perform-smtp__status-badge--bad"><?php esc_html_e( 'Failed', 'perform-forms' ); ?></span></td>
+				<td class="perform-smtp__status-detail" title="<?php echo esc_attr( $absolute ); ?>">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %s: relative time like "3 minutes" */
+							__( 'Failed %s ago.', 'perform-forms' ),
+							$relative
+						)
+					);
+					?>
+					<?php if ( '' !== $error ) : ?>
+						<br>
+						<code class="perform-smtp__status-error"><?php echo esc_html( $error ); ?></code>
+					<?php endif; ?>
+				</td>
+			<?php endif; ?>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Render the "Send test email" button as its own POST form
+	 * beneath the diagnostic status block.
+	 *
+	 * Own form (not a second submit inside the settings form) so the
+	 * test button never accidentally saves stale settings — it always
+	 * acts on whatever was last saved to wp_options. The button is
+	 * always rendered so an operator can still test from a known-
+	 * inactive state ("see, this falls back to PHP mail") — when SMTP
+	 * is inactive we show a yellow notice next to the button so the
+	 * operator knows the test won't go through the configured server.
+	 *
+	 * @return void
+	 */
+	private function render_test_button_form(): void {
+		$transport_loaded = class_exists( Transport::class );
+		$status           = $transport_loaded ? Transport::get_status() : [ 'effective' => false ];
+		$user             = wp_get_current_user();
+		$recipient        = $user ? (string) $user->user_email : '';
+		?>
+		<form method="post" action="<?php echo esc_url( $this->page_url() ); ?>" class="perform-smtp__test-form">
+			<?php wp_nonce_field( self::TEST_NONCE_ACTION ); ?>
+			<input type="hidden" name="perform_smtp_action" value="send_test" />
+
+			<button type="submit" class="button button-secondary">
+				<?php esc_html_e( 'Send test email', 'perform-forms' ); ?>
+			</button>
+
+			<?php if ( '' !== $recipient ) : ?>
+				<span class="perform-smtp__test-recipient">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %s: recipient email address */
+							__( 'Recipient: %s (your WordPress profile email).', 'perform-forms' ),
+							$recipient
+						)
+					);
+					?>
+				</span>
+			<?php endif; ?>
+
+			<?php if ( ! $status['effective'] ) : ?>
+				<p class="perform-smtp__test-warning description">
+					<?php esc_html_e( 'SMTP override is currently inactive (see status panel above). The test will fall through to the WordPress default transport — useful to verify your fallback path, but it does NOT confirm your SMTP credentials work.', 'perform-forms' ); ?>
+				</p>
+			<?php endif; ?>
+		</form>
+		<?php
+	}
+
+	/**
+	 * After a test-send redirect, render an inline notice with the
+	 * full result (untruncated error on failure) and clear the
+	 * transient so a page refresh doesn't replay it.
+	 *
+	 * Query-arg `perform_smtp_test_result=success|fail` is the
+	 * trigger — the transient holds the actual payload. Two-step
+	 * pattern (query arg + transient) survives the WP "remove
+	 * trailing args on next page load" behaviour while still
+	 * keeping the notice ephemeral.
+	 *
+	 * @return void
+	 */
+	private function maybe_print_test_result(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only flash signal.
+		if ( ! isset( $_GET['perform_smtp_test_result'] ) ) {
+			return;
+		}
+
+		$record = get_transient( $this->test_transient_key() );
+		delete_transient( $this->test_transient_key() );
+
+		if ( ! is_array( $record ) ) {
+			return;
+		}
+
+		if ( ! empty( $record['success'] ) ) {
+			printf(
+				'<div class="notice notice-success is-dismissible"><p><strong>%s</strong> %s</p></div>',
+				esc_html__( 'Test email sent.', 'perform-forms' ),
+				esc_html(
+					sprintf(
+						/* translators: %s: recipient email address */
+						__( 'Delivered to %s via the configured SMTP path. Check your inbox (or Mailtrap / sandbox inbox if that\'s where this server delivers).', 'perform-forms' ),
+						(string) $record['recipient']
+					)
+				)
+			);
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-error is-dismissible"><p><strong>%1$s</strong> %2$s</p>%3$s</div>',
+			esc_html__( 'Test email failed.', 'perform-forms' ),
+			esc_html(
+				sprintf(
+					/* translators: %s: recipient email address */
+					__( 'wp_mail() returned false when attempting to deliver to %s.', 'perform-forms' ),
+					(string) $record['recipient']
+				)
+			),
+			'' !== (string) $record['error']
+				? '<pre class="perform-smtp__test-error">' . esc_html( (string) $record['error'] ) . '</pre>'
+				: ''
+		);
 	}
 
 	/**
@@ -884,6 +1226,54 @@ final class SmtpPage {
 				color: #50575e;
 				font-size: 13px;
 				line-height: 1.5;
+			}
+			.perform-smtp .perform-smtp__status-error {
+				display: inline-block;
+				margin-top: 4px;
+				padding: 2px 6px;
+				background: #fce4e7;
+				color: #8e2933;
+				font-size: 12px;
+				border-radius: 3px;
+				max-width: 100%;
+				overflow-wrap: anywhere;
+			}
+
+			/* Test-send button form. Lives between the status block
+			   and the settings form — own POST endpoint so it never
+			   accidentally saves form values. */
+			.perform-smtp .perform-smtp__test-form {
+				margin: 0 0 28px;
+				padding: 14px 20px 16px;
+				background: #f6f7f7;
+				border-left: 4px solid #c3c4c7;
+				max-width: 920px;
+			}
+			.perform-smtp .perform-smtp__test-recipient {
+				margin-left: 10px;
+				color: #50575e;
+				font-size: 13px;
+			}
+			.perform-smtp .perform-smtp__test-warning {
+				margin: 10px 0 0;
+				padding: 8px 12px;
+				background: #fcf0d4;
+				color: #7c4910;
+				border-left: 3px solid #dba617;
+				max-width: 720px;
+			}
+			.perform-smtp__test-error {
+				margin: 8px 0 0;
+				padding: 10px 12px;
+				background: #f6f7f7;
+				color: #1d2327;
+				font-size: 12px;
+				line-height: 1.5;
+				white-space: pre-wrap;
+				word-break: break-word;
+				max-height: 200px;
+				overflow: auto;
+				border-radius: 3px;
 			}
 		</style>
 		<?php
