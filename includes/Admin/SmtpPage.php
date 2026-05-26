@@ -677,6 +677,9 @@ final class SmtpPage {
 			.perform-smtp__form input[type="email"],
 			.perform-smtp__form input[type="password"],
 			.perform-smtp__form select { max-width: 420px; }
+			/* Keep description text in the right column from running
+			   past the form's visual width on wide monitors. */
+			.perform-smtp__form .form-table td .description { max-width: 560px; }
 		</style>
 		<?php
 	}

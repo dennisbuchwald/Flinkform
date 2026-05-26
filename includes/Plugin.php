@@ -110,6 +110,12 @@ final class Plugin {
 			wp_schedule_event( time() + 60, Webhooks\Dispatcher::CRON_SCHEDULE, Webhooks\Dispatcher::CRON_HOOK );
 		}
 
+		// SMTP transport (Phase A-b). The Transport itself defers
+		// its actual hook registrations to the `init` action, so
+		// it's safe to instantiate here on plugins_loaded — see
+		// the class docblock for the i18n-timing rationale.
+		( new Smtp\Transport() )->register();
+
 		if ( is_admin() ) {
 			( new Admin\Menu() )->register();
 		}
