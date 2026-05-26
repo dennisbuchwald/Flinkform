@@ -78,20 +78,20 @@ final class Transport {
 	];
 
 	/**
-	 * Cached "is there a conflict?" lookup for the current request.
+	 * Static "is there a conflict?" cache, scoped to the request.
 	 *
 	 * Both phpmailer_init and the two From filters need the answer,
-	 * and the admin-notice hook fires once per page render. Caching
-	 * the result keeps the active_plugins option fetch to one per
-	 * request even when multiple mails go out (the option itself is
-	 * autoloaded, so the cost is marginal — but the cache also lets
-	 * us treat the result as stable across the request lifetime).
+	 * the admin-notice hook fires once per page render, and the
+	 * SMTP-status diagnostic on the settings page calls it too.
+	 * Static (not instance) so the diagnostic on the settings page
+	 * shares the same memo even though it uses self::detect_conflict()
+	 * without an instance.
 	 *
 	 * @var string|null|false  null = uncached, false = no conflict,
 	 *                          string = display label of the
 	 *                          first detected conflicting plugin.
 	 */
-	private $cached_conflict_label = null;
+	private static $cached_conflict_label = null;
 
 	/**
 	 * Entry point. Defers all hook registration to the `init` action
@@ -247,7 +247,7 @@ final class Transport {
 			return;
 		}
 
-		$conflict = $this->detect_conflict();
+		$conflict = self::detect_conflict();
 		if ( false === $conflict ) {
 			return;
 		}
@@ -282,7 +282,7 @@ final class Transport {
 		if ( empty( $settings['enabled'] ) ) {
 			return false;
 		}
-		return false === $this->detect_conflict();
+		return false === self::detect_conflict();
 	}
 
 	/**
@@ -297,24 +297,102 @@ final class Transport {
 	 * Multisite network-activated plugins are NOT scanned;
 	 * PerForm's Multisite support is post-MVP.
 	 *
+	 * Public so the SMTP-settings diagnostic block can show the
+	 * same conflict label it would show in the admin notice.
+	 *
 	 * @return string|false  Display label of the conflicting
 	 *                       plugin, or false when there is none.
 	 */
-	private function detect_conflict() {
-		if ( null !== $this->cached_conflict_label ) {
-			return $this->cached_conflict_label;
+	public static function detect_conflict() {
+		if ( null !== self::$cached_conflict_label ) {
+			return self::$cached_conflict_label;
 		}
 
 		$active = (array) get_option( 'active_plugins', [] );
 
 		foreach ( self::CONFLICTING_PLUGINS as $slug => $label ) {
 			if ( in_array( $slug, $active, true ) ) {
-				$this->cached_conflict_label = $label;
+				self::$cached_conflict_label = $label;
 				return $label;
 			}
 		}
 
-		$this->cached_conflict_label = false;
+		self::$cached_conflict_label = false;
 		return false;
+	}
+
+	/**
+	 * Diagnostic snapshot for the SMTP-settings page status block.
+	 *
+	 * Aggregates everything an operator needs to debug "why isn't
+	 * my SMTP working?" into one shape. The settings page renders
+	 * this with traffic-light badges so the answer is visible at
+	 * a glance instead of needing to trace through the codebase.
+	 *
+	 * Shape:
+	 *   [ *     'transport_loaded' => bool,    // class loaded on this request
+	 *     'enabled'          => bool,    // master toggle in settings
+	 *     'configured'       => bool,    // host + port + (auth → username/password) usable
+	 *     'configured_notes' => string,  // human reason if not configured
+	 *     'conflict'         => string|false,  // rival plugin label, false = none
+	 *     'effective'        => bool,    // would the next wp_mail() route via our config?
+	 *   ]
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function get_status(): array {
+		$settings = SmtpPage::get_settings();
+
+		$host = (string) $settings['host'];
+		$port = (int) $settings['port'];
+		$auth = ! empty( $settings['auth'] );
+
+		// "configured" mirrors the apply_smtp_config() bail-out
+		// gates: an empty host or zero port stops the hook short
+		// even when enabled, so we show that the same way here.
+		$configured_notes = '';
+		$configured       = true;
+
+		if ( '' === $host ) {
+			$configured       = false;
+			$configured_notes = __( 'No SMTP host set.', 'perform-forms' );
+		} elseif ( $port < 1 ) {
+			$configured       = false;
+			$configured_notes = __( 'No SMTP port set.', 'perform-forms' );
+		} elseif ( $auth ) {
+			$has_username = '' !== (string) $settings['username'];
+			$has_password_cipher = '' !== (string) $settings['password'];
+			if ( ! $has_username ) {
+				$configured       = false;
+				$configured_notes = __( 'Authentication is on but no username is set.', 'perform-forms' );
+			} elseif ( ! $has_password_cipher ) {
+				$configured       = false;
+				$configured_notes = __( 'Authentication is on but no password is stored.', 'perform-forms' );
+			} else {
+				$plaintext = Secret::decrypt( (string) $settings['password'] );
+				if ( '' === $plaintext ) {
+					$configured       = false;
+					$configured_notes = __( 'Stored password cannot be decrypted — most likely the wp-config.php auth salt was rotated. Re-enter your password.', 'perform-forms' );
+				}
+			}
+		}
+
+		$conflict = self::detect_conflict();
+
+		// "effective" is the boolean apply_smtp_config() answers
+		// when wp_mail() actually fires. Mirrors should_handle()
+		// + the inline guards inside apply_smtp_config().
+		$effective = ! empty( $settings['enabled'] )
+			&& $configured
+			&& false === $conflict;
+
+		return [
+			'transport_loaded' => true,
+			'enabled'          => ! empty( $settings['enabled'] ),
+			'configured'       => $configured,
+			'configured_notes' => $configured_notes,
+			'conflict'         => $conflict,
+			'effective'        => $effective,
+		];
 	}
 }

@@ -62,6 +62,7 @@ declare( strict_types = 1 );
 namespace PerForm\Admin;
 
 use PerForm\Settings\Secret;
+use PerForm\Smtp\Transport;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -330,8 +331,10 @@ final class SmtpPage {
 			<?php $this->maybe_print_notice(); ?>
 
 			<p class="description" style="max-width: 720px;">
-				<?php esc_html_e( 'Configure an SMTP server so PerForm can deliver admin notifications and submitter confirmations through your own mail provider instead of the WordPress default. Settings saved here apply once Slice A-b ships the phpmailer_init hook — in this Slice A-a release the UI persists your config but does not yet override wp_mail().', 'perform-forms' ); ?>
+				<?php esc_html_e( 'Configure an SMTP server so PerForm can deliver admin notifications and submitter confirmations through your own mail provider instead of the WordPress default. The status panel below shows whether the configured override is actually in effect for the next wp_mail() call.', 'perform-forms' ); ?>
 			</p>
+
+			<?php $this->render_status_block(); ?>
 
 			<form method="post" action="<?php echo esc_url( $this->page_url() ); ?>" class="perform-smtp__form">
 				<?php wp_nonce_field( self::NONCE_ACTION ); ?>
@@ -519,6 +522,153 @@ final class SmtpPage {
 	}
 
 	/**
+	 * Render the live diagnostic status block at the top of the
+	 * settings page.
+	 *
+	 * The block answers — at a glance, without leaving the page —
+	 * the five questions an operator asks when their SMTP override
+	 * doesn't seem to be working:
+	 *
+	 *   1. Is the Transport class even loaded? (Defends against
+	 *      partial FTP uploads where SmtpPage.php is newer than
+	 *      Smtp/Transport.php.)
+	 *   2. Is the master toggle on?
+	 *   3. Is the stored config usable (host + port + decryptable
+	 *      password)?
+	 *   4. Is a rival SMTP plugin active?
+	 *   5. Net answer: will the next wp_mail() route via PerForm?
+	 *
+	 * Status is read fresh on every render — no caching across
+	 * requests, no AJAX. Settings page is admin-only and rarely
+	 * loaded; the cost is trivial.
+	 *
+	 * @return void
+	 */
+	private function render_status_block(): void {
+		$transport_loaded = class_exists( Transport::class );
+
+		// Partial-upload defense: if Transport isn't loadable we
+		// can't call get_status() without a fatal. Show a single
+		// red row + bail.
+		if ( ! $transport_loaded ) {
+			?>
+			<div class="perform-smtp__status perform-smtp__status--effective-false">
+				<h2><?php esc_html_e( 'SMTP Status', 'perform-forms' ); ?></h2>
+				<table>
+					<tbody>
+						<tr>
+							<td class="perform-smtp__status-label"><?php esc_html_e( 'Transport module', 'perform-forms' ); ?></td>
+							<td><span class="perform-smtp__status-badge perform-smtp__status-badge--bad"><?php esc_html_e( 'Missing', 'perform-forms' ); ?></span></td>
+							<td class="perform-smtp__status-detail">
+								<?php esc_html_e( 'The PerForm\\Smtp\\Transport class could not be loaded. Upload includes/Smtp/Transport.php to fix this.', 'perform-forms' ); ?>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<?php
+			return;
+		}
+
+		$status = Transport::get_status();
+		$wrapper_modifier = $status['effective'] ? 'effective-true' : 'effective-false';
+		?>
+		<div class="perform-smtp__status perform-smtp__status--<?php echo esc_attr( $wrapper_modifier ); ?>">
+			<h2><?php esc_html_e( 'SMTP Status', 'perform-forms' ); ?></h2>
+			<table>
+				<tbody>
+					<tr>
+						<td class="perform-smtp__status-label"><?php esc_html_e( 'Transport module', 'perform-forms' ); ?></td>
+						<td><span class="perform-smtp__status-badge perform-smtp__status-badge--ok"><?php esc_html_e( 'Loaded', 'perform-forms' ); ?></span></td>
+						<td class="perform-smtp__status-detail">
+							<?php esc_html_e( 'PerForm\\Smtp\\Transport is active on this request.', 'perform-forms' ); ?>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="perform-smtp__status-label"><?php esc_html_e( 'Master toggle', 'perform-forms' ); ?></td>
+						<?php if ( $status['enabled'] ) : ?>
+							<td><span class="perform-smtp__status-badge perform-smtp__status-badge--ok"><?php esc_html_e( 'Enabled', 'perform-forms' ); ?></span></td>
+							<td class="perform-smtp__status-detail">
+								<?php esc_html_e( '"Enable PerForm SMTP" is on.', 'perform-forms' ); ?>
+							</td>
+						<?php else : ?>
+							<td><span class="perform-smtp__status-badge perform-smtp__status-badge--bad"><?php esc_html_e( 'Disabled', 'perform-forms' ); ?></span></td>
+							<td class="perform-smtp__status-detail">
+								<?php esc_html_e( '"Enable PerForm SMTP" is off — wp_mail() falls back to the WordPress default transport.', 'perform-forms' ); ?>
+							</td>
+						<?php endif; ?>
+					</tr>
+
+					<tr>
+						<td class="perform-smtp__status-label"><?php esc_html_e( 'Configuration', 'perform-forms' ); ?></td>
+						<?php if ( $status['configured'] ) : ?>
+							<td><span class="perform-smtp__status-badge perform-smtp__status-badge--ok"><?php esc_html_e( 'Complete', 'perform-forms' ); ?></span></td>
+							<td class="perform-smtp__status-detail">
+								<?php
+								$settings = self::get_settings();
+								echo esc_html(
+									sprintf(
+										/* translators: 1: host, 2: port, 3: encryption mode (TLS / SSL / none) */
+										__( '%1$s:%2$d (%3$s)', 'perform-forms' ),
+										(string) $settings['host'],
+										(int) $settings['port'],
+										strtoupper( (string) $settings['encryption'] )
+									)
+								);
+								?>
+							</td>
+						<?php else : ?>
+							<td><span class="perform-smtp__status-badge perform-smtp__status-badge--bad"><?php esc_html_e( 'Incomplete', 'perform-forms' ); ?></span></td>
+							<td class="perform-smtp__status-detail"><?php echo esc_html( (string) $status['configured_notes'] ); ?></td>
+						<?php endif; ?>
+					</tr>
+
+					<tr>
+						<td class="perform-smtp__status-label"><?php esc_html_e( 'Plugin conflict', 'perform-forms' ); ?></td>
+						<?php if ( false === $status['conflict'] ) : ?>
+							<td><span class="perform-smtp__status-badge perform-smtp__status-badge--neutral"><?php esc_html_e( 'None', 'perform-forms' ); ?></span></td>
+							<td class="perform-smtp__status-detail">
+								<?php esc_html_e( 'No competing SMTP plugin detected (WP Mail SMTP / FluentSMTP / Easy WP SMTP / Post SMTP).', 'perform-forms' ); ?>
+							</td>
+						<?php else : ?>
+							<td><span class="perform-smtp__status-badge perform-smtp__status-badge--warn"><?php esc_html_e( 'Detected', 'perform-forms' ); ?></span></td>
+							<td class="perform-smtp__status-detail">
+								<?php
+								echo esc_html(
+									sprintf(
+										/* translators: %s: name of the conflicting plugin */
+										__( '"%s" is active — PerForm SMTP self-disabled to avoid a double configuration. Deactivate the other plugin to let PerForm SMTP take over.', 'perform-forms' ),
+										(string) $status['conflict']
+									)
+								);
+								?>
+							</td>
+						<?php endif; ?>
+					</tr>
+
+					<tr>
+						<td class="perform-smtp__status-label"><strong><?php esc_html_e( 'Effective', 'perform-forms' ); ?></strong></td>
+						<?php if ( $status['effective'] ) : ?>
+							<td><span class="perform-smtp__status-badge perform-smtp__status-badge--ok"><?php esc_html_e( 'Active', 'perform-forms' ); ?></span></td>
+							<td class="perform-smtp__status-detail">
+								<strong><?php esc_html_e( 'The next wp_mail() call WILL route through this SMTP configuration.', 'perform-forms' ); ?></strong>
+							</td>
+						<?php else : ?>
+							<td><span class="perform-smtp__status-badge perform-smtp__status-badge--bad"><?php esc_html_e( 'Inactive', 'perform-forms' ); ?></span></td>
+							<td class="perform-smtp__status-detail">
+								<strong><?php esc_html_e( 'wp_mail() will use the WordPress default transport (not your configured SMTP).', 'perform-forms' ); ?></strong>
+								<?php esc_html_e( 'Resolve the rows marked above to fix this.', 'perform-forms' ); ?>
+							</td>
+						<?php endif; ?>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Tiny vanilla-JS handler that fills host/port/encryption when
 	 * the operator picks a provider preset, and toggles the
 	 * username/password row visibility based on the auth checkbox.
@@ -680,6 +830,61 @@ final class SmtpPage {
 			/* Keep description text in the right column from running
 			   past the form's visual width on wide monitors. */
 			.perform-smtp__form .form-table td .description { max-width: 560px; }
+
+			/* Diagnostic status block. Border-left colour tracks the
+			   "effective" boolean: green = SMTP override will fire on
+			   the next wp_mail(), red = something is blocking it. */
+			.perform-smtp .perform-smtp__status {
+				margin: 20px 0 24px;
+				padding: 14px 20px 16px;
+				background: #f6f7f7;
+				border-left: 4px solid #2271b1;
+				max-width: 920px;
+			}
+			.perform-smtp .perform-smtp__status--effective-true  { border-left-color: #00a32a; }
+			.perform-smtp .perform-smtp__status--effective-false { border-left-color: #d63638; }
+			.perform-smtp .perform-smtp__status h2 {
+				margin: 0 0 10px;
+				font-size: 12px;
+				text-transform: uppercase;
+				letter-spacing: 0.06em;
+				color: #1d2327;
+			}
+			.perform-smtp .perform-smtp__status table {
+				border-collapse: collapse;
+				width: 100%;
+			}
+			.perform-smtp .perform-smtp__status td {
+				padding: 4px 12px 4px 0;
+				vertical-align: middle;
+				border: 0;
+			}
+			.perform-smtp .perform-smtp__status td:last-child { padding-right: 0; }
+			.perform-smtp .perform-smtp__status-label {
+				font-weight: 600;
+				width: 150px;
+				color: #1d2327;
+				white-space: nowrap;
+			}
+			.perform-smtp .perform-smtp__status-badge {
+				display: inline-block;
+				padding: 2px 10px;
+				border-radius: 9999px;
+				font-size: 11px;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.04em;
+				white-space: nowrap;
+			}
+			.perform-smtp .perform-smtp__status-badge--ok      { background: #d1e7d8; color: #1a6c2f; }
+			.perform-smtp .perform-smtp__status-badge--bad     { background: #fce4e7; color: #8e2933; }
+			.perform-smtp .perform-smtp__status-badge--warn    { background: #fcf0d4; color: #7c4910; }
+			.perform-smtp .perform-smtp__status-badge--neutral { background: #f0f0f1; color: #50575e; }
+			.perform-smtp .perform-smtp__status-detail {
+				color: #50575e;
+				font-size: 13px;
+				line-height: 1.5;
+			}
 		</style>
 		<?php
 	}
