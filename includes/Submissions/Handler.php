@@ -127,6 +127,19 @@ final class Handler {
 			$this->silent_reject();
 		}
 
+		// Built-in spam challenge verify (Phase B-a). Sits between
+		// the time-check and field validation: a missing or invalid
+		// challenge token is silent-rejected the same way honeypot
+		// hits are. The Guard façade reads the form's spamProtection
+		// attribute to decide whether to run a check at all — so a
+		// form explicitly opted out via 'none' falls through here
+		// instantly. Honeypot + time-check from Phase 1 still apply
+		// even when spam protection is 'none' (defense in depth).
+		$form_attrs = isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [];
+		if ( ! \PerForm\Spam\Guard::verify_submission( $form_id, $form_attrs ) ) {
+			$this->silent_reject();
+		}
+
 		// Sanitize + validate user input against that definition.
 		[ $clean, $errors ] = $this->validate( $definition['fields'] );
 

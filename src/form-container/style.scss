@@ -649,7 +649,8 @@
 	.perform-section-heading--full-width,
 	.perform-form__error--global,
 	.perform-form__actions,
-	.perform-form__hp {
+	.perform-form__hp,
+	.perform-form__spam {
 		grid-column: 1 / -1;
 	}
 
@@ -856,4 +857,56 @@
 			background-color: color-mix(in srgb, currentColor 10%, transparent);
 		}
 	}
+}
+
+/* ---------------------------------------------------------------------
+ * Built-in spam challenge (Phase B-a).
+ *
+ * The challenge block sits inside the form alongside the field grid.
+ * The math fallback row only appears when JavaScript is disabled OR
+ * the PoW solver hasn't finished yet — the solver removes the row
+ * (via the `hidden` attribute) the moment it has a solution.
+ *
+ * Doubled `.perform-form` selector for theme-resistant specificity,
+ * same convention as the rest of this stylesheet (see specificity
+ * strategy comment near the top).
+ * ------------------------------------------------------------------ */
+.perform-form.perform-form .perform-form__spam {
+	/* No visual chrome by default — the math row, when visible,
+	 * looks like a normal labeled field. */
+}
+
+.perform-form.perform-form .perform-form__spam-math {
+	display: block;
+
+	/* When the PoW solver sets `hidden`, the math row disappears
+	 * without a layout shift on the surrounding fields. */
+	&[hidden] {
+		display: none;
+	}
+}
+
+.perform-form.perform-form .perform-form__spam-label {
+	display: block;
+	font-weight: 500;
+	margin-bottom: 4px;
+	color: var(--perform-color-text, currentColor);
+
+	input[type="text"] {
+		display: inline-block;
+		margin-left: 8px;
+		min-width: 60px;
+		max-width: 80px;
+		padding: 4px 8px;
+		border: 1px solid var(--perform-color-border, currentColor);
+		border-radius: var(--perform-border-radius, 4px);
+		font-size: inherit;
+		background: var(--perform-color-input-background, transparent);
+	}
+}
+
+.perform-form.perform-form .perform-form__spam-hint {
+	margin: 4px 0 0;
+	font-size: 12px;
+	opacity: 0.7;
 }

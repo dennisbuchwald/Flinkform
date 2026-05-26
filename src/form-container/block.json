@@ -47,6 +47,11 @@
 		"submitCondition": {
 			"type": "object",
 			"default": {}
+		},
+		"spamProtection": {
+			"type": "string",
+			"default": "auto",
+			"enum": ["auto", "builtin", "none"]
 		}
 	},
 	"providesContext": {

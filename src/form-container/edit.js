@@ -63,7 +63,7 @@ function generateUuid() {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { formId, title, submitLabel, successMessage, notifications, appearance, customCSS } = attributes;
+	const { formId, title, submitLabel, successMessage, notifications, appearance, customCSS, spamProtection } = attributes;
 
 	const adminConfig = notifications?.admin ?? {};
 	const submitterConfig = notifications?.submitter ?? {};
@@ -546,6 +546,44 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					toggleLabel={ __( 'Gate the submit button', 'perform-forms' ) }
 					toggleHelp={ __( 'Disable the submit button until the rules below match. Useful for "I agree to terms" checkboxes.', 'perform-forms' ) }
 				/>
+
+				<PanelBody
+					title={ __( 'Spam Protection', 'perform-forms' ) }
+					initialOpen={ false }
+				>
+					<SelectControl
+						label={ __( 'Strategy', 'perform-forms' ) }
+						value={ spamProtection ?? 'auto' }
+						options={ [
+							{
+								label: __( 'Auto — built-in challenge (recommended)', 'perform-forms' ),
+								value: 'auto',
+							},
+							{
+								label: __( 'Built-in challenge (force on)', 'perform-forms' ),
+								value: 'builtin',
+							},
+							{
+								label: __( 'None — honeypot + time-check only', 'perform-forms' ),
+								value: 'none',
+							},
+						] }
+						help={ __(
+							'PerForm’s built-in challenge runs a tiny proof-of-work in the visitor’s browser (transparent, ~50–500 ms) plus a math fallback for visitors without JavaScript. No external services, no cookies — 100% DSGVO-compliant.',
+							'perform-forms'
+						) }
+						onChange={ ( value ) => setAttributes( { spamProtection: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ spamProtection === 'none' && (
+						<Notice status="warning" isDismissible={ false } className="perform-spam-notice">
+							{ __(
+								'Honeypot + time-check from Phase 1 still apply, but the active challenge is off. Use only for trusted-context forms (logged-in users, internal tools).',
+								'perform-forms'
+							) }
+						</Notice>
+					) }
+				</PanelBody>
 
 				<PanelBody
 					title={ __( 'Custom CSS', 'perform-forms' ) }

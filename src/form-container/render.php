@@ -437,6 +437,16 @@ $timestamp_token = base64_encode( (string) time() );
 			</label>
 		</div>
 
+		<?php
+		// Built-in spam challenge (Phase B-a). Rendered only when
+		// the form's spamProtection attribute resolves to something
+		// other than 'none' — the Guard façade owns that decision so
+		// we don't have to know about provider switching here.
+		if ( \PerForm\Spam\Guard::should_protect( $attributes ) ) {
+			echo \PerForm\Spam\Renderer::render( $form_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Renderer escapes every interpolation internally.
+		}
+		?>
+
 		<?php if ( ! empty( $errors['_form'] ) ) : ?>
 			<div class="perform-form__error perform-form__error--global" role="alert">
 				<?php echo esc_html( $errors['_form'] ); ?>

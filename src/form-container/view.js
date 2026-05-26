@@ -786,3 +786,152 @@ function focusFirstFieldOfStep( wrapper, stepIndex ) {
 		focusable.focus();
 	}
 }
+
+// ---------------------------------------------------------------------
+// Built-in spam challenge — proof-of-work solver (Phase B-a)
+//
+// Each protected form renders a `.perform-form__spam` block with
+// `data-perform-pow-salt` + `data-perform-pow-difficulty` attributes and
+// a hidden `[data-perform-spam-solution]` input. We find the salt/
+// difficulty, compute sha256(salt + n) for increasing n until the hex
+// hash matches the leading-zero requirement, then write the winning n
+// into the hidden input. The visible math fallback is hidden once we
+// have a solution so JS-on visitors never see it.
+//
+// Compute strategy: main-thread async with yield-every-1000 iterations.
+// Avoids Web Workers (no extra script asset to register, no inline-blob
+// CSP friction). Average wall time at difficulty=18 is ~50-500 ms on
+// modern CPUs, sometimes up to ~2 s on low-end mobile. crypto.subtle
+// is available on every browser shipped since 2016 — we don't fall
+// back any further; visitors on truly ancient browsers see the math
+// challenge and answer it manually.
+//
+// SSR + Interactivity-API friendliness: the solver runs as a free-
+// standing DOM init (not through the Interactivity store) so it works
+// on every form regardless of multi-step state. Phase 7b's conditional
+// logic init follows the same pattern.
+// ---------------------------------------------------------------------
+
+if ( typeof document !== 'undefined' ) {
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', initSpamChallenge );
+	} else {
+		initSpamChallenge();
+	}
+}
+
+function initSpamChallenge() {
+	const blocks = document.querySelectorAll( '.perform-form__spam[data-perform-spam]' );
+	blocks.forEach( ( block ) => {
+		const salt       = block.getAttribute( 'data-perform-pow-salt' ) || '';
+		const difficulty = parseInt(
+			block.getAttribute( 'data-perform-pow-difficulty' ) || '0',
+			10
+		);
+		const solutionInput = block.querySelector( '[data-perform-spam-solution]' );
+		const mathRow       = block.querySelector( '[data-perform-spam-math]' );
+
+		if ( ! salt || ! difficulty || ! solutionInput ) {
+			// Mis-rendered block — leave the math fallback visible so
+			// the visitor can still submit by answering the question.
+			return;
+		}
+
+		if ( ! window.crypto || ! window.crypto.subtle ) {
+			// Browser lacks Web Crypto — same fallback path.
+			return;
+		}
+
+		solvePoW( salt, difficulty )
+			.then( ( solution ) => {
+				solutionInput.value = String( solution );
+				// PoW solved → math row is redundant; hide it. We
+				// purposely hide AFTER successful solve so a slow
+				// device that's still computing leaves the math row
+				// visible as a fallback the visitor can use.
+				if ( mathRow ) {
+					mathRow.setAttribute( 'hidden', '' );
+					// Clear any prefilled math answer so the server
+					// doesn't see two competing solutions on submit.
+					const mathInput = mathRow.querySelector( 'input[type="text"]' );
+					if ( mathInput ) {
+						mathInput.value = '';
+					}
+				}
+			} )
+			.catch( () => {
+				// Compute aborted (e.g. tab backgrounded long enough
+				// for the browser to throttle the JS loop) — fall
+				// back to the math row that's already visible.
+			} );
+	} );
+}
+
+/**
+ * Compute the PoW solution.
+ *
+ * Loops with a microtask yield every 1024 iterations so the UI thread
+ * stays responsive. crypto.subtle.digest is async; the inner await
+ * already lets the event loop breathe, but Chromium specifically can
+ * starve repaint cycles when the yields are too tight — 1024 is the
+ * sweet spot between "responsive" and "not artificially slow".
+ *
+ * @param {string} salt        base64url-encoded server-supplied salt
+ * @param {number} difficulty  leading-zero bits required
+ * @returns {Promise<number>}  the winning integer
+ */
+async function solvePoW( salt, difficulty ) {
+	const encoder = new TextEncoder();
+	const fullHex = Math.floor( difficulty / 4 );
+	const extraBits = difficulty % 4;
+	const mask = ( 0x0f << ( 4 - extraBits ) ) & 0x0f;
+
+	let n = 0;
+	while ( true ) {
+		const data = encoder.encode( `${ salt }|${ n }` );
+		const digest = await window.crypto.subtle.digest( 'SHA-256', data );
+		const hex = bytesToHex( digest );
+
+		let leadingZeros = true;
+		for ( let i = 0; i < fullHex; i++ ) {
+			if ( hex[ i ] !== '0' ) {
+				leadingZeros = false;
+				break;
+			}
+		}
+
+		if ( leadingZeros ) {
+			if ( extraBits === 0 ) {
+				return n;
+			}
+			const nibble = parseInt( hex[ fullHex ], 16 );
+			if ( ( nibble & mask ) === 0 ) {
+				return n;
+			}
+		}
+
+		n++;
+		if ( ( n & 1023 ) === 0 ) {
+			// Yield to give the UI thread a chance to repaint.
+			// 0-ms timeout is the standard "next tick" pattern.
+			await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
+		}
+	}
+}
+
+/**
+ * Convert an ArrayBuffer to a lowercase hex string.
+ * Faster than `Array.from(bytes).map(...).join('')` on hot paths
+ * because the latter allocates a fresh array per call.
+ *
+ * @param {ArrayBuffer} buffer
+ * @returns {string}
+ */
+function bytesToHex( buffer ) {
+	const bytes = new Uint8Array( buffer );
+	let out = '';
+	for ( let i = 0; i < bytes.length; i++ ) {
+		out += bytes[ i ].toString( 16 ).padStart( 2, '0' );
+	}
+	return out;
+}
