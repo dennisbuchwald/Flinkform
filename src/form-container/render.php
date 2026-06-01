@@ -455,16 +455,6 @@ $timestamp_token = base64_encode( (string) time() );
 			</label>
 		</div>
 
-		<?php
-		// Built-in spam challenge (Phase B-a). Rendered only when
-		// the form's spamProtection attribute resolves to something
-		// other than 'none' — the Guard façade owns that decision so
-		// we don't have to know about provider switching here.
-		if ( \PerForm\Spam\Guard::should_protect( $attributes ) ) {
-			echo \PerForm\Spam\Renderer::render( $form_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Renderer escapes every interpolation internally.
-		}
-		?>
-
 		<?php if ( ! empty( $errors['_form'] ) ) : ?>
 			<div class="perform-form__error perform-form__error--global" role="alert">
 				<?php echo esc_html( $errors['_form'] ); ?>
@@ -566,6 +556,15 @@ $timestamp_token = base64_encode( (string) time() );
 
 		<?php echo $inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks output, fields escape themselves. ?>
 
+		<?php
+		// Built-in spam challenge (Phase B-a). Rendered just above the
+		// submit button so it sits at the bottom of the form, not above
+		// the fields. The Guard façade decides whether to protect.
+		if ( \PerForm\Spam\Guard::should_protect( $attributes ) ) {
+			echo \PerForm\Spam\Renderer::render( $form_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Renderer escapes every interpolation internally.
+		}
+		?>
+
 		<div class="perform-form__actions">
 			<?php if ( $is_multi_step ) : ?>
 				<?php
@@ -626,6 +625,24 @@ $timestamp_token = base64_encode( (string) time() );
 		</div>
 	</form>
 </div>
+<?php if ( \PerForm\Spam\Guard::should_protect( $attributes ) ) : ?>
+<script>
+/*
+ * Spam-challenge boot: hide the math fallback row immediately so
+ * JS-on visitors never see it flash. The deferred view.js module
+ * will hide it again after solving the PoW, but this inline script
+ * runs synchronously during HTML parsing — zero flash. JS-disabled
+ * visitors never execute this, so the math row stays visible for
+ * them (correct fallback behaviour).
+ */
+( function () {
+	var w = document.currentScript && document.currentScript.previousElementSibling;
+	if ( ! w ) { return; }
+	var m = w.querySelector( '[data-perform-spam-math]' );
+	if ( m ) { m.setAttribute( 'hidden', '' ); }
+}() );
+</script>
+<?php endif; ?>
 <?php if ( $is_multi_step ) : ?>
 <script>
 /*
