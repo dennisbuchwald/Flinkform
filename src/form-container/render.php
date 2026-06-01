@@ -75,7 +75,7 @@ if ( ! in_array( $submit_btn_style, [ 'fill', 'outline', 'ghost' ], true ) ) {
 }
 
 $field_style = isset( $appearance['fieldStyle'] ) && is_string( $appearance['fieldStyle'] ) ? $appearance['fieldStyle'] : 'bordered';
-if ( ! in_array( $field_style, [ 'bordered', 'underline', 'minimal' ], true ) ) {
+if ( ! in_array( $field_style, [ 'bordered', 'soft', 'underline', 'minimal' ], true ) ) {
 	$field_style = 'bordered';
 }
 

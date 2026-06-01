@@ -401,7 +401,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</BaseControl>
 					<ToggleGroupControl
 						label={ __( 'Field style', 'perform-forms' ) }
-						help={ __( 'Bordered: full outline. Underline: bottom border only. Minimal: no border, subtle background.', 'perform-forms' ) }
+						help={ __( 'Bordered: full outline. Soft: light gray border. Underline: bottom border only. Minimal: no border, subtle background.', 'perform-forms' ) }
 						value={ fieldStyle }
 						onChange={ ( value ) => updateAppearance( { fieldStyle: value } ) }
 						isBlock
@@ -409,6 +409,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption value="bordered" label={ __( 'Bordered', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="soft" label={ __( 'Soft', 'perform-forms' ) } />
 						<ToggleGroupControlOption value="underline" label={ __( 'Underline', 'perform-forms' ) } />
 						<ToggleGroupControlOption value="minimal" label={ __( 'Minimal', 'perform-forms' ) } />
 					</ToggleGroupControl>

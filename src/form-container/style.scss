@@ -565,6 +565,30 @@
  * ------------------------------------------------------------------ */
 
 /* Field style — bordered (default) | underline | minimal. */
+/* Field style — soft: same full border as "bordered" but light gray
+ * instead of currentColor. Gives the gentle, airy look common in
+ * premium contact forms (CF7 defaults, Typeform embeds). Focus
+ * darkens the border to the primary colour instead of adding an
+ * outline ring — feels less "technical". */
+.perform-form.perform-form--field-style-soft {
+	.perform-field__input {
+		border-color: #d0d0d0;
+		box-shadow: none;
+
+		&:focus,
+		&:focus-visible {
+			border-color: var(--perform-color-primary);
+			outline: none;
+			box-shadow: 0 0 0 1px var(--perform-color-primary);
+		}
+	}
+
+	.perform-field--has-error .perform-field__input {
+		border-color: #cc0000;
+		box-shadow: 0 0 0 1px #cc0000;
+	}
+}
+
 .perform-form.perform-form--field-style-underline {
 	.perform-field__input {
 		border-width: 0 0 1px 0;
@@ -898,6 +922,12 @@
 		// definition in the base for why.
 		--perform-color-primary: var(--wp--preset--color--primary, #7eb6ff);
 		--perform-color-on-primary: var(--wp--preset--color--background, #1a1a1a);
+	}
+
+	.perform-form.perform-form--field-style-soft {
+		.perform-field__input {
+			border-color: #555;
+		}
 	}
 
 	.perform-form.perform-form--field-style-minimal {
