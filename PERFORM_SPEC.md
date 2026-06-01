@@ -193,7 +193,53 @@ Built-in webhook support — no Zapier account needed for basic integrations.
 
 Multiple webhooks per form are supported.
 
-### 4.8 Optional SMTP Module
+### 4.8 DSGVO / GDPR Compliance
+
+Data protection is not an afterthought — it is built into the architecture from day one. PerForm must be usable by European sites without any additional configuration or legal risk.
+
+**Data minimisation by default:**
+- IP address storage is **optional** and **off by default**. The user explicitly opts in per form if they need it (e.g. for abuse prevention).
+- User agent storage is optional, off by default.
+- Only the data the user explicitly collects via form fields is stored — nothing else.
+
+**Data retention:**
+- Configurable retention period per form: keep forever, keep for X days, or store nothing at all (webhook-only mode, data is forwarded and never persisted in WordPress).
+- Automatic deletion of submissions older than the configured period via WP-Cron.
+
+**Right to erasure:**
+- Individual submissions can be deleted from the admin panel at any time.
+- Bulk delete is supported.
+- A WP-CLI command for programmatic deletion is provided.
+
+**Third-party services:**
+- No data is sent to any external service by default.
+- Optional CAPTCHA providers (reCAPTCHA, Turnstile, hCaptcha) only activate when explicitly configured — and the privacy implications of each are clearly noted in the settings UI.
+- When a CAPTCHA service is active, a notice should be shown to guide the operator to update their privacy policy accordingly.
+
+**No cookies by default:**
+- PerForm sets no cookies on the frontend unless a CAPTCHA provider that requires cookies is activated.
+
+### 4.8b Spam Protection & CAPTCHA
+
+**Always-on (zero configuration, zero user friction):**
+- Honeypot field — invisible hidden field; bots fill it, humans don't. Submissions with a filled honeypot are silently rejected.
+- Time-based check — submissions completed faster than a human could read and fill the form are flagged as bot traffic.
+
+These two layers alone handle the majority of spam without any external service, without cookies, and without DSGVO implications.
+
+**Optional CAPTCHA (operator activates per form or globally):**
+The specific CAPTCHA solution is intentionally left open — the choice depends on the operator's privacy posture and legal requirements. PerForm should support at least two options, with a clean abstraction layer so adding more is straightforward.
+
+Candidate providers to evaluate and implement (in order of privacy-friendliness):
+1. **Cloudflare Turnstile** — invisible, no cookies in most cases, GDPR-friendlier than reCAPTCHA
+2. **hCaptcha** — privacy-respecting alternative, EU-friendly
+3. **Google reCAPTCHA v3** — most widely known, but sends data to Google — operators must disclose this in their privacy policy
+
+The implementation should make the privacy trade-off of each option visible to the WordPress site operator in plain language, not just an API key input field.
+
+**Recommendation note for implementer:** Cloudflare Turnstile is the preferred default CAPTCHA option given its superior privacy posture, but the final decision should be validated against current service terms and DSGVO guidance at time of implementation.
+
+### 4.9 Optional SMTP Module
 
 WordPress's built-in `wp_mail()` function relies on PHP's `mail()` — which is unreliable on most hosting environments and gets flagged as spam. The standard solution is a separate SMTP plugin (WP Mail SMTP has 3M+ installs — the problem is real and universal).
 
