@@ -542,6 +542,10 @@ $timestamp_token = base64_encode( (string) time() );
 			</div>
 		<?php endif; ?>
 
+		<?php if ( $is_multi_step ) : ?>
+			<div class="perform-sr-only" aria-live="polite" aria-atomic="true" data-perform-step-announce></div>
+		<?php endif; ?>
+
 		<?php echo $inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks output, fields escape themselves. ?>
 
 		<div class="perform-form__actions">

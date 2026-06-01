@@ -106,12 +106,15 @@ final class Renderer {
 		// applied client-side. Until view.js runs, the math row is
 		// visible — that's a fraction of a second on fast paths,
 		// invisible to the user on the typical sub-100ms hydration.
+		$math_id = 'perform-spam-answer-' . substr( md5( $form_id ), 0, 8 );
+		$hint_id = $math_id . '-hint';
+
 		$markup .= '<div class="perform-form__spam-math" data-perform-spam-math>';
-		$markup .= '<label class="perform-form__spam-label">';
+		$markup .= '<label class="perform-form__spam-label" for="' . esc_attr( $math_id ) . '">';
 		$markup .= esc_html( $question );
-		$markup .= ' <input type="text" name="' . esc_attr( self::FIELD_ANSWER ) . '" value="" autocomplete="off" inputmode="numeric" pattern="[0-9]*" size="4" />';
 		$markup .= '</label>';
-		$markup .= '<p class="perform-form__spam-hint">' . esc_html__( 'Spam protection — answer the question above to submit the form.', 'perform-forms' ) . '</p>';
+		$markup .= ' <input type="text" id="' . esc_attr( $math_id ) . '" name="' . esc_attr( self::FIELD_ANSWER ) . '" value="" autocomplete="off" inputmode="numeric" pattern="[0-9]*" size="4" aria-describedby="' . esc_attr( $hint_id ) . '" />';
+		$markup .= '<p class="perform-form__spam-hint" id="' . esc_attr( $hint_id ) . '">' . esc_html__( 'Spam protection — answer the question above to submit the form.', 'perform-forms' ) . '</p>';
 		$markup .= '</div>';
 
 		$markup .= '</div>';

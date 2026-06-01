@@ -60,6 +60,25 @@
  */
 
 /* ---------------------------------------------------------------------
+ * Screen-reader-only utility (WCAG 2.1 AA)
+ *
+ * Visually hides an element while keeping it accessible to assistive
+ * technology. Used for live-region step announcements in multi-step
+ * forms and other a11y-only content.
+ * ------------------------------------------------------------------ */
+.perform-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
+/* ---------------------------------------------------------------------
  * Block-level chrome
  *
  * Form, success/error banners, actions row, submit button. Selectors
@@ -470,6 +489,7 @@
 
 		&--has-error &__input {
 			border-color: #cc0000;
+			border-left-width: 3px;
 		}
 
 		// Fieldset-based fields (radio + checkbox group) reset browser defaults.

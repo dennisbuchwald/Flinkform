@@ -58,6 +58,7 @@ $described = trim( $help_id . ' ' . $error_id );
 				name="perform_field[<?php echo esc_attr( $field_name ); ?>][]"
 				value="<?php echo esc_attr( $opt_value ); ?>"
 				<?php checked( in_array( $opt_value, $selected, true ) ); ?>
+				<?php echo $required ? 'aria-required="true"' : ''; ?>
 			/>
 			<span><?php echo esc_html( $opt_label ); ?></span>
 		</label>

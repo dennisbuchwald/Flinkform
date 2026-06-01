@@ -545,6 +545,7 @@ const { state } = store( NAMESPACE, {
 			if ( null !== target ) {
 				ctx.currentStep = target;
 				syncProgressContext( ctx, wrapper );
+				announceStepChange( wrapper, ctx.progressLabel );
 				deferFocus( wrapper, ctx.currentStep );
 			}
 		},
@@ -562,6 +563,7 @@ const { state } = store( NAMESPACE, {
 			ctx.currentStep = target;
 			syncProgressContext( ctx, wrapper );
 			if ( wrapper ) {
+				announceStepChange( wrapper, ctx.progressLabel );
 				deferFocus( wrapper, ctx.currentStep );
 			}
 		},
@@ -732,6 +734,25 @@ function findPrevVisibleStep( wrapper, current ) {
 }
 
 /**
+ * Announce the current step to screen readers via the aria-live region
+ * that render.php injects into multi-step forms.
+ *
+ * @param {HTMLElement} wrapper      The form wrapper element.
+ * @param {string}      progressLabel The "Step X of Y" text to announce.
+ */
+function announceStepChange( wrapper, progressLabel ) {
+	const region = wrapper.querySelector( '[data-perform-step-announce]' );
+	if ( region ) {
+		// Clear first, then set on next tick — screen readers re-announce
+		// identical text only when the node content actually changes.
+		region.textContent = '';
+		requestAnimationFrame( () => {
+			region.textContent = progressLabel;
+		} );
+	}
+}
+
+/**
  * Schedule a focus move to the new step after Interactivity has
  * finished reconciling the DOM.
  *
@@ -784,6 +805,14 @@ function focusFirstFieldOfStep( wrapper, stepIndex ) {
 	);
 	if ( focusable && typeof focusable.focus === 'function' ) {
 		focusable.focus();
+	} else {
+		// No focusable field in this step (e.g. display-only content
+		// or all fields are conditional-hidden). Focus the step
+		// container itself so keyboard users land inside the new step.
+		if ( ! step.hasAttribute( 'tabindex' ) ) {
+			step.setAttribute( 'tabindex', '-1' );
+		}
+		step.focus();
 	}
 }
 

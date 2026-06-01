@@ -116,6 +116,11 @@ final class Plugin {
 		// the class docblock for the i18n-timing rationale.
 		( new Smtp\Transport() )->register();
 
+		// GDPR / DSGVO privacy integration — privacy-policy content,
+		// personal data exporter + eraser for WP's built-in privacy
+		// tools (Tools > Export/Erase Personal Data).
+		Privacy::register();
+
 		if ( is_admin() ) {
 			( new Admin\Menu() )->register();
 		}
