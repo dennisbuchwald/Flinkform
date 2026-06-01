@@ -924,12 +924,6 @@
 		--perform-color-on-primary: var(--wp--preset--color--background, #1a1a1a);
 	}
 
-	.perform-form.perform-form--field-style-soft {
-		.perform-field__input {
-			border-color: #555;
-		}
-	}
-
 	.perform-form.perform-form--field-style-minimal {
 		.perform-field__input {
 			// On dark themes the 6% currentColor tint over the page
