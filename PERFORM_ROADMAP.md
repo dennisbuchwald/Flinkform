@@ -486,6 +486,68 @@ Plugin submitted to WordPress.org plugin directory. No blocking issues from the 
 
 ---
 
+## Phase M — Freemium Release (Free-Core + Pro-Addon)
+**Goal:** Turn PerForm into a sellable product. The free version stays on WordPress.org as the funnel; the paid features ship as a separate Pro add-on plugin that docks onto a stable extension layer in the free core. Owner wants to move toward release ASAP, so this phase is architected to be **platform-agnostic** — the actual sales/license platform is wired in only at the very last slice.
+
+**Decided (2026-06-01, this session):**
+- **Architecture = Model B** — Free-Core (in .org repo) + separate Pro add-on plugin (Yoast-style), *not* one license-gated codebase. Reason: the Pro code never enters the public .org repo, and Pro can be released/updated without going through the .org review team each time.
+- **The "two plugins" UX concern is designed away** via a 1-click upgrade flow: the free core downloads + activates the Pro add-on automatically after the license key is entered (WP Plugin Install API + license/update endpoint). The customer experiences one click, not "install two plugins".
+- **Merchant of Record is mandatory** for the seller (German solo vendor) — the platform must handle EU VAT / OSS. Current tendency: **Freemius** (sells + licenses + auto-update + MoR in one), decision deferred to slice M-h.
+- **Bridge-layer = an API contract.** Once Pro ships, the extension hooks must not break — a free-core update must never break installed Pro copies. Same contract discipline as the DB-schema migration recipe.
+- **Free/Pro split = DECIDED (strategy: "balanced").** Pro: Conditional Logic, Multi-Step, Webhooks, CSV Export, SMTP (Basic Auth + OAuth2), external CAPTCHA. Free: builder + basic fields + single-recipient notify + submissions view + built-in spam challenge + privacy + thank-you redirect. See the feature matrix below. Since everything is currently in one codebase and nothing is released yet, this is the clean window to assign features without breaking the "never paywall a shipped free feature" rule.
+
+### What gets built (split across M-a → M-h slices):
+
+**Sub-track E — Free/Pro architecture foundation (no selling yet):**
+- **M-a:** Define the extension/bridge layer in the free core — a small, *stable*, documented set of hooks the Pro add-on docks onto. Initial extension points: `performforms/register_fields` (Pro field types), `performforms/notification_routes` (CRM/webhook routes), `performforms/captcha_providers` (Phase-D Turnstile/hCaptcha/reCAPTCHA). Reuse the existing Guard-façade / conflict-detection pattern. Document as an internal API with a "do not break" contract note.
+- **M-b:** Scaffold a real (initially near-empty) Pro add-on as a *separate* plugin that docks via the M-a hooks. Includes a dependency + min-version check against the free core (admin notice if free core missing/too old). Proves the separation holds end-to-end.
+- **M-c:** Assign existing/planned features to Free vs Pro per the feature matrix (see below). Move Pro-bound features (e.g. Phase-D external CAPTCHA providers, SMTP OAuth2) into the add-on without breaking the free core.
+
+**Sub-track F — License & updates:**
+- **M-d:** License client in the Pro add-on — enter key, validate against endpoint, cache result, surface status in admin. Built behind a `License_Provider` interface (adapter) so the platform is swappable.
+- **M-e:** Auto-update mechanism for the Pro add-on (hooks into the WP update transient against the platform/own update endpoint). Free core continues to update via .org as normal.
+- **M-f:** "Upgrade to Pro" flow in the free core — license entry → 1-click download + activation of the Pro add-on (the UX fix for the "two plugins" concern).
+
+**Sub-track G — WordPress.org readiness of the free version:**
+- **M-g:** Make the free version .org-submittable — `readme.txt` to .org standard, Plugin Check tool green, trademark/guideline compliance, *tasteful* (non-nagging) upsell hints only. (Overlaps with Phase 8; consolidate, do not duplicate.)
+
+**Sub-track H — Sales & platform:**
+- **M-h:** Pick and wire the platform (Freemius vs Lemon Squeezy vs self-hosted EDD) into the single `License_Provider` adapter + update endpoint from M-d/M-e. Tendency: Freemius (covers F entirely + EU VAT). This is the *only* slice that touches the platform — everything before it is platform-agnostic.
+
+### Free / Pro feature matrix (DECIDED 2026-06-01 — strategy: "balanced"):
+
+Positioning of Free: *"A solid contact form with the best free spam protection on the market."* — genuinely useful, not crippleware.
+
+| Free (the .org funnel — fully useful standalone) | Pro (scale / automate / integrate) |
+|---|---|
+| Form builder + container | **Conditional logic** (`Conditions` module) |
+| Basic fields: text, email, textarea, number, checkbox, radio, select, toggle, hidden, section-heading | **Multi-step forms** (the `page-break` block + step logic) |
+| Single-recipient email notification + merge tags | **Webhooks** (`Webhooks` module) |
+| Submissions admin — **view / list only** | **Submissions CSV export** (`Exporter`) |
+| Built-in spam challenge (HMAC + PoW + math) — kept Free as the differentiator | **SMTP** — Basic Auth *and* OAuth2 (full `Smtp` module is Pro) |
+| Privacy / GDPR basics, thank-you redirect (Phase C) | External CAPTCHA providers (Phase-D: Turnstile / hCaptcha / reCAPTCHA) |
+| Single notification route | Future: file uploads, payment fields (Stripe), CRM integrations, multiple notification routes, A/B |
+
+**Architecture consequences for M-c (since these are already built in the single codebase):**
+- The `page-break` block moves to Pro → free core must degrade gracefully if a form references a page-break but Pro is inactive (render as single page, no hard error).
+- The `Conditions`, `Webhooks`, `Smtp`, and the `Exporter` modules move into the Pro add-on, wired back via the M-a hooks.
+- **SMTP-to-Pro mitigation (build in M-c):** free version stays on `wp_mail()`; add a tasteful admin notice ("Deliverability issues? PerForm Pro adds SMTP") + a readme FAQ entry, so the limit reads as an upsell, not a defect. (Owner chose SMTP=Pro despite the deliverability-review risk; this is the agreed safeguard.)
+
+**Pricing model (decided direction):** annual subscription with site tiers (1 / 5 / unlimited), ~30% first-year discount, auto-renew. Lifetime deals only as a one-off launch booster (e.g. AppSumo), never permanent — they kill recurring revenue.
+
+### Definition of done (Phase M — complete):
+Free version is live on WordPress.org. A customer can buy a license, click "Upgrade to Pro" once, and the Pro add-on installs, activates, validates the license, and unlocks Pro features — with auto-updates working and EU VAT handled by the chosen platform.
+
+### Not included yet:
+Affiliate program, in-plugin onboarding wizard, usage analytics/telemetry, multi-currency manual handling (the MoR covers this). Defer until after first paying customers.
+
+### Golden rules for this phase:
+- **Never paywall a feature that already shipped as free.** It burns trust. Free features only ever move *into* free, never out of it.
+- **The bridge layer (M-a) is frozen once Pro ships.** Add hooks, never remove or change signatures.
+- **Stay platform-agnostic until M-h.** Everything routes through the `License_Provider` adapter so Freemius ↔ Lemon Squeezy is an isolated swap.
+
+---
+
 ## Parallel Track — CAPTCHA Options (can be added any time Phase 1+)
 
 CAPTCHA integration is a parallel concern — it does not block any phase and can be implemented alongside any phase after Phase 1. It is called out separately because it requires external service evaluation.
@@ -522,6 +584,7 @@ CAPTCHA integration is a parallel concern — it does not block any phase and ca
 | C | Thank-You-Redirect Polish | Per-form success URL + conversion-tracking metadata |
 | 8 | Polish + Launch Prep | Submitted to WordPress.org |
 | D | OAuth2 SMTP + External CAPTCHA Providers (post-launch) | Workspace / M365 / Turnstile / hCaptcha / reCAPTCHA |
+| M | Freemium Release (Free-Core + Pro-Addon) | Customer buys a license, 1-click installs Pro, EU VAT handled |
 
 ---
 
