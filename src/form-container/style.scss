@@ -380,17 +380,20 @@
 	}
 
 	// Variant: filled (default). Primary colour fill, contrast text, no border.
+	// --perform-button-bg / --perform-button-color / --perform-button-border-color
+	// are per-form overrides from the Style panel; when unset they fall
+	// back through the primary colour → theme → hard-coded chain.
 	&--button-fill &__submit {
 		border: 0;
-		background: var(--perform-color-primary);
-		color: var(--perform-color-on-primary);
+		background: var(--perform-button-bg, var(--perform-color-primary));
+		color: var(--perform-button-color, var(--perform-color-on-primary));
 	}
 
 	// Variant: outline. Transparent fill, primary border + text.
 	&--button-outline &__submit {
-		border: 1px solid var(--perform-color-primary);
+		border: 1px solid var(--perform-button-border-color, var(--perform-button-bg, var(--perform-color-primary)));
 		background: transparent;
-		color: var(--perform-color-primary);
+		color: var(--perform-button-color, var(--perform-button-bg, var(--perform-color-primary)));
 	}
 
 	// Variant: ghost. Transparent everything, primary text. Subtle hover
@@ -399,11 +402,11 @@
 	&--button-ghost &__submit {
 		border: 0;
 		background: transparent;
-		color: var(--perform-color-primary);
+		color: var(--perform-button-color, var(--perform-button-bg, var(--perform-color-primary)));
 
 		&:hover,
 		&:focus-visible {
-			background: color-mix(in srgb, var(--perform-color-primary) 10%, transparent);
+			background: color-mix(in srgb, var(--perform-button-bg, var(--perform-color-primary)) 10%, transparent);
 			opacity: 1;
 		}
 	}

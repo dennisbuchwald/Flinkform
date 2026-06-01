@@ -75,6 +75,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const submitterConfig = notifications?.submitter ?? {};
 	const appearanceConfig = appearance ?? {};
 	const primaryColor = appearanceConfig.primaryColor;
+	const buttonColor = appearanceConfig.buttonColor;
+	const buttonTextColor = appearanceConfig.buttonTextColor;
+	const buttonBorderColor = appearanceConfig.buttonBorderColor;
 	const submitButtonStyle = appearanceConfig.submitButtonStyle ?? 'fill';
 	const fieldStyle = appearanceConfig.fieldStyle ?? 'bordered';
 	const fieldSpacing = appearanceConfig.fieldSpacing ?? 'normal';
@@ -96,6 +99,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}
 	if ( typeof borderRadius === 'number' ) {
 		editorStyle[ '--perform-border-radius' ] = `${ borderRadius }px`;
+	}
+	if ( typeof buttonColor === 'string' && buttonColor !== '' ) {
+		editorStyle[ '--perform-button-bg' ] = buttonColor;
+	}
+	if ( typeof buttonTextColor === 'string' && buttonTextColor !== '' ) {
+		editorStyle[ '--perform-button-color' ] = buttonTextColor;
+	}
+	if ( typeof buttonBorderColor === 'string' && buttonBorderColor !== '' ) {
+		editorStyle[ '--perform-button-border-color' ] = buttonBorderColor;
 	}
 
 	const editorClassName = [
@@ -468,6 +480,45 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleGroupControlOption value="outline" label={ __( 'Outline', 'perform-forms' ) } />
 						<ToggleGroupControlOption value="ghost" label={ __( 'Ghost', 'perform-forms' ) } />
 					</ToggleGroupControl>
+					<BaseControl
+						label={ __( 'Button background', 'perform-forms' ) }
+						help={ __( 'Leave unset to use the primary colour.', 'perform-forms' ) }
+						id="perform-style-button-color"
+						__nextHasNoMarginBottom
+					>
+						<ColorPalette
+							value={ buttonColor }
+							onChange={ ( value ) => updateAppearance( { buttonColor: value || undefined } ) }
+							clearable
+							enableAlpha={ false }
+						/>
+					</BaseControl>
+					<BaseControl
+						label={ __( 'Button text colour', 'perform-forms' ) }
+						help={ __( 'Leave unset for automatic contrast.', 'perform-forms' ) }
+						id="perform-style-button-text-color"
+						__nextHasNoMarginBottom
+					>
+						<ColorPalette
+							value={ buttonTextColor }
+							onChange={ ( value ) => updateAppearance( { buttonTextColor: value || undefined } ) }
+							clearable
+							enableAlpha={ false }
+						/>
+					</BaseControl>
+					<BaseControl
+						label={ __( 'Button border colour', 'perform-forms' ) }
+						help={ __( 'Only visible when button style is "Outline". Leave unset to match the background colour.', 'perform-forms' ) }
+						id="perform-style-button-border-color"
+						__nextHasNoMarginBottom
+					>
+						<ColorPalette
+							value={ buttonBorderColor }
+							onChange={ ( value ) => updateAppearance( { buttonBorderColor: value || undefined } ) }
+							clearable
+							enableAlpha={ false }
+						/>
+					</BaseControl>
 					<ToggleGroupControl
 						label={ __( 'Progress indicator', 'perform-forms' ) }
 						help={ __( 'Shown on multi-step forms only. Bar fills as the user advances; Dots marks each step; Numbers reads "Step X of Y".', 'perform-forms' ) }

@@ -60,6 +60,15 @@ $perform_sanitize_color = static function ( string $color ): string {
 $primary_color    = isset( $appearance['primaryColor'] ) && is_string( $appearance['primaryColor'] )
 	? $perform_sanitize_color( $appearance['primaryColor'] )
 	: '';
+$button_color       = isset( $appearance['buttonColor'] ) && is_string( $appearance['buttonColor'] )
+	? $perform_sanitize_color( $appearance['buttonColor'] )
+	: '';
+$button_text_color  = isset( $appearance['buttonTextColor'] ) && is_string( $appearance['buttonTextColor'] )
+	? $perform_sanitize_color( $appearance['buttonTextColor'] )
+	: '';
+$button_border_color = isset( $appearance['buttonBorderColor'] ) && is_string( $appearance['buttonBorderColor'] )
+	? $perform_sanitize_color( $appearance['buttonBorderColor'] )
+	: '';
 $submit_btn_style = isset( $appearance['submitButtonStyle'] ) && is_string( $appearance['submitButtonStyle'] ) ? $appearance['submitButtonStyle'] : 'fill';
 if ( ! in_array( $submit_btn_style, [ 'fill', 'outline', 'ghost' ], true ) ) {
 	$submit_btn_style = 'fill';
@@ -220,6 +229,15 @@ if ( '' !== $primary_color ) {
 }
 if ( null !== $border_radius_px ) {
 	$inline_style_parts[] = '--perform-border-radius:' . $border_radius_px . 'px';
+}
+if ( '' !== $button_color ) {
+	$inline_style_parts[] = '--perform-button-bg:' . $button_color;
+}
+if ( '' !== $button_text_color ) {
+	$inline_style_parts[] = '--perform-button-color:' . $button_text_color;
+}
+if ( '' !== $button_border_color ) {
+	$inline_style_parts[] = '--perform-button-border-color:' . $button_border_color;
 }
 
 $wrapper_args = [
