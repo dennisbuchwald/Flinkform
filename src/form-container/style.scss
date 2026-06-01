@@ -896,46 +896,6 @@
 }
 
 /* ---------------------------------------------------------------------
- * Dark mode
- *
- * Most modern themes that publish a theme.json already swap their
- * `--wp--preset--color--*` variables under prefers-color-scheme; in
- * those cases our --perform-* cascade picks up the dark values for
- * free (no override here needed). The block below covers themes
- * without that — it nudges our hard-coded fallbacks and the
- * minimal-field tint to land readable on a dark background instead
- * of inheriting their light-mode look.
- *
- * We only override the FALLBACK values, never the theme-supplied
- * ones. The cascade order var(--perform-X, var(--wp--preset--Y,
- * fallback)) means that as long as the theme supplies its own value,
- * our `prefers-color-scheme: dark` re-declaration of the fallback
- * doesn't change anything — but on themes that don't, the form
- * survives without us shipping a separate dark stylesheet.
- * ------------------------------------------------------------------ */
-@media (prefers-color-scheme: dark) {
-	.perform-form {
-		// Same cascade as the default block, with dark-mode-readable
-		// hard-coded fallbacks for themes that don't redeclare their
-		// presets under prefers-color-scheme. The page-background
-		// variable deliberately stays out of this block — see its
-		// definition in the base for why.
-		--perform-color-primary: var(--wp--preset--color--primary, #7eb6ff);
-		--perform-color-on-primary: var(--wp--preset--color--background, #1a1a1a);
-	}
-
-	.perform-form.perform-form--field-style-minimal {
-		.perform-field__input {
-			// On dark themes the 6% currentColor tint over the page
-			// background gets too dim — bump to 10% so the field
-			// still reads as a separate surface.
-			background: color-mix(in srgb, currentColor 10%, transparent);
-			background-color: color-mix(in srgb, currentColor 10%, transparent);
-		}
-	}
-}
-
-/* ---------------------------------------------------------------------
  * Built-in spam challenge (Phase B-a).
  *
  * The challenge block sits inside the form alongside the field grid.
