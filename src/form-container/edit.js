@@ -444,7 +444,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						help={
 							labelPosition === 'floating'
 								? __( 'Material-style notched label: rests inside the input, then slides onto the top border on focus, cutting a notch through it. Applies to text-style fields.', 'perform-forms' )
-								: __( 'Beside and Floating apply to text-style fields only.', 'perform-forms' )
+								: labelPosition === 'placeholder'
+									? __( 'Labels are visually hidden (still accessible to screen readers). The label text is used as placeholder inside the field. Applies to text-style fields only.', 'perform-forms' )
+									: __( 'Beside, Floating and Hidden apply to text-style fields only.', 'perform-forms' )
 						}
 						value={ labelPosition }
 						onChange={ ( value ) => updateAppearance( { labelPosition: value } ) }
@@ -455,6 +457,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleGroupControlOption value="above" label={ __( 'Above', 'perform-forms' ) } />
 						<ToggleGroupControlOption value="beside" label={ __( 'Beside', 'perform-forms' ) } />
 						<ToggleGroupControlOption value="floating" label={ __( 'Floating', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="placeholder" label={ __( 'Hidden', 'perform-forms' ) } />
 					</ToggleGroupControl>
 					<ToggleGroupControl
 						label={ __( 'Columns', 'perform-forms' ) }

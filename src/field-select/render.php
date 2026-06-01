@@ -16,6 +16,10 @@ defined( 'ABSPATH' ) || exit;
 $form_id     = isset( $block->context['perform/formId'] ) ? (string) $block->context['perform/formId'] : '';
 $label       = isset( $attributes['label'] ) && is_string( $attributes['label'] ) ? $attributes['label'] : '';
 $placeholder = isset( $attributes['placeholder'] ) && is_string( $attributes['placeholder'] ) ? $attributes['placeholder'] : '';
+$perform_appearance = isset( $block->context['perform/appearance'] ) && is_array( $block->context['perform/appearance'] ) ? $block->context['perform/appearance'] : [];
+if ( '' === $placeholder && ( $perform_appearance['labelPosition'] ?? '' ) === 'placeholder' && '' !== $label ) {
+	$placeholder = '-- ' . $label . ( ! empty( $attributes['required'] ) ? '*' : '' ) . ' --';
+}
 $required    = ! empty( $attributes['required'] );
 $help_text   = isset( $attributes['helpText'] ) && is_string( $attributes['helpText'] ) ? $attributes['helpText'] : '';
 $field_name  = isset( $attributes['fieldName'] ) && is_string( $attributes['fieldName'] ) ? $attributes['fieldName'] : '';

@@ -85,7 +85,7 @@ if ( ! in_array( $field_spacing, [ 'compact', 'normal', 'relaxed' ], true ) ) {
 }
 
 $label_position = isset( $appearance['labelPosition'] ) && is_string( $appearance['labelPosition'] ) ? $appearance['labelPosition'] : 'above';
-if ( ! in_array( $label_position, [ 'above', 'beside', 'floating' ], true ) ) {
+if ( ! in_array( $label_position, [ 'above', 'beside', 'floating', 'placeholder' ], true ) ) {
 	$label_position = 'above';
 }
 

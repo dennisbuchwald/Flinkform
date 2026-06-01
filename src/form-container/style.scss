@@ -720,6 +720,35 @@
 	}
 }
 
+/* Placeholder labels — label is visually hidden, label text used as
+ * placeholder inside the input. The <label> stays in the DOM for
+ * accessibility (screen readers still announce it). Radio, checkbox
+ * and toggle groups keep their visible labels — placeholder mode
+ * only makes sense for text-style inputs.
+ *
+ * Mirrors the "clean" CF7-style look where there are no visible labels
+ * above the fields. The required asterisk is appended to the placeholder
+ * text by the field render.php so it stays visible. */
+.perform-form.perform-form--labels-placeholder {
+	.perform-field--text,
+	.perform-field--email,
+	.perform-field--textarea,
+	.perform-field--number,
+	.perform-field--select {
+		> .perform-field__label {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+			border-width: 0;
+		}
+	}
+}
+
 /* Floating labels — Material-Design "Outlined TextField" look.
  *
  * In the resting state the label sits inside the input, vertically
