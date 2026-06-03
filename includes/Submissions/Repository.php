@@ -157,7 +157,14 @@ final class Repository {
 		global $wpdb;
 
 		$deleted = $wpdb->delete( Schema::table_name(), [ 'id' => $id ], [ '%d' ] );
-		return false !== $deleted && $deleted > 0;
+		$ok      = false !== $deleted && $deleted > 0;
+
+		if ( $ok ) {
+			/** This action is documented in this file — see delete_many(). */
+			do_action( 'perform_submissions_deleted', [ $id ] );
+		}
+
+		return $ok;
 	}
 
 	/**
@@ -179,8 +186,27 @@ final class Repository {
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name controlled; placeholders prepared.
 		$deleted = $wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE id IN ({$placeholders})", $ids ) );
+		$count   = false === $deleted ? 0 : (int) $deleted;
 
-		return false === $deleted ? 0 : (int) $deleted;
+		if ( $count > 0 ) {
+			/**
+			 * Fires after one or more submissions are deleted (manual admin
+			 * delete or WordPress's personal-data eraser — both funnel through
+			 * this repository).
+			 *
+			 * Add-ons hook this to cascade-delete related personal data so a
+			 * deletion never orphans it — e.g. PerForm Pro removes the webhook
+			 * delivery-log rows tied to these submissions. Critical for GDPR
+			 * erasure requests.
+			 *
+			 * @since 0.2.6
+			 *
+			 * @param array<int, int> $ids Submission ids that were deleted.
+			 */
+			do_action( 'perform_submissions_deleted', $ids );
+		}
+
+		return $count;
 	}
 
 	/**

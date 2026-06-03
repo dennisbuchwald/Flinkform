@@ -181,6 +181,28 @@ final class Privacy {
 	}
 
 	/**
+	 * Public lookup for add-ons: submission IDs whose stored data contains
+	 * the given email address.
+	 *
+	 * Lets Pro modules (e.g. the webhook delivery-log personal-data exporter)
+	 * resolve a data subject's submissions without duplicating the email-match
+	 * logic. Same pagination semantics as the exporter/eraser callbacks.
+	 *
+	 * @since 0.2.6
+	 *
+	 * @param string $email    Email address to search for.
+	 * @param int    $page     Page (1-based).
+	 * @param int    $per_page Results per page.
+	 * @return array<int, int> Matching submission ids.
+	 */
+	public static function find_submission_ids_by_email( string $email, int $page = 1, int $per_page = 50 ): array {
+		return array_map(
+			static fn( array $submission ): int => (int) $submission['id'],
+			self::find_by_email( $email, $page, $per_page )
+		);
+	}
+
+	/**
 	 * Find submissions whose JSON `data` column contains the given
 	 * email address. Uses a LIKE query against the serialised JSON —
 	 * pragmatic for the data volumes PerForm targets.

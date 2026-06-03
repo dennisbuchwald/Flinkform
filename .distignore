@@ -1,0 +1,35 @@
+# Files & folders excluded from the distributed plugin zip.
+# Consumed by `wp-scripts plugin-zip` (npm run plugin-zip) and mirrored by the
+# manual rsync build. The compiled `build/` directory is NOT listed — it must
+# ship in the zip (it is git-ignored, regenerated via `npm run build`).
+
+/.git
+/.github
+/.claude
+/.dev
+/_wporg-svn
+/node_modules
+/src
+
+/.distignore
+/.editorconfig
+/.gitignore
+/.phpcs.xml.dist
+/composer.json
+/composer.lock
+/package.json
+/package-lock.json
+/deploy.sh
+
+# Development docs — the only doc that ships is readme.txt (WordPress.org).
+/readme.md
+/AUDIT_PROMPT.md
+/CONTINUE_PROMPT.md
+/INITIAL_PROMPT.md
+/PERFORM_LANDINGPAGE.md
+/PERFORM_ROADMAP.md
+/PERFORM_SPEC.md
+
+*.zip
+.DS_Store
+Thumbs.db

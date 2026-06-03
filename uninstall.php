@@ -26,20 +26,11 @@ if ( ! defined( 'PERFORM_PLUGIN_DIR' ) ) {
 require_once __DIR__ . '/includes/Autoloader.php';
 \PerForm\Autoloader::register();
 
-// Drop all custom database tables + the schema-version option.
+// Drop the submissions table + the schema-version option.
 \PerForm\Database\Schema::drop();
-
-// Remove plugin options created by the SMTP module (Phase A).
-delete_option( 'perform_smtp_settings' );
-delete_option( 'perform_smtp_last_test' );
 
 // Remove the Forms-Indexer transient cache.
 delete_transient( 'perform_forms_index' );
 
-// Clean up per-user transients from SMTP test results. These use the
-// pattern `perform_smtp_test_result_{user_id}` — iterate over all users
-// who might have one. Limit to administrators for efficiency.
-$admins = get_users( [ 'role' => 'administrator', 'fields' => 'ID' ] );
-foreach ( $admins as $admin_id ) {
-	delete_transient( 'perform_smtp_test_result_' . $admin_id );
-}
+// Note: SMTP options/transients and the webhook tables are owned by PerForm
+// Pro and are cleaned up by the Pro add-on's own uninstall.php.
