@@ -515,6 +515,14 @@ Plugin submitted to WordPress.org plugin directory. No blocking issues from the 
     - **Security:** SSRF defence-in-depth on webhooks — `reject_unsafe_urls` in the Deliverer + a `wp_http_validate_url()` `validate_callback` on the REST `url` arg.
     - **Standards/build:** `@package PerForm`→`PerFormPro` + `@since` corrected in the 12 verbatim-moved Pro files; free `package.json` version 0.1.0→0.2.6; `.distignore` added to both plugins.
     - Deferred to **M-g**: the `readme.txt` rewrite (still says "no premium tier" + lists Pro features as free) — blocks the .org upload, not polishing.
+  - **M-c-f:** ✅ shipped (v0.2.7). **Comprehensive 2nd audit + full fix.** A multi-agent 8-dimension audit (the rewritten `AUDIT_PROMPT.md`) scored 66/80 (82.5%); only `readme.txt` blocked launch. All actionable findings fixed:
+    - **Launch blockers → GO:** full Free/Pro `readme.txt` rewrite; corrected the "no cookies" claim (disclosed the strictly-necessary `perform_flash` cookie).
+    - **2 new features:** Consent block (`perform/field-consent`, always required, auto privacy-policy link, canonical type `consent`); per-form **auto-purge** (`retentionDays` inspector attr + `Submissions\Retention` daily cron deleting via `delete_many()` so the GDPR cascade fires; `Indexer` tracks `retention_days`).
+    - **Security:** Mailer Reply-To CRLF strip; webhook SSRF defence-in-depth.
+    - **A11y:** blanket `prefers-reduced-motion`; multi-step persistent `role=alert` errors + client validation of required checkbox groups; section-heading `headingLevel`; math-fallback `required`; back-button contrast.
+    - **Perf:** `Forms\Locator` object-cache; Pro dispatcher wall-clock guard.
+    - **Build/standards:** `.distignore` (both); `@package`/`@since` fixes; package.json versions; CSV multi-value implode; SMTP-option cleanup → Pro uninstall; TextControl in the Pro headers editor.
+    - Deferred (documented): LIKE-scan perf (MVP), SmtpPage render refactor (low/risk).
 
 **Sub-track F — License & updates:**
 - **M-d:** License client in the Pro add-on — enter key, validate against endpoint, cache result, surface status in admin. Built behind a `License_Provider` interface (adapter) so the platform is swappable.
