@@ -110,11 +110,10 @@ final class Plugin {
 			wp_schedule_event( time() + 60, Webhooks\Dispatcher::CRON_SCHEDULE, Webhooks\Dispatcher::CRON_HOOK );
 		}
 
-		// SMTP transport (Phase A-b). The Transport itself defers
-		// its actual hook registrations to the `init` action, so
-		// it's safe to instantiate here on plugins_loaded — see
-		// the class docblock for the i18n-timing rationale.
-		( new Smtp\Transport() )->register();
+		// SMTP transport is owned by PerForm Pro — it registers the Transport
+		// (phpmailer_init overrides + conflict detection) via the bridge's
+		// perform_register_modules hook. The free core sends mail through the
+		// WordPress default (wp_mail) transport.
 
 		// GDPR / DSGVO privacy integration — privacy-policy content,
 		// personal data exporter + eraser for WP's built-in privacy

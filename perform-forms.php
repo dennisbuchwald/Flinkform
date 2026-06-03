@@ -3,7 +3,7 @@
  * Plugin Name:       PerForm
  * Plugin URI:        https://wordpress.org/plugins/perform-forms/
  * Description:       Beautiful, native WordPress forms built for the block editor — fast, accessible, free.
- * Version:           0.2.0
+ * Version:           0.2.1
  * Requires at least: 7.0
  * Tested up to:      7.0
  * Requires PHP:      8.1
@@ -28,7 +28,7 @@ defined( 'ABSPATH' ) || exit;
  * every subsystem (block registration, asset enqueueing, activation,
  * uninstall) so a version bump or a relocation only ever happens here.
  */
-define( 'PERFORM_VERSION', '0.2.0' );
+define( 'PERFORM_VERSION', '0.2.1' );
 define( 'PERFORM_PLUGIN_FILE', __FILE__ );
 define( 'PERFORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PERFORM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
