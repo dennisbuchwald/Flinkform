@@ -113,7 +113,10 @@ final class Renderer {
 		$markup .= '<label class="perform-form__spam-label" for="' . esc_attr( $math_id ) . '">';
 		$markup .= esc_html( $question );
 		$markup .= '</label>';
-		$markup .= ' <input type="text" id="' . esc_attr( $math_id ) . '" name="' . esc_attr( self::FIELD_ANSWER ) . '" value="" autocomplete="off" inputmode="numeric" pattern="[0-9]*" size="4" aria-describedby="' . esc_attr( $hint_id ) . '" />';
+		// `required` gives JS-off visitors proper inline validation. On the
+		// JS path view.js clears AND removes `required` when it hides this row
+		// after the PoW solves, so a hidden field never blocks submission.
+		$markup .= ' <input type="text" id="' . esc_attr( $math_id ) . '" name="' . esc_attr( self::FIELD_ANSWER ) . '" value="" autocomplete="off" inputmode="numeric" pattern="[0-9]*" size="4" required aria-describedby="' . esc_attr( $hint_id ) . '" />';
 		$markup .= '<p class="perform-form__spam-hint" id="' . esc_attr( $hint_id ) . '">' . esc_html__( 'Spam protection — answer the question above to submit the form.', 'perform-forms' ) . '</p>';
 		$markup .= '</div>';
 

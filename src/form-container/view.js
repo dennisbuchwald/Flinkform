@@ -885,6 +885,9 @@ function initSpamChallenge() {
 					const mathInput = mathRow.querySelector( 'input[type="text"]' );
 					if ( mathInput ) {
 						mathInput.value = '';
+						// Drop `required` too — the row is now hidden, and a
+						// hidden required field would block form submission.
+						mathInput.removeAttribute( 'required' );
 					}
 				}
 			} )

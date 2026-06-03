@@ -168,12 +168,22 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		// Users who opted out of motion get an instant swap. Re-state
-		// the starting style as the steady state so the @starting-style
-		// rule above can't accidentally fade them in.
-		&__step:not([hidden]) {
-			transition: none;
+		// Users who opted out of motion get instant swaps everywhere — not
+		// just on step fades, but the progress-bar fill, progress dots,
+		// floating-label movement and button transitions too. Canonical
+		// reduced-motion reset, scoped to the form. !important is the
+		// accepted a11y-override idiom here (it must beat every transition
+		// declared later in this file regardless of source order).
+		&,
+		& * {
+			transition-duration: 0.01ms !important;
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			scroll-behavior: auto !important;
+		}
 
+		// Re-state the step's steady style so @starting-style can't fade it.
+		&__step:not([hidden]) {
 			@starting-style {
 				opacity: 1;
 				transform: translateY(0);
@@ -306,7 +316,9 @@
 		background: transparent;
 		color: inherit;
 		cursor: pointer;
-		opacity: 0.7;
+		// 0.75 keeps the muted look while staying clear of the WCAG AA
+		// contrast cliff that 0.7 can cross on lighter colour schemes.
+		opacity: 0.75;
 		border-radius: var(--perform-border-radius);
 		transition: opacity 0.15s ease;
 

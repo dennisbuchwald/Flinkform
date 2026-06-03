@@ -1,6 +1,6 @@
 # PerForm
 
-[![WordPress Plugin Version](https://img.shields.io/badge/version-0.1.0-blue)](https://wordpress.org/plugins/perform-forms/)
+[![WordPress Plugin Version](https://img.shields.io/badge/version-0.2.6-blue)](https://wordpress.org/plugins/perform-forms/)
 [![License](https://img.shields.io/badge/license-GPL%20v2-green)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![WordPress](https://img.shields.io/badge/WordPress-7.0%2B-blue)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.1%2B-purple)](https://php.net/)

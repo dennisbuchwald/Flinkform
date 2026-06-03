@@ -13,7 +13,6 @@
 		"form-builder",
 		"contact-form",
 		"multi-step",
-		"webhooks",
 		"interactivity-api"
 	],
 	"repository": {

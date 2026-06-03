@@ -62,7 +62,10 @@ final class Mailer {
 		$to       = $this->resolve_recipients( MergeTags::render( $config['to'], $context ) );
 		$subject  = MergeTags::render( $config['subject'], $context );
 		$body     = MergeTags::render( $config['body'], $context );
-		$reply_to = trim( MergeTags::render( $config['reply_to'], $context ) );
+		// Strip CR/LF before anything else — defence-in-depth against header
+		// injection via a merge-tagged Reply-To (is_email() + PHPMailer would
+		// also reject it, but we never want a raw newline near a mail header).
+		$reply_to = str_replace( [ "\r", "\n" ], '', trim( MergeTags::render( $config['reply_to'], $context ) ) );
 
 		$headers = [];
 		if ( '' !== $reply_to && is_email( $reply_to ) ) {

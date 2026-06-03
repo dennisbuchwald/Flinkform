@@ -61,6 +61,8 @@ final class Privacy {
 
 		$content .= '<p>' . __( 'The built-in spam protection (proof-of-work challenge) runs entirely in the visitor\'s browser and on this server — no data is sent to any external anti-spam service.', 'perform-forms' ) . '</p>';
 
+		$content .= '<p>' . __( 'PerForm sets one short-lived, strictly necessary cookie ("perform_flash", lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload. No tracking, analytics or marketing cookies are ever set.', 'perform-forms' ) . '</p>';
+
 		wp_add_privacy_policy_content( 'PerForm', $content );
 	}
 
