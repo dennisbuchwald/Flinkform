@@ -54,6 +54,7 @@ final class Locator {
 		'perform/field-select'   => 'select',
 		'perform/field-radio'    => 'radio',
 		'perform/field-checkbox' => 'checkbox',
+		'perform/field-consent'  => 'consent',
 	];
 
 	/**

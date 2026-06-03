@@ -41,6 +41,7 @@ final class Registry {
 		'field-checkbox',
 		'field-toggle',
 		'field-hidden',
+		'field-consent',
 	];
 
 	/**
