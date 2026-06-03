@@ -5,9 +5,10 @@
  * Handles three responsibilities:
  *
  *  1. dispatch() — runs on admin_init for any incoming bulk action or
- *     row action (delete, mark read/unread, CSV export). Mutating
- *     handlers redirect back to a clean URL after running, so the user
- *     never has a destructive action sitting in the address bar.
+ *     row action (delete, mark read/unread). Mutating handlers redirect
+ *     back to a clean URL after running, so the user never has a
+ *     destructive action sitting in the address bar. (CSV export is owned
+ *     by PerForm Pro, which registers its own handler via the bridge.)
  *  2. render()   — renders either the list view or the single-submission
  *     detail view depending on the `?action=view&id=...` query args.
  *  3. Inline CSS — a tiny block of styles for the unread dot, status
@@ -23,7 +24,6 @@ declare( strict_types = 1 );
 namespace PerForm\Admin;
 
 use PerForm\Forms\Indexer;
-use PerForm\Submissions\Exporter;
 use PerForm\Submissions\Repository;
 use PerForm\Webhooks\DeliveryRepository;
 use PerForm\Webhooks\Dispatcher as WebhookDispatcher;
@@ -476,7 +476,11 @@ final class SubmissionsPage {
 	}
 
 	/**
-	 * Handle a single-row action (delete, mark_unread, export).
+	 * Handle a single-row action (delete, mark_unread).
+	 *
+	 * CSV export is owned by PerForm Pro — it registers its own handler and
+	 * filter-bar button via the bridge layer, so the free core no longer
+	 * routes an 'export' action here.
 	 *
 	 * @param string $action The `perform_action` query arg.
 	 * @return void
@@ -486,13 +490,6 @@ final class SubmissionsPage {
 		$id = isset( $_GET['id'] ) ? (int) $_GET['id'] : 0;
 
 		switch ( $action ) {
-			case 'export':
-				check_admin_referer( 'perform_export' );
-				$filters = $this->read_filters_from_request();
-				( new Exporter( $this->repository ) )->stream( $filters );
-				// Exporter calls exit(). Falling through to redirect on failure.
-				$this->redirect_with_notice( __( 'CSV export failed.', 'perform-forms' ) );
-				break;
 			case 'delete':
 				if ( 0 === $id ) {
 					return;
@@ -610,23 +607,6 @@ final class SubmissionsPage {
 	 */
 	private function list_url(): string {
 		return add_query_arg( 'page', Menu::PARENT_SLUG, admin_url( 'admin.php' ) );
-	}
-
-	/**
-	 * Pull filter args off the request for the exporter.
-	 *
-	 * @return array<string, string>
-	 */
-	private function read_filters_from_request(): array {
-		$filters = [];
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only filter inputs (export nonce checked separately).
-		foreach ( [ 'form_id', 'status', 'date_from', 'date_to', 'search' ] as $key ) {
-			if ( ! empty( $_GET[ $key ] ) ) {
-				$filters[ $key ] = sanitize_text_field( wp_unslash( $_GET[ $key ] ) );
-			}
-		}
-		// phpcs:enable
-		return $filters;
 	}
 
 	/**

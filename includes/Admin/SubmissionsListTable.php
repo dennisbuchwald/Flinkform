@@ -376,21 +376,19 @@ final class SubmissionsListTable extends \WP_List_Table {
 			<?php submit_button( __( 'Filter', 'perform-forms' ), '', 'filter_action', false ); ?>
 
 			<?php
-			$export_url = add_query_arg(
-				array_merge(
-					[
-						'page'           => Menu::PARENT_SLUG,
-						'perform_action' => 'export',
-						'_wpnonce'       => wp_create_nonce( 'perform_export' ),
-					],
-					$current
-				),
-				admin_url( 'admin.php' )
-			);
+			/**
+			 * Render extra actions in the submissions filter bar.
+			 *
+			 * The free core ships the filter controls; Pro-only actions — the
+			 * CSV export button (PerForm Pro) — attach here so they appear
+			 * inline with Filter without the free core shipping their code.
+			 *
+			 * @since 0.2.0
+			 *
+			 * @param array<string, string> $current Active filter values (form_id, status, date_from, date_to, search).
+			 */
+			do_action( 'perform_submissions_table_actions', $current );
 			?>
-			<a href="<?php echo esc_url( $export_url ); ?>" class="button">
-				<?php esc_html_e( 'Export CSV', 'perform-forms' ); ?>
-			</a>
 		</div>
 		<?php
 	}

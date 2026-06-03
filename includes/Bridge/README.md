@@ -80,6 +80,20 @@ reCAPTCHA). A form requesting an unregistered provider degrades to `builtin`.
 - **Input/Return:** `array<int,string>` — provider keys (core: `[ 'builtin' ]`).
 - Consulted in `PerForm\Spam\Guard::resolve_strategy()`.
 
+### 5. `perform_submissions_table_actions` (action) — submissions filter-bar actions
+Added in slice M-c-a (CSV export move). Fires in the submissions list filter
+bar, next to the Filter button. Pro attaches inline actions here — the CSV
+export button — so the free core ships no export UI. With no add-on, the bar
+shows only the free filter controls.
+
+- **Args:** `array<string,string> $current` — active filter values
+  (`form_id`, `status`, `date_from`, `date_to`, `search`), so Pro can carry the
+  current filter into the export URL.
+- Fired in `PerForm\Admin\SubmissionsListTable` (filter-bar render).
+- Pro's request handler runs independently on `admin_init`, re-checking
+  `Menu::CAPABILITY` + the `perform_export` nonce — the free core's `dispatch()`
+  no longer routes an `export` action.
+
 ---
 
 ## Planned extension points (not yet cut — added when Pro needs them)
