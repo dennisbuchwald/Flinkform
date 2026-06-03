@@ -57,12 +57,7 @@ final class Privacy {
 
 		$content .= '<p>' . __( 'Submissions are retained indefinitely unless a site administrator deletes them manually through the PerForm submissions screen or until the plugin is uninstalled, at which point all submission data is permanently removed.', 'perform-forms' ) . '</p>';
 
-		$content .= '<p>' . __( 'PerForm does not send any data to external services by default. The following optional features, when enabled by a site administrator, may transmit submission data to third parties:', 'perform-forms' ) . '</p>';
-
-		$content .= '<ul>';
-		$content .= '<li>' . __( '<strong>Webhooks:</strong> When configured, submission data is sent to the URL(s) specified by the site administrator (e.g. Zapier, Make, n8n).', 'perform-forms' ) . '</li>';
-		$content .= '<li>' . __( '<strong>SMTP:</strong> When enabled, notification emails are routed through the configured SMTP provider instead of the server\'s default mail transport.', 'perform-forms' ) . '</li>';
-		$content .= '</ul>';
+		$content .= '<p>' . __( 'PerForm does not send any submission data to external services. (Add-ons such as PerForm Pro may add integrations — e.g. webhooks or SMTP delivery — that transmit data to third parties; those add their own privacy disclosures when active.)', 'perform-forms' ) . '</p>';
 
 		$content .= '<p>' . __( 'The built-in spam protection (proof-of-work challenge) runs entirely in the visitor\'s browser and on this server — no data is sent to any external anti-spam service.', 'perform-forms' ) . '</p>';
 

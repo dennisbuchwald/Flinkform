@@ -25,8 +25,6 @@ namespace PerForm\Admin;
 
 use PerForm\Forms\Indexer;
 use PerForm\Submissions\Repository;
-use PerForm\Webhooks\DeliveryRepository;
-use PerForm\Webhooks\Dispatcher as WebhookDispatcher;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -88,23 +86,6 @@ final class SubmissionsPage {
 		// phpcs:enable
 
 		return in_array( $action, [ 'mark_read', 'mark_unread', 'delete' ], true ) ? $action : '';
-	}
-
-	/**
-	 * URL of the submission-detail view for a given id.
-	 *
-	 * @param int $id Submission id.
-	 * @return string
-	 */
-	private function detail_url( int $id ): string {
-		return add_query_arg(
-			[
-				'page'   => Menu::PARENT_SLUG,
-				'action' => 'view',
-				'id'     => $id,
-			],
-			admin_url( 'admin.php' )
-		);
 	}
 
 	/**
@@ -269,7 +250,19 @@ final class SubmissionsPage {
 				</table>
 			<?php endif; ?>
 
-			<?php $this->render_webhook_deliveries_section( $id ); ?>
+			<?php
+			/**
+			 * Fires after the submission's field table, inside the detail view.
+			 *
+			 * PerForm Pro hooks this to render the "Webhook Deliveries" section
+			 * for the submission. With no add-on, nothing extra renders.
+			 *
+			 * @since 0.2.5
+			 *
+			 * @param int $id Submission id.
+			 */
+			do_action( 'perform_submission_detail_after', $id );
+			?>
 
 			<p class="perform-detail__actions">
 				<a href="<?php echo esc_url( $toggle_url ); ?>" class="button">
@@ -280,106 +273,6 @@ final class SubmissionsPage {
 				</a>
 			</p>
 		</div>
-		<?php
-	}
-
-	/**
-	 * Render the per-submission webhook delivery table.
-	 *
-	 * Shows the dispatch state of every webhook attached to this
-	 * submission — useful for debugging "did the webhook fire?"
-	 * questions without leaving the submission detail page. Each
-	 * row carries a Resend link that re-queues a fresh delivery
-	 * attempt for this same submission against the same webhook.
-	 *
-	 * @param int $submission_id Submission id.
-	 * @return void
-	 */
-	private function render_webhook_deliveries_section( int $submission_id ): void {
-		$deliveries = ( new DeliveryRepository() )->find_for_submission( $submission_id );
-		if ( empty( $deliveries ) ) {
-			return; // No webhooks configured for this form, or none triggered yet.
-		}
-		?>
-		<h2 style="margin-top:32px;"><?php esc_html_e( 'Webhook Deliveries', 'perform-forms' ); ?></h2>
-		<table class="widefat striped">
-			<thead>
-				<tr>
-					<th><?php esc_html_e( 'Webhook', 'perform-forms' ); ?></th>
-					<th><?php esc_html_e( 'Status', 'perform-forms' ); ?></th>
-					<th><?php esc_html_e( 'Code', 'perform-forms' ); ?></th>
-					<th><?php esc_html_e( 'Attempt', 'perform-forms' ); ?></th>
-					<th><?php esc_html_e( 'Updated', 'perform-forms' ); ?></th>
-					<th><?php esc_html_e( 'Actions', 'perform-forms' ); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php foreach ( $deliveries as $delivery ) :
-					$label  = (string) ( $delivery['webhook_label'] ?? '' );
-					$url    = (string) ( $delivery['webhook_url'] ?? '' );
-					$status = (string) ( $delivery['status'] ?? '' );
-					$color  = WebhookLogListTable::status_color( $status );
-					$resend_nonce = wp_create_nonce( 'perform_webhook_resend_' . (int) $delivery['id'] );
-					$resend_url   = add_query_arg(
-						[
-							'page'              => Menu::PARENT_SLUG,
-							'perform_action'    => 'webhook_resend',
-							'id'                => $submission_id,
-							'delivery_id'       => (int) $delivery['id'],
-							'_wpnonce'          => $resend_nonce,
-						],
-						admin_url( 'admin.php' )
-					);
-					?>
-					<tr>
-						<td>
-							<?php
-							if ( '' === $label && '' === $url ) {
-								echo '<em>' . esc_html__( '(deleted)', 'perform-forms' ) . '</em>';
-							} else {
-								echo esc_html( '' !== $label ? $label : $url );
-								if ( '' !== $label && '' !== $url ) {
-									echo '<br><small style="opacity:0.7">' . esc_html( $url ) . '</small>';
-								}
-							}
-							?>
-						</td>
-						<td>
-							<span style="display:inline-block;padding:2px 8px;border-radius:3px;background:<?php echo esc_attr( $color ); ?>;color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;">
-								<?php echo esc_html( $status ); ?>
-							</span>
-						</td>
-						<td>
-							<?php echo isset( $delivery['response_code'] ) && null !== $delivery['response_code'] ? esc_html( (string) (int) $delivery['response_code'] ) : '—'; ?>
-						</td>
-						<td><?php echo (int) ( $delivery['attempt'] ?? 0 ); ?></td>
-						<td>
-							<?php
-							$ts = strtotime( ( $delivery['updated_at'] ?? '' ) . ' UTC' );
-							echo $ts ? esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $ts ) ) : '—';
-							?>
-						</td>
-						<td>
-							<a href="<?php echo esc_url( $resend_url ); ?>" class="button button-small">
-								<?php esc_html_e( 'Resend', 'perform-forms' ); ?>
-							</a>
-						</td>
-					</tr>
-					<?php if ( ! empty( $delivery['response_body'] ) ) : ?>
-						<tr>
-							<td colspan="6">
-								<details>
-									<summary style="cursor:pointer;font-size:12px;opacity:0.75;">
-										<?php esc_html_e( 'Response body', 'perform-forms' ); ?>
-									</summary>
-									<pre style="white-space:pre-wrap;word-break:break-word;font-size:11px;max-height:150px;overflow:auto;margin:4px 0 0;background:#f6f7f7;padding:8px;border-radius:3px;"><?php echo esc_html( (string) $delivery['response_body'] ); ?></pre>
-								</details>
-							</td>
-						</tr>
-					<?php endif; ?>
-				<?php endforeach; ?>
-			</tbody>
-		</table>
 		<?php
 	}
 
@@ -506,66 +399,7 @@ final class SubmissionsPage {
 				$this->repository->update_status( $id, 'unread' );
 				$this->redirect_with_notice( __( 'Submission marked as unread.', 'perform-forms' ) );
 				break;
-			case 'webhook_resend':
-				$delivery_id = isset( $_GET['delivery_id'] ) ? (int) $_GET['delivery_id'] : 0;
-				if ( 0 === $id || 0 === $delivery_id ) {
-					return;
-				}
-				check_admin_referer( 'perform_webhook_resend_' . $delivery_id );
-				$this->handle_webhook_resend( $id, $delivery_id );
-				break;
 		}
-	}
-
-	/**
-	 * Re-queue a webhook delivery against the original submission.
-	 *
-	 * Looks up the original delivery row to recover the webhook_id +
-	 * submission_id pairing, then enqueues a fresh row through the
-	 * regular dispatch path. The original row stays in the log as
-	 * historical record — Resend never mutates past attempts.
-	 *
-	 * @param int $submission_id          Submission this resend belongs to.
-	 * @param int $original_delivery_id   Delivery row id the operator clicked.
-	 * @return void
-	 */
-	private function handle_webhook_resend( int $submission_id, int $original_delivery_id ): void {
-		$delivery_repo = new DeliveryRepository();
-		$original      = $delivery_repo->find( $original_delivery_id );
-
-		if ( null === $original || (int) $original['submission_id'] !== $submission_id ) {
-			$this->redirect_to_detail_with_notice( $submission_id, __( 'Could not resend — delivery not found.', 'perform-forms' ) );
-			return;
-		}
-
-		$new_id = $delivery_repo->enqueue( (int) $original['webhook_id'], $submission_id );
-		if ( null === $new_id ) {
-			$this->redirect_to_detail_with_notice( $submission_id, __( 'Could not resend — queue insert failed.', 'perform-forms' ) );
-			return;
-		}
-
-		// Trigger a single-event cron run so the operator doesn't have
-		// to wait up to a minute for the resend to actually fire.
-		wp_schedule_single_event( time() + 1, WebhookDispatcher::CRON_HOOK );
-
-		$this->redirect_to_detail_with_notice( $submission_id, __( 'Webhook delivery re-queued.', 'perform-forms' ) );
-	}
-
-	/**
-	 * Redirect back to a specific submission's detail page, carrying
-	 * a transient notice.
-	 *
-	 * @param int    $id     Submission id.
-	 * @param string $notice One-line message.
-	 * @return never
-	 */
-	private function redirect_to_detail_with_notice( int $id, string $notice ): void {
-		$url = $this->detail_url( $id );
-		if ( '' !== $notice ) {
-			$url = add_query_arg( 'perform_notice', rawurlencode( $notice ), $url );
-		}
-		wp_safe_redirect( $url );
-		exit;
 	}
 
 	/**

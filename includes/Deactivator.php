@@ -27,14 +27,11 @@ final class Deactivator {
 	 * @return void
 	 */
 	public static function deactivate(): void {
-		// User data (submissions, webhooks, deliveries) must survive
-		// deactivation — that contract belongs to uninstall.php only.
+		// No-op. Submission data must survive deactivation — that contract
+		// belongs to uninstall.php. The only runtime state the plugin used to
+		// clear here was the webhook dispatcher cron, which now lives with
+		// PerForm Pro and is cleared by Pro's own deactivation handler.
 		//
-		// Cron schedules, on the other hand, are runtime state. They
-		// must clear on deactivation or WordPress keeps firing into a
-		// hook with no registered callback — wastes ticks, and on
-		// re-activation we'd schedule a second event alongside the
-		// orphaned one. Clear unconditionally; activator re-schedules.
-		wp_clear_scheduled_hook( Webhooks\Dispatcher::CRON_HOOK );
+		// Intentionally left empty.
 	}
 }

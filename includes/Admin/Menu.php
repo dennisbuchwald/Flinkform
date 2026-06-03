@@ -79,17 +79,8 @@ final class Menu {
 			[ $this, 'render_forms_page' ]
 		);
 
-		add_submenu_page(
-			self::PARENT_SLUG,
-			__( 'Webhook Log', 'perform-forms' ),
-			__( 'Webhook Log', 'perform-forms' ),
-			self::CAPABILITY,
-			WebhookLogPage::SLUG,
-			[ $this, 'render_webhook_log_page' ]
-		);
-
-		// The SMTP settings page is owned by PerForm Pro, which attaches its
-		// own submenu here via add_submenu_page( Menu::PARENT_SLUG, … ).
+		// The Webhook Log and SMTP pages are owned by PerForm Pro, which
+		// attaches its own submenus here via add_submenu_page( Menu::PARENT_SLUG, … ).
 	}
 
 	/**
@@ -108,15 +99,6 @@ final class Menu {
 	 */
 	public function render_forms_page(): void {
 		( new FormsPage() )->render();
-	}
-
-	/**
-	 * Render the Webhook Log page.
-	 *
-	 * @return void
-	 */
-	public function render_webhook_log_page(): void {
-		( new WebhookLogPage() )->render();
 	}
 
 	/**
