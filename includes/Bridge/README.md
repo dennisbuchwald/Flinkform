@@ -26,11 +26,9 @@ which runs before `plugins_loaded` — it does two things:
 ```php
 // 1. Advertise its capabilities so the free core degrades gracefully.
 add_filter( 'perform_pro_features', static function ( array $features ): array {
-    $features[] = 'multistep';
-    $features[] = 'conditional_logic';
-    $features[] = 'webhooks';
     $features[] = 'submissions_export';
     $features[] = 'smtp';
+    $features[] = 'webhooks'; // once the module moves to Pro
     return $features;
 } );
 
@@ -56,8 +54,8 @@ features off → graceful degradation everywhere.
 - **Input:** `array $features` (empty from core)
 - **Return:** list `[ 'multistep', … ]` *or* keyed map `[ 'multistep' => true ]`
 - **Read via:** `Features::has( Features::MULTISTEP )`, `Features::is_pro_active()`
-- Capability keys: `multistep`, `conditional_logic`, `webhooks`,
-  `submissions_export`, `smtp` (see `Features` constants).
+- Capability keys: `webhooks`, `submissions_export`, `smtp` (see `Features`
+  constants). Conditional logic and multi-step stay in the free core.
 
 ### 2. `perform_register_modules` (action) — module foothold
 Fires once on `plugins_loaded`, after the free core has wired its own modules.

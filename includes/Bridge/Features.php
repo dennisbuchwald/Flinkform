@@ -45,11 +45,12 @@ final class Features {
 	 * core checks against. Mapped 1:1 to the Free/Pro feature matrix in
 	 * PERFORM_ROADMAP.md (Phase M).
 	 */
-	public const MULTISTEP          = 'multistep';
-	public const CONDITIONAL_LOGIC  = 'conditional_logic';
 	public const WEBHOOKS           = 'webhooks';
 	public const SUBMISSIONS_EXPORT = 'submissions_export';
 	public const SMTP               = 'smtp';
+	// Note: conditional logic and multi-step stay in the FREE core — they are
+	// intrinsic to building forms and woven through every block, not cleanly
+	// separable. Pro differentiates on integrations / infrastructure instead.
 
 	/**
 	 * Resolve the active capability set.
@@ -57,8 +58,8 @@ final class Features {
 	 * Accepts both shapes the Pro add-on might return from the filter, so the
 	 * add-on author can use whichever reads cleaner:
 	 *
-	 *   [ 'multistep', 'webhooks' ]            // sequential list
-	 *   [ 'multistep' => true, 'smtp' => false ] // keyed map (false disables)
+	 *   [ 'webhooks', 'smtp' ]                  // sequential list
+	 *   [ 'webhooks' => true, 'smtp' => false ] // keyed map (false disables)
 	 *
 	 * Not cached on purpose: the filter is added during the boot cycle and the
 	 * lookups happen later (render time), but keeping this stateless avoids the

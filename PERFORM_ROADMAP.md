@@ -494,7 +494,7 @@ Plugin submitted to WordPress.org plugin directory. No blocking issues from the 
 - **The "two plugins" UX concern is designed away** via a 1-click upgrade flow: the free core downloads + activates the Pro add-on automatically after the license key is entered (WP Plugin Install API + license/update endpoint). The customer experiences one click, not "install two plugins".
 - **Merchant of Record is mandatory** for the seller (German solo vendor) — the platform must handle EU VAT / OSS. Current tendency: **Freemius** (sells + licenses + auto-update + MoR in one), decision deferred to slice M-h.
 - **Bridge-layer = an API contract.** Once Pro ships, the extension hooks must not break — a free-core update must never break installed Pro copies. Same contract discipline as the DB-schema migration recipe.
-- **Free/Pro split = DECIDED (strategy: "balanced").** Pro: Conditional Logic, Multi-Step, Webhooks, CSV Export, SMTP (Basic Auth + OAuth2), external CAPTCHA. Free: builder + basic fields + single-recipient notify + submissions view + built-in spam challenge + privacy + thank-you redirect. See the feature matrix below. Since everything is currently in one codebase and nothing is released yet, this is the clean window to assign features without breaking the "never paywall a shipped free feature" rule.
+- **Free/Pro split = DECIDED, then REVISED 2026-06-03.** Pro (cleanly-separable only): Webhooks, CSV Export, SMTP (Basic Auth + OAuth2), external CAPTCHA, + future payments/integrations. Free: builder + all fields + **conditional logic + multi-step** + single-recipient notify + submissions view + built-in spam challenge + privacy + thank-you redirect. Conditional Logic + Multi-Step were pulled back to Free because they are woven through the core blocks/runtime and not cleanly separable — see the revised feature matrix below.
 
 ### What gets built (split across M-a → M-h slices):
 
@@ -505,7 +505,7 @@ Plugin submitted to WordPress.org plugin directory. No blocking issues from the 
   - **M-c-a:** ✅ shipped — **CSV export** (server-side only: one button + one class, no editor UI / DB / cron). Free core: deleted `Submissions\Exporter`, removed the `export` action from `SubmissionsPage::dispatch()`, replaced the export button with the `perform_submissions_table_actions` seam. Pro: own `PerFormPro\` autoloader + `Export\CsvExporter` (reads the free core's `Submissions\Repository`) + `Export\ExportController` (renders the button via the seam, handles the request on `admin_init` with its own capability + nonce gate). Establishes the move pattern: *module → Pro, free core fires a seam, Pro owns UI + handler.*
   - **M-c-b:** ✅ shipped (v0.2.1). **SMTP** moved to Pro: `Transport` (phpmailer_init overrides + conflict detection) + the 1281-line `SmtpPage` settings screen, copied verbatim into `PerFormPro\Smtp\*` (namespace + text-domain swapped, logic untouched). `Settings\Secret` stays in the free core as shared crypto (Pro uses `\PerForm\Settings\Secret`). Free core: removed the SMTP submenu + render + dispatch case from `Admin\Menu`, removed the Transport wiring from `Plugin::init()`. Pro: `Smtp\Module` re-attaches the submenu under `Menu::PARENT_SLUG` (admin_menu priority 20, after the parent exists) + dispatches on admin_init + boots Transport — no new core seam needed (reuses `Menu::PARENT_SLUG`/`CAPABILITY` constants). **Versioning introduced:** patch-bump per slice so uploads are verifiable in the plugins list; `PERFORM_PRO_MIN_CORE` bumped to 0.2.1 so Pro can't run against a 0.2.0 core that still ships its own SMTP page (would double the menu). Free degradation: no Pro = no SMTP page, mail goes through default `wp_mail()`.
   - **M-c-c:** ✅ shipped (v0.2.2). **Editor extensibility mechanism.** Free core: `form-container/edit.js` applies the JS filter `perform.formContainer.inspectorPanels` (`@wordpress/hooks`, auto-pulls `wp-hooks` into the block's editor deps) and renders the returned panels inside `<InspectorControls>`; passes `{ attributes, setAttributes, clientId, formId, formFields }`. Pro: a deliberately build-free vanilla `wp.*` script (`assets/editor.js`, enqueued via `Editor\Extensions` on `enqueue_block_editor_assets`) `addFilter`s a proof panel ("PerForm Pro is active…"). Mechanism is identical whether the fill is built or hand-written, so the Pro build pipeline is deferred until a module ships JSX that needs it. Documented as extension point #6 in `includes/Bridge/README.md`. This is the prerequisite for the 3 editor-UI modules below.
-  - **M-c-d / -e / -f:** Webhooks (uses M-c-c SlotFill + cron + DB tables + log page), Conditional Logic, Multi-Step. Hard — sequenced after the SlotFill mechanism exists.
+  - **M-c-d:** Webhooks — the last module move. Uses the M-c-c inspector-panel filter for the integrations panel (+ sets up the Pro JSX build pipeline), moves the REST controller / dispatcher / deliverer / repos / listener, the 2 DB tables (Pro owns its schema via the auto-migrate-on-init recipe; no drop on deactivate → data survives a lapse), the cron schedule, and the Webhook Log admin page + the deliveries section in the submission detail. **Conditional Logic and Multi-Step are NO LONGER moved** — they stay in the free core (see the revised matrix above). After M-c-d the module migration is complete; Pro = CSV + SMTP + Webhooks (+ future CAPTCHA / payments / integrations).
 
 **Sub-track F — License & updates:**
 - **M-d:** License client in the Pro add-on — enter key, validate against endpoint, cache result, surface status in admin. Built behind a `License_Provider` interface (adapter) so the platform is swappable.
@@ -518,24 +518,25 @@ Plugin submitted to WordPress.org plugin directory. No blocking issues from the 
 **Sub-track H — Sales & platform:**
 - **M-h:** Pick and wire the platform (Freemius vs Lemon Squeezy vs self-hosted EDD) into the single `License_Provider` adapter + update endpoint from M-d/M-e. Tendency: Freemius (covers F entirely + EU VAT). This is the *only* slice that touches the platform — everything before it is platform-agnostic.
 
-### Free / Pro feature matrix (DECIDED 2026-06-01 — strategy: "balanced"):
+### Free / Pro feature matrix (REVISED 2026-06-03 — see note below):
 
-Positioning of Free: *"A solid contact form with the best free spam protection on the market."* — genuinely useful, not crippleware.
+Positioning of Free: *"A genuinely powerful form builder — conditional logic and multi-step included, with the best free spam protection on the market."* Pro is the **integrations / payments / infrastructure** tier.
 
-| Free (the .org funnel — fully useful standalone) | Pro (scale / automate / integrate) |
+**Revision (2026-06-03):** Conditional Logic and Multi-Step were moved back to **Free**. Mapping the code showed they are *not* cleanly separable — conditional logic lives in all 12 block editors + the submission runtime; multi-step is woven through `form-container/render.php` (~300 lines of step machinery) and the 966-line `view.js`. Extracting them would be a fragile, invasive refactor with bad UX on Pro lapse (hidden fields reappear, steps flatten). Keeping them Free is the robust choice *and* a stronger funnel — and Pro's real draws (webhooks, payments, integrations) are more compelling upgrade triggers than conditional logic (widely expected free today). Owner agreed.
+
+| Free (the .org funnel — a powerful builder) | Pro (integrations / payments / infrastructure) |
 |---|---|
-| Form builder + container | **Conditional logic** (`Conditions` module) |
-| Basic fields: text, email, textarea, number, checkbox, radio, select, toggle, hidden, section-heading | **Multi-step forms** (the `page-break` block + step logic) |
-| Single-recipient email notification + merge tags | **Webhooks** (`Webhooks` module) |
-| Submissions admin — **view / list only** | **Submissions CSV export** (`Exporter`) |
-| Built-in spam challenge (HMAC + PoW + math) — kept Free as the differentiator | **SMTP** — Basic Auth *and* OAuth2 (full `Smtp` module is Pro) |
-| Privacy / GDPR basics, thank-you redirect (Phase C) | External CAPTCHA providers (Phase-D: Turnstile / hCaptcha / reCAPTCHA) |
-| Single notification route | Future: file uploads, payment fields (Stripe), CRM integrations, multiple notification routes, A/B |
+| Form builder + container, all basic fields | **Webhooks** (`Webhooks` module) — Zapier / Make / n8n / CRM |
+| **Conditional logic** (`Conditions`) — show/hide, submit-gating | **Submissions CSV export** (`Exporter`) ✅ moved |
+| **Multi-step forms** (`page-break` + step machinery) | **SMTP** — Basic Auth + OAuth2 (full `Smtp` module) ✅ moved |
+| Single-recipient email notification + merge tags | External CAPTCHA providers (Phase-D: Turnstile / hCaptcha / reCAPTCHA) |
+| Submissions admin — view / list | Future: **payment fields (Stripe)**, file uploads, CRM integrations, multiple notification routes, A/B |
+| Built-in spam challenge (HMAC + PoW + math), privacy, thank-you redirect | |
 
-**Architecture consequences for M-c (since these are already built in the single codebase):**
-- The `page-break` block moves to Pro → free core must degrade gracefully if a form references a page-break but Pro is inactive (render as single page, no hard error).
-- The `Conditions`, `Webhooks`, `Smtp`, and the `Exporter` modules move into the Pro add-on, wired back via the M-a hooks.
-- **SMTP-to-Pro mitigation (build in M-c):** free version stays on `wp_mail()`; add a tasteful admin notice ("Deliverability issues? PerForm Pro adds SMTP") + a readme FAQ entry, so the limit reads as an upsell, not a defect. (Owner chose SMTP=Pro despite the deliverability-review risk; this is the agreed safeguard.)
+**Architecture consequences:**
+- Cleanly-separable modules move to Pro: `Exporter` (M-c-a ✅), `Smtp` (M-c-b ✅), `Webhooks` (M-c-d, next). These have isolated surfaces (own admin pages / one inspector panel / own tables).
+- `Conditions` + multi-step stay in the free core — too woven into the block rendering/editing to extract without a fragile refactor.
+- **SMTP-to-Pro mitigation (still relevant):** free stays on `wp_mail()`; a tasteful "Deliverability issues? PerForm Pro adds SMTP" admin notice + readme FAQ frames the limit as an upsell. (Follow-up polish.)
 
 **Pricing model (decided direction):** annual subscription with site tiers (1 / 5 / unlimited), ~30% first-year discount, auto-renew. Lifetime deals only as a one-off launch booster (e.g. AppSumo), never permanent — they kill recurring revenue.
 
