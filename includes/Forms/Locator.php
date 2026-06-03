@@ -28,6 +28,12 @@ defined( 'ABSPATH' ) || exit;
 final class Locator {
 
 	/**
+	 * Object-cache group + TTL for the parsed form definition.
+	 */
+	private const CACHE_GROUP = 'perform_forms';
+	private const CACHE_TTL   = 5 * MINUTE_IN_SECONDS;
+
+	/**
 	 * Block name of the form container.
 	 */
 	private const FORM_BLOCK = 'perform/form';
@@ -69,20 +75,37 @@ final class Locator {
 			return null;
 		}
 
+		// Cache the parsed form definition. parse_blocks() over the full
+		// post_content runs on every submission otherwise. The key includes a
+		// content hash, so editing the post invalidates the entry automatically;
+		// a stored `0` marks a verified "no matching form" so misses and
+		// negatives stay distinct. On sites with a persistent object cache this
+		// also spans requests.
+		$cache_key = $post_id . ':' . $form_id . ':' . md5( $post->post_content );
+		$cached    = wp_cache_get( $cache_key, self::CACHE_GROUP );
+		if ( false !== $cached ) {
+			return is_array( $cached ) ? $cached : null;
+		}
+
 		$blocks = parse_blocks( $post->post_content );
 		$found  = $this->find_form( $blocks, $form_id );
 
 		if ( null === $found ) {
+			wp_cache_set( $cache_key, 0, self::CACHE_GROUP, self::CACHE_TTL );
 			return null;
 		}
 
 		$inner_blocks = $found['innerBlocks'] ?? [];
 
-		return [
+		$result = [
 			'attributes' => isset( $found['attrs'] ) && is_array( $found['attrs'] ) ? $found['attrs'] : [],
 			'fields'     => $this->collect_fields( $inner_blocks ),
 			'steps'      => $this->collect_steps( $inner_blocks ),
 		];
+
+		wp_cache_set( $cache_key, $result, self::CACHE_GROUP, self::CACHE_TTL );
+
+		return $result;
 	}
 
 	/**
