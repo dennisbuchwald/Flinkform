@@ -28,7 +28,6 @@ import {
 	TextareaControl,
 	ToggleControl,
 } from '@wordpress/components';
-import IntegrationsPanel from './integrations-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 const ALLOWED_BLOCKS = [
@@ -650,8 +649,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</>
 					) }
 				</PanelBody>
-
-				<IntegrationsPanel formId={ formId } formFields={ formFields } />
 
 				<ConditionalLogicPanel
 					attributes={ attributes }
