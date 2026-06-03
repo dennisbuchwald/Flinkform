@@ -16,12 +16,28 @@ Before you start, READ for context:
 - `perform-forms/includes/Bridge/README.md` (the frozen Free/Pro bridge contract)
 - `perform-forms/PERFORM_ROADMAP.md` → "Phase M" (what moved and why)
 
-## The two codebases
+## The two codebases — paths & access
 
-- **Free core** — `perform-forms/` · namespace `PerForm\` · GPL, WordPress.org-bound,
-  free forever. A block-editor forms plugin.
-- **Pro add-on** — `perform-forms-pro/` · namespace `PerFormPro\` · separate paid
-  plugin that docks onto the free core. Pro code never ships in the free repo.
+Both live as sibling directories and as separate Git repos. Audit at **v0.2.5**.
+
+| Plugin | Local path | Git remote |
+|--------|-----------|------------|
+| **Free core** | `/Users/dennisbuchwald/Arbeitsplatz/01_Code/04_Ressource/02_Eigenentwicklungen/perform-forms` | `https://github.com/dennisbuchwald/perform-forms` |
+| **Pro add-on** | `/Users/dennisbuchwald/Arbeitsplatz/01_Code/04_Ressource/02_Eigenentwicklungen/perform-forms-pro` | `https://github.com/dennisbuchwald/perform-forms-pro` |
+
+- **Free core** — `perform-forms/` · namespace `PerForm\` (PSR-4 → `includes/`) · GPL,
+  WordPress.org-bound, free forever. A block-editor forms plugin. Entry:
+  `perform-forms.php` → `PerForm\Plugin::init()`. JS source in `src/`, compiled to
+  `build/` via `npm run build` (build/ is git-ignored, ships only in the zip).
+- **Pro add-on** — `perform-forms-pro/` · namespace `PerFormPro\` (PSR-4 → `includes/`)
+  · separate paid plugin that docks onto the free core; Pro code never ships in the
+  free repo. Entry: `perform-forms-pro.php`. Editor JS in `src/` → `build/`.
+- For DB-column-parity checks (Dimension 2), the free core's ORIGINAL webhook table
+  SQL is in its git history — `git -C <free-core-path> log -p -- includes/Database/Schema.php`
+  (look at the state before commit `6bf7660`, which removed the webhook tables).
+- Key files to read first: `perform-forms/includes/Bridge/README.md`,
+  `perform-forms/PERFORM_ROADMAP.md` (Phase M), both plugins' main entry files,
+  `perform-forms-pro/includes/Database/Schema.php`, `perform-forms/includes/Privacy.php`.
 
 ## Architecture you must understand first
 
