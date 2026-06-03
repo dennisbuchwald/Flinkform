@@ -1,176 +1,277 @@
-# PerForm + PerForm Pro — Pre-Polish Audit Prompt
+# Audit-Prompt: PerForm + PerForm Pro
 
-> Paste this to an auditing agent (Claude Code with repo access). It audits BOTH
-> plugins as of the completed Phase-M module migration (v0.2.5), before polishing.
-> The goal is to surface defects NOW — the plugins are pre-release (not on .org yet).
+> Diesen Prompt in einem neuen Chat (Agent mit Repo-Zugriff) verwenden, um BEIDE
+> Plugins — den kostenlosen Core UND das Pro-Add-on — sowie ihr Zusammenspiel
+> unabhängig prüfen zu lassen. Stand: v0.2.6 (Phase-M-Migration + Audit-Polish
+> abgeschlossen). Die Plugins sind pre-release (noch nicht auf WordPress.org).
 
 ---
 
-## Your role
+Führe ein **vollständiges Security-, Performance-, Accessibility-, Code-Quality-,
+Frontend/SEO- und DSGVO/Datenschutz-Audit** der beiden WordPress-Plugins
+**„PerForm"** (Free-Core) und **„PerForm Pro"** (Add-on) durch — als *Paar*.
 
-You are a senior WordPress plugin auditor and a GDPR/DSGVO reviewer. Audit two
-plugins for **correctness, security, GDPR compliance, Free/Pro separation
-integrity, and WordPress.org readiness**. **Report only — do not fix anything.**
+PerForm ist ein block-editor-natives Formular-Plugin (WordPress 7.0+, PHP 8.1+,
+Interactivity API, kein jQuery). Es rendert Formulare aus Gutenberg-Blöcken,
+speichert Submissions in einer eigenen Tabelle, verschickt Benachrichtigungen
+und schützt vor Spam mit einem eingebauten Proof-of-Work-Challenge. **PerForm
+Pro** ist ein separates Plugin, das über eine eingefrorene **Bridge** andockt und
+die kostenpflichtigen Features liefert: Webhooks (REST + Cron + DB-Tabellen +
+Log), SMTP-Versand, CSV-Export. Conditional Logic und Multi-Step bleiben bewusst
+im Free-Core (untrennbar in die Blöcke verwoben).
 
-Before you start, READ for context:
-- `perform-forms/includes/Bridge/README.md` (the frozen Free/Pro bridge contract)
-- `perform-forms/PERFORM_ROADMAP.md` → "Phase M" (what moved and why)
+## Codebases — Pfade & Zugriff
 
-## The two codebases — paths & access
+Beide liegen als Schwester-Verzeichnisse und als getrennte Git-Repos vor.
 
-Both live as sibling directories and as separate Git repos. Audit at **v0.2.5**.
+| Plugin | Lokaler Pfad | Git-Remote | Namespace |
+|--------|--------------|------------|-----------|
+| **Free-Core** | `/Users/dennisbuchwald/Arbeitsplatz/01_Code/04_Ressource/02_Eigenentwicklungen/perform-forms` | `https://github.com/dennisbuchwald/perform-forms` | `PerForm\` |
+| **Pro-Add-on** | `/Users/dennisbuchwald/Arbeitsplatz/01_Code/04_Ressource/02_Eigenentwicklungen/perform-forms-pro` | `https://github.com/dennisbuchwald/perform-forms-pro` | `PerFormPro\` |
 
-| Plugin | Local path | Git remote |
-|--------|-----------|------------|
-| **Free core** | `/Users/dennisbuchwald/Arbeitsplatz/01_Code/04_Ressource/02_Eigenentwicklungen/perform-forms` | `https://github.com/dennisbuchwald/perform-forms` |
-| **Pro add-on** | `/Users/dennisbuchwald/Arbeitsplatz/01_Code/04_Ressource/02_Eigenentwicklungen/perform-forms-pro` | `https://github.com/dennisbuchwald/perform-forms-pro` |
+- Beide nutzen einen eigenen PSR-4-Autoloader (`includes/Autoloader.php`,
+  Namespace → `includes/`). JS-Quellen in `src/`, kompiliert nach `build/` via
+  `npm run build` (@wordpress/scripts). `build/` ist git-ignored und liegt nur im
+  ausgelieferten ZIP — beim Lesen ggf. erst `npm run build` ausführen oder die
+  `src/`-Quellen prüfen.
+- **Zuerst lesen** (Kontext): `perform-forms/includes/Bridge/README.md` (der
+  eingefrorene Bridge-Vertrag), `perform-forms/PERFORM_ROADMAP.md` (Phase M),
+  beide Haupt-Dateien (`perform-forms.php`, `perform-forms-pro.php`),
+  `perform-forms/PERFORM_SPEC.md` falls vorhanden.
 
-- **Free core** — `perform-forms/` · namespace `PerForm\` (PSR-4 → `includes/`) · GPL,
-  WordPress.org-bound, free forever. A block-editor forms plugin. Entry:
-  `perform-forms.php` → `PerForm\Plugin::init()`. JS source in `src/`, compiled to
-  `build/` via `npm run build` (build/ is git-ignored, ships only in the zip).
-- **Pro add-on** — `perform-forms-pro/` · namespace `PerFormPro\` (PSR-4 → `includes/`)
-  · separate paid plugin that docks onto the free core; Pro code never ships in the
-  free repo. Entry: `perform-forms-pro.php`. Editor JS in `src/` → `build/`.
-- For DB-column-parity checks (Dimension 2), the free core's ORIGINAL webhook table
-  SQL is in its git history — `git -C <free-core-path> log -p -- includes/Database/Schema.php`
-  (look at the state before commit `6bf7660`, which removed the webhook tables).
-- Key files to read first: `perform-forms/includes/Bridge/README.md`,
-  `perform-forms/PERFORM_ROADMAP.md` (Phase M), both plugins' main entry files,
-  `perform-forms-pro/includes/Database/Schema.php`, `perform-forms/includes/Privacy.php`.
+## Architektur, die du verstehen musst, bevor du auditierst
 
-## Architecture you must understand first
+- **Model-B-Freemium:** Der Free-Core ist eine Plattform mit Erweiterungs-Nähten;
+  Pro ist ein eigenes Plugin, das diese hookt. Pro-Code liegt NIE im Free-Repo.
+  Pro hängt hart am Core via `Requires Plugins`-Header **und** einer Laufzeit-
+  Versionssperre `PERFORM_PRO_MIN_CORE`.
+- **Bridge-Nähte (eingefroren, sobald Pro live ist):** `perform_pro_features`
+  (Filter → `Bridge\Features`-Façade), `perform_register_modules` (Action,
+  Pro-Foothold), `perform_block_dirs` (Filter), `perform_spam_providers` (Filter),
+  `perform_submissions_table_actions` (Action, CSV-Button),
+  `perform.formContainer.inspectorPanels` (JS-Filter, Editor-Panels),
+  `perform_submission_detail_after` (Action, Webhook-Deliveries),
+  `perform_submissions_deleted` (Action, GDPR-Lösch-Kaskade). Submission-Lifecycle:
+  `perform_before_submission`, `perform_after_submission`. Mail:
+  `perform_email_notification`. Merge-Tags: `perform_merge_tags_context`,
+  `perform_resolve_merge_tag`.
+- **In Pro verschoben:** CSV-Export, SMTP (Transport + Settings-Seite), Webhooks
+  (REST + 2 DB-Tabellen + Cron + Log-Seite + Editor-Integrations-Panel). **Im Free:**
+  Builder, alle Feldtypen, Conditional Logic, Multi-Step, Spam-Challenge,
+  Benachrichtigungen, Submissions-Ansicht.
+- **DB:** Free besitzt `{prefix}perform_submissions`. Pro besitzt
+  `{prefix}perform_webhooks` + `{prefix}perform_webhook_deliveries` (gleiche Namen
+  wie früher im Core → adoptiert sie in-place via dbDelta; `perform_pro_db_version`
+  Auto-Migrate; kein Drop bei Deactivate).
 
-- **Model B freemium:** the free core is a platform with extension seams; Pro is a
-  separate plugin that hooks them. Pro hard-depends on the core via the
-  `Requires Plugins` header **and** a runtime `PERFORM_PRO_MIN_CORE` version guard.
-- **Bridge seams** (frozen once Pro shipped): `perform_pro_features` (filter →
-  `Bridge\Features` capability façade), `perform_register_modules` (action, Pro
-  foothold), `perform_block_dirs` (filter), `perform_spam_providers` (filter),
-  `perform_submissions_table_actions` (action, CSV export button),
-  `perform.formContainer.inspectorPanels` (JS filter, editor panels),
-  `perform_submission_detail_after` (action, webhook deliveries section).
-- **Moved free → Pro:** CSV export (`Exporter` → `PerFormPro\Export\*`), SMTP
-  (transport + settings page → `PerFormPro\Smtp\*`), Webhooks (REST + 2 DB tables +
-  cron + log page + the editor integrations panel → `PerFormPro\Webhooks\*`).
-- **Stayed free (intentionally):** conditional logic, multi-step — woven into the
-  core blocks, not separable.
-- **DB:** Pro owns the webhook tables `perform_webhooks` + `perform_webhook_deliveries`
-  using the SAME names the free core used → Pro adopts existing tables in place
-  (`PerFormPro\Database\Schema`, `perform_pro_db_version`, dbDelta auto-migrate, no
-  drop on deactivate). Free core owns `perform_submissions` only.
+## Vorgehen & Output
 
-## Audit dimensions
+Bewerte **jede der 8 Dimensionen auf einer Skala von 1–10**. Liste **alle Findings
+mit `Datei:Zeile`, Severity (Kritisch/Hoch/Mittel/Niedrig) und konkretem Fix**.
+Gib für JEDES Finding an, **welches Plugin** betroffen ist (Free / Pro / Bridge).
+**Nur auditieren — nichts fixen.** Am Ende: pro Dimension der Score, eine
+**priorisierte Top-10-Liste**, ein explizites **Go/No-Go für den Launch** und die
+**Top-3-DSGVO-Maßnahmen**.
 
-Rank every finding **Critical / High / Medium / Low**. For each:
-`[SEVERITY] path/file.php:line — short title` → what's wrong · why it matters · concrete fix.
+---
 
-### 1. Free/Pro separation integrity
-- Free core must run standalone with **zero fatals when Pro is absent** — no dangling
-  references to moved classes (`Webhooks\*`, `Smtp\*`, `Submissions\Exporter`,
-  `WebhookLogPage`/`WebhookLogListTable`). Grep the free core for them.
-- **No double-registration** when both active: admin submenus, REST routes, cron
-  events, action/filter hooks, editor panels. Confirm the `PERFORM_PRO_MIN_CORE`
-  gates actually prevent a mismatched-version pair from double-registering.
-- Every bridge seam: correctly fired by free + consumed by Pro? Signature/argument
-  mismatch? Timing bugs (admin_menu priority, plugins_loaded order, JS filter
-  registered before the form-container renders)?
-- Has any seam's signature changed since it was documented (contract violation)?
+### Dimension 1 — Free/Pro-Trennung & Bridge-Integrität *(einzigartig & kritisch)*
 
-### 2. Correctness / bugs — focus on the migration
-- Namespace swaps: each moved class sits in the correct namespace and the Pro
-  autoloader resolves it (path = namespace). Pro references to `\PerForm\...` must
-  point at classes that still exist (`Submissions\Repository`, `Admin\Menu`,
-  `Settings\Secret`). Free core must not reference `PerFormPro\...`.
-- ⭐ **DB table adoption (high-risk):** compare Pro's `Database\Schema` webhook
-  `CREATE TABLE` statements against the free core's ORIGINAL definitions in git
-  history. They must be **identical** — a column/key mismatch means dbDelta will try
-  to ALTER a live customer table on adoption (data risk) or silently diverge.
-- Cron lifecycle: schedule registered with correct timing (the `cron_schedules`
-  filter fires before `init`), event scheduled on activation, cleared on
-  deactivation, self-healed on file-only update, never duplicated/orphaned.
-- REST: routes registered, every route has a correct `permission_callback`, args
-  sanitized + validated.
-- The CSV-export and webhook-resend handlers run on `admin_init` **independently** of
-  the core's dispatch — verify capability + nonce checks are airtight (no bypass,
-  correct nonce action names, correct capability `Menu::CAPABILITY`).
-- Activation / deactivation / uninstall hooks correct + idempotent in both plugins.
+- **Standalone-Free:** Läuft der Free-Core mit **null Fatals**, wenn Pro fehlt?
+  Grep nach Referenzen auf verschobene Klassen (`Webhooks\*`, `Smtp\*`,
+  `Export\*`, `WebhookLogPage/ListTable`) im Free-Core — es darf KEINE geben.
+- **Graceful Degradation:** Verschwinden Pro-Features sauber (kein Button, kein
+  Menü, kein Editor-Panel, kein Crash), wenn Pro inaktiv ist? Rendert ein Formular
+  mit Webhooks-Config korrekt ohne Pro?
+- **Keine Doppel-Registrierung** bei beiden aktiv: Admin-Submenüs, REST-Routes,
+  Cron-Events, Hooks, Editor-Panels. Verhindern die `PERFORM_PRO_MIN_CORE`-Sperren
+  zuverlässig, dass eine versions-gemischte Paarung (z. B. Pro 0.2.6 + Core 0.2.5)
+  doppelt registriert?
+- **Bridge-Vertrag:** Wird jede Naht vom Core korrekt gefeuert und von Pro korrekt
+  konsumiert? Signatur-/Argument-Abweichungen? Timing-Bugs (admin_menu-Priorität 20,
+  JS-Filter-Registrierung vs. Block-Render, `plugins_loaded`-Reihenfolge, der
+  `perform_register_modules`-Foothold)? Hat eine Naht ihre Signatur seit der
+  Dokumentation geändert (Vertragsbruch)?
+- **Cross-Plugin-Hooks:** `perform_after_submission` (vom Core gefeuert, von Pros
+  `SubmissionListener` konsumiert), `perform_submissions_deleted` (GDPR-Kaskade).
+- **Namespaces & Cross-Refs:** Jede verschobene Klasse im richtigen Namespace +
+  Autoloader-auflösbar. Pro nutzt `\PerForm\…`-Klassen, die existieren
+  (`Submissions\Repository`, `Admin\Menu`, `Settings\Secret`, `Privacy`).
 
-### 3. Security
-- Every `$wpdb` call uses `prepare()` for variable input; table names interpolated
-  (never from user input). Look hard at the webhook repos + delivery queries.
-- Capability checks on every admin action, REST endpoint, and settings save.
-- Nonce verification on every state-changing request (export, resend, SMTP save +
-  test-send, webhook CRUD).
-- Output escaping (`esc_html`/`esc_attr`/`esc_url`/`wp_kses_post`) wherever DB or user
-  data is printed — incl. the SMTP status page, webhook log, deliveries section.
-- Input sanitization on all `$_GET`/`$_POST`/`$_REQUEST`.
-- **SSRF:** webhooks POST to admin-supplied URLs — note any lack of guards
-  (internal-IP/loopback filtering). Admin-configured lowers severity but flag it.
-- Secrets: SMTP password encrypted via `Settings\Secret`; never logged, never echoed,
-  not exposed via REST. Check the encryption + the wp-config salt dependency.
-- No `eval`, no `unserialize` of untrusted data, no `extract`.
+### Dimension 2 — Sicherheit
 
-### 4. GDPR / DSGVO — **first-class priority (owner flagged this explicitly)**
-- **Data inventory:** enumerate every piece of personal data stored (submission field
-  values, webhook delivery response bodies, anything else), where, and for how long.
-- **Privacy-policy content:** the free core registers content via
-  `wp_add_privacy_policy_content` (`Privacy.php`). After webhooks + SMTP moved to Pro,
-  the free text was generalized. ⭐ **Does Pro add its OWN privacy disclosures** for
-  webhooks (submission data sent to third-party URLs, possibly outside the EU) and
-  SMTP (mail routed through a provider)? This is a **likely GAP** — webhooks transmit
-  personal data to third parties and MUST be disclosed.
-- ⭐ **Erasure cascade (likely GAP):** the free core has a personal-data exporter +
-  eraser (`Privacy.php`) for submissions. Webhook delivery rows (now in Pro) carry
-  `submission_id` and may hold personal data in `response_body`. When a submission is
-  erased (or via WP's eraser), are the related webhook delivery rows also erased? Does
-  Pro register its own exporter/eraser for the delivery log? If not, personal data is
-  orphaned after an erasure request — a GDPR violation.
-- **Data minimization:** the plugin claims it stores no IP / user-agent. Verify in the
-  submission `Handler`, the spam challenge, and webhook deliveries.
-- **Third-country transfer / external transmission:** webhooks → arbitrary URLs; SMTP
-  → configured provider. Both are admin-configured (lawful basis is the controller's
-  duty) but the plugin must be transparent. Confirm the built-in spam challenge stays
-  100% local (no external call).
-- **No silent external calls:** confirm the free core contacts nothing by default, and
-  Pro contacts nothing until an admin configures a webhook/SMTP.
-- **Retention:** submissions are retained indefinitely until manual delete/uninstall.
-  Flag whether that is documented and whether a retention/auto-purge option is
-  warranted for GDPR storage-limitation.
-- **Uninstall vs deactivate:** deactivate must preserve all data (verify); free
-  uninstall drops `perform_submissions`, Pro uninstall drops the webhook tables —
-  confirm no personal data is orphaned and no table is left behind on full removal.
+- **Submit-Pipeline:** Nonce-Verifikation auf der Formular-Verarbeitung
+  (`Submissions\Handler`), Konsistenz JS↔PHP Nonce-Namen. Honeypot + Time-Check +
+  PoW-Challenge-Verifikation (`Spam\Guard`, `Spam\Challenge` — HMAC-Token: ist der
+  Secret-Key sicher abgeleitet, ist die Token-Verifikation timing-safe via
+  `hash_equals`?).
+- **E-Mail-Header-Injection:** Werden Newlines/CRLF aus Reply-To / To / Subject
+  entfernt, BEVOR sie in `wp_mail()` gehen? Achtung: das Merge-Tag-System
+  (`Notifications\MergeTags`) rendert benutzer-eingegebene Feldwerte in Subject/
+  Reply-To/Body — können eingeschleuste Header (z. B. `\nBcc:`) durchrutschen?
+- **Open Redirect:** Die Thank-You-Redirect-Funktion — wird die Ziel-URL gegen
+  `wp_safe_redirect()` / Whitelist geprüft (kein Redirect auf fremde Domains)?
+- **XSS / Output-Escaping:** Alle Templates (`render.php` aller Blöcke,
+  Admin-Seiten, Webhook-Log, SMTP-Status, Submission-Detail) — `esc_html`/
+  `esc_attr`/`esc_url`/`wp_kses_post`. Im JS: kein `innerHTML`/`.html()` mit
+  ungeprüften Daten (prüfe `view.js`, `integrations-panel.js`).
+- **SQL-Injection:** Jeder `$wpdb`-Call mit Variablen-Input nutzt `prepare()`;
+  Tabellennamen nur interpoliert (nie User-Input). Genau hinsehen:
+  `Submissions\Repository`, Pro `Webhooks\Repository` + `DeliveryRepository`,
+  und die `LIKE`-Query in `Privacy::find_by_email` (Full-Scan + Escape via
+  `esc_like`?).
+- **REST-Sicherheit (Pro `Webhooks\RestController`):** Jede Route mit korrektem
+  `permission_callback` (nicht `__return_true`), `args` sanitized + validated.
+- **SSRF (Pro Webhooks):** Der `Deliverer` POSTet an admin-konfigurierte URLs —
+  ist `reject_unsafe_urls` gesetzt, validiert der REST-Endpoint die URL
+  (`wp_http_validate_url`)? Reicht das, oder kann ein interner Endpoint
+  (169.254.x, localhost) getroffen werden?
+- **Capability-Checks:** Auf JEDER Admin-Aktion, jedem REST-Endpoint, jedem
+  State-Change (Export, Webhook-Resend, SMTP-Save/Test, Submission-Delete).
+- **Secret-Handling:** SMTP-Passwort-Verschlüsselung (`Settings\Secret`,
+  AES-256-CBC, wp-config-Salt-Abhängigkeit) — wird der Klartext je geloggt/
+  ausgegeben/per REST exponiert?
+- **CSRF auf allen AJAX/GET-State-Changes**, `ABSPATH`-Guards auf allen
+  PHP-Dateien, kein `eval`/`unserialize` von Untrusted-Daten.
 
-### 5. WordPress.org / standards
-- Text domains: free = `perform-forms`, Pro = `perform-forms-pro`. The ~10 moved files
-  were swapped with sed — check for **missed or over-swapped** domains and any string
-  that isn't actually a text domain getting mangled.
-- i18n timing: no `__()`/`_e()` before `init` (WP 6.7+ JIT-load notice) — check
-  early hooks, `cron_schedules` display strings, activation callbacks.
-- Prefixing: all global functions, options, hooks, cron hooks prefixed `perform_`.
-- `perform-forms/readme.txt`: still lists webhooks/SMTP/CSV as free and says "There is
-  no premium tier" — confirm this is stale and scope the rewrite (slated for M-g).
-- Free core should pass the WordPress.org Plugin Check tool — note blockers.
+### Dimension 3 — Performance
 
-### 6. Build / packaging
-- Shipped zips must exclude dev cruft (`node_modules`, `src`, `.git`, dev `.md`) but
-  INCLUDE `build/`. Pro `build/index.js` + `index.asset.php` present; the editor
-  enqueue reads deps/version from the manifest.
-- No secrets, no `.claude/`, no `settings.local.json` in either zip.
+- **Frontend-Bundle:** Größe des Frontend-JS/CSS (Ziel laut Spec < 15 KB gzipped).
+  Misst `build/form-container/view.js` (~966 Z. Multi-Step + Conditional-Logic).
+  Conditional Asset Loading — werden Skripte/Styles NUR auf Seiten mit einem
+  PerForm-Block geladen (nicht site-weit)?
+- **Interactivity API:** Hydration-Kosten, unnötige Re-Renders, Store-Größe bei
+  Multi-Step.
+- **DB pro Request:** Submission-Speicherung (`Handler` → `Repository`),
+  Form-Lookup (`Forms\Locator`/`Indexer` — Caching/Transient?), die Submissions-
+  Liste (Pagination, Indizes auf `form_id`/`status`/`created_at`).
+- **Cron (Pro):** Der Webhook-Dispatcher läuft im **Minutentakt**
+  (`perform_every_minute`). Ist das gerechtfertigt? Batch-Größe (BATCH_SIZE),
+  atomares Claiming gegen Doppel-Versand, HTTP-Timeout, Last bei vielen Deliveries.
+- **GDPR-Query:** `Privacy::find_by_email` macht `LIKE %email%` über die
+  Submissions-Tabelle (Full-Table-Scan) — bei großen Tabellen ein Problem.
 
-## Known risk areas — start here (pre-flagged as likely)
+### Dimension 4 — Accessibility (WCAG 2.1 AA) *(forms-kritisch)*
 
-1. **GDPR — webhook delivery logs are not covered by erasure**, and **Pro adds no
-   privacy-policy content** for webhooks/SMTP. (Dimension 4.)
-2. **DB column parity** between the free core's original webhook table SQL and Pro's
-   `Database\Schema` — must be byte-identical. (Dimension 2.)
-3. **Text-domain swap misses** across the moved files. (Dimension 5.)
-4. **Cross-plugin hook timing** — admin_menu priority 20, the JS inspector filter,
-   `perform_after_submission` fired by free + consumed by Pro. (Dimension 1.)
-5. **Double-registration / orphaned cron** across version-mismatched pairs. (Dim. 1/2.)
+- **Labels:** Jedes Feld mit korrekt assoziiertem `<label for>` (auch bei visuell
+  versteckten / floating Labels). Required-Felder mit `aria-required` + sichtbarer
+  Kennzeichnung.
+- **Fehler-Handling:** Validierungsfehler via `aria-live="polite"` /
+  `aria-describedby` angekündigt, Fehler-Felder mit `aria-invalid`. Server- UND
+  Client-Fehler.
+- **Multi-Step:** Tastatur-bedienbare Navigation (Tab/Enter), Focus-Management beim
+  Schrittwechsel (Focus auf den neuen Schritt/erstes Feld), Progress-Indicator mit
+  ARIA (`aria-valuenow`/-`valuemax`), Schritt-Ankündigung via Live-Region
+  (`data-perform-step-announce`). Keine Layout-Shifts beim Wechsel.
+- **Spam-Challenge:** Funktioniert die Math-Fallback-Variante ohne JS und ist sie
+  zugänglich (Label, Fehler)? Kein Zugänglichkeits-Blocker durch das PoW-Widget.
+- **Interaktive Elemente:** Echte `<button>`/`<a>` statt `<div onclick>`.
+  Icon-Buttons mit `aria-label`. Submit/Next/Back klar benannt.
+- **`prefers-reduced-motion`** auf allen Animationen/Transitions (`@starting-style`-
+  Fade, Step-Übergänge). **Farbkontraste** der Default-Feld-Styles + Status-Badges
+  gegen 4.5:1 prüfen. Sichtbarer **Focus-Indicator** auf allen Feldern/Buttons.
+- **Editor-A11y:** Sind die Inspector-Controls + Block-UIs tastaturbedienbar?
 
-## Output
+### Dimension 5 — Code-Qualität & WordPress-Standards
 
-Group findings by dimension, severity-ranked. End with: (a) a prioritized fix list,
-(b) an explicit **go / no-go for polishing**, and (c) the top 3 GDPR actions. Cite
-`file:line` for every finding. Audit only — implement nothing.
+- **WP Best Practices:** Sanitization/Escaping/Nonces durchgängig; keine
+  deprecated APIs; kein `@`-Error-Suppression.
+- **i18n:** Alle user-facing Strings in `__()`/`_e()`/`esc_html__()` mit der
+  RICHTIGEN Text-Domain (Free = `perform-forms`, Pro = `perform-forms-pro` — prüfe
+  die verbatim-verschobenen Pro-Dateien auf verpasste/über-ersetzte Domains).
+  **i18n-Timing:** kein `__()` vor `init` (WP 6.7+ JIT-Notice) — Cron-Schedule-
+  Display-Strings, Activation-Callbacks, früh registrierte Hooks.
+- **Beschreibungstexte:** `wp_kses_post()` vs. `esc_html()` korrekt gewählt.
+- **Prefixing:** Alle globalen Funktionen/Options/Hooks/Cron `perform_`-präfixiert.
+- **Doc-Header:** `@package` (PerForm vs. PerFormPro), `@since` konsistent.
+- **CSS:** Custom-Properties-Konsistenz, `!important`-Nutzung, Spezifität, die
+  theme-resistente `.perform-form.perform-form`-Doppelklassen-Strategie.
+- **JS:** Vanilla vs. wp.* Konsistenz, Error-Handling bei `apiFetch`/Fetch.
+- **PHP:** strict_types, Typisierung, Single-Responsibility, tote/verwaiste
+  Methoden nach der Migration.
+
+### Dimension 6 — Frontend, Markup & SEO-Hygiene
+
+- **Markup-Qualität:** Valides, semantisches HTML des gerenderten Formulars; kein
+  Render-Blocking; **kein Cumulative Layout Shift** (reservierte Höhen, Multi-Step).
+- **Kein SEO-Schaden:** Das Formular/Plugin darf die Seite nicht aufblähen oder
+  unerwünschte Meta/Markup einschleusen. Inline-Styles/Scripts minimal.
+- **Structured Data:** Falls Schema ausgegeben wird (i. d. R. minimal bei Forms) —
+  Korrektheit prüfen; sonst als „n/a" markieren.
+- **Bilder/Assets:** Falls Felder Bilder/Icons rendern: `width`/`height`,
+  Lazy-Loading wo sinnvoll.
+
+### Dimension 7 — DSGVO / Datenschutz *(erstklassig — explizit gewünscht)*
+
+- **Daten-Inventar:** Welche personenbezogenen Daten werden verarbeitet/gespeichert
+  und WO? (Submission-Feldwerte: Name/E-Mail/Telefon/Nachricht → `perform_submissions`;
+  Webhook-Delivery-`response_body` → `perform_webhook_deliveries`; sonstiges?)
+- **Datenminimierung:** Das Plugin behauptet, KEINE IP-Adressen / User-Agents zu
+  speichern — verifiziere das in `Submissions\Handler`, im Spam-Challenge und in
+  den Webhook-Deliveries.
+- **Einwilligung/Consent:** Gibt es ein Datenschutz-Checkbox-Feld / einen Mechanismus,
+  um vor der Verarbeitung eine Einwilligung einzuholen? Falls nicht — als Lücke +
+  Empfehlung notieren (Consent-Feld als Block).
+- **Auskunfts- & Löschrecht (WP Privacy Tools):** Free registriert Exporter + Eraser
+  (`Privacy.php`) für Submissions; Pro registriert einen Exporter für Webhook-
+  Delivery-Logs + eine **Lösch-Kaskade** via `perform_submissions_deleted`.
+  **Prüfe:** Wird WIRKLICH jede personenbezogene Spur erfasst? Werden beim Erase/
+  Delete eines Submissions die zugehörigen Delivery-Zeilen (Pro) zuverlässig
+  mitgelöscht (keine verwaisten Daten)? Deckt der Export alle Daten ab? Bekannte
+  Feinheit: die Kaskade löscht *still* — wird die Löschung im WP-Erasure-*Report*
+  gezählt? (Optional verbesserbar.)
+- **Externe Übertragung / Drittland:** Webhooks senden Submission-Daten an
+  beliebige (admin-konfigurierte) URLs, evtl. außerhalb der EU; SMTP routet Mail
+  über einen Provider. Sind beide im Datenschutzhinweis offengelegt (Pro
+  `Privacy.php`)? Prüfe Vollständigkeit + Korrektheit der Texte.
+- **Keine stillen externen Calls:** Bestätige, dass der Free-Core per Default NICHTS
+  extern sendet (Spam-Challenge 100 % lokal) und Pro nichts, bis ein Admin etwas
+  konfiguriert. Lädt der Editor/Frontend externe CDNs/Fonts (IP-Übertragung)?
+- **Personenbezug in URLs/Logs:** Der Thank-You-Redirect kann `?perform_submission={id}`
+  anhängen — ist das problematisch (ID in URL/Referrer)? Enthalten Webhook-
+  Delivery-`response_body`s oder Logs personenbezogene Daten — sind sie löschbar?
+- **Aufbewahrung:** Submissions werden unbegrenzt aufbewahrt (bis manuelles Löschen/
+  Uninstall). Storage-Limitation-Risiko — gibt es / sollte es eine
+  Aufbewahrungsfrist/Auto-Purge-Option geben? Dokumentiert?
+- **Uninstall vs. Deactivate:** Deactivate erhält alle Daten (verifiziere); Free-
+  Uninstall droppt `perform_submissions`, Pro-Uninstall droppt die Webhook-Tabellen
+  + SMTP-Optionen. Bleibt nirgends personenbezogene Daten verwaist?
+- **Empfehlungen:** Welche Maßnahmen für volle DSGVO-Konformität? (Consent-Feld,
+  Aufbewahrungsfristen/Auto-Purge, Datenschutz-Doku, ggf. Eraser-Reporting.)
+
+### Dimension 8 — Build, Packaging & .org-Readiness
+
+- **ZIP-Hygiene:** Die ausgelieferten ZIPs schließen Dev-Ballast aus
+  (`node_modules`, `src`, `.git`, Dev-`.md`, `.claude`, `package.json`) via
+  `.distignore`, enthalten aber `build/`. Kein `settings.local.json`/Secrets im ZIP.
+  Pro: `build/index.js` + `index.asset.php` vorhanden, Enqueue liest das Manifest.
+- **Versionierung:** Header-Version = Konstante = `package.json` = `readme.txt`
+  Stable-Tag, in beiden Plugins konsistent (0.2.6). `PERFORM_PRO_MIN_CORE` korrekt.
+- **readme.txt (Free):** **Bekannte Lücke** — listet Webhooks/SMTP/CSV noch als
+  „free" und behauptet „no premium tier". Muss für das Freemium-Modell neu
+  geschrieben werden (blockt den .org-Upload). Bestätige Umfang.
+- **Plugin Check:** Würde der Free-Core das WordPress.org „Plugin Check"-Tool
+  bestehen? Blocker auflisten. GPL-Header korrekt in beiden.
+
+---
+
+## Bekannte Risiko-Bereiche (hier zuerst hinsehen)
+
+1. **E-Mail-Header-Injection** über das Merge-Tag-System in Subject/Reply-To.
+2. **Open-Redirect** im Thank-You-Redirect.
+3. **GDPR-Lösch-Kaskade** — keine verwaisten Webhook-Delivery-Zeilen nach
+   Submission-Löschung; Vollständigkeit von Export/Erase.
+4. **A11y der Multi-Step-Navigation** (Focus-Management, Live-Region) + der
+   Spam-Challenge.
+5. **SSRF** bei Webhooks (interne Endpoints trotz `reject_unsafe_urls`?).
+6. **Frontend-Bundle-Größe** (< 15 KB-Ziel) + Conditional Loading.
+7. **Doppel-Registrierung / Versions-Mismatch** zwischen Free & Pro.
+8. **readme.txt** veraltet (Freemium-Rewrite nötig).
+
+## Output-Format
+
+Pro Dimension: **Score 1–10** + kurze Begründung. Pro Finding:
+`[SEVERITY] (Free|Pro|Bridge) datei.php:zeile — Titel` → Problem · Warum es zählt ·
+Konkreter Fix. Am Ende: **priorisierte Top-10-Verbesserungen**, ein **Go/No-Go für
+den Launch**, und die **Top-3-DSGVO-Maßnahmen**. **Implementiere nichts — nur
+auditieren + berichten.**
