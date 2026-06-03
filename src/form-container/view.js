@@ -519,24 +519,32 @@ const { state } = store( NAMESPACE, {
 				return;
 			}
 
-			// Clear stale aria-invalid markers from a previous attempt
-			// on this step so the new check starts from a clean slate.
-			currentStepEl
-				.querySelectorAll( '[aria-invalid="true"]' )
-				.forEach( ( el ) => el.removeAttribute( 'aria-invalid' ) );
+			// Reset client-side error state from any previous attempt so the
+			// new check starts clean.
+			clearStepErrors( currentStepEl );
 
-			const invalid = currentStepEl.querySelectorAll( ':invalid' );
+			// Native constraint-invalid controls, plus required checkbox
+			// groups that the :invalid selector can't see (group semantics).
+			const invalid = Array.from( currentStepEl.querySelectorAll( ':invalid' ) );
+			const missingGroups = requiredCheckboxGroupsMissing( currentStepEl );
 
-			if ( invalid.length > 0 ) {
+			if ( invalid.length > 0 || missingGroups.length > 0 ) {
+				// Persistent, screen-reader-announced messages on every field —
+				// not just the browser's transient native tooltip. validationMessage
+				// is already localised by the browser; group messages come from a
+				// server-translated data attribute.
 				invalid.forEach( ( field ) => {
-					field.setAttribute( 'aria-invalid', 'true' );
+					showFieldError( field, field.validationMessage );
 				} );
-				// reportValidity() surfaces the browser's native error
-				// tooltip on the first invalid field and is itself an
-				// i18n-aware message — no string table to maintain.
-				invalid[ 0 ].reportValidity();
-				if ( typeof invalid[ 0 ].focus === 'function' ) {
-					invalid[ 0 ].focus();
+				missingGroups.forEach( ( group ) => markGroupError( group ) );
+
+				// Native tooltip + focus on the first offending control.
+				if ( invalid[ 0 ] ) {
+					invalid[ 0 ].reportValidity();
+				}
+				const first = invalid[ 0 ] || missingGroups[ 0 ];
+				if ( first && typeof first.focus === 'function' ) {
+					first.focus();
 				}
 				return;
 			}
@@ -615,6 +623,97 @@ const { state } = store( NAMESPACE, {
 	},
 
 } );
+
+/**
+ * Clear all client-side validation error state from a step before re-checking.
+ *
+ * @param {HTMLElement} stepEl
+ */
+function clearStepErrors( stepEl ) {
+	stepEl
+		.querySelectorAll( '[aria-invalid="true"]' )
+		.forEach( ( el ) => el.removeAttribute( 'aria-invalid' ) );
+	stepEl
+		.querySelectorAll( '.perform-field__error--client' )
+		.forEach( ( el ) => el.remove() );
+	stepEl
+		.querySelectorAll( '.perform-field--has-error' )
+		.forEach( ( el ) => el.classList.remove( 'perform-field--has-error' ) );
+}
+
+/**
+ * Required checkbox GROUPS with nothing checked — the `:invalid` selector
+ * can't catch these because group requiredness isn't an HTML `required`.
+ * The fieldset carries `data-perform-required` when required (see render.php).
+ *
+ * @param {HTMLElement} stepEl
+ * @return {HTMLElement[]} Offending group fieldsets.
+ */
+function requiredCheckboxGroupsMissing( stepEl ) {
+	return Array.from( stepEl.querySelectorAll( '[data-perform-required]' ) ).filter(
+		( group ) => ! group.querySelector( 'input[type="checkbox"]:checked' )
+	);
+}
+
+/**
+ * Render a persistent, role="alert" error for a single control + wire
+ * aria-describedby/aria-invalid so assistive tech announces it.
+ *
+ * @param {HTMLElement} field   The invalid control.
+ * @param {string}      message Localised message (browser validationMessage).
+ */
+function showFieldError( field, message ) {
+	const wrapper = field.closest( '.perform-field' );
+	if ( wrapper ) {
+		field.setAttribute( 'aria-invalid', 'true' );
+		renderFieldError( wrapper, field, message );
+	}
+}
+
+/**
+ * Render a persistent error for a required checkbox group (no single control).
+ *
+ * @param {HTMLElement} group The fieldset.
+ */
+function markGroupError( group ) {
+	renderFieldError( group, null, group.getAttribute( 'data-perform-required-message' ) || '' );
+}
+
+/**
+ * Inject/update a `.perform-field__error--client` message inside a field
+ * wrapper. Mirrors the server-side error markup so styling + semantics match.
+ *
+ * @param {HTMLElement}      wrapper The `.perform-field` container.
+ * @param {HTMLElement|null} field   The control to link (null for groups).
+ * @param {string}           message The message text.
+ */
+function renderFieldError( wrapper, field, message ) {
+	if ( ! message ) {
+		return;
+	}
+	wrapper.classList.add( 'perform-field--has-error' );
+
+	let errorEl = wrapper.querySelector( '.perform-field__error--client' );
+	if ( ! errorEl ) {
+		const name = wrapper.getAttribute( 'data-perform-field-name' ) || 'field';
+		errorEl = document.createElement( 'p' );
+		errorEl.className = 'perform-field__error perform-field__error--client';
+		errorEl.setAttribute( 'role', 'alert' );
+		errorEl.id = 'perform-client-error-' + name;
+		wrapper.appendChild( errorEl );
+	}
+	errorEl.textContent = message;
+
+	if ( field ) {
+		const described = ( field.getAttribute( 'aria-describedby' ) || '' )
+			.split( ' ' )
+			.filter( Boolean );
+		if ( ! described.includes( errorEl.id ) ) {
+			described.push( errorEl.id );
+			field.setAttribute( 'aria-describedby', described.join( ' ' ) );
+		}
+	}
+}
 
 /**
  * Recompute and write the progress-indicator context values for the

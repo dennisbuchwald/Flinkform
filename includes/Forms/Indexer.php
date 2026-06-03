@@ -203,10 +203,11 @@ final class Indexer {
 				if ( '' !== $form_id ) {
 					if ( ! isset( $by_form_id[ $form_id ] ) ) {
 						$by_form_id[ $form_id ] = [
-							'form_id'      => $form_id,
-							'title'        => isset( $attrs['title'] ) && is_string( $attrs['title'] ) ? trim( $attrs['title'] ) : '',
-							'submit_label' => isset( $attrs['submitLabel'] ) && is_string( $attrs['submitLabel'] ) ? $attrs['submitLabel'] : '',
-							'sources'      => [],
+							'form_id'        => $form_id,
+							'title'          => isset( $attrs['title'] ) && is_string( $attrs['title'] ) ? trim( $attrs['title'] ) : '',
+							'submit_label'   => isset( $attrs['submitLabel'] ) && is_string( $attrs['submitLabel'] ) ? $attrs['submitLabel'] : '',
+							'retention_days' => isset( $attrs['retentionDays'] ) ? max( 0, (int) $attrs['retentionDays'] ) : 0,
+							'sources'        => [],
 						];
 					}
 					// Always prefer the first non-empty title we see — if
@@ -269,6 +270,7 @@ final class Indexer {
 				'title'             => '' !== $form['title'] ? $form['title'] : $this->fallback_title( $form ),
 				'has_explicit_title' => '' !== $form['title'],
 				'submit_label'      => $form['submit_label'],
+				'retention_days'    => $form['retention_days'] ?? 0,
 				'sources'           => $form['sources'],
 				'submission_count'  => $stats['count'],
 				'last_submission_at' => $stats['last_at'],

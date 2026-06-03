@@ -210,6 +210,35 @@ final class Repository {
 	}
 
 	/**
+	 * Find submission IDs for a form created strictly before a cutoff.
+	 *
+	 * Used by the retention purge. Capped so a single cron run stays bounded;
+	 * the daily job drains any remainder on later runs.
+	 *
+	 * @param string $form_id    Form UUID.
+	 * @param string $before_gmt Cutoff datetime, 'Y-m-d H:i:s' (GMT/UTC).
+	 * @param int    $limit      Maximum ids to return.
+	 * @return array<int, int>
+	 */
+	public function find_ids_older_than( string $form_id, string $before_gmt, int $limit = 1000 ): array {
+		global $wpdb;
+
+		$table = Schema::table_name();
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name controlled; values prepared.
+		$ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT id FROM {$table} WHERE form_id = %s AND created_at < %s ORDER BY id ASC LIMIT %d",
+				$form_id,
+				$before_gmt,
+				$limit
+			)
+		);
+
+		return is_array( $ids ) ? array_map( 'intval', $ids ) : [];
+	}
+
+	/**
 	 * Update a single submission's read/unread status.
 	 *
 	 * @param int    $id

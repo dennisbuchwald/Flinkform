@@ -53,6 +53,10 @@
 			"default": "auto",
 			"enum": ["auto", "builtin", "none"]
 		},
+		"retentionDays": {
+			"type": "number",
+			"default": 0
+		},
 		"afterSubmit": {
 			"type": "object",
 			"default": {

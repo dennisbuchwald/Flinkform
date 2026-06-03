@@ -93,6 +93,14 @@ final class Plugin {
 		// tools (Tools > Export/Erase Personal Data).
 		Privacy::register();
 
+		// Submission retention / auto-purge (storage limitation). The cron
+		// callback is registered here; the daily schedule is set on activation
+		// and self-healed below for the file-only update path.
+		( new Submissions\Retention() )->register();
+		if ( ! wp_next_scheduled( Submissions\Retention::CRON_HOOK ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', Submissions\Retention::CRON_HOOK );
+		}
+
 		if ( is_admin() ) {
 			( new Admin\Menu() )->register();
 		}

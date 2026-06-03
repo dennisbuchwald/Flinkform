@@ -34,6 +34,12 @@ final class Activator {
 	public static function activate(): void {
 		Database\Schema::create();
 
+		// Daily submission-retention purge (storage limitation). Self-healed in
+		// Plugin::init for the file-only update path where this never runs.
+		if ( ! wp_next_scheduled( Submissions\Retention::CRON_HOOK ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', Submissions\Retention::CRON_HOOK );
+		}
+
 		// The webhook dispatcher cron lives with PerForm Pro now — Pro's own
 		// activation handler creates the webhook tables and schedules the cron.
 		// The free core only owns the submissions table.

@@ -64,7 +64,7 @@ function generateUuid() {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { formId, title, submitLabel, successMessage, notifications, appearance, customCSS, spamProtection, afterSubmit } = attributes;
+	const { formId, title, submitLabel, successMessage, notifications, appearance, customCSS, spamProtection, afterSubmit, retentionDays } = attributes;
 
 	const afterSubmitConfig = afterSubmit ?? {};
 	const afterSubmitBehaviour = afterSubmitConfig.behaviour === 'redirect' ? 'redirect' : 'message';
@@ -715,6 +715,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							) }
 						</Notice>
 					) }
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Data Retention', 'perform-forms' ) }
+					initialOpen={ false }
+				>
+					<RangeControl
+						label={ __( 'Auto-delete submissions after (days)', 'perform-forms' ) }
+						help={ __(
+							'GDPR storage limitation: automatically delete this form’s submissions older than the chosen number of days. 0 = keep forever. Purges run daily and also remove any linked PerForm Pro webhook delivery records.',
+							'perform-forms'
+						) }
+						value={ retentionDays ?? 0 }
+						onChange={ ( value ) => setAttributes( { retentionDays: value ?? 0 } ) }
+						min={ 0 }
+						max={ 365 }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				<PanelBody

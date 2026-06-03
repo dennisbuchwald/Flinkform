@@ -27,11 +27,10 @@ final class Deactivator {
 	 * @return void
 	 */
 	public static function deactivate(): void {
-		// No-op. Submission data must survive deactivation — that contract
-		// belongs to uninstall.php. The only runtime state the plugin used to
-		// clear here was the webhook dispatcher cron, which now lives with
-		// PerForm Pro and is cleared by Pro's own deactivation handler.
-		//
-		// Intentionally left empty.
+		// Clear the retention-purge cron — runtime state, must not keep firing
+		// into a hook with no callback once the plugin is inactive. Submission
+		// DATA is untouched (that contract belongs to uninstall.php). The
+		// webhook dispatcher cron is cleared by PerForm Pro's own deactivator.
+		wp_clear_scheduled_hook( Submissions\Retention::CRON_HOOK );
 	}
 }
