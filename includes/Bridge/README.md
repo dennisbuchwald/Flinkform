@@ -96,6 +96,21 @@ shows only the free filter controls.
 
 ---
 
+### 6. `perform.formContainer.inspectorPanels` (JS filter) — editor inspector panels
+Added in slice M-c-c. A **JavaScript** filter (`@wordpress/hooks`), not a PHP
+hook — it is the editor-extensibility mechanism for every Pro module with a
+form-container inspector UI (webhooks, conditional logic, multi-step). The free
+core's `form-container/edit.js` applies it and renders the returned panels
+inside `<InspectorControls>`. The Pro editor script (`assets/editor.js`, enqueued
+on `enqueue_block_editor_assets`) attaches via `wp.hooks.addFilter`.
+
+- **Input/Return:** `Array` of React elements (panels). Core default: `[]`.
+- **Context arg:** `{ attributes, setAttributes, clientId, formId, formFields }`.
+- Pro consumes it with deps `wp-hooks`, `wp-element`, `wp-components`, `wp-i18n`.
+- With no add-on the list is empty → no extra panels render.
+
+---
+
 ## Planned extension points (not yet cut — added when Pro needs them)
 
 Adding these later is contract-compliant (additive). Listed here so the shape is

@@ -5,8 +5,9 @@
  * If a block is duplicated, both copies inherit the same UUID — Phase 1
  * accepts this; later phases may detect and re-key duplicates explicitly.
  */
-import { useEffect, useMemo } from '@wordpress/element';
+import { Fragment, useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
+import { applyFilters } from '@wordpress/hooks';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	ColorPalette,
@@ -662,6 +663,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					toggleLabel={ __( 'Gate the submit button', 'perform-forms' ) }
 					toggleHelp={ __( 'Disable the submit button until the rules below match. Useful for "I agree to terms" checkboxes.', 'perform-forms' ) }
 				/>
+
+				{ /*
+				 * Pro inspector-panel extension point. PerForm Pro injects its
+				 * own form-container inspector panels here via:
+				 *   addFilter( 'perform.formContainer.inspectorPanels', … )
+				 * The free core passes the full editing context; the default is
+				 * an empty list, so with no add-on nothing extra renders.
+				 * Contract: see includes/Bridge/README.md (frozen once Pro ships).
+				 */ }
+				{ applyFilters(
+					'perform.formContainer.inspectorPanels',
+					[],
+					{ attributes, setAttributes, clientId, formId, formFields }
+				).map( ( panel, index ) => (
+					<Fragment key={ `perform-pro-panel-${ index }` }>
+						{ panel }
+					</Fragment>
+				) ) }
 
 				<PanelBody
 					title={ __( 'Spam Protection', 'perform-forms' ) }
