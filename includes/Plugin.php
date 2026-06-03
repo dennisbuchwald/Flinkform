@@ -124,6 +124,23 @@ final class Plugin {
 		if ( is_admin() ) {
 			( new Admin\Menu() )->register();
 		}
+
+		/**
+		 * Pro add-on foothold — the single, well-timed hook the PerForm Pro
+		 * add-on docks onto to wire its own subsystems.
+		 *
+		 * Fires once on `plugins_loaded`, after the free core has wired all of
+		 * its own modules, so the add-on can rely on the core being ready. The
+		 * add-on registers its listener from its main file (top-level), which
+		 * runs before `plugins_loaded`, so it is already attached when this
+		 * fires. With no add-on installed this is a no-op.
+		 *
+		 * This is the Pro counterpart to the hard wiring above. See
+		 * includes/Bridge/README.md for the frozen bridge-layer contract.
+		 *
+		 * @since 0.2.0
+		 */
+		do_action( 'perform_register_modules' );
 	}
 
 	/**

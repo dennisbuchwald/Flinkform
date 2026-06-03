@@ -73,15 +73,36 @@ final class Registry {
 	}
 
 	/**
-	 * Register every block whose compiled output lives under /build.
+	 * Register every PerForm block from its compiled `block.json` directory.
+	 *
+	 * The free core's blocks live under its own `/build`. The map is exposed
+	 * through `perform_block_dirs` so the Pro add-on can append its blocks
+	 * (e.g. Pro field types) pointing at the *add-on's* build directory — Pro
+	 * block code never ships inside the free core. Keys are block slugs (used
+	 * to de-duplicate), values are absolute paths to the directory holding the
+	 * compiled `block.json`.
+	 *
+	 * @since 0.2.0 Made filterable for the Free/Pro bridge.
 	 *
 	 * @return void
 	 */
 	public function register_blocks(): void {
+		$dirs = [];
 		foreach ( self::BLOCKS as $block ) {
-			$path = PERFORM_PLUGIN_DIR . 'build/' . $block;
+			$dirs[ $block ] = PERFORM_PLUGIN_DIR . 'build/' . $block;
+		}
 
-			if ( is_dir( $path ) ) {
+		/**
+		 * Filter the set of block directories PerForm registers.
+		 *
+		 * @since 0.2.0
+		 *
+		 * @param array<string, string> $dirs Map of block slug => absolute path to the block.json directory.
+		 */
+		$dirs = (array) apply_filters( 'perform_block_dirs', $dirs );
+
+		foreach ( $dirs as $path ) {
+			if ( is_string( $path ) && is_dir( $path ) ) {
 				register_block_type( $path );
 			}
 		}

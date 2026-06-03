@@ -48,21 +48,38 @@ final class Guard {
 	 * meaningful return values; Phase B-b will add 'turnstile' etc.
 	 *
 	 * @param array<string, mixed> $form_attributes Block attributes from the form-container.
-	 * @return string  'builtin' | 'none'
+	 * @return string  'builtin' | 'none' | a Pro-registered provider key (e.g. 'turnstile')
 	 */
 	public static function resolve_strategy( array $form_attributes ): string {
 		$attr = isset( $form_attributes['spamProtection'] ) && is_string( $form_attributes['spamProtection'] )
 			? sanitize_key( $form_attributes['spamProtection'] )
 			: 'auto';
 
-		switch ( $attr ) {
-			case 'none':
-				return 'none';
-			case 'builtin':
-			case 'auto':
-			default:
-				return 'builtin';
+		if ( 'none' === $attr ) {
+			return 'none';
 		}
+
+		if ( 'builtin' === $attr || 'auto' === $attr ) {
+			return 'builtin';
+		}
+
+		/**
+		 * Filter the registered spam-protection providers.
+		 *
+		 * The free core ships only the built-in PoW + math challenge. The Pro
+		 * add-on appends external providers here (Phase D: 'turnstile',
+		 * 'hcaptcha', 'recaptcha'). A form requesting a provider that is not
+		 * registered — e.g. a form saved with 'turnstile' but Pro since
+		 * deactivated — degrades gracefully to the always-available built-in
+		 * challenge rather than leaving the form unprotected.
+		 *
+		 * @since 0.2.0
+		 *
+		 * @param array<int, string> $providers Registered provider keys.
+		 */
+		$providers = (array) apply_filters( 'perform_spam_providers', [ 'builtin' ] );
+
+		return in_array( $attr, $providers, true ) ? $attr : 'builtin';
 	}
 
 	/**
