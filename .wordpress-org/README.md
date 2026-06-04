@@ -24,11 +24,19 @@ Assets update live within minutes and are independent of plugin version tags.
 
 | File | Size (px) | Purpose | Status |
 |------|-----------|---------|--------|
-| `icon-128x128.png` | 128 × 128 | Plugin icon (directory + search) | ☐ TODO |
-| `icon-256x256.png` | 256 × 256 | Retina icon | ☐ TODO |
-| `banner-772x250.png` | 772 × 250 | Header banner (standard) | ☐ TODO |
-| `banner-1544x500.png` | 1544 × 500 | Header banner (retina) | ☐ TODO |
+| `icon-128x128.png` | 128 × 128 | Plugin icon (directory + search) | ✅ done |
+| `icon-256x256.png` | 256 × 256 | Retina icon | ✅ done |
+| `banner-772x250.png` | 772 × 250 | Header banner (standard) | ✅ done |
+| `banner-1544x500.png` | 1544 × 500 | Header banner (retina) | ✅ done |
 | `screenshot-1.png` … `screenshot-7.png` | any (consistent aspect) | Gallery | ☐ TODO |
+
+Icon + banner use the **dbw brand gradient** (`135°`, `#ea2b1f → #ff3c6f →
+#ff4fdd → #7e56ff → #00b2ff`) — a gradient "P" on near-black (`#0F0F11`).
+Regenerate them deterministically with:
+
+```bash
+node .wordpress-org/generate-assets.mjs   # needs Playwright + Chrome
+```
 
 - PNG (or JPG). An animated `icon-256x256.gif` is allowed but optional.
 - An SVG icon (`icon.svg`) is also accepted and scales best — but ship the PNGs
