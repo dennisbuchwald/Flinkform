@@ -8,11 +8,11 @@ Stable tag: 0.2.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Beautiful, native WordPress forms built for the block editor — fast, accessible, free. Multi-step and conditional logic included.
+The last WordPress form plugin you'll ever install — block-native, multi-step, conditional logic, accessible, and free.
 
 == Description ==
 
-**PerForm** is the form plugin WordPress should have shipped natively. Beautiful by default, fast to use, powerful when you need it — and the core is free, always.
+**PerForm** is the last form plugin you'll ever install — the one WordPress should have shipped natively. Beautiful by default, fast to use, powerful when you need it, and free at its core.
 
 = The standard =
 

@@ -5,9 +5,9 @@
 [![WordPress](https://img.shields.io/badge/WordPress-6.5%2B-blue)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.1%2B-purple)](https://php.net/)
 
-> The form plugin WordPress should have shipped natively.
+> The last WordPress form plugin you'll ever install.
 
-**PerForm** builds beautiful, accessible forms inside the WordPress Block Editor — fast by default, privacy-first, and genuinely capable for free. Multi-step forms and conditional logic are part of the free core, not a paid upsell.
+**PerForm** is the last form plugin you'll ever install — the one WordPress should have shipped natively. Beautiful, accessible forms built inside the Block Editor: fast by default, privacy-first, and genuinely capable for free. Multi-step forms and conditional logic are part of the free core, not a paid upsell.
 
 ```
 If a first-time user cannot build and publish a working contact form in under
