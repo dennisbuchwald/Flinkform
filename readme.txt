@@ -1,7 +1,7 @@
 === PerForm ===
 Contributors: dbwmediadennis
 Tags: forms, contact form, form builder, multi-step form, conditional logic
-Requires at least: 7.0
+Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
 Stable tag: 0.2.9
@@ -22,7 +22,7 @@ If a first-time user cannot build and publish a working contact form in under 5 
 
 * **Native, not bolted on** — built inside the WordPress Block Editor with `block.json` and the Interactivity API, not in a separate admin UI
 * **Beautiful by default** — forms inherit your theme's typography, colours and spacing automatically via theme.json
-* **Modern stack** — WordPress 7.0+, PHP 8.1+, no jQuery, frontend JS under 15 KB gzipped
+* **Modern stack** — WordPress 6.5+, PHP 8.1+, no jQuery, frontend JS under 15 KB gzipped
 * **Genuinely capable for free** — multi-step forms and conditional logic are part of the free core, not a paid upsell
 * **WCAG 2.1 AA** — full keyboard navigation, screen-reader compatible, aria-live announcements
 * **Privacy by design** — no external services, no tracking cookies, no IP tracking. Everything stays on your server
@@ -91,7 +91,7 @@ Pro adds webhooks, an SMTP module and CSV export (with more coming). You only ne
 
 = What WordPress version do I need? =
 
-WordPress 7.0 or higher and PHP 8.1 or higher. PerForm uses modern WordPress APIs (Interactivity API, block.json v3, viewScriptModule) that are not available in older versions.
+WordPress 6.5 or higher and PHP 8.1 or higher. PerForm uses modern WordPress APIs (Interactivity API, block.json v3, viewScriptModule) that are not available in older versions.
 
 = Does PerForm work with my theme? =
 

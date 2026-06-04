@@ -2,7 +2,7 @@
 
 [![WordPress Plugin Version](https://img.shields.io/badge/version-0.2.7-blue)](https://wordpress.org/plugins/perform-forms/)
 [![License](https://img.shields.io/badge/license-GPL%20v2-green)](https://www.gnu.org/licenses/gpl-2.0.html)
-[![WordPress](https://img.shields.io/badge/WordPress-7.0%2B-blue)](https://wordpress.org/)
+[![WordPress](https://img.shields.io/badge/WordPress-6.5%2B-blue)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.1%2B-purple)](https://php.net/)
 
 > The form plugin WordPress should have shipped natively.
@@ -18,7 +18,7 @@ If a first-time user cannot build and publish a working contact form in under
 
 - **Native, not bolted on** — built with `block.json` and the Interactivity API, not a separate admin UI
 - **Beautiful by default** — inherits your theme's colours, typography and spacing from `theme.json`
-- **Modern stack** — WordPress 7.0+, PHP 8.1+, no jQuery, frontend JS under 15 KB gzipped
+- **Modern stack** — WordPress 6.5+, PHP 8.1+, no jQuery, frontend JS under 15 KB gzipped
 - **Capable for free** — multi-step and conditional logic ship in the core
 - **WCAG 2.1 AA** — full keyboard navigation, screen-reader support, `aria-live` announcements
 - **Privacy by design** — no external services, no tracking cookies, no IP logging; everything stays on your server
@@ -50,7 +50,7 @@ The free core works fully on its own — Pro simply adds these capabilities when
 - **Database** — a dedicated `{prefix}perform_submissions` table (not posts/meta)
 - **Free/Pro split** — the core is a platform with frozen extension seams (filters/actions); Pro is a separate plugin that hooks them and never ships inside this repo
 - **Build** — `@wordpress/scripts`
-- **Stack** — WordPress 7.0+, PHP 8.1+, no jQuery, JS budget under 15 KB gzipped
+- **Stack** — WordPress 6.5+, PHP 8.1+, no jQuery, JS budget under 15 KB gzipped
 
 ## Development
 
@@ -74,7 +74,7 @@ Source blocks live in `src/` (compiled to `build/`); PHP classes follow PSR-4 un
 
 ## Compatibility
 
-- WordPress 7.0 or higher
+- WordPress 6.5 or higher
 - PHP 8.1 or higher
 - Block Editor (Gutenberg) required
 

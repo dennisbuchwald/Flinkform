@@ -4,7 +4,7 @@
  * Plugin URI:        https://wordpress.org/plugins/perform-forms/
  * Description:       Beautiful, native WordPress forms built for the block editor — fast, accessible, free.
  * Version:           0.2.9
- * Requires at least: 7.0
+ * Requires at least: 6.5
  * Tested up to:      7.0
  * Requires PHP:      8.1
  * Author:            dbw media
