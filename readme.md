@@ -1,8 +1,9 @@
 # PerForm
 
-[![WordPress Plugin Version](https://img.shields.io/badge/version-0.2.7-blue)](https://wordpress.org/plugins/perform-forms/)
+[![WordPress Plugin Version](https://img.shields.io/badge/version-0.2.9-blue)](https://wordpress.org/plugins/perform-forms/)
 [![License](https://img.shields.io/badge/license-GPL%20v2-green)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![WordPress](https://img.shields.io/badge/WordPress-6.5%2B-blue)](https://wordpress.org/)
+[![Tested up to](https://img.shields.io/badge/tested%20up%20to-7.0-blue)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.1%2B-purple)](https://php.net/)
 
 > The last WordPress form plugin you'll ever install.
@@ -77,6 +78,12 @@ Source blocks live in `src/` (compiled to `build/`); PHP classes follow PSR-4 un
 - WordPress 6.5 or higher
 - PHP 8.1 or higher
 - Block Editor (Gutenberg) required
+
+## Support
+
+- **Documentation**: Check the [plugin page](https://wordpress.org/plugins/perform-forms/)
+- **Support Forum**: [WordPress.org Support](https://wordpress.org/support/plugin/perform-forms/)
+- **Professional Support**: [dbw media](https://dbw-media.de/kontakt)
 
 ## About dbw media
 
