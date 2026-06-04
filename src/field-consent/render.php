@@ -51,7 +51,7 @@ $privacy_url = $link_pp ? (string) get_privacy_policy_url() : '';
 			required
 			aria-required="true"
 			<?php checked( $is_checked ); ?>
-			<?php echo $error ? 'aria-describedby="' . esc_attr( $error_id ) . '"' : ''; ?>
+			<?php echo $error ? 'aria-invalid="true" aria-describedby="' . esc_attr( $error_id ) . '"' : ''; ?>
 		/>
 		<span>
 			<?php echo esc_html( $consent_txt ); ?>
@@ -59,6 +59,7 @@ $privacy_url = $link_pp ? (string) get_privacy_policy_url() : '';
 			<?php if ( '' !== $privacy_url ) : ?>
 				<a href="<?php echo esc_url( $privacy_url ); ?>" target="_blank" rel="noopener noreferrer">
 					<?php esc_html_e( 'Privacy Policy', 'perform-forms' ); ?>
+					<span class="perform-sr-only"><?php esc_html_e( '(opens in a new tab)', 'perform-forms' ); ?></span>
 				</a>
 			<?php endif; ?>
 		</span>

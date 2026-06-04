@@ -88,22 +88,37 @@ success "SVN working copy updated"
 
 # 4. Dateien zu SVN trunk kopieren
 info "Copying files to SVN trunk..."
+# Exclude list kept in sync with .distignore (single source of truth for what
+# ships). The compiled build/ directory is intentionally NOT excluded.
 rsync -av \
     --exclude='.git*' \
+    --exclude='.github' \
     --exclude='node_modules' \
     --exclude='vendor' \
     --exclude='*.log' \
+    --exclude='*.zip' \
     --exclude='.DS_Store' \
+    --exclude='Thumbs.db' \
+    --exclude='src' \
+    --exclude='package.json' \
     --exclude='package-lock.json' \
+    --exclude='composer.json' \
     --exclude='composer.lock' \
+    --exclude='.phpcs.xml.dist' \
     --exclude='.claude*' \
     --exclude='.dev' \
     --exclude='.wordpress-org' \
+    --exclude='.distignore' \
     --exclude='DEPLOY-*.md' \
     --exclude='PLUGIN-CHECK-*.md' \
     --exclude='PERFORM_SPEC.md' \
+    --exclude='PERFORM_ROADMAP.md' \
+    --exclude='PERFORM_LANDINGPAGE.md' \
+    --exclude='AUDIT_PROMPT.md' \
+    --exclude='CONTINUE_PROMPT.md' \
     --exclude='INITIAL_PROMPT.md' \
     --exclude='readme.md' \
+    --exclude='includes/Bridge/README.md' \
     --exclude='.editorconfig' \
     --exclude='_wporg-svn' \
     --exclude='deploy.sh' \

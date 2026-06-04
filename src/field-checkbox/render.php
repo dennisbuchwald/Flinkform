@@ -36,6 +36,7 @@ $described = trim( $help_id . ' ' . $error_id );
 <fieldset
 	class="perform-field perform-field--checkbox<?php echo $error ? ' perform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' perform-field--full-width' : ''; ?>"
 	<?php echo $described ? 'aria-describedby="' . esc_attr( $described ) . '"' : ''; ?>
+	<?php echo $error ? 'aria-invalid="true"' : ''; ?>
 	<?php echo \PerForm\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); ?>
 	data-perform-field-name="<?php echo esc_attr( $field_name ); ?>"
 	<?php echo $required ? 'data-perform-required="1" data-perform-required-message="' . esc_attr__( 'Please select at least one option.', 'perform-forms' ) . '"' : ''; ?>

@@ -7,9 +7,13 @@
 /.github
 /.claude
 /.dev
+/.wordpress-org
 /_wporg-svn
 /node_modules
 /src
+
+# Developer-only contract docs (not for end users).
+includes/Bridge/README.md
 
 /.distignore
 /.editorconfig

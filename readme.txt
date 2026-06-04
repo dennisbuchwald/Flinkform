@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, multi-step form, conditional logic
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.2.7
+Stable tag: 0.2.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -135,6 +135,12 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 == Changelog ==
 
+= 0.2.8 =
+* Added a dedicated Consent field (GDPR), per-form retention auto-purge, and a GPLv2 LICENSE file
+* Accessibility: explicit focus rings for checkboxes/radios/toggles, High-Contrast-Mode-safe focus on the soft field style, aria-invalid on group/consent errors, improved contrast
+* Hardening: mail subject + Reply-To stripped of CR/LF; privacy-policy strings escaped; webhook header REST input sanitised
+* Privacy text now documents the retention period and the strictly-necessary flash cookie
+
 = 0.2.7 =
 * Introduces the Free/Pro architecture: the core is free (incl. multi-step + conditional logic); webhooks, SMTP and CSV export move to the optional PerForm Pro add-on
 * Privacy: full WordPress privacy-tools integration (exporter + eraser); accurate disclosure of the single strictly-necessary `perform_flash` cookie
@@ -172,8 +178,10 @@ If you install PerForm Pro, additional data handling applies and is disclosed se
 
 **Data deletion:**
 * Individual submissions can be deleted from the admin submissions screen
+* Optionally, set a per-form retention period (Form block → Data Retention) and PerForm deletes older submissions automatically each day
 * All free-core data (the submissions table) is permanently removed when the plugin is uninstalled through the WordPress admin
 * PerForm integrates with WordPress's privacy tools (Tools > Export Personal Data / Erase Personal Data) to support data-subject access and erasure requests. Deleting a submission also removes any related PerForm Pro webhook delivery records.
+* If you used PerForm Pro, uninstall it as well: its webhook delivery log lives in the add-on's own tables and is removed by the Pro uninstaller. (WordPress already prevents deleting the free core while Pro is active.)
 
 == Source Code ==
 

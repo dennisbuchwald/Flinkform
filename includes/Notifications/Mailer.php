@@ -60,7 +60,7 @@ final class Mailer {
 		$context = MergeTags::context( $submission_id, $form_id, $clean, $form_def );
 
 		$to       = $this->resolve_recipients( MergeTags::render( $config['to'], $context ) );
-		$subject  = MergeTags::render( $config['subject'], $context );
+		$subject  = str_replace( [ "\r", "\n" ], '', MergeTags::render( $config['subject'], $context ) );
 		$body     = MergeTags::render( $config['body'], $context );
 		// Strip CR/LF before anything else — defence-in-depth against header
 		// injection via a merge-tagged Reply-To (is_email() + PHPMailer would
@@ -153,7 +153,7 @@ final class Mailer {
 
 		$context = MergeTags::context( $submission_id, $form_id, $clean, $form_def );
 
-		$subject = MergeTags::render( $config['subject'], $context );
+		$subject = str_replace( [ "\r", "\n" ], '', MergeTags::render( $config['subject'], $context ) );
 		$body    = MergeTags::render( $config['body'], $context );
 
 		/** This filter is documented in this file. */

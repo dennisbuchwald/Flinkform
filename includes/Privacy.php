@@ -51,17 +51,19 @@ final class Privacy {
 			return;
 		}
 
-		$content = '<h2>' . __( 'PerForm — Form Submissions', 'perform-forms' ) . '</h2>';
+		// esc_html__ (not __) so a malicious translation file can never inject
+		// markup into the privacy-policy page; these strings are plain prose.
+		$content = '<h2>' . esc_html__( 'PerForm — Form Submissions', 'perform-forms' ) . '</h2>';
 
-		$content .= '<p>' . __( 'When a visitor submits a form built with PerForm, the plugin stores the submitted field values (name, email, message, etc.) in a dedicated database table on this website. No IP addresses or browser user-agent strings are collected.', 'perform-forms' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'When a visitor submits a form built with PerForm, the plugin stores the submitted field values (name, email, message, etc.) in a dedicated database table on this website. No IP addresses or browser user-agent strings are collected.', 'perform-forms' ) . '</p>';
 
-		$content .= '<p>' . __( 'Submissions are retained indefinitely unless a site administrator deletes them manually through the PerForm submissions screen or until the plugin is uninstalled, at which point all submission data is permanently removed.', 'perform-forms' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'Submissions are retained until a site administrator deletes them (individually or in bulk), until the plugin is uninstalled, or — when a per-form retention period is configured — until they are older than that period, after which a daily routine deletes them automatically.', 'perform-forms' ) . '</p>';
 
-		$content .= '<p>' . __( 'PerForm does not send any submission data to external services. (Add-ons such as PerForm Pro may add integrations — e.g. webhooks or SMTP delivery — that transmit data to third parties; those add their own privacy disclosures when active.)', 'perform-forms' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'PerForm does not send any submission data to external services. (Add-ons such as PerForm Pro may add integrations — e.g. webhooks or SMTP delivery — that transmit data to third parties; those add their own privacy disclosures when active.)', 'perform-forms' ) . '</p>';
 
-		$content .= '<p>' . __( 'The built-in spam protection (proof-of-work challenge) runs entirely in the visitor\'s browser and on this server — no data is sent to any external anti-spam service.', 'perform-forms' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'The built-in spam protection (proof-of-work challenge) runs entirely in the visitor\'s browser and on this server — no data is sent to any external anti-spam service.', 'perform-forms' ) . '</p>';
 
-		$content .= '<p>' . __( 'PerForm sets one short-lived, strictly necessary cookie ("perform_flash", lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload. No tracking, analytics or marketing cookies are ever set.', 'perform-forms' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'PerForm sets one short-lived, strictly necessary cookie ("perform_flash", lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload. No tracking, analytics or marketing cookies are ever set.', 'perform-forms' ) . '</p>';
 
 		wp_add_privacy_policy_content( 'PerForm', $content );
 	}
