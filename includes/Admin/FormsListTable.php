@@ -91,7 +91,7 @@ final class FormsListTable extends \WP_List_Table {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only listing parameters.
 		$this->search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
 		$orderby      = isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'last_submission';
-		$order        = isset( $_GET['order'] ) && 'asc' === strtolower( (string) $_GET['order'] ) ? 'asc' : 'desc';
+		$order        = isset( $_GET['order'] ) && 'asc' === strtolower( sanitize_key( wp_unslash( $_GET['order'] ) ) ) ? 'asc' : 'desc';
 		// phpcs:enable
 
 		$forms = $this->indexer->all();

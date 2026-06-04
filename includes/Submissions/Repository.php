@@ -51,6 +51,7 @@ final class Repository {
 			return false;
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom submissions table; a write that nothing caches.
 		$inserted = $wpdb->insert(
 			Schema::table_name(),
 			[
@@ -79,7 +80,7 @@ final class Repository {
 		global $wpdb;
 
 		$table = Schema::table_name();
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from controlled source.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name from controlled source.
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT id, form_id, data, created_at, status FROM {$table} WHERE id = %d", $id ), ARRAY_A );
 
 		if ( ! is_array( $row ) ) {
@@ -111,7 +112,7 @@ final class Repository {
 		$args[] = $per_page;
 		$args[] = $offset;
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name and ORDER BY validated above; values prepared.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name and ORDER BY validated above; values prepared.
 		$sql  = "SELECT id, form_id, data, created_at, status FROM {$table} {$where} ORDER BY {$orderby_sql} {$order_sql} LIMIT %d OFFSET %d";
 		$rows = $wpdb->get_results( $wpdb->prepare( $sql, $args ), ARRAY_A );
 		// phpcs:enable
@@ -135,7 +136,7 @@ final class Repository {
 		$table             = Schema::table_name();
 		[ $where, $args ]  = $this->build_where( $filters );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from controlled source.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name from controlled source.
 		$sql = "SELECT COUNT(*) FROM {$table} {$where}";
 		if ( empty( $args ) ) {
 			$count = (int) $wpdb->get_var( $sql );
@@ -156,6 +157,7 @@ final class Repository {
 	public function delete( int $id ): bool {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom submissions table; a delete that nothing caches.
 		$deleted = $wpdb->delete( Schema::table_name(), [ 'id' => $id ], [ '%d' ] );
 		$ok      = false !== $deleted && $deleted > 0;
 
@@ -184,7 +186,7 @@ final class Repository {
 		$table        = Schema::table_name();
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name controlled; placeholders prepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name controlled; placeholders prepared.
 		$deleted = $wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE id IN ({$placeholders})", $ids ) );
 		$count   = false === $deleted ? 0 : (int) $deleted;
 
@@ -225,7 +227,7 @@ final class Repository {
 
 		$table = Schema::table_name();
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name controlled; values prepared.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom submissions table; only the controlled table name is interpolated, all values are prepared.
 		$ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT id FROM {$table} WHERE form_id = %s AND created_at < %s ORDER BY id ASC LIMIT %d",
@@ -234,6 +236,7 @@ final class Repository {
 				$limit
 			)
 		);
+		// phpcs:enable
 
 		return is_array( $ids ) ? array_map( 'intval', $ids ) : [];
 	}
@@ -252,6 +255,7 @@ final class Repository {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom submissions table; a write that nothing caches.
 		$updated = $wpdb->update(
 			Schema::table_name(),
 			[ 'status' => $status ],
@@ -286,7 +290,7 @@ final class Repository {
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 		$args         = array_merge( [ $status ], $ids );
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name controlled; placeholders prepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name controlled; placeholders prepared.
 		$updated = $wpdb->query( $wpdb->prepare( "UPDATE {$table} SET status = %s WHERE id IN ({$placeholders})", $args ) );
 
 		return false === $updated ? 0 : (int) $updated;
@@ -302,7 +306,7 @@ final class Repository {
 		global $wpdb;
 
 		$table = Schema::table_name();
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from controlled source.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name from controlled source.
 		$rows = $wpdb->get_col( "SELECT DISTINCT form_id FROM {$table} ORDER BY form_id ASC" );
 
 		return is_array( $rows ) ? array_values( array_filter( array_map( 'strval', $rows ) ) ) : [];

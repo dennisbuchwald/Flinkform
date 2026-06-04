@@ -94,6 +94,7 @@ final class Schema {
 			KEY status (status)
 		) {$charset};";
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- dbDelta() is the WordPress-sanctioned way to create/upgrade a custom table.
 		dbDelta( $sql );
 	}
 
@@ -108,7 +109,7 @@ final class Schema {
 		global $wpdb;
 
 		$table = self::table_name();
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name cannot be parameterised.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Uninstall-time DROP of our own table; name cannot be parameterised, no caching applies.
 		$wpdb->query( "DROP TABLE IF EXISTS {$table}" );
 
 		delete_option( self::OPTION_DB_VERSION );

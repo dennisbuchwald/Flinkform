@@ -108,14 +108,14 @@ final class Handler {
 		// Honeypot — bots fill hidden fields; humans don't see them.
 		// On hit we redirect to "success" so the bot believes it won.
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already validated above.
-		$honeypot = isset( $_POST[ self::HONEYPOT_FIELD ] ) ? (string) wp_unslash( $_POST[ self::HONEYPOT_FIELD ] ) : '';
+		$honeypot = isset( $_POST[ self::HONEYPOT_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::HONEYPOT_FIELD ] ) ) : '';
 		if ( '' !== trim( $honeypot ) ) {
 			$this->redirect_success( $post_id, $form_id );
 		}
 
 		// Time-check — render-to-submit faster than humans can read.
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already validated above.
-		$ts_raw  = isset( $_POST[ self::TIMESTAMP_FIELD ] ) ? (string) wp_unslash( $_POST[ self::TIMESTAMP_FIELD ] ) : '';
+		$ts_raw  = isset( $_POST[ self::TIMESTAMP_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::TIMESTAMP_FIELD ] ) ) : '';
 		$ts_decoded = (int) base64_decode( $ts_raw, true );
 		if ( $ts_decoded <= 0 || ( time() - $ts_decoded ) < self::MIN_FILL_SECONDS ) {
 			$this->silent_reject();
@@ -369,7 +369,7 @@ final class Handler {
 	 * @return array{0: array<string, mixed>, 1: array<string, string>} [clean, errors]
 	 */
 	private function validate( array $fields ): array {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already validated by caller.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce validated by caller; each value is sanitised per field type in the loop below.
 		$raw = isset( $_POST['perform_field'] ) && is_array( $_POST['perform_field'] ) ? wp_unslash( $_POST['perform_field'] ) : [];
 
 		$clean  = [];

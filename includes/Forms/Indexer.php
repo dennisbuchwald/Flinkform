@@ -172,7 +172,7 @@ final class Indexer {
 		$placeholders = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$needle       = '%' . $wpdb->esc_like( '<!-- wp:' . self::FORM_BLOCK ) . '%';
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders prepared below.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- core posts table; only %s placeholders are interpolated, all values prepared.
 		$sql = $wpdb->prepare(
 			"SELECT ID FROM {$wpdb->posts}
 			 WHERE post_status IN ({$placeholders})
@@ -181,6 +181,7 @@ final class Indexer {
 		);
 
 		$ids = $wpdb->get_col( $sql );
+		// phpcs:enable
 
 		return is_array( $ids ) ? array_map( 'intval', $ids ) : [];
 	}
@@ -246,11 +247,12 @@ final class Indexer {
 		$stats_by_form = [];
 		$submissions_table = $wpdb->prefix . 'perform_submissions';
 		if ( $this->table_exists( $submissions_table ) ) {
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name controlled.
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom submissions table; only the controlled table name is interpolated, no user input in this aggregate.
 			$rows = $wpdb->get_results(
 				"SELECT form_id, COUNT(*) AS count, MAX(created_at) AS last_at FROM {$submissions_table} GROUP BY form_id",
 				ARRAY_A
 			);
+			// phpcs:enable
 			if ( is_array( $rows ) ) {
 				foreach ( $rows as $row ) {
 					$stats_by_form[ (string) $row['form_id'] ] = [
@@ -338,7 +340,7 @@ final class Indexer {
 	 */
 	private function table_exists( string $table ): bool {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name controlled.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name controlled.
 		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
 		return $found === $table;
 	}

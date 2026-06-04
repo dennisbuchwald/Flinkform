@@ -39,7 +39,7 @@ $privacy_url = $link_pp ? (string) get_privacy_policy_url() : '';
 ?>
 <div
 	class="perform-field perform-field--consent<?php echo $error ? ' perform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' perform-field--full-width' : ''; ?>"
-	<?php echo \PerForm\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); ?>
+	<?php echo \PerForm\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?>
 	data-perform-field-name="<?php echo esc_attr( $field_name ); ?>"
 >
 	<label class="perform-field__option perform-field__consent-label" for="<?php echo esc_attr( $uid ); ?>">

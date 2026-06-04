@@ -222,7 +222,7 @@ final class Privacy {
 		$table  = Schema::table_name();
 		$offset = max( 0, ( $page - 1 ) * $per_page );
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name from controlled source.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom submissions table; only the controlled table name is interpolated, the email is prepared + esc_like'd, this is a rare on-demand GDPR query.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT id, form_id, data, created_at, status FROM {$table} WHERE data LIKE %s ORDER BY id ASC LIMIT %d OFFSET %d",
@@ -232,6 +232,7 @@ final class Privacy {
 			),
 			ARRAY_A
 		);
+		// phpcs:enable
 
 		if ( ! is_array( $rows ) ) {
 			return [];

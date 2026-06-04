@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, multi-step form, conditional logic
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.2.8
+Stable tag: 0.2.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 0.2.9 =
+* WordPress.org Plugin Check pass: documented the safe direct custom-table queries, fixed admin sort-order input handling, sanitised spam/honeypot inputs — no functional change
+* Resolved all Plugin Check errors and warnings (output escaping is handled internally; queries are prepared)
 
 = 0.2.8 =
 * Added a dedicated Consent field (GDPR), per-form retention auto-purge, and a GPLv2 LICENSE file

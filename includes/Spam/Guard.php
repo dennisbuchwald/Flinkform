@@ -113,9 +113,9 @@ final class Guard {
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce already validated upstream in Handler::handle().
-		$token       = isset( $_POST[ Renderer::FIELD_TOKEN ] ) ? (string) wp_unslash( $_POST[ Renderer::FIELD_TOKEN ] ) : '';
-		$pow_sol     = isset( $_POST[ Renderer::FIELD_SOLUTION ] ) ? (string) wp_unslash( $_POST[ Renderer::FIELD_SOLUTION ] ) : '';
-		$math_answer = isset( $_POST[ Renderer::FIELD_ANSWER ] ) ? (string) wp_unslash( $_POST[ Renderer::FIELD_ANSWER ] ) : '';
+		$token       = isset( $_POST[ Renderer::FIELD_TOKEN ] ) ? sanitize_text_field( wp_unslash( $_POST[ Renderer::FIELD_TOKEN ] ) ) : '';
+		$pow_sol     = isset( $_POST[ Renderer::FIELD_SOLUTION ] ) ? sanitize_text_field( wp_unslash( $_POST[ Renderer::FIELD_SOLUTION ] ) ) : '';
+		$math_answer = isset( $_POST[ Renderer::FIELD_ANSWER ] ) ? sanitize_text_field( wp_unslash( $_POST[ Renderer::FIELD_ANSWER ] ) ) : '';
 		// phpcs:enable
 
 		if ( '' === $token ) {
