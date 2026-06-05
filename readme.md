@@ -6,9 +6,9 @@
 [![Tested up to](https://img.shields.io/badge/tested%20up%20to-7.0-blue)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.1%2B-purple)](https://php.net/)
 
-> The last WordPress form plugin you'll ever install.
+> Block-native forms for WordPress — conditional logic, accessible, and free.
 
-**PerForm** is the last form plugin you'll ever install — the one WordPress should have shipped natively. Beautiful, accessible forms built inside the Block Editor: fast by default, privacy-first, and genuinely capable for free. Multi-step forms and conditional logic are part of the free core, not a paid upsell.
+**PerForm Forms** builds forms the way WordPress should have done it from the start — inside the Block Editor, with the Interactivity API, no separate admin UI. Beautiful, accessible, privacy-first, and genuinely capable for free.
 
 ```
 If a first-time user cannot build and publish a working contact form in under
@@ -20,18 +20,17 @@ If a first-time user cannot build and publish a working contact form in under
 - **Native, not bolted on** — built with `block.json` and the Interactivity API, not a separate admin UI
 - **Beautiful by default** — inherits your theme's colours, typography and spacing from `theme.json`
 - **Modern stack** — WordPress 6.5+, PHP 8.1+, no jQuery, frontend JS under 15 KB gzipped
-- **Capable for free** — multi-step and conditional logic ship in the core
+- **Conditional logic** — show/hide fields based on user input, included in the free core
 - **WCAG 2.1 AA** — full keyboard navigation, screen-reader support, `aria-live` announcements
 - **Privacy by design** — no external services, no tracking cookies, no IP logging; everything stays on your server
 
 ## Features (free core)
 
-- **10 field types** — Text, Email, Textarea, Number, Select, Radio, Checkbox, Toggle, Hidden, Consent — plus Section Heading and Page Break
-- **Multi-step forms** with a progress indicator (bar, dots, numbers) and per-step validation
-- **Conditional logic** — show/hide fields and steps based on user input
+- **10 field types** — Text, Email, Textarea, Number, Select, Radio, Checkbox, Toggle, Hidden, Consent — plus Section Heading
+- **Conditional logic** — show/hide fields based on user input
 - **Theme-aware styling** — `theme.json` inheritance, field styles (bordered / underline / minimal), label positions, dark mode
 - **Notifications** — admin + optional confirmation email via `wp_mail`, with merge tags
-- **Spam protection** — honeypot + time-check + a built-in proof-of-work challenge (math fallback for no-JS), zero configuration, no external service
+- **Spam protection** — honeypot + time-check, zero configuration, no external service
 - **Submissions admin** — list with search, filter, sort, bulk actions, and a detail view
 - **Privacy tools** — WordPress data export / erasure integration, optional retention auto-purge
 

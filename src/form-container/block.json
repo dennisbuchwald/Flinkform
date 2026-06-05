@@ -40,10 +40,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"customCSS": {
-			"type": "string",
-			"default": ""
-		},
 		"submitCondition": {
 			"type": "object",
 			"default": {}

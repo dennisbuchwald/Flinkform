@@ -90,6 +90,13 @@ final class Registry {
 	public function register_blocks(): void {
 		$dirs = [];
 		foreach ( self::BLOCKS as $block ) {
+			// Multi-step (page-break) is a Pro capability — skip registration
+			// when Pro is absent so the block never appears in the inserter.
+			// The render code in form-container stays for graceful degradation.
+			if ( 'page-break' === $block && ! \PerForm\Bridge\Features::has( \PerForm\Bridge\Features::MULTI_STEP ) ) {
+				continue;
+			}
+
 			$dirs[ $block ] = PERFORM_PLUGIN_DIR . 'build/' . $block;
 		}
 

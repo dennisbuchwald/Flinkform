@@ -64,8 +64,6 @@ final class FormsPage {
 			wp_die( esc_html__( 'You do not have permission to view PerForm forms.', 'perform-forms' ) );
 		}
 
-		$this->print_inline_styles();
-
 		$table = new FormsListTable( $this->indexer );
 		$table->prepare_items();
 
@@ -124,29 +122,29 @@ final class FormsPage {
 	}
 
 	/**
-	 * Tiny stylesheet for the tag pill rendering inside the title column.
+	 * CSS for the Forms admin page (tag pills in the title column).
 	 *
-	 * @return void
+	 * Called from Menu::enqueue_forms_styles() via wp_add_inline_style().
+	 *
+	 * @return string
 	 */
-	private function print_inline_styles(): void {
-		?>
-		<style>
-			.perform-tag {
-				display: inline-block;
-				margin-left: 6px;
-				padding: 1px 8px;
-				border-radius: 9999px;
-				font-size: 11px;
-				background: #f1f1f1;
-				color: #555;
-				font-weight: 400;
-				text-transform: lowercase;
-			}
-			.perform-tag--warning {
-				background: #fff4e5;
-				color: #b85c00;
-			}
-		</style>
-		<?php
+	public static function inline_css(): string {
+		return <<<'CSS'
+.perform-tag {
+	display: inline-block;
+	margin-left: 6px;
+	padding: 1px 8px;
+	border-radius: 9999px;
+	font-size: 11px;
+	background: #f1f1f1;
+	color: #555;
+	font-weight: 400;
+	text-transform: lowercase;
+}
+.perform-tag--warning {
+	background: #fff4e5;
+	color: #b85c00;
+}
+CSS;
 	}
 }

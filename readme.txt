@@ -1,6 +1,6 @@
 === PerForm Forms ===
 Contributors: dbwmediadennis
-Tags: forms, contact form, form builder, multi-step form, conditional logic
+Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
@@ -8,11 +8,11 @@ Stable tag: 0.2.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-The last WordPress form plugin you'll ever install — block-native, multi-step, conditional logic, accessible, and free.
+Block-native forms for WordPress — conditional logic, accessible, and free.
 
 == Description ==
 
-**PerForm** is the last form plugin you'll ever install — the one WordPress should have shipped natively. Beautiful by default, fast to use, powerful when you need it, and free at its core.
+**PerForm Forms** builds forms the way WordPress should have done it from the start — inside the Block Editor, with the Interactivity API, no separate admin UI.
 
 = The standard =
 
@@ -23,7 +23,7 @@ If a first-time user cannot build and publish a working contact form in under 5 
 * **Native, not bolted on** — built inside the WordPress Block Editor with `block.json` and the Interactivity API, not in a separate admin UI
 * **Beautiful by default** — forms inherit your theme's typography, colours and spacing automatically via theme.json
 * **Modern stack** — WordPress 6.5+, PHP 8.1+, no jQuery, frontend JS under 15 KB gzipped
-* **Genuinely capable for free** — multi-step forms and conditional logic are part of the free core, not a paid upsell
+* **Conditional logic** — show/hide fields based on user input, included in the free core
 * **WCAG 2.1 AA** — full keyboard navigation, screen-reader compatible, aria-live announcements
 * **Privacy by design** — no external services, no tracking cookies, no IP tracking. Everything stays on your server
 
@@ -31,10 +31,8 @@ If a first-time user cannot build and publish a working contact form in under 5 
 
 **Form building**
 * 10 field types: Text, Email, Textarea, Number, Select, Radio, Checkbox, Toggle, Hidden, Section Heading
-* Multi-step forms with progress indicator (bar, dots, numbers)
-* Conditional logic — show/hide fields and steps based on user input
+* Conditional logic — show/hide fields based on user input
 * Two-column layout with per-field full-width override
-* Custom CSS per form with scoped selectors
 
 **Styling**
 * Automatic theme.json inheritance (colours, typography, spacing, border radius)
@@ -48,7 +46,6 @@ If a first-time user cannot build and publish a working contact form in under 5 
 
 **Spam protection**
 * Always-on honeypot + time-based check (zero configuration)
-* Built-in proof-of-work challenge — transparent for JS-enabled visitors, math fallback for everyone else
 * No external service, no API keys, no tracking cookies, 100% GDPR-friendly
 
 **After submission**
@@ -70,9 +67,9 @@ If a first-time user cannot build and publish a working contact form in under 5 
 
 == Frequently Asked Questions ==
 
-= Is PerForm free? =
+= Is PerForm Forms free? =
 
-Yes. PerForm is GPLv2-licensed and completely free — including multi-step forms and conditional logic. Everything you need to build and run real forms is in the core.
+Yes. PerForm Forms is GPLv2-licensed and completely free — including conditional logic. Everything you need to build and run real forms is in the core.
 
 = What WordPress version do I need? =
 
@@ -88,17 +85,16 @@ Email deliverability depends on your host. Many hosts send `wp_mail()` unreliabl
 
 = How does the spam protection work? =
 
-PerForm uses a three-layer approach that requires no setup:
+PerForm Forms uses a two-layer approach that requires no setup:
 
 1. **Honeypot** — a hidden field that bots fill in but humans never see
 2. **Time check** — submissions faster than a couple of seconds after page load are rejected
-3. **Proof-of-work challenge** — the visitor's browser solves a small cryptographic puzzle (~50–500 ms, completely transparent). If JavaScript is disabled, a simple math question appears as fallback
 
 No external service is contacted. No tracking cookies are set. No personal data is shared.
 
-= Does PerForm support multi-step forms? =
+= Does PerForm Forms support multi-step forms? =
 
-Yes — in the free core. Insert a **Page Break** block between fields to split the form into steps. Choose a progress indicator style (bar, dots, numbers, none). Per-step validation ensures users complete required fields before advancing. Steps can be conditionally skipped via the conditional-logic engine.
+Multi-step forms are available as a premium feature. Insert a **Page Break** block between fields to split the form into steps, choose a progress indicator style, and benefit from per-step validation.
 
 = Is PerForm GDPR-compliant? =
 

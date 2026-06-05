@@ -59,27 +59,31 @@ final class Guard {
 			return 'none';
 		}
 
+		// The built-in PoW + math challenge is a Pro capability. When Pro is
+		// absent the free core degrades to 'none' — honeypot + time-check
+		// (Phase 1) still apply upstream and require zero configuration.
 		if ( 'builtin' === $attr || 'auto' === $attr ) {
-			return 'builtin';
+			return \PerForm\Bridge\Features::has( \PerForm\Bridge\Features::SPAM_CHALLENGE )
+				? 'builtin'
+				: 'none';
 		}
 
 		/**
 		 * Filter the registered spam-protection providers.
 		 *
-		 * The free core ships only the built-in PoW + math challenge. The Pro
-		 * add-on appends external providers here (Phase D: 'turnstile',
+		 * The Pro add-on registers external providers here (e.g. 'turnstile',
 		 * 'hcaptcha', 'recaptcha'). A form requesting a provider that is not
 		 * registered — e.g. a form saved with 'turnstile' but Pro since
-		 * deactivated — degrades gracefully to the always-available built-in
-		 * challenge rather than leaving the form unprotected.
+		 * deactivated — degrades gracefully to 'none' (honeypot + time-check
+		 * still apply) rather than leaving the form unprotected.
 		 *
 		 * @since 0.2.0
 		 *
 		 * @param array<int, string> $providers Registered provider keys.
 		 */
-		$providers = (array) apply_filters( 'perform_spam_providers', [ 'builtin' ] );
+		$providers = (array) apply_filters( 'perform_spam_providers', [] );
 
-		return in_array( $attr, $providers, true ) ? $attr : 'builtin';
+		return in_array( $attr, $providers, true ) ? $attr : 'none';
 	}
 
 	/**

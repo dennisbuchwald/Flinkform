@@ -138,42 +138,6 @@ if ( isset( $appearance['borderRadius'] ) && is_numeric( $appearance['borderRadi
 	}
 }
 
-/**
- * Sanitise an author-supplied Custom CSS string before it lands in a
- * <style> block on the page.
- *
- * Inspector access is gated by the `edit_posts` capability, so the
- * threat model is "trusted user", not "drive-by attacker" — but we
- * still defend in depth:
- *
- *   1. wp_strip_all_tags() — removes any <script> / <style> blocks
- *      the author tries to embed (also strips raw HTML tags, which
- *      have no business in a CSS textarea).
- *   2. preg_replace() of the three legacy IE vectors that survive
- *      strip_all_tags:
- *        - expression(…)   — old IE-only CSS expression evaluator
- *        - behavior:       — IE-only binding to an HTC behaviour file
- *        - javascript:     — only meaningful in url() values; tiny
- *                            attack surface but cheap to neutralise
- *      All three are dead in every supported browser today (the
- *      plugin requires WP 7.0 + PHP 8.1, which target evergreen
- *      browsers anyway) but neutralising them costs us nothing.
- *
- * @param string $css Raw CSS from the block attribute.
- * @return string Sanitised CSS, safe to echo into <style>…</style>.
- */
-$perform_sanitize_custom_css = static function ( string $css ): string {
-	$css = wp_strip_all_tags( $css );
-	$css = (string) preg_replace( '/expression\s*\(/i', '', $css );
-	$css = (string) preg_replace( '/behavior\s*:/i', '', $css );
-	$css = (string) preg_replace( '/javascript\s*:/i', '', $css );
-	return trim( $css );
-};
-
-$custom_css = isset( $attributes['customCSS'] ) && is_string( $attributes['customCSS'] )
-	? $perform_sanitize_custom_css( $attributes['customCSS'] )
-	: '';
-
 // Without a stable form ID we cannot save or validate — render nothing.
 if ( '' === $form_id ) {
 	return;
@@ -288,24 +252,14 @@ if ( $is_multi_step && ! $is_success ) {
 	// The action lives in view.js and reads the DOM markers to
 	// recompute the progress indicator's totals + position.
 	$wrapper_args['data-wp-on--perform-skipped-changed'] = 'actions.onSkippedChanged';
-	// `data-perform-enhanced` is set by the inline boot script further
-	// down on the form, before view.js loads — so any CSS gated on it
-	// applies before Interactivity hydrates and the action row + step
-	// visibility don't flash through the JS-disabled fallback layout.
+	// `data-perform-enhanced` is set by the boot script (enqueued via
+	// wp_add_inline_script further down) before view.js loads — so any
+	// CSS gated on it applies before Interactivity hydrates and the
+	// action row + step visibility don't flash.
 }
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
-// Custom CSS — same <style> block goes out in both the success view and
-// the normal form render so author rules survive past submission. ID is
-// derived from the form UUID so multiple forms on one page don't clash
-// on the element id and a single rule-set is reused if the page caches.
-$custom_css_block = '';
-if ( '' !== $custom_css ) {
-	$custom_css_block = '<style id="perform-custom-css-' . esc_attr( $form_id ) . '">' . $custom_css . '</style>';
-}
-
 if ( $is_success ) :
-	echo $custom_css_block; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitised above.
 	?>
 	<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 		<div class="perform-form__success" role="status" aria-live="polite">
@@ -430,7 +384,6 @@ if ( 1 === $step_count ) {
 // catch bots that submit a form within microseconds of rendering it.
 $timestamp_token = base64_encode( (string) time() );
 ?>
-<?php echo $custom_css_block; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitised above. ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<form
 		class="perform-form__form"
@@ -569,16 +522,9 @@ $timestamp_token = base64_encode( (string) time() );
 			<?php if ( $is_multi_step ) : ?>
 				<?php
 				// Navigation buttons — emitted only in multi-step mode.
-				// All three are rendered visible server-side; the inline
-				// boot script further down sets `hidden` on Back +
-				// Submit immediately for the JS-on initial state (step
-				// 0 = first step → Back hidden; not last step →
-				// Submit hidden). Once Interactivity hydrates, the
-				// `data-wp-bind--hidden` expressions take over and
-				// toggle visibility per step. With JS disabled the
-				// boot script never runs and every button stays
-				// visible — only Submit is functional then, which is
-				// the desired single-page fallback.
+				// The enqueued boot script sets `hidden` on Back + Submit
+				// for the JS-on initial state. Interactivity's
+				// `data-wp-bind--hidden` expressions take over per step.
 				?>
 				<button
 					type="button"
@@ -625,82 +571,29 @@ $timestamp_token = base64_encode( (string) time() );
 		</div>
 	</form>
 </div>
-<?php if ( \PerForm\Spam\Guard::should_protect( $attributes ) ) : ?>
-<script>
-/*
- * Spam-challenge boot: hide the math fallback row immediately so
- * JS-on visitors never see it flash. The deferred view.js module
- * will hide it again after solving the PoW, but this inline script
- * runs synchronously during HTML parsing — zero flash. JS-disabled
- * visitors never execute this, so the math row stays visible for
- * them (correct fallback behaviour).
- */
-( function () {
-	var w = document.currentScript && document.currentScript.previousElementSibling;
-	if ( ! w ) { return; }
-	var m = w.querySelector( '[data-perform-spam-math]' );
-	if ( m ) { m.setAttribute( 'hidden', '' ); }
-}() );
-</script>
-<?php endif; ?>
-<?php if ( $is_multi_step ) : ?>
-<script>
-/*
- * PerForm boot script — runs synchronously the moment the form wrapper
- * appears in the DOM, before view.js gets a chance to load and hydrate
- * Interactivity bindings. Two jobs:
- *
- *   1. Set data-perform-enhanced on the form wrapper so the CSS rules
- *      that switch between the JS-disabled fallback layout and the
- *      enhanced multi-step look apply immediately, with no flash.
- *   2. Apply the same `hidden` attribute the data-wp-bind--hidden
- *      bindings would apply on hydration to the elements that
- *      shouldn't be visible on step 0 — non-first steps, separators,
- *      the Back button, and the Submit button. With this in place
- *      the form's initial paint matches the post-hydration state
- *      exactly, and Interactivity's binding evaluation a few ms later
- *      is a no-op on first load.
- *
- * With JavaScript disabled this script never runs, so the form falls
- * back to the all-visible 5a-style layout and the user submits via
- * the still-visible Submit button.
- *
- * Inline / no module — needs to execute as part of HTML parsing, not
- * after the module loader catches up. ES5 syntax keeps it parseable
- * on every browser that can read this attribute spec at all.
- */
-( function () {
-	var form = document.currentScript && document.currentScript.previousElementSibling;
-	if ( ! form || ! form.classList || form.classList.contains( 'perform-form--multi-step' ) !== true ) {
-		return;
+<?php
+// Boot scripts — use wp_add_inline_script() instead of raw <script> tags
+// for WP.org compliance. Both are gated behind Pro capabilities so they
+// never execute in the free-only plugin.
+if ( \PerForm\Spam\Guard::should_protect( $attributes ) ) {
+	wp_register_script( 'perform-boot', false, [], PERFORM_VERSION, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+	wp_enqueue_script( 'perform-boot' );
+	wp_add_inline_script(
+		'perform-boot',
+		'(function(){document.querySelectorAll("[data-perform-spam-math]").forEach(function(m){m.setAttribute("hidden","")})})();'
+	);
+}
+
+if ( $is_multi_step ) {
+	if ( ! wp_script_is( 'perform-boot', 'registered' ) ) {
+		wp_register_script( 'perform-boot', false, [], PERFORM_VERSION, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
 	}
-	form.setAttribute( 'data-perform-enhanced', '' );
-
-	var hide = function ( el ) { if ( el ) { el.setAttribute( 'hidden', '' ); } };
-
-	var steps = form.querySelectorAll( '.perform-form__step' );
-	for ( var i = 0; i < steps.length; i++ ) {
-		if ( steps[ i ].getAttribute( 'data-step-index' ) !== '0' ) {
-			hide( steps[ i ] );
-		}
-	}
-
-	var separators = form.querySelectorAll( '.perform-form__step-separator' );
-	for ( var j = 0; j < separators.length; j++ ) {
-		hide( separators[ j ] );
-	}
-
-	hide( form.querySelector( '.perform-form__nav--back' ) );
-
-	// Submit = .perform-form__submit without .perform-form__nav--next.
-	var submits = form.querySelectorAll( '.perform-form__submit' );
-	for ( var k = 0; k < submits.length; k++ ) {
-		if ( ! submits[ k ].classList.contains( 'perform-form__nav--next' ) ) {
-			hide( submits[ k ] );
-		}
-	}
-}() );
-</script>
-<?php endif; ?>
+	wp_enqueue_script( 'perform-boot' );
+	wp_add_inline_script(
+		'perform-boot',
+		'(function(){var h=function(e){if(e)e.setAttribute("hidden","")};document.querySelectorAll(".perform-form--multi-step:not([data-perform-enhanced])").forEach(function(f){f.setAttribute("data-perform-enhanced","");f.querySelectorAll(".perform-form__step").forEach(function(s){if(s.getAttribute("data-step-index")!=="0")h(s)});f.querySelectorAll(".perform-form__step-separator").forEach(function(s){h(s)});h(f.querySelector(".perform-form__nav--back"));f.querySelectorAll(".perform-form__submit:not(.perform-form__nav--next)").forEach(function(s){h(s)})})})();'
+	);
+}
+?>
 <?php
 \PerForm\Submissions\Handler::clear_render_state();

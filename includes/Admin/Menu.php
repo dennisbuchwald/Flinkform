@@ -51,7 +51,7 @@ final class Menu {
 	 * @return void
 	 */
 	public function register_pages(): void {
-		add_menu_page(
+		$submissions_hook = add_menu_page(
 			__( 'PerForm', 'perform-forms' ),
 			__( 'PerForm', 'perform-forms' ),
 			self::CAPABILITY,
@@ -70,7 +70,7 @@ final class Menu {
 			[ $this, 'render_submissions_page' ]
 		);
 
-		add_submenu_page(
+		$forms_hook = add_submenu_page(
 			self::PARENT_SLUG,
 			__( 'Forms', 'perform-forms' ),
 			__( 'Forms', 'perform-forms' ),
@@ -81,6 +81,37 @@ final class Menu {
 
 		// The Webhook Log and SMTP pages are owned by PerForm Pro, which
 		// attaches its own submenus here via add_submenu_page( Menu::PARENT_SLUG, … ).
+
+		// Enqueue page-specific admin styles via wp_add_inline_style() so no
+		// raw <style> tags appear in the page output.
+		if ( $submissions_hook ) {
+			add_action( "admin_print_styles-{$submissions_hook}", [ $this, 'enqueue_submissions_styles' ] );
+		}
+		if ( $forms_hook ) {
+			add_action( "admin_print_styles-{$forms_hook}", [ $this, 'enqueue_forms_styles' ] );
+		}
+	}
+
+	/**
+	 * Enqueue inline CSS for the Submissions admin page.
+	 *
+	 * @return void
+	 */
+	public function enqueue_submissions_styles(): void {
+		wp_register_style( 'perform-admin-submissions', false );
+		wp_enqueue_style( 'perform-admin-submissions' );
+		wp_add_inline_style( 'perform-admin-submissions', SubmissionsPage::inline_css() );
+	}
+
+	/**
+	 * Enqueue inline CSS for the Forms admin page.
+	 *
+	 * @return void
+	 */
+	public function enqueue_forms_styles(): void {
+		wp_register_style( 'perform-admin-forms', false );
+		wp_enqueue_style( 'perform-admin-forms' );
+		wp_add_inline_style( 'perform-admin-forms', FormsPage::inline_css() );
 	}
 
 	/**

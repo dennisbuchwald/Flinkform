@@ -98,8 +98,6 @@ final class SubmissionsPage {
 			wp_die( esc_html__( 'You do not have permission to view PerForm submissions.', 'perform-forms' ) );
 		}
 
-		$this->print_inline_styles();
-
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only routing.
 		$action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
 		if ( 'view' === $action ) {
@@ -444,22 +442,22 @@ final class SubmissionsPage {
 	}
 
 	/**
-	 * Emit the small bit of CSS the admin pages need.
+	 * CSS for the Submissions admin page.
 	 *
-	 * @return void
+	 * Called from Menu::enqueue_submissions_styles() via wp_add_inline_style().
+	 *
+	 * @return string
 	 */
-	private function print_inline_styles(): void {
-		?>
-		<style>
-			.perform-unread-dot { color: #2271b1; font-size: 14px; line-height: 1; margin-right: 4px; }
-			.perform-status { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; line-height: 1.4; }
-			.perform-status--unread { background: #e7f5ff; color: #1d4ed8; font-weight: 600; }
-			.perform-status--read { background: #f1f1f1; color: #555; }
-			.perform-preview { color: #444; }
-			.perform-detail__meta p { margin: 4px 0; }
-			.perform-detail__fields th { vertical-align: top; }
-			.perform-detail__actions { margin-top: 24px; display: flex; gap: 12px; }
-		</style>
-		<?php
+	public static function inline_css(): string {
+		return <<<'CSS'
+.perform-unread-dot { color: #2271b1; font-size: 14px; line-height: 1; margin-right: 4px; }
+.perform-status { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; line-height: 1.4; }
+.perform-status--unread { background: #e7f5ff; color: #1d4ed8; font-weight: 600; }
+.perform-status--read { background: #f1f1f1; color: #555; }
+.perform-preview { color: #444; }
+.perform-detail__meta p { margin: 4px 0; }
+.perform-detail__fields th { vertical-align: top; }
+.perform-detail__actions { margin-top: 24px; display: flex; gap: 12px; }
+CSS;
 	}
 }

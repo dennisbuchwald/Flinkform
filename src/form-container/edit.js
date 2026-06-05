@@ -64,7 +64,7 @@ function generateUuid() {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { formId, title, submitLabel, successMessage, notifications, appearance, customCSS, spamProtection, afterSubmit, retentionDays } = attributes;
+	const { formId, title, submitLabel, successMessage, notifications, appearance, afterSubmit, retentionDays } = attributes;
 
 	const afterSubmitConfig = afterSubmit ?? {};
 	const afterSubmitBehaviour = afterSubmitConfig.behaviour === 'redirect' ? 'redirect' : 'message';
@@ -680,44 +680,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				) ) }
 
 				<PanelBody
-					title={ __( 'Spam Protection', 'perform-forms' ) }
-					initialOpen={ false }
-				>
-					<SelectControl
-						label={ __( 'Strategy', 'perform-forms' ) }
-						value={ spamProtection ?? 'auto' }
-						options={ [
-							{
-								label: __( 'Auto — built-in challenge (recommended)', 'perform-forms' ),
-								value: 'auto',
-							},
-							{
-								label: __( 'Built-in challenge (force on)', 'perform-forms' ),
-								value: 'builtin',
-							},
-							{
-								label: __( 'None — honeypot + time-check only', 'perform-forms' ),
-								value: 'none',
-							},
-						] }
-						help={ __(
-							'PerForm’s built-in challenge runs a tiny proof-of-work in the visitor’s browser (transparent, ~50–500 ms) plus a math fallback for visitors without JavaScript. No external services, no cookies — 100% DSGVO-compliant.',
-							'perform-forms'
-						) }
-						onChange={ ( value ) => setAttributes( { spamProtection: value } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ spamProtection === 'none' && (
-						<Notice status="warning" isDismissible={ false } className="perform-spam-notice">
-							{ __(
-								'Honeypot + time-check from Phase 1 still apply, but the active challenge is off. Use only for trusted-context forms (logged-in users, internal tools).',
-								'perform-forms'
-							) }
-						</Notice>
-					) }
-				</PanelBody>
-
-				<PanelBody
 					title={ __( 'Data Retention', 'perform-forms' ) }
 					initialOpen={ false }
 				>
@@ -735,40 +697,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Custom CSS', 'perform-forms' ) }
-					initialOpen={ false }
-				>
-					<TextareaControl
-						label={ __( 'CSS rules', 'perform-forms' ) }
-						help={ __( 'Scope rules to this form by prefixing selectors with [data-perform-id="<id>"]. Otherwise the rules apply to every PerForm on the page.', 'perform-forms' ) }
-						value={ customCSS ?? '' }
-						onChange={ ( value ) => setAttributes( { customCSS: value } ) }
-						rows={ 10 }
-						className="perform-custom-css-input"
-						__nextHasNoMarginBottom
-					/>
-					{ formId && (
-						<p style={ { fontSize: '12px', opacity: 0.7, marginTop: '8px' } }>
-							{ __( 'Form ID for scoping:', 'perform-forms' ) }
-							<br />
-							<code style={ { userSelect: 'all', wordBreak: 'break-all' } }>
-								{ `[data-perform-id="${ formId }"]` }
-							</code>
-						</p>
-					) }
-				</PanelBody>
-			</InspectorControls>
+				</InspectorControls>
 
 			<div { ...blockProps }>
-				{ customCSS && (
-					/* Editor live-preview: render the same <style> tag the
-					 * frontend gets. dangerouslySetInnerHTML is fine here — the
-					 * only writer is the editing user (capability edit_posts),
-					 * and the frontend output applies an extra sanitisation
-					 * pass before echoing. */
-					<style dangerouslySetInnerHTML={ { __html: customCSS } } />
-				) }
 				{ isMultiStep && progressIndicator !== 'none' && (
 					/* Editor preview of the progress indicator. Mirrors
 					 * the server-rendered markup with currentStep = 0

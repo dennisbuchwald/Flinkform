@@ -48,9 +48,9 @@ final class Features {
 	public const WEBHOOKS           = 'webhooks';
 	public const SUBMISSIONS_EXPORT = 'submissions_export';
 	public const SMTP               = 'smtp';
-	// Note: conditional logic and multi-step stay in the FREE core — they are
-	// intrinsic to building forms and woven through every block, not cleanly
-	// separable. Pro differentiates on integrations / infrastructure instead.
+	public const MULTI_STEP         = 'multi_step';
+	public const SPAM_CHALLENGE     = 'spam_challenge';
+	public const CUSTOM_CSS         = 'custom_css';
 
 	/**
 	 * Resolve the active capability set.
