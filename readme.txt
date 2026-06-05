@@ -1,4 +1,4 @@
-=== PerForm ===
+=== PerForm Forms ===
 Contributors: dbwmediadennis
 Tags: forms, contact form, form builder, multi-step form, conditional logic
 Requires at least: 6.5
@@ -60,17 +60,6 @@ If a first-time user cannot build and publish a working contact form in under 5 
 * Single-submission detail view with all field labels and values
 * Mark as read/unread
 
-= PerForm Pro =
-
-[PerForm Pro](https://dbw-media.de/perform-forms-pro/) is an optional paid add-on that installs alongside the free core and unlocks integrations, deliverability and data tooling:
-
-* **Webhooks** — send submissions to Zapier, Make, n8n, Airtable or any URL (JSON/form-encoded, custom headers, conditional triggers, automatic retry, delivery log)
-* **SMTP delivery** — route notification mail through Gmail, Outlook, SendGrid, Mailgun, Brevo, Postmark or Amazon SES, with a one-click test and conflict detection
-* **CSV export** of submissions
-* Coming soon: external CAPTCHA providers (Turnstile, hCaptcha, reCAPTCHA), file uploads and payment fields
-
-The free core works fully on its own; Pro simply adds these capabilities when installed.
-
 == Installation ==
 
 1. Upload the `perform-forms` folder to `/wp-content/plugins/`
@@ -83,11 +72,7 @@ The free core works fully on its own; Pro simply adds these capabilities when in
 
 = Is PerForm free? =
 
-Yes. The PerForm core is GPLv2-licensed and free, including multi-step forms and conditional logic. An optional paid add-on, **PerForm Pro**, adds integrations (webhooks), SMTP delivery and CSV export — but you never need it to build and run real forms.
-
-= What does PerForm Pro add, and do I need it? =
-
-Pro adds webhooks, an SMTP module and CSV export (with more coming). You only need it if you want those specific integrations — the free core handles form building, multi-step, conditional logic, notifications and spam protection on its own.
+Yes. PerForm is GPLv2-licensed and completely free — including multi-step forms and conditional logic. Everything you need to build and run real forms is in the core.
 
 = What WordPress version do I need? =
 
@@ -99,7 +84,7 @@ Yes. PerForm reads your theme's design tokens from `theme.json` and inherits col
 
 = My notification emails don't arrive. What can I do? =
 
-Email deliverability depends on your host. Many hosts send `wp_mail()` unreliably. PerForm Pro includes an SMTP module (Gmail, Outlook, SendGrid, Mailgun, Brevo, Postmark, Amazon SES) that routes mail through a proper provider. If you already use a dedicated SMTP plugin (WP Mail SMTP, FluentSMTP, etc.), it will handle delivery for PerForm too.
+Email deliverability depends on your host. Many hosts send `wp_mail()` unreliably. If your notifications don't arrive, install a dedicated SMTP plugin (such as WP Mail SMTP or FluentSMTP) to route mail through a proper provider — it will handle delivery for PerForm too.
 
 = How does the spam protection work? =
 
@@ -117,7 +102,7 @@ Yes — in the free core. Insert a **Page Break** block between fields to split 
 
 = Is PerForm GDPR-compliant? =
 
-PerForm is designed with privacy by default — see the Privacy section below for the full detail. In short: no IP addresses or user-agent strings are stored, no data leaves your server unless you install PerForm Pro and configure an integration, and PerForm integrates with WordPress's privacy tools for data-subject access and erasure requests.
+PerForm is designed with privacy by default — see the Privacy section below for the full detail. In short: no IP addresses or user-agent strings are stored, no data ever leaves your server, and PerForm integrates with WordPress's privacy tools for data-subject access and erasure requests.
 
 = Can I redirect to a thank-you page after submission? =
 
@@ -146,7 +131,7 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Privacy text now documents the retention period and the strictly-necessary flash cookie
 
 = 0.2.7 =
-* Introduces the Free/Pro architecture: the core is free (incl. multi-step + conditional logic); webhooks, SMTP and CSV export move to the optional PerForm Pro add-on
+* Architecture refactor: the core stays fully free (incl. multi-step + conditional logic); integration features (webhooks, SMTP, CSV export) were factored out of the core
 * Privacy: full WordPress privacy-tools integration (exporter + eraser); accurate disclosure of the single strictly-necessary `perform_flash` cookie
 * Accessibility: broader `prefers-reduced-motion` coverage; required spam-math fallback for no-JS visitors
 * Hardening: defence-in-depth against mail-header injection; open-redirect-safe thank-you redirects
@@ -163,7 +148,7 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 == Upgrade Notice ==
 
 = 0.2.7 =
-Free/Pro split: multi-step and conditional logic stay free; webhooks, SMTP and CSV export are now part of the optional PerForm Pro add-on.
+Multi-step and conditional logic stay in the free core; integration features (webhooks, SMTP, CSV export) were factored out of the core.
 
 == Privacy ==
 
@@ -177,15 +162,11 @@ PerForm is built with privacy by default. Here is what the free core does and do
 * It sets no tracking, analytics or marketing cookies. PerForm sets exactly one strictly-necessary cookie — `perform_flash` (lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload
 * It contacts no external service
 
-**PerForm Pro (optional add-on):**
-If you install PerForm Pro, additional data handling applies and is disclosed separately by that plugin: SMTP credentials (encrypted) are stored in `wp_options` when SMTP is enabled; webhook configurations and delivery logs are stored in dedicated tables; and, when configured, submission data is transmitted to your webhook URLs and notification mail is routed through your SMTP provider (both of which may involve third parties, possibly outside the EU).
-
 **Data deletion:**
 * Individual submissions can be deleted from the admin submissions screen
 * Optionally, set a per-form retention period (Form block → Data Retention) and PerForm deletes older submissions automatically each day
 * All free-core data (the submissions table) is permanently removed when the plugin is uninstalled through the WordPress admin
-* PerForm integrates with WordPress's privacy tools (Tools > Export Personal Data / Erase Personal Data) to support data-subject access and erasure requests. Deleting a submission also removes any related PerForm Pro webhook delivery records.
-* If you used PerForm Pro, uninstall it as well: its webhook delivery log lives in the add-on's own tables and is removed by the Pro uninstaller. (WordPress already prevents deleting the free core while Pro is active.)
+* PerForm integrates with WordPress's privacy tools (Tools > Export Personal Data / Erase Personal Data) to support data-subject access and erasure requests
 
 == Source Code ==
 

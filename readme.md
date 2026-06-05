@@ -35,21 +35,11 @@ If a first-time user cannot build and publish a working contact form in under
 - **Submissions admin** — list with search, filter, sort, bulk actions, and a detail view
 - **Privacy tools** — WordPress data export / erasure integration, optional retention auto-purge
 
-## PerForm Pro
-
-[PerForm Pro](https://dbw-media.de/perform-forms-pro/) is an optional paid add-on that installs alongside the free core and adds integrations, deliverability and data tooling:
-
-- **Webhooks** — Zapier, Make, n8n, Airtable or any URL (conditional triggers, retries, delivery log)
-- **SMTP delivery** — Gmail, Outlook, SendGrid, Mailgun, Brevo, Postmark, Amazon SES
-- **CSV export** of submissions
-
-The free core works fully on its own — Pro simply adds these capabilities when installed.
-
 ## Architecture
 
 - **Rendering** — dynamic blocks with server-side `render.php`; frontend interactivity via `@wordpress/interactivity` (script modules)
 - **Database** — a dedicated `{prefix}perform_submissions` table (not posts/meta)
-- **Free/Pro split** — the core is a platform with frozen extension seams (filters/actions); Pro is a separate plugin that hooks them and never ships inside this repo
+- **Extensible** — the core exposes frozen extension seams (filters/actions) so integrations can hook in without modifying the core
 - **Build** — `@wordpress/scripts`
 - **Stack** — WordPress 6.5+, PHP 8.1+, no jQuery, JS budget under 15 KB gzipped
 
@@ -87,7 +77,7 @@ Source blocks live in `src/` (compiled to `build/`); PHP classes follow PSR-4 un
 
 ## About dbw media
 
-[dbw media](https://dbw-media.de) is a WordPress studio focused on custom development, Gutenberg blocks and performance. PerForm is built and maintained by [Dennis Buchwald](https://dbw-media.de).
+[dbw media](https://dbw-media.de) is a WordPress studio focused on custom development, Gutenberg blocks and performance. PerForm is built and maintained by [Dennis Buchwald](https://dennisbuchwald.de) — the personal brand behind dbw media.
 
 ## License
 

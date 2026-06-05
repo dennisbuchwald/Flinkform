@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       PerForm
+ * Plugin Name:       PerForm Forms
  * Plugin URI:        https://wordpress.org/plugins/perform-forms/
  * Description:       The last WordPress form plugin you'll ever install — block-native, multi-step, conditional logic, accessible, and free.
  * Version:           0.2.9
