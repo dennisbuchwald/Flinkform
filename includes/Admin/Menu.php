@@ -98,7 +98,7 @@ final class Menu {
 	 * @return void
 	 */
 	public function enqueue_submissions_styles(): void {
-		wp_register_style( 'perform-admin-submissions', false );
+		wp_register_style( 'perform-admin-submissions', false, [], PERFORM_VERSION );
 		wp_enqueue_style( 'perform-admin-submissions' );
 		wp_add_inline_style( 'perform-admin-submissions', SubmissionsPage::inline_css() );
 	}
@@ -109,7 +109,7 @@ final class Menu {
 	 * @return void
 	 */
 	public function enqueue_forms_styles(): void {
-		wp_register_style( 'perform-admin-forms', false );
+		wp_register_style( 'perform-admin-forms', false, [], PERFORM_VERSION );
 		wp_enqueue_style( 'perform-admin-forms' );
 		wp_add_inline_style( 'perform-admin-forms', FormsPage::inline_css() );
 	}

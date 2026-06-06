@@ -50,9 +50,9 @@
 
 declare( strict_types = 1 );
 
-namespace PerForm\Spam;
-
 defined( 'ABSPATH' ) || exit;
+
+namespace PerForm\Spam;
 
 /**
  * Token mint + verify + replay-guard for built-in spam challenges.
