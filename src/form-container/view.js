@@ -298,11 +298,11 @@ function gatherFormValues( form ) {
 
 	form.querySelectorAll( 'input[name], textarea[name], select[name]' ).forEach( ( el ) => {
 		const rawName = el.getAttribute( 'name' );
-		// Field inputs are emitted as `perform_field[<name>]` — extract
+		// Field inputs are emitted as `perffo_field[<name>]` — extract
 		// the inner name so the values map matches the field-name shape
 		// the conditional-logic rules reference (and the server's
 		// `$clean` map uses too).
-		const match = rawName.match( /^perform_field\[([^\]]+)\](\[\])?$/ );
+		const match = rawName.match( /^perffo_field\[([^\]]+)\](\[\])?$/ );
 		if ( ! match ) {
 			return;
 		}

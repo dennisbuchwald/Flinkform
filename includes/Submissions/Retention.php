@@ -6,7 +6,7 @@
  * 0 = keep forever). A daily cron deletes submissions older than that period.
  *
  * Deletion runs through `Submissions\Repository::delete_many()`, so the
- * `perform_submissions_deleted` action fires and any related PerForm Pro
+ * `perffo_submissions_deleted` action fires and any related PerForm Pro
  * webhook delivery rows are cascade-deleted too — no orphaned personal data.
  *
  * The per-form retention values are read from the form index (`Forms\Indexer`),
@@ -32,7 +32,7 @@ final class Retention {
 	/**
 	 * Daily cron hook that runs the purge.
 	 */
-	public const CRON_HOOK = 'perform_purge_submissions';
+	public const CRON_HOOK = 'perffo_purge_submissions';
 
 	/**
 	 * Max rows deleted per form per run — keeps a single cron tick bounded on
@@ -75,7 +75,7 @@ final class Retention {
 			$ids    = $repo->find_ids_older_than( $form_id, $cutoff, self::PER_FORM_CAP );
 
 			if ( ! empty( $ids ) ) {
-				// delete_many() fires perform_submissions_deleted → Pro cascade.
+				// delete_many() fires perffo_submissions_deleted → Pro cascade.
 				$repo->delete_many( $ids );
 			}
 		}

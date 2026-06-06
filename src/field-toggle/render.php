@@ -36,7 +36,7 @@ $described = trim( $help_id . ' ' . $error_id );
 		<input
 			type="checkbox"
 			id="<?php echo esc_attr( $field_uid ); ?>"
-			name="perform_field[<?php echo esc_attr( $field_name ); ?>]"
+			name="perffo_field[<?php echo esc_attr( $field_name ); ?>]"
 			value="1"
 			<?php checked( $is_on ); ?>
 			<?php echo $required ? 'required aria-required="true"' : ''; ?>

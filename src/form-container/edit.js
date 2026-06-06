@@ -365,7 +365,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 							<ToggleControl
 								label={ __( 'Append submission ID', 'perform-forms' ) }
-								help={ __( 'Adds ?perform_submission_id=N to the redirect URL — useful for analytics events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off because submission IDs are PII-adjacent and end up in browser history.', 'perform-forms' ) }
+								help={ __( 'Adds ?perffo_submission_id=N to the redirect URL — useful for analytics events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off because submission IDs are PII-adjacent and end up in browser history.', 'perform-forms' ) }
 								checked={ !! afterSubmitConfig.appendSubmissionId }
 								onChange={ ( value ) => updateAfterSubmit( { appendSubmissionId: value } ) }
 								__nextHasNoMarginBottom
@@ -373,7 +373,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 							<ToggleControl
 								label={ __( 'Append form ID', 'perform-forms' ) }
-								help={ __( 'Adds ?perform_form_id=UUID — lets a shared thank-you page differentiate conversions by source form.', 'perform-forms' ) }
+								help={ __( 'Adds ?perffo_form_id=UUID — lets a shared thank-you page differentiate conversions by source form.', 'perform-forms' ) }
 								checked={ !! afterSubmitConfig.appendFormId }
 								onChange={ ( value ) => updateAfterSubmit( { appendFormId: value } ) }
 								__nextHasNoMarginBottom

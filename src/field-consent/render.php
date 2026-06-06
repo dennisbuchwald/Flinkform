@@ -46,7 +46,7 @@ $privacy_url = $link_pp ? (string) get_privacy_policy_url() : '';
 		<input
 			type="checkbox"
 			id="<?php echo esc_attr( $uid ); ?>"
-			name="perform_field[<?php echo esc_attr( $field_name ); ?>]"
+			name="perffo_field[<?php echo esc_attr( $field_name ); ?>]"
 			value="1"
 			required
 			aria-required="true"

@@ -3,7 +3,7 @@
  * Persistence for form submissions.
  *
  * Thin wrapper around $wpdb that owns reads and writes against the
- * `{prefix}_perform_submissions` table. Every input value flows through
+ * `{prefix}_perffo_submissions` table. Every input value flows through
  * prepared statements (via $wpdb->prepare or $wpdb->insert/update's
  * format arrays); identifiers and ORDER BY clauses are gated through
  * allow-lists.
@@ -163,7 +163,7 @@ final class Repository {
 
 		if ( $ok ) {
 			/** This action is documented in this file — see delete_many(). */
-			do_action( 'perform_submissions_deleted', [ $id ] );
+			do_action( 'perffo_submissions_deleted', [ $id ] );
 		}
 
 		return $ok;
@@ -205,7 +205,7 @@ final class Repository {
 			 *
 			 * @param array<int, int> $ids Submission ids that were deleted.
 			 */
-			do_action( 'perform_submissions_deleted', $ids );
+			do_action( 'perffo_submissions_deleted', $ids );
 		}
 
 		return $count;

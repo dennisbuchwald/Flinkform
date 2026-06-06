@@ -30,7 +30,7 @@ final class Locator {
 	/**
 	 * Object-cache group + TTL for the parsed form definition.
 	 */
-	private const CACHE_GROUP = 'perform_forms';
+	private const CACHE_GROUP = 'perffo_forms';
 	private const CACHE_TTL   = 5 * MINUTE_IN_SECONDS;
 
 	/**

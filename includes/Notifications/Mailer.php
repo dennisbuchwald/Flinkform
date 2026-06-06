@@ -2,7 +2,7 @@
 /**
  * Email notifications for accepted submissions.
  *
- * Subscriber on `perform_after_submission`. Composes an admin notification
+ * Subscriber on `perffo_after_submission`. Composes an admin notification
  * and dispatches it via `wp_mail()` — no SMTP module, no HTML body, no
  * configuration UI yet. Slice 3a deliberately ships with working defaults:
  * the moment the plugin update is uploaded, the site admin starts
@@ -38,8 +38,8 @@ final class Mailer {
 	 * @return void
 	 */
 	public function register(): void {
-		add_action( 'perform_after_submission', [ $this, 'send_admin_notification' ], 10, 4 );
-		add_action( 'perform_after_submission', [ $this, 'send_submitter_confirmation' ], 11, 4 );
+		add_action( 'perffo_after_submission', [ $this, 'send_admin_notification' ], 10, 4 );
+		add_action( 'perffo_after_submission', [ $this, 'send_submitter_confirmation' ], 11, 4 );
 	}
 
 	/**
@@ -91,7 +91,7 @@ final class Mailer {
 		 * @param string                                                                                     $type One of 'admin' | 'submitter'.
 		 */
 		$email = (array) apply_filters(
-			'perform_email_notification',
+			'perffo_email_notification',
 			[
 				'to'      => $to,
 				'subject' => $subject,
@@ -158,7 +158,7 @@ final class Mailer {
 
 		/** This filter is documented in this file. */
 		$email = (array) apply_filters(
-			'perform_email_notification',
+			'perffo_email_notification',
 			[
 				'to'      => [ $recipient ],
 				'subject' => $subject,

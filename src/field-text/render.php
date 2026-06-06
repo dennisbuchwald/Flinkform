@@ -20,8 +20,8 @@ defined( 'ABSPATH' ) || exit;
 $form_id     = isset( $block->context['perform/formId'] ) ? (string) $block->context['perform/formId'] : '';
 $label       = isset( $attributes['label'] ) && is_string( $attributes['label'] ) ? $attributes['label'] : '';
 $placeholder = isset( $attributes['placeholder'] ) && is_string( $attributes['placeholder'] ) ? $attributes['placeholder'] : '';
-$perform_appearance = isset( $block->context['perform/appearance'] ) && is_array( $block->context['perform/appearance'] ) ? $block->context['perform/appearance'] : [];
-if ( '' === $placeholder && ( $perform_appearance['labelPosition'] ?? '' ) === 'placeholder' && '' !== $label ) {
+$perffo_appearance = isset( $block->context['perform/appearance'] ) && is_array( $block->context['perform/appearance'] ) ? $block->context['perform/appearance'] : [];
+if ( '' === $placeholder && ( $perffo_appearance['labelPosition'] ?? '' ) === 'placeholder' && '' !== $label ) {
 	$placeholder = $label . ( ! empty( $attributes['required'] ) ? '*' : '' );
 }
 $required    = ! empty( $attributes['required'] );
@@ -49,7 +49,7 @@ $described = trim( $help_id . ' ' . $error_id );
 	<input
 		type="text"
 		id="<?php echo esc_attr( $field_uid ); ?>"
-		name="perform_field[<?php echo esc_attr( $field_name ); ?>]"
+		name="perffo_field[<?php echo esc_attr( $field_name ); ?>]"
 		class="perform-field__input"
 		value="<?php echo esc_attr( (string) $value ); ?>"
 		placeholder="<?php echo esc_attr( $placeholder ); ?>"

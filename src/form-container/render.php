@@ -2,7 +2,7 @@
 /**
  * Server-side render for the Form Container block.
  *
- * Emits a `<form>` posting to `admin-post.php?action=perform_submit`, with a
+ * Emits a `<form>` posting to `admin-post.php?action=perffo_submit`, with a
  * nonce, the form's stable UUID, the source post ID (used by the handler
  * to locate the original block markup for validation), a honeypot field and
  * a timestamp token.
@@ -45,7 +45,7 @@ $appearance     = isset( $attributes['appearance'] ) && is_array( $attributes['a
  * @param string $color Raw colour from the block attribute.
  * @return string
  */
-$perform_sanitize_color = static function ( string $color ): string {
+$perffo_sanitize_color = static function ( string $color ): string {
 	$trimmed = trim( $color );
 	if ( '' === $trimmed ) {
 		return '';
@@ -58,16 +58,16 @@ $perform_sanitize_color = static function ( string $color ): string {
 };
 
 $primary_color    = isset( $appearance['primaryColor'] ) && is_string( $appearance['primaryColor'] )
-	? $perform_sanitize_color( $appearance['primaryColor'] )
+	? $perffo_sanitize_color( $appearance['primaryColor'] )
 	: '';
 $button_color       = isset( $appearance['buttonColor'] ) && is_string( $appearance['buttonColor'] )
-	? $perform_sanitize_color( $appearance['buttonColor'] )
+	? $perffo_sanitize_color( $appearance['buttonColor'] )
 	: '';
 $button_text_color  = isset( $appearance['buttonTextColor'] ) && is_string( $appearance['buttonTextColor'] )
-	? $perform_sanitize_color( $appearance['buttonTextColor'] )
+	? $perffo_sanitize_color( $appearance['buttonTextColor'] )
 	: '';
 $button_border_color = isset( $appearance['buttonBorderColor'] ) && is_string( $appearance['buttonBorderColor'] )
-	? $perform_sanitize_color( $appearance['buttonBorderColor'] )
+	? $perffo_sanitize_color( $appearance['buttonBorderColor'] )
 	: '';
 $submit_btn_style = isset( $appearance['submitButtonStyle'] ) && is_string( $appearance['submitButtonStyle'] ) ? $appearance['submitButtonStyle'] : 'fill';
 if ( ! in_array( $submit_btn_style, [ 'fill', 'outline', 'ghost' ], true ) ) {
@@ -109,19 +109,19 @@ $show_step_labels = ! empty( $appearance['showStepLabels'] );
 // without having to read the markup back.
 $page_break_count = 0;
 $step_labels      = [ '' ]; // Step 0 has no opening page-break, so no label.
-foreach ( $block->inner_blocks as $perform_inner_probe ) {
-	if ( 'perform/page-break' === $perform_inner_probe->name ) {
+foreach ( $block->inner_blocks as $perffo_inner_probe ) {
+	if ( 'perform/page-break' === $perffo_inner_probe->name ) {
 		$page_break_count++;
-		$label_attr     = isset( $perform_inner_probe->attributes['label'] ) && is_string( $perform_inner_probe->attributes['label'] )
-			? sanitize_text_field( $perform_inner_probe->attributes['label'] )
+		$label_attr     = isset( $perffo_inner_probe->attributes['label'] ) && is_string( $perffo_inner_probe->attributes['label'] )
+			? sanitize_text_field( $perffo_inner_probe->attributes['label'] )
 			: '';
 		$step_labels[]  = $label_attr;
 	}
 }
 $is_multi_step = $page_break_count > 0;
 $has_any_step_label = false;
-foreach ( $step_labels as $perform_step_label_probe ) {
-	if ( '' !== $perform_step_label_probe ) {
+foreach ( $step_labels as $perffo_step_label_probe ) {
+	if ( '' !== $perffo_step_label_probe ) {
 		$has_any_step_label = true;
 		break;
 	}
@@ -147,8 +147,8 @@ if ( '' === $form_id ) {
 // targeting this specific form (UUID), so multiple forms on one page don't
 // all flip to success after one submits.
 // phpcs:disable WordPress.Security.NonceVerification.Recommended
-$status     = isset( $_GET['perform_status'] ) ? sanitize_key( wp_unslash( $_GET['perform_status'] ) ) : '';
-$status_for = isset( $_GET['perform_form'] ) ? sanitize_text_field( wp_unslash( $_GET['perform_form'] ) ) : '';
+$status     = isset( $_GET['perffo_status'] ) ? sanitize_key( wp_unslash( $_GET['perffo_status'] ) ) : '';
+$status_for = isset( $_GET['perffo_form'] ) ? sanitize_text_field( wp_unslash( $_GET['perffo_form'] ) ) : '';
 // phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 $is_success = ( 'success' === $status && $status_for === $form_id );
@@ -394,17 +394,17 @@ $timestamp_token = base64_encode( (string) time() );
 			data-wp-on--submit="actions.submitGuard"
 		<?php endif; ?>
 	>
-		<?php wp_nonce_field( 'perform_submit_' . $form_id, '_perform_nonce' ); ?>
-		<input type="hidden" name="action" value="perform_submit" />
-		<input type="hidden" name="perform_form_id" value="<?php echo esc_attr( $form_id ); ?>" />
-		<input type="hidden" name="perform_post_id" value="<?php echo esc_attr( (string) $source_post_id ); ?>" />
-		<input type="hidden" name="perform_ts" value="<?php echo esc_attr( $timestamp_token ); ?>" />
+		<?php wp_nonce_field( 'perffo_submit_' . $form_id, '_perffo_nonce' ); ?>
+		<input type="hidden" name="action" value="perffo_submit" />
+		<input type="hidden" name="perffo_form_id" value="<?php echo esc_attr( $form_id ); ?>" />
+		<input type="hidden" name="perffo_post_id" value="<?php echo esc_attr( (string) $source_post_id ); ?>" />
+		<input type="hidden" name="perffo_ts" value="<?php echo esc_attr( $timestamp_token ); ?>" />
 
 		<?php // Honeypot — visually + AT-hidden, bots will fill it. ?>
 		<div class="perform-form__hp" aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;">
 			<label>
 				<?php esc_html_e( 'Leave this field empty', 'perform-forms' ); ?>
-				<input type="text" name="perform_hp" value="" tabindex="-1" autocomplete="off" />
+				<input type="text" name="perffo_hp" value="" tabindex="-1" autocomplete="off" />
 			</label>
 		</div>
 
@@ -576,21 +576,21 @@ $timestamp_token = base64_encode( (string) time() );
 // for WP.org compliance. Both are gated behind Pro capabilities so they
 // never execute in the free-only plugin.
 if ( \PerForm\Spam\Guard::should_protect( $attributes ) ) {
-	wp_register_script( 'perform-boot', false, [], PERFORM_VERSION, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
-	wp_enqueue_script( 'perform-boot' );
+	wp_register_script( 'perffo-boot', false, [], PERFFO_VERSION, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+	wp_enqueue_script( 'perffo-boot' );
 	wp_add_inline_script(
-		'perform-boot',
+		'perffo-boot',
 		'(function(){document.querySelectorAll("[data-perform-spam-math]").forEach(function(m){m.setAttribute("hidden","")})})();'
 	);
 }
 
 if ( $is_multi_step ) {
-	if ( ! wp_script_is( 'perform-boot', 'registered' ) ) {
-		wp_register_script( 'perform-boot', false, [], PERFORM_VERSION, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+	if ( ! wp_script_is( 'perffo-boot', 'registered' ) ) {
+		wp_register_script( 'perffo-boot', false, [], PERFFO_VERSION, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
 	}
-	wp_enqueue_script( 'perform-boot' );
+	wp_enqueue_script( 'perffo-boot' );
 	wp_add_inline_script(
-		'perform-boot',
+		'perffo-boot',
 		'(function(){var h=function(e){if(e)e.setAttribute("hidden","")};document.querySelectorAll(".perform-form--multi-step:not([data-perform-enhanced])").forEach(function(f){f.setAttribute("data-perform-enhanced","");f.querySelectorAll(".perform-form__step").forEach(function(s){if(s.getAttribute("data-step-index")!=="0")h(s)});f.querySelectorAll(".perform-form__step-separator").forEach(function(s){h(s)});h(f.querySelector(".perform-form__nav--back"));f.querySelectorAll(".perform-form__submit:not(.perform-form__nav--next)").forEach(function(s){h(s)})})})();'
 	);
 }

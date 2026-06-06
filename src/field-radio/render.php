@@ -54,7 +54,7 @@ $described = trim( $help_id . ' ' . $error_id );
 			<input
 				type="radio"
 				id="<?php echo esc_attr( $opt_uid ); ?>"
-				name="perform_field[<?php echo esc_attr( $field_name ); ?>]"
+				name="perffo_field[<?php echo esc_attr( $field_name ); ?>]"
 				value="<?php echo esc_attr( $opt_value ); ?>"
 				<?php checked( $value, $opt_value ); ?>
 				<?php echo $required ? 'required aria-required="true"' : ''; ?>

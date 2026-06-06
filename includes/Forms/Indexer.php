@@ -38,7 +38,7 @@ final class Indexer {
 	/**
 	 * Cache key.
 	 */
-	private const CACHE_KEY = 'perform_forms_index';
+	private const CACHE_KEY = 'perffo_forms_index';
 
 	/**
 	 * Cache lifetime in seconds. Five minutes is short enough that a stale
@@ -245,7 +245,7 @@ final class Indexer {
 		// Pull per-form submission counts + last-submission times in one
 		// query — cheaper than N round-trips through the Repository.
 		$stats_by_form = [];
-		$submissions_table = $wpdb->prefix . 'perform_submissions';
+		$submissions_table = $wpdb->prefix . 'perffo_submissions';
 		if ( $this->table_exists( $submissions_table ) ) {
 			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom submissions table; only the controlled table name is interpolated, no user input in this aggregate.
 			$rows = $wpdb->get_results(

@@ -26,7 +26,7 @@ final class Menu {
 	 * the Submissions list, since that's what site operators look at
 	 * most often).
 	 */
-	public const PARENT_SLUG = 'perform-submissions';
+	public const PARENT_SLUG = 'perffo-submissions';
 
 	/**
 	 * Capability required to access any PerForm admin page. `manage_options`
@@ -98,9 +98,9 @@ final class Menu {
 	 * @return void
 	 */
 	public function enqueue_submissions_styles(): void {
-		wp_register_style( 'perform-admin-submissions', false, [], PERFORM_VERSION );
-		wp_enqueue_style( 'perform-admin-submissions' );
-		wp_add_inline_style( 'perform-admin-submissions', SubmissionsPage::inline_css() );
+		wp_register_style( 'perffo-admin-submissions', false, [], PERFFO_VERSION );
+		wp_enqueue_style( 'perffo-admin-submissions' );
+		wp_add_inline_style( 'perffo-admin-submissions', SubmissionsPage::inline_css() );
 	}
 
 	/**
@@ -109,9 +109,9 @@ final class Menu {
 	 * @return void
 	 */
 	public function enqueue_forms_styles(): void {
-		wp_register_style( 'perform-admin-forms', false, [], PERFORM_VERSION );
-		wp_enqueue_style( 'perform-admin-forms' );
-		wp_add_inline_style( 'perform-admin-forms', FormsPage::inline_css() );
+		wp_register_style( 'perffo-admin-forms', false, [], PERFFO_VERSION );
+		wp_enqueue_style( 'perffo-admin-forms' );
+		wp_add_inline_style( 'perffo-admin-forms', FormsPage::inline_css() );
 	}
 
 	/**

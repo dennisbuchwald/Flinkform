@@ -44,7 +44,7 @@ final class Autoloader {
 		}
 
 		$relative = substr( $class, strlen( self::NAMESPACE_PREFIX ) );
-		$path     = PERFORM_PLUGIN_DIR . 'includes/' . str_replace( '\\', '/', $relative ) . '.php';
+		$path     = PERFFO_PLUGIN_DIR . 'includes/' . str_replace( '\\', '/', $relative ) . '.php';
 
 		if ( is_readable( $path ) ) {
 			require_once $path;

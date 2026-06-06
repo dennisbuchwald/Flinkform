@@ -81,7 +81,7 @@ final class Guard {
 		 *
 		 * @param array<int, string> $providers Registered provider keys.
 		 */
-		$providers = (array) apply_filters( 'perform_spam_providers', [] );
+		$providers = (array) apply_filters( 'perffo_spam_providers', [] );
 
 		return in_array( $attr, $providers, true ) ? $attr : 'none';
 	}

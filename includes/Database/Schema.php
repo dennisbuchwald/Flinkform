@@ -40,7 +40,7 @@ final class Schema {
 	/**
 	 * Option key holding the currently installed schema version.
 	 */
-	public const OPTION_DB_VERSION = 'perform_db_version';
+	public const OPTION_DB_VERSION = 'perffo_db_version';
 
 	/**
 	 * Resolve the fully-qualified submissions table name.
@@ -49,7 +49,7 @@ final class Schema {
 	 */
 	public static function table_name(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'perform_submissions';
+		return $wpdb->prefix . 'perffo_submissions';
 	}
 
 	/**

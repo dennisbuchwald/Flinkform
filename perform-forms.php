@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       PerForm Forms
  * Plugin URI:        https://wordpress.org/plugins/perform-forms/
- * Description:       Block-native forms for WordPress — conditional logic, accessible, and free.
- * Version:           0.2.9
+ * Description:       Block-native form builder for the WordPress Block Editor — theme.json styling, conditional logic, Interactivity API.
+ * Version:           0.3.0
  * Requires at least: 6.5
  * Tested up to:      7.0
  * Requires PHP:      8.1
@@ -28,14 +28,14 @@ defined( 'ABSPATH' ) || exit;
  * every subsystem (block registration, asset enqueueing, activation,
  * uninstall) so a version bump or a relocation only ever happens here.
  */
-define( 'PERFORM_VERSION', '0.2.9' );
-define( 'PERFORM_PLUGIN_FILE', __FILE__ );
-define( 'PERFORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'PERFORM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'PERFORM_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'PERFFO_VERSION', '0.3.0' );
+define( 'PERFFO_PLUGIN_FILE', __FILE__ );
+define( 'PERFFO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'PERFFO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'PERFFO_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 // Register the PSR-4 autoloader before anything else touches the namespace.
-require_once PERFORM_PLUGIN_DIR . 'includes/Autoloader.php';
+require_once PERFFO_PLUGIN_DIR . 'includes/Autoloader.php';
 \PerForm\Autoloader::register();
 
 /**
@@ -47,10 +47,10 @@ require_once PERFORM_PLUGIN_DIR . 'includes/Autoloader.php';
  *
  * @return void
  */
-function perform_bootstrap(): void {
+function perffo_bootstrap(): void {
 	\PerForm\Plugin::instance()->init();
 }
-add_action( 'plugins_loaded', 'perform_bootstrap' );
+add_action( 'plugins_loaded', 'perffo_bootstrap' );
 
 register_activation_hook( __FILE__, [ \PerForm\Activator::class, 'activate' ] );
 register_deactivation_hook( __FILE__, [ \PerForm\Deactivator::class, 'deactivate' ] );

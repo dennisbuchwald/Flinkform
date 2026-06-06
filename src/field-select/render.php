@@ -16,8 +16,8 @@ defined( 'ABSPATH' ) || exit;
 $form_id     = isset( $block->context['perform/formId'] ) ? (string) $block->context['perform/formId'] : '';
 $label       = isset( $attributes['label'] ) && is_string( $attributes['label'] ) ? $attributes['label'] : '';
 $placeholder = isset( $attributes['placeholder'] ) && is_string( $attributes['placeholder'] ) ? $attributes['placeholder'] : '';
-$perform_appearance = isset( $block->context['perform/appearance'] ) && is_array( $block->context['perform/appearance'] ) ? $block->context['perform/appearance'] : [];
-if ( '' === $placeholder && ( $perform_appearance['labelPosition'] ?? '' ) === 'placeholder' && '' !== $label ) {
+$perffo_appearance = isset( $block->context['perform/appearance'] ) && is_array( $block->context['perform/appearance'] ) ? $block->context['perform/appearance'] : [];
+if ( '' === $placeholder && ( $perffo_appearance['labelPosition'] ?? '' ) === 'placeholder' && '' !== $label ) {
 	$placeholder = '-- ' . $label . ( ! empty( $attributes['required'] ) ? '*' : '' ) . ' --';
 }
 $required    = ! empty( $attributes['required'] );
@@ -39,7 +39,7 @@ $field_uid = 'perform-field-' . md5( $form_id . '-' . $field_name );
 $help_id   = $help_text ? $field_uid . '-help' : '';
 $error_id  = $error ? $field_uid . '-error' : '';
 $described = trim( $help_id . ' ' . $error_id );
-$name_attr = 'perform_field[' . $field_name . ']' . ( $multiple ? '[]' : '' );
+$name_attr = 'perffo_field[' . $field_name . ']' . ( $multiple ? '[]' : '' );
 ?>
 <div class="perform-field perform-field--select<?php echo $error ? ' perform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' perform-field--full-width' : ''; ?>"<?php echo \PerForm\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?> data-perform-field-name="<?php echo esc_attr( $field_name ); ?>">
 	<label class="perform-field__label" for="<?php echo esc_attr( $field_uid ); ?>">

@@ -19,8 +19,8 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 // uninstall.php runs standalone — the main plugin bootstrap has not been
 // loaded. Define the path constant the autoloader expects, then wire it up.
-if ( ! defined( 'PERFORM_PLUGIN_DIR' ) ) {
-	define( 'PERFORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'PERFFO_PLUGIN_DIR' ) ) {
+	define( 'PERFFO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 }
 
 require_once __DIR__ . '/includes/Autoloader.php';
@@ -30,7 +30,7 @@ require_once __DIR__ . '/includes/Autoloader.php';
 \PerForm\Database\Schema::drop();
 
 // Remove the Forms-Indexer transient cache.
-delete_transient( 'perform_forms_index' );
+delete_transient( 'perffo_forms_index' );
 
 // Note: SMTP options/transients and the webhook tables are owned by PerForm
 // Pro and are cleaned up by the Pro add-on's own uninstall.php.

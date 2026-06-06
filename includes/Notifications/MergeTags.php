@@ -8,9 +8,9 @@
  * Designed to be shared across notification surfaces — the Mailer uses it
  * today, webhooks and integrations will reuse the same context in later
  * phases. The context build is exposed separately so listeners on
- * `perform_after_submission` can compose it once and reuse it.
+ * `perffo_after_submission` can compose it once and reuse it.
  *
- * Unknown tags pass through the `perform_resolve_merge_tag` filter; if
+ * Unknown tags pass through the `perffo_resolve_merge_tag` filter; if
  * still unresolved they remain in the output verbatim so authors notice
  * the typo instead of silently shipping empty strings.
  *
@@ -96,7 +96,7 @@ final class MergeTags {
 		 * @param array<string, mixed> $clean
 		 * @param array<string, mixed> $form_def
 		 */
-		return (array) apply_filters( 'perform_merge_tags_context', $context, $submission_id, $form_id, $clean, $form_def );
+		return (array) apply_filters( 'perffo_merge_tags_context', $context, $submission_id, $form_id, $clean, $form_def );
 	}
 
 	/**
@@ -182,7 +182,7 @@ final class MergeTags {
 		 * @param string               $key
 		 * @param array<string, mixed> $context
 		 */
-		$resolved = apply_filters( 'perform_resolve_merge_tag', $resolved, $namespace, $key, $context );
+		$resolved = apply_filters( 'perffo_resolve_merge_tag', $resolved, $namespace, $key, $context );
 
 		if ( null === $resolved ) {
 			return '{' . $namespace . ':' . $key . '}';

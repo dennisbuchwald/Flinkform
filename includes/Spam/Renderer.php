@@ -6,11 +6,11 @@
  * `render.php` injects into every protected `<form>`. The markup
  * carries:
  *
- *   - One hidden input  `perform_spam_token`     — the HMAC-signed
+ *   - One hidden input  `perffo_spam_token`     — the HMAC-signed
  *                                                  token from Challenge::mint().
- *   - One hidden input  `perform_spam_solution`  — populated by the
+ *   - One hidden input  `perffo_spam_solution`  — populated by the
  *                                                  PoW solver in view.js.
- *   - One visible input `perform_spam_answer`   — math fallback,
+ *   - One visible input `perffo_spam_answer`   — math fallback,
  *                                                  shown via @media or
  *                                                  noscript-equivalent
  *                                                  defaults to hidden
@@ -44,21 +44,21 @@ final class Renderer {
 	 *
 	 * @var string
 	 */
-	public const FIELD_TOKEN = 'perform_spam_token';
+	public const FIELD_TOKEN = 'perffo_spam_token';
 
 	/**
 	 * Hidden input name carrying the PoW solution (integer string).
 	 *
 	 * @var string
 	 */
-	public const FIELD_SOLUTION = 'perform_spam_solution';
+	public const FIELD_SOLUTION = 'perffo_spam_solution';
 
 	/**
 	 * Visible input name for the math fallback answer.
 	 *
 	 * @var string
 	 */
-	public const FIELD_ANSWER = 'perform_spam_answer';
+	public const FIELD_ANSWER = 'perffo_spam_answer';
 
 	/**
 	 * Render the spam-challenge block for a form.

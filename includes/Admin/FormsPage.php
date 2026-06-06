@@ -43,14 +43,14 @@ final class FormsPage {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified inside.
-		$action = isset( $_GET['perform_action'] ) ? sanitize_key( wp_unslash( $_GET['perform_action'] ) ) : '';
+		$action = isset( $_GET['perffo_action'] ) ? sanitize_key( wp_unslash( $_GET['perffo_action'] ) ) : '';
 		if ( 'refresh' !== $action ) {
 			return;
 		}
 
-		check_admin_referer( 'perform_forms_refresh' );
+		check_admin_referer( 'perffo_forms_refresh' );
 		$this->indexer->invalidate();
-		wp_safe_redirect( add_query_arg( 'perform_notice', rawurlencode( __( 'Forms index refreshed.', 'perform-forms' ) ), $this->list_url() ) );
+		wp_safe_redirect( add_query_arg( 'perffo_notice', rawurlencode( __( 'Forms index refreshed.', 'perform-forms' ) ), $this->list_url() ) );
 		exit;
 	}
 
@@ -71,11 +71,11 @@ final class FormsPage {
 			add_query_arg(
 				[
 					'page'           => self::SLUG,
-					'perform_action' => 'refresh',
+					'perffo_action' => 'refresh',
 				],
 				admin_url( 'admin.php' )
 			),
-			'perform_forms_refresh'
+			'perffo_forms_refresh'
 		);
 		?>
 		<div class="wrap">
@@ -105,7 +105,7 @@ final class FormsPage {
 	 */
 	private function maybe_print_notice(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only.
-		$notice = isset( $_GET['perform_notice'] ) ? sanitize_text_field( wp_unslash( $_GET['perform_notice'] ) ) : '';
+		$notice = isset( $_GET['perffo_notice'] ) ? sanitize_text_field( wp_unslash( $_GET['perffo_notice'] ) ) : '';
 		if ( '' === $notice ) {
 			return;
 		}

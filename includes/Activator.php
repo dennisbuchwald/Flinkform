@@ -3,9 +3,9 @@
  * Plugin activation handler.
  *
  * Runs once when the plugin is activated via the WordPress admin. Phase 0
- * is a no-op — Phase 1 will create the `{prefix}_perform_submissions`
+ * is a no-op — Phase 1 will create the `{prefix}_perffo_submissions`
  * table here via dbDelta and seed the schema version option for future
- * migrations (see PERFORM_SPEC.md §4.3 / §7).
+ * migrations (see PERFFO_SPEC.md §4.3 / §7).
  *
  * @package PerForm
  * @since 0.1.0

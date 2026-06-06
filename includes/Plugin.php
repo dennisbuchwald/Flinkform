@@ -73,19 +73,19 @@ final class Plugin {
 			)
 		)->register();
 
-		// Notifications subscribe to perform_after_submission. Registered
+		// Notifications subscribe to perffo_after_submission. Registered
 		// unconditionally — even REST-context saves should mail the admin.
 		( new Notifications\Mailer() )->register();
 
 		// Webhooks are owned by PerForm Pro (REST CRUD, cron dispatcher,
 		// submission listener, the delivery tables + the Webhook Log page).
 		// Pro wires the whole subsystem via the bridge's
-		// perform_register_modules hook and owns its own DB schema + cron
+		// perffo_register_modules hook and owns its own DB schema + cron
 		// lifecycle. The free core ships no webhook code.
 
 		// SMTP transport is owned by PerForm Pro — it registers the Transport
 		// (phpmailer_init overrides + conflict detection) via the bridge's
-		// perform_register_modules hook. The free core sends mail through the
+		// perffo_register_modules hook. The free core sends mail through the
 		// WordPress default (wp_mail) transport.
 
 		// GDPR / DSGVO privacy integration — privacy-policy content,
@@ -120,7 +120,7 @@ final class Plugin {
 		 *
 		 * @since 0.2.0
 		 */
-		do_action( 'perform_register_modules' );
+		do_action( 'perffo_register_modules' );
 	}
 
 	/**

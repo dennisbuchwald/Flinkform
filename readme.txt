@@ -4,28 +4,24 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.2.9
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Block-native forms for WordPress — conditional logic, accessible, and free.
+Block-native form builder for the WordPress Block Editor — theme.json styling, conditional logic, Interactivity API.
 
 == Description ==
 
-**PerForm Forms** builds forms the way WordPress should have done it from the start — inside the Block Editor, with the Interactivity API, no separate admin UI.
+PerForm Forms is a form builder that lives entirely inside the WordPress Block Editor. Forms are composed from native blocks (`block.json` v3), styled through `theme.json` design tokens, and powered by the Interactivity API — no separate admin UI, no shortcodes, no jQuery.
 
-= The standard =
+= How it works =
 
-If a first-time user cannot build and publish a working contact form in under 5 minutes without reading any documentation, we have failed.
-
-= What makes PerForm different =
-
-* **Native, not bolted on** — built inside the WordPress Block Editor with `block.json` and the Interactivity API, not in a separate admin UI
-* **Beautiful by default** — forms inherit your theme's typography, colours and spacing automatically via theme.json
+* **Block Editor native** — forms are built with `block.json` and the Interactivity API, directly inside the editor
+* **theme.json styling** — forms inherit your theme's typography, colours and spacing automatically
 * **Modern stack** — WordPress 6.5+, PHP 8.1+, no jQuery, frontend JS under 15 KB gzipped
 * **Conditional logic** — show/hide fields based on user input, included in the free core
 * **WCAG 2.1 AA** — full keyboard navigation, screen-reader compatible, aria-live announcements
-* **Privacy by design** — no external services, no tracking cookies, no IP tracking. Everything stays on your server
+* **Privacy by design** — no external services, no tracking cookies, no IP tracking — everything stays on your server
 
 = Features (free core) =
 
@@ -116,6 +112,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 == Changelog ==
 
+= 0.3.0 =
+* Renamed all WordPress-global prefixes from `perform_` to `perffo_` (constants, options, transients, hooks, form fields, script/style handles, menu slugs) to satisfy WordPress.org naming requirements
+* Revised readme description to remove promotional language
+
 = 0.2.9 =
 * WordPress.org Plugin Check pass: documented the safe direct custom-table queries, fixed admin sort-order input handling, sanitised spam/honeypot inputs — no functional change
 * Resolved all Plugin Check errors and warnings (output escaping is handled internally; queries are prepared)
@@ -128,7 +128,7 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 = 0.2.7 =
 * Architecture refactor: the core stays fully free (incl. multi-step + conditional logic); integration features (webhooks, SMTP, CSV export) were factored out of the core
-* Privacy: full WordPress privacy-tools integration (exporter + eraser); accurate disclosure of the single strictly-necessary `perform_flash` cookie
+* Privacy: full WordPress privacy-tools integration (exporter + eraser); accurate disclosure of the single strictly-necessary `perffo_flash` cookie
 * Accessibility: broader `prefers-reduced-motion` coverage; required spam-math fallback for no-JS visitors
 * Hardening: defence-in-depth against mail-header injection; open-redirect-safe thank-you redirects
 * Numerous internal correctness, security and standards improvements
@@ -151,11 +151,11 @@ Multi-step and conditional logic stay in the free core; integration features (we
 PerForm is built with privacy by default. Here is what the free core does and does not do:
 
 **What the free core stores:**
-* Form submissions (the field values visitors enter) in a dedicated database table (`{prefix}perform_submissions`)
+* Form submissions (the field values visitors enter) in a dedicated database table (`{prefix}perffo_submissions`)
 
 **What the free core does NOT do:**
 * It stores no IP addresses and no browser user-agent strings
-* It sets no tracking, analytics or marketing cookies. PerForm sets exactly one strictly-necessary cookie — `perform_flash` (lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload
+* It sets no tracking, analytics or marketing cookies. PerForm sets exactly one strictly-necessary cookie — `perffo_flash` (lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload
 * It contacts no external service
 
 **Data deletion:**

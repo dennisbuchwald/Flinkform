@@ -184,11 +184,11 @@ final class SubmissionsListTable extends \WP_List_Table {
 			],
 			admin_url( 'admin.php' )
 		);
-		$delete_nonce = wp_create_nonce( 'perform_delete_' . $id );
+		$delete_nonce = wp_create_nonce( 'perffo_delete_' . $id );
 		$delete_url   = add_query_arg(
 			[
 				'page'           => Menu::PARENT_SLUG,
-				'perform_action' => 'delete',
+				'perffo_action' => 'delete',
 				'id'             => $id,
 				'_wpnonce'       => $delete_nonce,
 			],
@@ -387,7 +387,7 @@ final class SubmissionsListTable extends \WP_List_Table {
 			 *
 			 * @param array<string, string> $current Active filter values (form_id, status, date_from, date_to, search).
 			 */
-			do_action( 'perform_submissions_table_actions', $current );
+			do_action( 'perffo_submissions_table_actions', $current );
 			?>
 		</div>
 		<?php

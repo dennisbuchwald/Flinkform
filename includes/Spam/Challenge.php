@@ -31,7 +31,7 @@
  * The token alone is a *witness* (a valid HMAC over a payload) — it
  * doesn't prove it hasn't been used before. The `n` field is a per-
  * issue random identifier; on successful verify we set a transient
- * `perform_spam_used_<n>` for the remaining token TTL. A replay of
+ * `perffo_spam_used_<n>` for the remaining token TTL. A replay of
  * the same token within the TTL window finds the transient and is
  * rejected. After the TTL expires the transient self-cleans, which
  * is fine because the underlying token is also expired by then.
@@ -213,7 +213,7 @@ final class Challenge {
 
 		// Replay-guard: a successful verify burns the token. If
 		// the transient is already set, this is a replay attempt.
-		$used_key = 'perform_spam_used_' . md5( (string) ( $payload['n'] ?? '' ) );
+		$used_key = 'perffo_spam_used_' . md5( (string) ( $payload['n'] ?? '' ) );
 		if ( false !== get_transient( $used_key ) ) {
 			return false;
 		}

@@ -77,7 +77,7 @@ final class Registry {
 	 * Register every PerForm block from its compiled `block.json` directory.
 	 *
 	 * The free core's blocks live under its own `/build`. The map is exposed
-	 * through `perform_block_dirs` so the Pro add-on can append its blocks
+	 * through `perffo_block_dirs` so the Pro add-on can append its blocks
 	 * (e.g. Pro field types) pointing at the *add-on's* build directory — Pro
 	 * block code never ships inside the free core. Keys are block slugs (used
 	 * to de-duplicate), values are absolute paths to the directory holding the
@@ -97,7 +97,7 @@ final class Registry {
 				continue;
 			}
 
-			$dirs[ $block ] = PERFORM_PLUGIN_DIR . 'build/' . $block;
+			$dirs[ $block ] = PERFFO_PLUGIN_DIR . 'build/' . $block;
 		}
 
 		/**
@@ -107,7 +107,7 @@ final class Registry {
 		 *
 		 * @param array<string, string> $dirs Map of block slug => absolute path to the block.json directory.
 		 */
-		$dirs = (array) apply_filters( 'perform_block_dirs', $dirs );
+		$dirs = (array) apply_filters( 'perffo_block_dirs', $dirs );
 
 		foreach ( $dirs as $path ) {
 			if ( is_string( $path ) && is_dir( $path ) ) {

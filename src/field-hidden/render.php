@@ -33,6 +33,6 @@ $resolved     = \PerForm\Fields\HiddenResolver::resolve( $source, $static_value 
 ?>
 <input
 	type="hidden"
-	name="perform_field[<?php echo esc_attr( $field_name ); ?>]"
+	name="perffo_field[<?php echo esc_attr( $field_name ); ?>]"
 	value="<?php echo esc_attr( $resolved ); ?>"
 />

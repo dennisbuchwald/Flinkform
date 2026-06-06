@@ -43,7 +43,7 @@ final class SubmissionsPage {
 	 * Handle mutating actions early, before headers go out.
 	 *
 	 * Single-row actions and the CSV export ship with their own per-action
-	 * nonces in the URL (`perform_action=...`). Bulk actions arrive via
+	 * nonces in the URL (`perffo_action=...`). Bulk actions arrive via
 	 * WP_List_Table's outer form using the standard `action`/`action2`
 	 * pair plus the `bulk-submissions` nonce.
 	 *
@@ -55,7 +55,7 @@ final class SubmissionsPage {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified inside each branch.
-		$single_action = isset( $_GET['perform_action'] ) ? sanitize_key( wp_unslash( $_GET['perform_action'] ) ) : '';
+		$single_action = isset( $_GET['perffo_action'] ) ? sanitize_key( wp_unslash( $_GET['perffo_action'] ) ) : '';
 		if ( '' !== $single_action ) {
 			$this->handle_single_action( $single_action );
 			return;
@@ -126,7 +126,7 @@ final class SubmissionsPage {
 			<form method="get">
 				<input type="hidden" name="page" value="<?php echo esc_attr( Menu::PARENT_SLUG ); ?>" />
 				<?php
-				$table->search_box( __( 'Search submissions', 'perform-forms' ), 'perform-submissions-search' );
+				$table->search_box( __( 'Search submissions', 'perform-forms' ), 'perffo-submissions-search' );
 				$table->display();
 				?>
 			</form>
@@ -169,21 +169,21 @@ final class SubmissionsPage {
 			? (string) $live_form['title']
 			: (string) ( $meta['form_title'] ?? '' );
 
-		$delete_nonce = wp_create_nonce( 'perform_delete_' . $id );
+		$delete_nonce = wp_create_nonce( 'perffo_delete_' . $id );
 		$delete_url   = add_query_arg(
 			[
 				'page'           => Menu::PARENT_SLUG,
-				'perform_action' => 'delete',
+				'perffo_action' => 'delete',
 				'id'             => $id,
 				'_wpnonce'       => $delete_nonce,
 			],
 			admin_url( 'admin.php' )
 		);
-		$toggle_nonce = wp_create_nonce( 'perform_status_' . $id );
+		$toggle_nonce = wp_create_nonce( 'perffo_status_' . $id );
 		$toggle_url   = add_query_arg(
 			[
 				'page'           => Menu::PARENT_SLUG,
-				'perform_action' => 'mark_unread',
+				'perffo_action' => 'mark_unread',
 				'id'             => $id,
 				'_wpnonce'       => $toggle_nonce,
 			],
@@ -259,7 +259,7 @@ final class SubmissionsPage {
 			 *
 			 * @param int $id Submission id.
 			 */
-			do_action( 'perform_submission_detail_after', $id );
+			do_action( 'perffo_submission_detail_after', $id );
 			?>
 
 			<p class="perform-detail__actions">
@@ -373,7 +373,7 @@ final class SubmissionsPage {
 	 * filter-bar button via the bridge layer, so the free core no longer
 	 * routes an 'export' action here.
 	 *
-	 * @param string $action The `perform_action` query arg.
+	 * @param string $action The `perffo_action` query arg.
 	 * @return void
 	 */
 	private function handle_single_action( string $action ): void {
@@ -385,7 +385,7 @@ final class SubmissionsPage {
 				if ( 0 === $id ) {
 					return;
 				}
-				check_admin_referer( 'perform_delete_' . $id );
+				check_admin_referer( 'perffo_delete_' . $id );
 				$this->repository->delete( $id );
 				$this->redirect_with_notice( __( 'Submission deleted.', 'perform-forms' ) );
 				break;
@@ -393,7 +393,7 @@ final class SubmissionsPage {
 				if ( 0 === $id ) {
 					return;
 				}
-				check_admin_referer( 'perform_status_' . $id );
+				check_admin_referer( 'perffo_status_' . $id );
 				$this->repository->update_status( $id, 'unread' );
 				$this->redirect_with_notice( __( 'Submission marked as unread.', 'perform-forms' ) );
 				break;
@@ -407,7 +407,7 @@ final class SubmissionsPage {
 	 */
 	private function maybe_print_notice(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only flash message.
-		$notice = isset( $_GET['perform_notice'] ) ? sanitize_text_field( wp_unslash( $_GET['perform_notice'] ) ) : '';
+		$notice = isset( $_GET['perffo_notice'] ) ? sanitize_text_field( wp_unslash( $_GET['perffo_notice'] ) ) : '';
 		if ( '' === $notice ) {
 			return;
 		}
@@ -426,7 +426,7 @@ final class SubmissionsPage {
 	private function redirect_with_notice( string $notice ): void {
 		$url = $this->list_url();
 		if ( '' !== $notice ) {
-			$url = add_query_arg( 'perform_notice', rawurlencode( $notice ), $url );
+			$url = add_query_arg( 'perffo_notice', rawurlencode( $notice ), $url );
 		}
 		wp_safe_redirect( $url );
 		exit;

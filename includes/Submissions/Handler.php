@@ -2,7 +2,7 @@
 /**
  * Form submission handler.
  *
- * Hooks `admin-post.php?action=perform_submit` (both logged-in and nopriv
+ * Hooks `admin-post.php?action=perffo_submit` (both logged-in and nopriv
  * variants) and walks every incoming submission through the same gauntlet:
  * nonce → honeypot → time-check → field validation → persist → redirect.
  *
@@ -27,17 +27,17 @@ use PerForm\Forms\Locator;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Processes POSTs to admin-post.php?action=perform_submit.
+ * Processes POSTs to admin-post.php?action=perffo_submit.
  */
 final class Handler {
 
-	private const ACTION             = 'perform_submit';
-	private const NONCE_FIELD        = '_perform_nonce';
-	private const HONEYPOT_FIELD     = 'perform_hp';
-	private const TIMESTAMP_FIELD    = 'perform_ts';
+	private const ACTION             = 'perffo_submit';
+	private const NONCE_FIELD        = '_perffo_nonce';
+	private const HONEYPOT_FIELD     = 'perffo_hp';
+	private const TIMESTAMP_FIELD    = 'perffo_ts';
 	private const MIN_FILL_SECONDS   = 2;
 	private const FLASH_TTL_SECONDS  = 60;
-	private const FLASH_COOKIE_NAME  = 'perform_flash';
+	private const FLASH_COOKIE_NAME  = 'perffo_flash';
 
 	/**
 	 * Errors for the form currently being rendered.
@@ -87,8 +87,8 @@ final class Handler {
 	 */
 	public function handle(): void {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce is checked below explicitly.
-		$form_id = isset( $_POST['perform_form_id'] ) ? sanitize_text_field( wp_unslash( $_POST['perform_form_id'] ) ) : '';
-		$post_id = isset( $_POST['perform_post_id'] ) ? absint( wp_unslash( $_POST['perform_post_id'] ) ) : 0;
+		$form_id = isset( $_POST['perffo_form_id'] ) ? sanitize_text_field( wp_unslash( $_POST['perffo_form_id'] ) ) : '';
+		$post_id = isset( $_POST['perffo_post_id'] ) ? absint( wp_unslash( $_POST['perffo_post_id'] ) ) : 0;
 		// phpcs:enable
 
 		if ( '' === $form_id || 0 === $post_id ) {
@@ -97,7 +97,7 @@ final class Handler {
 
 		// Nonce — the only check whose failure we surface as 403, because
 		// it usually means a real human ran into a caching/session issue.
-		if ( ! check_admin_referer( 'perform_submit_' . $form_id, self::NONCE_FIELD ) ) {
+		if ( ! check_admin_referer( 'perffo_submit_' . $form_id, self::NONCE_FIELD ) ) {
 			wp_die(
 				esc_html__( 'Security check failed. Please go back and try again.', 'perform-forms' ),
 				esc_html__( 'Submission rejected', 'perform-forms' ),
@@ -199,7 +199,7 @@ final class Handler {
 		 * @param string               $form_id UUID of the form.
 		 * @param array<string, mixed> $clean   Sanitised, validated values keyed by field name.
 		 */
-		do_action( 'perform_before_submission', $form_id, $clean );
+		do_action( 'perffo_before_submission', $form_id, $clean );
 
 		// Compose the self-contained payload. Storing labels and types
 		// alongside the values means each submission stays readable in the
@@ -238,7 +238,7 @@ final class Handler {
 		 * The primary integration point for notifications, webhooks, CRM
 		 * sync, and anything else that should happen exactly once per
 		 * accepted submission. Spam-rejected submissions never reach this
-		 * hook (see perform_before_submission for the same guarantee).
+		 * hook (see perffo_before_submission for the same guarantee).
 		 *
 		 * Pure action hook — listeners cannot cancel the success redirect.
 		 * The submission row is already committed by the time this fires,
@@ -251,7 +251,7 @@ final class Handler {
 		 * @param array<string, mixed> $clean         Sanitised values keyed by field name.
 		 * @param array{attributes: array<string, mixed>, fields: array<int, array<string, mixed>>} $form_def Authoritative form definition from the source post.
 		 */
-		do_action( 'perform_after_submission', $submission_id, $form_id, $clean, $definition );
+		do_action( 'perffo_after_submission', $submission_id, $form_id, $clean, $definition );
 
 		$this->redirect_success( $post_id, $form_id, $form_attrs, $submission_id );
 	}
@@ -370,7 +370,7 @@ final class Handler {
 	 */
 	private function validate( array $fields ): array {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce validated by caller; each value is sanitised per field type in the loop below.
-		$raw = isset( $_POST['perform_field'] ) && is_array( $_POST['perform_field'] ) ? wp_unslash( $_POST['perform_field'] ) : [];
+		$raw = isset( $_POST['perffo_field'] ) && is_array( $_POST['perffo_field'] ) ? wp_unslash( $_POST['perffo_field'] ) : [];
 
 		$clean  = [];
 		$errors = [];
@@ -597,7 +597,7 @@ final class Handler {
 	 * @return string
 	 */
 	private function flash_key( string $token, string $form_id ): string {
-		return 'perform_flash_' . md5( $token . '|' . $form_id );
+		return 'perffo_flash_' . md5( $token . '|' . $form_id );
 	}
 
 	/**
@@ -619,15 +619,15 @@ final class Handler {
 	 *
 	 *   1. afterSubmit.behaviour === 'redirect' AND a non-empty
 	 *      redirectUrl is set:
-	 *        a. Build URL with optional `?perform_submission_id` /
-	 *           `?perform_form_id` query args.
+	 *        a. Build URL with optional `?perffo_submission_id` /
+	 *           `?perffo_form_id` query args.
 	 *        b. Run through wp_safe_redirect() — same-origin-only by
 	 *           default; external URLs are silently filtered to the
 	 *           home URL by WordPress core. The author-facing copy in
 	 *           the inspector documents this so it's not a surprise.
 	 *        c. On success, exit.
 	 *   2. Fall through to the legacy "redirect back to source post
-	 *      with ?perform_status=success" behaviour. Used when the
+	 *      with ?perffo_status=success" behaviour. Used when the
 	 *      author kept the default behaviour, when a redirect URL
 	 *      was rejected by safe-redirect (returns false), or when the
 	 *      handler runs from a code path that didn't pass form
@@ -673,8 +673,8 @@ final class Handler {
 
 		$url = add_query_arg(
 			[
-				'perform_status' => 'success',
-				'perform_form'   => $form_id,
+				'perffo_status' => 'success',
+				'perffo_form'   => $form_id,
 			],
 			get_permalink( $post_id ) ?: home_url( '/' )
 		);
@@ -688,8 +688,8 @@ final class Handler {
 	 *
 	 * Leaves the URL alone if it already contains the metadata
 	 * args — defensive against an author who hand-rolled the URL
-	 * with `?perform_submission_id=` already in it (rare but
-	 * possible) so we don't end up with `?perform_submission_id=1&perform_submission_id=2`.
+	 * with `?perffo_submission_id=` already in it (rare but
+	 * possible) so we don't end up with `?perffo_submission_id=1&perffo_submission_id=2`.
 	 *
 	 * @param string                 $raw_url
 	 * @param array<string, mixed>   $after_submit
@@ -700,11 +700,11 @@ final class Handler {
 	private function build_redirect_url( string $raw_url, array $after_submit, string $form_id, ?int $submission_id ): string {
 		$args = [];
 
-		if ( ! empty( $after_submit['appendSubmissionId'] ) && null !== $submission_id && ! str_contains( $raw_url, 'perform_submission_id=' ) ) {
-			$args['perform_submission_id'] = $submission_id;
+		if ( ! empty( $after_submit['appendSubmissionId'] ) && null !== $submission_id && ! str_contains( $raw_url, 'perffo_submission_id=' ) ) {
+			$args['perffo_submission_id'] = $submission_id;
 		}
-		if ( ! empty( $after_submit['appendFormId'] ) && ! str_contains( $raw_url, 'perform_form_id=' ) ) {
-			$args['perform_form_id'] = $form_id;
+		if ( ! empty( $after_submit['appendFormId'] ) && ! str_contains( $raw_url, 'perffo_form_id=' ) ) {
+			$args['perffo_form_id'] = $form_id;
 		}
 
 		if ( empty( $args ) ) {
@@ -724,8 +724,8 @@ final class Handler {
 	private function redirect_error( int $post_id, string $form_id ): void {
 		$url = add_query_arg(
 			[
-				'perform_status' => 'error',
-				'perform_form'   => $form_id,
+				'perffo_status' => 'error',
+				'perffo_form'   => $form_id,
 			],
 			get_permalink( $post_id ) ?: home_url( '/' )
 		);
@@ -787,7 +787,7 @@ final class Handler {
 			return [];
 		}
 
-		$key  = 'perform_flash_' . md5( $token . '|' . $form_id );
+		$key  = 'perffo_flash_' . md5( $token . '|' . $form_id );
 		$data = get_transient( $key );
 		if ( ! is_array( $data ) ) {
 			$consumed[ $form_id ] = [];
