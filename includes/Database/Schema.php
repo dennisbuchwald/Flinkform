@@ -13,6 +13,7 @@
 
 declare( strict_types = 1 );
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace PerForm\Database;
 
 defined( 'ABSPATH' ) || exit;

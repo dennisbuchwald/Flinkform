@@ -52,6 +52,7 @@ declare( strict_types = 1 );
 
 defined( 'ABSPATH' ) || exit;
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace PerForm\Spam;
 
 /**

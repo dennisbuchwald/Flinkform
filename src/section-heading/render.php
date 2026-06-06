@@ -14,6 +14,8 @@ declare( strict_types = 1 );
 
 defined( 'ABSPATH' ) || exit;
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 $title       = isset( $attributes['title'] ) && is_string( $attributes['title'] ) ? $attributes['title'] : '';
 $description = isset( $attributes['description'] ) && is_string( $attributes['description'] ) ? $attributes['description'] : '';
 $full_width  = ! empty( $attributes['fullWidth'] );

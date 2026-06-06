@@ -19,6 +19,8 @@ declare( strict_types = 1 );
 
 defined( 'ABSPATH' ) || exit;
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 $form_id     = isset( $block->context['perform/formId'] ) ? (string) $block->context['perform/formId'] : '';
 $consent_txt = isset( $attributes['consentText'] ) && is_string( $attributes['consentText'] ) ? $attributes['consentText'] : '';
 $link_pp     = ! empty( $attributes['linkPrivacyPolicy'] );

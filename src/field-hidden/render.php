@@ -16,6 +16,8 @@ declare( strict_types = 1 );
 
 defined( 'ABSPATH' ) || exit;
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 $form_id    = isset( $block->context['perform/formId'] ) ? (string) $block->context['perform/formId'] : '';
 $field_name = isset( $attributes['fieldName'] ) && is_string( $attributes['fieldName'] ) ? $attributes['fieldName'] : '';
 

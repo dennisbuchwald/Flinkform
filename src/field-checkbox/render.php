@@ -13,6 +13,8 @@ declare( strict_types = 1 );
 
 defined( 'ABSPATH' ) || exit;
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 $form_id    = isset( $block->context['perform/formId'] ) ? (string) $block->context['perform/formId'] : '';
 $label      = isset( $attributes['label'] ) && is_string( $attributes['label'] ) ? $attributes['label'] : '';
 $required   = ! empty( $attributes['required'] );

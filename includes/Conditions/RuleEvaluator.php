@@ -45,6 +45,7 @@
 
 declare( strict_types = 1 );
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace PerForm\Conditions;
 
 defined( 'ABSPATH' ) || exit;
