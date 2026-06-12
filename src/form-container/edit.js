@@ -30,7 +30,7 @@ import {
 } from '@wordpress/components';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
-const ALLOWED_BLOCKS = [
+const CORE_ALLOWED_BLOCKS = [
 	'flinkform/section-heading',
 	'flinkform/page-break',
 	'flinkform/field-text',
@@ -47,6 +47,15 @@ const ALLOWED_BLOCKS = [
 	'flinkform/field-hidden',
 	'flinkform/field-consent',
 ];
+
+// Bridge seam: add-ons append their field blocks (e.g. Pro's file upload)
+// via this JS filter — same mechanism as the inspector-panels seam below.
+// Evaluated lazily (at render time, not import time) so the result doesn't
+// depend on script load order between the core and add-on editor bundles.
+function getAllowedBlocks() {
+	const filtered = applyFilters( 'flinkform.formContainer.allowedBlocks', CORE_ALLOWED_BLOCKS );
+	return Array.isArray( filtered ) && filtered.length > 0 ? filtered : CORE_ALLOWED_BLOCKS;
+}
 
 const TEMPLATE = [
 	[ 'flinkform/field-text', { label: __( 'Name', 'flinkform' ), required: true } ],
@@ -776,7 +785,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</div>
 				) }
 				<InnerBlocks
-					allowedBlocks={ ALLOWED_BLOCKS }
+					allowedBlocks={ getAllowedBlocks() }
 					template={ TEMPLATE }
 					templateLock={ false }
 				/>
