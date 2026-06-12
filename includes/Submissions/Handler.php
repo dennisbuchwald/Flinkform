@@ -181,6 +181,33 @@ final class Handler {
 			}
 		}
 
+		/**
+		 * Extension seam: process side-channel inputs (file uploads via
+		 * $_FILES, computed values) after field validation. Listeners may
+		 * add or rewrite entries in $clean (keyed by field name) and add
+		 * error messages to $errors — a non-empty $errors still flashes
+		 * and redirects below, exactly like a core validation failure.
+		 *
+		 * @since 0.4.0
+		 *
+		 * @param array{clean: array<string, mixed>, errors: array<string, string>} $result
+		 * @param array<string, mixed> $definition Located form definition.
+		 * @param string               $form_id    UUID of the form.
+		 */
+		$processed = apply_filters(
+			'flinkform_process_submission',
+			[
+				'clean'  => $clean,
+				'errors' => $errors,
+			],
+			$definition,
+			$form_id
+		);
+		if ( is_array( $processed ) ) {
+			$clean  = isset( $processed['clean'] ) && is_array( $processed['clean'] ) ? $processed['clean'] : $clean;
+			$errors = isset( $processed['errors'] ) && is_array( $processed['errors'] ) ? $processed['errors'] : $errors;
+		}
+
 		if ( ! empty( $errors ) ) {
 			$this->flash( $form_id, $errors, $clean );
 			$this->redirect_error( $post_id, $form_id );
@@ -471,7 +498,25 @@ final class Handler {
 				$arr = is_array( $value ) ? $value : ( '' === (string) $value ? [] : [ $value ] );
 				return array_values( array_filter( array_map( 'sanitize_text_field', array_map( 'strval', $arr ) ), static fn( $v ): bool => '' !== $v ) );
 			default:
-				return sanitize_text_field( (string) $value );
+				/**
+				 * Extension seam: add-on field types (registered via the
+				 * `flinkform_field_blocks` filter) sanitise their values
+				 * here. The default is the text-field treatment, so a
+				 * listener that doesn't recognise the type can return
+				 * the passed value unchanged.
+				 *
+				 * @param mixed                $sanitised Default-sanitised value.
+				 * @param string               $type      Field type.
+				 * @param mixed                $raw       Raw incoming value.
+				 * @param array<string, mixed> $field     Field definition.
+				 */
+				return apply_filters(
+					'flinkform_sanitise_field',
+					sanitize_text_field( (string) $value ),
+					$type,
+					$value,
+					$field
+				);
 		}
 	}
 
@@ -586,8 +631,27 @@ final class Handler {
 					}
 				}
 				return '';
+			case 'text':
+			case 'textarea':
+			case 'toggle':
+			case 'consent':
+			case 'hidden':
+				return '';
 		}
-		return '';
+
+		/**
+		 * Extension seam: add-on field types (registered via the
+		 * `flinkform_field_blocks` filter) validate here. Return an
+		 * sprintf-ready error template with one %s for the field label,
+		 * or '' when the value is acceptable.
+		 *
+		 * @param string               $error Error template (default '').
+		 * @param string               $type  Field type.
+		 * @param mixed                $value Sanitised value.
+		 * @param array<string, mixed> $field Field definition.
+		 */
+		$external = apply_filters( 'flinkform_validate_field', '', $type, $value, $field );
+		return is_string( $external ) ? $external : '';
 	}
 
 	/**

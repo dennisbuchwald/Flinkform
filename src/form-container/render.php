@@ -404,6 +404,7 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 		class="flinkform-form__form"
 		method="post"
 		action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"
+		enctype="multipart/form-data"
 		novalidate
 		<?php if ( $is_multi_step ) : ?>
 			data-wp-on--submit="actions.submitGuard"

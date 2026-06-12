@@ -62,6 +62,37 @@ final class Locator {
 	];
 
 	/**
+	 * Memoised block-name → field-type map, extension seam included.
+	 *
+	 * @var array<string, string>|null
+	 */
+	private ?array $field_blocks_cache = null;
+
+	/**
+	 * Block-name → field-type map with the Pro/extension seam applied.
+	 *
+	 * Add-ons register additional field blocks (file upload, rating, …)
+	 * via the `flinkform_field_blocks` filter. A registered type flows
+	 * through the whole pipeline: the Handler's sanitise/validate filters
+	 * (`flinkform_sanitise_field` / `flinkform_validate_field`) handle the
+	 * type-specific behaviour. Part of the frozen bridge contract — see
+	 * includes/Bridge/README.md.
+	 *
+	 * @return array<string, string>
+	 */
+	private function field_blocks(): array {
+		if ( null === $this->field_blocks_cache ) {
+			$map = apply_filters( 'flinkform_field_blocks', self::FIELD_BLOCKS );
+
+			// Defensive: a broken listener must not knock out the core map.
+			$this->field_blocks_cache = is_array( $map ) && ! empty( $map )
+				? array_merge( self::FIELD_BLOCKS, array_map( 'strval', $map ) )
+				: self::FIELD_BLOCKS;
+		}
+		return $this->field_blocks_cache;
+	}
+
+	/**
 	 * Locate a form's attributes + field list inside a post.
 	 *
 	 * Returns null when the post does not contain a matching form block.
@@ -166,7 +197,7 @@ final class Locator {
 				continue;
 			}
 
-			if ( ! isset( self::FIELD_BLOCKS[ $block_name ] ) ) {
+			if ( ! isset( $this->field_blocks()[ $block_name ] ) ) {
 				continue;
 			}
 
@@ -176,7 +207,7 @@ final class Locator {
 				continue;
 			}
 
-			$type    = self::FIELD_BLOCKS[ $block_name ];
+			$type    = $this->field_blocks()[ $block_name ];
 			$record  = [
 				'name'             => $name,
 				'type'             => $type,
@@ -303,7 +334,20 @@ final class Locator {
 					'staticValue' => isset( $attrs['staticValue'] ) && is_string( $attrs['staticValue'] ) ? $attrs['staticValue'] : '',
 				];
 		}
-		return [];
+
+		/**
+		 * Extension seam: add-on field types carry their block attributes
+		 * into the field definition here (e.g. allowed extensions + max
+		 * size for a file field). Must return an array of extra keys to
+		 * merge into the field record.
+		 *
+		 * @param array<string, mixed> $extras     Extra field-record keys (default []).
+		 * @param string               $type       Field type from flinkform_field_blocks.
+		 * @param string               $block_name Source block name.
+		 * @param array<string, mixed> $attrs      Raw block attributes.
+		 */
+		$extras = apply_filters( 'flinkform_field_extras', [], $type, $block_name, $attrs );
+		return is_array( $extras ) ? $extras : [];
 	}
 
 	/**

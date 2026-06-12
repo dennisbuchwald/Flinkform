@@ -109,6 +109,30 @@ on `enqueue_block_editor_assets`) attaches via `wp.hooks.addFilter`.
 
 ---
 
+### 7. Custom field types (filters) — cut in 0.4.0
+
+Four seams that together let an add-on ship a complete field type (file
+upload, rating, signature, …) without touching the core:
+
+- **`flinkform_field_blocks` (filter)** — `Forms\Locator`. Map of
+  `block name → field type string`. Registering here makes the Locator treat
+  the block as a value-bearing field (it flows into validation + persistence).
+- **`flinkform_field_extras` (filter)** — `Forms\Locator::type_extras()`.
+  Carry block attributes (allowed extensions, max size, …) into the field
+  definition for unknown types. Args: `($extras, $type, $block_name, $attrs)`.
+- **`flinkform_sanitise_field` (filter)** — `Submissions\Handler::sanitise()`
+  default branch. Args: `($sanitised, $type, $raw, $field)`.
+- **`flinkform_validate_field` (filter)** — `Submissions\Handler::validate_type()`
+  fallthrough. Return an sprintf-ready error template (`%s` = label) or `''`.
+- **`flinkform_process_submission` (filter)** — `Submissions\Handler::handle()`,
+  after field validation, before the error gate. Receives
+  `['clean' => …, 'errors' => …]` plus `($definition, $form_id)`; listeners
+  process side-channel input (`$_FILES`!) and may rewrite `clean` / add
+  `errors`. The form element always posts `multipart/form-data`, so file
+  inputs work without core changes.
+
+---
+
 ## Planned extension points (not yet cut — added when Pro needs them)
 
 Adding these later is contract-compliant (additive). Listed here so the shape is
