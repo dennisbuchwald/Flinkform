@@ -50,6 +50,9 @@ final class Locator {
 		'flinkform/field-email'    => 'email',
 		'flinkform/field-textarea' => 'textarea',
 		'flinkform/field-number'   => 'number',
+		'flinkform/field-date'     => 'date',
+		'flinkform/field-url'      => 'url',
+		'flinkform/field-phone'    => 'phone',
 		'flinkform/field-toggle'   => 'toggle',
 		'flinkform/field-hidden'   => 'hidden',
 		'flinkform/field-select'   => 'select',
@@ -278,6 +281,11 @@ final class Locator {
 					'min'  => isset( $attrs['min'] ) && '' !== $attrs['min'] ? (string) $attrs['min'] : '',
 					'max'  => isset( $attrs['max'] ) && '' !== $attrs['max'] ? (string) $attrs['max'] : '',
 					'step' => isset( $attrs['step'] ) && '' !== $attrs['step'] ? (string) $attrs['step'] : '',
+				];
+			case 'date':
+				return [
+					'minDate' => isset( $attrs['minDate'] ) && is_string( $attrs['minDate'] ) ? $attrs['minDate'] : '',
+					'maxDate' => isset( $attrs['maxDate'] ) && is_string( $attrs['maxDate'] ) ? $attrs['maxDate'] : '',
 				];
 			case 'select':
 				return [

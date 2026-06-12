@@ -37,11 +37,15 @@ const ALLOWED_BLOCKS = [
 	'flinkform/field-email',
 	'flinkform/field-textarea',
 	'flinkform/field-number',
+	'flinkform/field-date',
+	'flinkform/field-url',
+	'flinkform/field-phone',
 	'flinkform/field-select',
 	'flinkform/field-radio',
 	'flinkform/field-checkbox',
 	'flinkform/field-toggle',
 	'flinkform/field-hidden',
+	'flinkform/field-consent',
 ];
 
 const TEMPLATE = [

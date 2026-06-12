@@ -1,0 +1,59 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "flinkform/field-url",
+	"version": "0.1.0",
+	"title": "URL Field",
+	"category": "flinkform",
+	"icon": "admin-links",
+	"description": "A website URL input with format validation.",
+	"keywords": [
+		"url", "website", "link",
+		"input",
+		"field"
+	],
+	"textdomain": "flinkform",
+	"parent": [
+		"flinkform/form"
+	],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Website"
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"fullWidth": {
+			"type": "boolean",
+			"default": false
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"usesContext": [
+		"flinkform/formId",
+		"flinkform/appearance"
+	],
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

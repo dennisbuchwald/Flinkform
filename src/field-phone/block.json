@@ -1,0 +1,59 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "flinkform/field-phone",
+	"version": "0.1.0",
+	"title": "Phone Field",
+	"category": "flinkform",
+	"icon": "phone",
+	"description": "A phone number input.",
+	"keywords": [
+		"phone", "tel", "telefon",
+		"input",
+		"field"
+	],
+	"textdomain": "flinkform",
+	"parent": [
+		"flinkform/form"
+	],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Phone"
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"fullWidth": {
+			"type": "boolean",
+			"default": false
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"usesContext": [
+		"flinkform/formId",
+		"flinkform/appearance"
+	],
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

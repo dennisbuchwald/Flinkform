@@ -444,6 +444,14 @@ final class Handler {
 		switch ( $type ) {
 			case 'email':
 				return sanitize_email( (string) $value );
+			case 'url':
+				return esc_url_raw( trim( (string) $value ) );
+			case 'date':
+				return sanitize_text_field( trim( (string) $value ) );
+			case 'phone':
+				// Keep only characters that appear in real-world phone
+				// notation; everything else (letters, markup) is stripped.
+				return trim( (string) preg_replace( '/[^0-9+\-\/().\s]/', '', (string) $value ) );
 			case 'textarea':
 				return sanitize_textarea_field( (string) $value );
 			case 'number':
@@ -497,6 +505,49 @@ final class Handler {
 				if ( '' !== (string) $value && ! is_email( (string) $value ) ) {
 					/* translators: %s: field label */
 					return __( '%s must be a valid email address.', 'flinkform' );
+				}
+				return '';
+			case 'url':
+				$str = (string) $value;
+				if ( '' === $str ) {
+					return '';
+				}
+				$scheme = strtolower( (string) wp_parse_url( $str, PHP_URL_SCHEME ) );
+				if ( ! in_array( $scheme, [ 'http', 'https' ], true ) || false === filter_var( $str, FILTER_VALIDATE_URL ) ) {
+					/* translators: %s: field label */
+					return __( '%s must be a valid web address (https://…).', 'flinkform' );
+				}
+				return '';
+			case 'date':
+				$str = (string) $value;
+				if ( '' === $str ) {
+					return '';
+				}
+				if ( ! preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', $str, $m ) || ! checkdate( (int) $m[2], (int) $m[3], (int) $m[1] ) ) {
+					/* translators: %s: field label */
+					return __( '%s must be a valid date.', 'flinkform' );
+				}
+				$min = isset( $field['minDate'] ) && '' !== $field['minDate'] ? (string) $field['minDate'] : '';
+				$max = isset( $field['maxDate'] ) && '' !== $field['maxDate'] ? (string) $field['maxDate'] : '';
+				// Y-m-d strings compare correctly as plain strings.
+				if ( '' !== $min && $str < $min ) {
+					/* translators: %s: field label */
+					return __( '%s is before the earliest allowed date.', 'flinkform' );
+				}
+				if ( '' !== $max && $str > $max ) {
+					/* translators: %s: field label */
+					return __( '%s is after the latest allowed date.', 'flinkform' );
+				}
+				return '';
+			case 'phone':
+				$str = (string) $value;
+				if ( '' === $str ) {
+					return '';
+				}
+				$digits = (string) preg_replace( '/\D/', '', $str );
+				if ( strlen( $digits ) < 5 || strlen( $digits ) > 20 ) {
+					/* translators: %s: field label */
+					return __( '%s must be a valid phone number.', 'flinkform' );
 				}
 				return '';
 			case 'number':

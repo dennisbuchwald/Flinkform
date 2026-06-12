@@ -1,0 +1,65 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "flinkform/field-date",
+	"version": "0.1.0",
+	"title": "Date Field",
+	"category": "flinkform",
+	"icon": "calendar-alt",
+	"description": "A date picker input.",
+	"keywords": [
+		"date",
+		"datum",
+		"calendar",
+		"input",
+		"field"
+	],
+	"textdomain": "flinkform",
+	"parent": [
+		"flinkform/form"
+	],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Date"
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"fullWidth": {
+			"type": "boolean",
+			"default": false
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
+		},
+		"minDate": {
+			"type": "string",
+			"default": ""
+		},
+		"maxDate": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"usesContext": [
+		"flinkform/formId",
+		"flinkform/appearance"
+	],
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}
