@@ -382,9 +382,11 @@ if ( 1 === $step_count ) {
 	}
 }
 
-// Timestamp token — base64 of `time()`, validated server-side on submit to
-// catch bots that submit a form within microseconds of rendering it.
-$timestamp_token = base64_encode( (string) time() );
+// Timestamp token — HMAC-signed render time, validated server-side on submit
+// to catch bots that submit a form within microseconds of rendering it. The
+// signature (bound to the form UUID) prevents bots from forging an older
+// timestamp to skip the minimum-fill-time gate.
+$timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<form

@@ -114,10 +114,13 @@ final class Handler {
 			$this->redirect_success( $post_id, $form_id );
 		}
 
-		// Time-check — render-to-submit faster than humans can read.
+		// Time-check — render-to-submit faster than humans can read. The
+		// timestamp is HMAC-signed at render time (Challenge::mint_timestamp)
+		// so a bot cannot forge an aged value to skip the gate; verify()
+		// returns 0 for any tampered, malformed or unsigned token.
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already validated above.
-		$ts_raw  = isset( $_POST[ self::TIMESTAMP_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::TIMESTAMP_FIELD ] ) ) : '';
-		$ts_decoded = (int) base64_decode( $ts_raw, true );
+		$ts_raw     = isset( $_POST[ self::TIMESTAMP_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::TIMESTAMP_FIELD ] ) ) : '';
+		$ts_decoded = \Flinkform\Spam\Challenge::verify_timestamp( $ts_raw, $form_id );
 		if ( $ts_decoded <= 0 || ( time() - $ts_decoded ) < self::MIN_FILL_SECONDS ) {
 			$this->silent_reject();
 		}

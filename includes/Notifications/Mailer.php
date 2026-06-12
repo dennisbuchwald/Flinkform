@@ -67,6 +67,7 @@ final class Mailer {
 		// injection via a merge-tagged Reply-To (is_email() + PHPMailer would
 		// also reject it, but we never want a raw newline near a mail header).
 		$reply_to = str_replace( [ "\r", "\n" ], '', trim( MergeTags::render( $config['reply_to'], $context ) ) );
+		$reply_to = sanitize_email( $reply_to );
 
 		$headers = [];
 		if ( '' !== $reply_to && is_email( $reply_to ) ) {

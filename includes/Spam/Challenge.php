@@ -305,6 +305,11 @@ final class Challenge {
 	 * @param string $answer
 	 * @return bool
 	 */
+	// SECURITY NOTE: the math answer space is small (sums of 2-9, i.e.
+	// 4-18) and offline-enumerable from a captured salt+hash pair. This
+	// fallback is intentionally lightweight — it only exists for no-JS
+	// visitors; the real gate is the PoW challenge plus the single-use
+	// replay guard, which burns a token on its first successful verify.
 	private static function verify_math( string $salt_b64, string $expected_hash, string $answer ): bool {
 		$answer = trim( $answer );
 		if ( '' === $answer || strlen( $answer ) > 4 ) {
@@ -315,6 +320,47 @@ final class Challenge {
 		}
 		$candidate = hash( 'sha256', $salt_b64 . '|' . $answer );
 		return hash_equals( $expected_hash, $candidate );
+	}
+
+	/**
+	 * Mint an HMAC-signed render timestamp for the time-check.
+	 *
+	 * The naked base64(time()) token used previously was forgeable:
+	 * a bot could submit base64(time() - 100) and always pass the
+	 * minimum-fill-time gate. Signing the epoch (bound to the form
+	 * UUID) means the value the server compares against is one it
+	 * issued itself.
+	 *
+	 * @param string $form_id
+	 * @return string "epochB64url.hmac"
+	 */
+	public static function mint_timestamp( string $form_id ): string {
+		$epoch_b64 = self::base64_url_encode( (string) time() );
+		$hmac      = hash_hmac( 'sha256', 'ts|' . $form_id . '|' . $epoch_b64, self::derive_key() );
+		return $epoch_b64 . '.' . $hmac;
+	}
+
+	/**
+	 * Verify a signed render timestamp.
+	 *
+	 * @param string $token   Value from the hidden flinkform_ts field.
+	 * @param string $form_id
+	 * @return int The embedded epoch on success, 0 on any failure.
+	 */
+	public static function verify_timestamp( string $token, string $form_id ): int {
+		$parts = explode( '.', $token, 2 );
+		if ( 2 !== count( $parts ) ) {
+			return 0;
+		}
+		[ $epoch_b64, $hmac ] = $parts;
+
+		$expected = hash_hmac( 'sha256', 'ts|' . $form_id . '|' . $epoch_b64, self::derive_key() );
+		if ( ! hash_equals( $expected, $hmac ) ) {
+			return 0;
+		}
+
+		$epoch = (int) self::base64_url_decode( $epoch_b64 );
+		return $epoch > 0 ? $epoch : 0;
 	}
 
 	/**

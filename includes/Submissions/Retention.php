@@ -54,9 +54,31 @@ final class Retention {
 	/**
 	 * Delete submissions older than each form's retention period.
 	 *
+	 * A transient lock prevents two overlapping cron runs (possible on
+	 * busy sites where a purge of a large backlog outlives the schedule
+	 * interval) from claiming the same rows.
+	 *
 	 * @return void
 	 */
 	public function purge(): void {
+		if ( false !== get_transient( 'flinkform_purge_lock' ) ) {
+			return; // A previous purge run is still in progress.
+		}
+		set_transient( 'flinkform_purge_lock', 1, HOUR_IN_SECONDS );
+
+		try {
+			$this->run_purge();
+		} finally {
+			delete_transient( 'flinkform_purge_lock' );
+		}
+	}
+
+	/**
+	 * The actual purge pass, see purge() for the lock wrapper.
+	 *
+	 * @return void
+	 */
+	private function run_purge(): void {
 		$forms = ( new Indexer() )->all();
 		$repo  = new Repository();
 
