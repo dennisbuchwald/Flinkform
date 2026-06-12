@@ -2,9 +2,9 @@
 /**
  * Conditional-logic wrapper-attribute helper.
  *
- * Renders the `data-perform-condition` HTML attribute every PerForm
+ * Renders the `data-flinkform-condition` HTML attribute every Flinkform
  * block that supports conditional logic emits on its outer wrapper —
- * the frontend JS reads the JSON back out via `dataset.performCondition`
+ * the frontend JS reads the JSON back out via `dataset.flinkformCondition`
  * and re-evaluates against current form values on every input change.
  *
  * Kept as a tiny static method so each block's `render.php` can
@@ -13,14 +13,14 @@
  * emit) or is an empty string (no rule, no attribute, no leading
  * space). Callers echo the result directly into the opening tag.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Conditions;
+namespace Flinkform\Conditions;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -30,16 +30,16 @@ defined( 'ABSPATH' ) || exit;
 final class Wrapper {
 
 	/**
-	 * Render the `data-perform-condition` attribute (with a leading
+	 * Render the `data-flinkform-condition` attribute (with a leading
 	 * space) for a block whose `conditionalLogic` is enabled. Returns
 	 * an empty string when the rule set is missing, disabled, or
 	 * carries no rules — so the block's HTML stays byte-identical to
 	 * its pre-Phase-7 output on every form that doesn't use the feature.
 	 *
 	 * @param mixed $rule_set The block's `conditionalLogic` attribute (object-shaped array, or anything).
-	 * @return string `' data-perform-condition="..."'` or `''`.
+	 * @return string `' data-flinkform-condition="..."'` or `''`.
 	 */
-	public static function data_attribute( $rule_set, string $attr_name = 'data-perform-condition' ): string {
+	public static function data_attribute( $rule_set, string $attr_name = 'data-flinkform-condition' ): string {
 		if ( ! is_array( $rule_set ) || empty( $rule_set['enabled'] ) ) {
 			return '';
 		}

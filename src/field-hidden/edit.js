@@ -6,19 +6,19 @@ import { Notice, PanelBody, SelectControl, TextControl } from '@wordpress/compon
 import { generateFieldName } from '../shared/field-name';
 
 const SOURCE_OPTIONS = [
-	{ label: __( 'Static value', 'perform-forms' ), value: 'static' },
-	{ label: __( 'Current page URL', 'perform-forms' ), value: 'current_url' },
-	{ label: __( 'Current post ID', 'perform-forms' ), value: 'current_post_id' },
-	{ label: __( 'Current user ID (0 if logged out)', 'perform-forms' ), value: 'current_user_id' },
-	{ label: __( 'Current date (Y-m-d)', 'perform-forms' ), value: 'current_date' },
-	{ label: __( 'Current date + time (ISO)', 'perform-forms' ), value: 'current_datetime' },
+	{ label: __( 'Static value', 'flinkform' ), value: 'static' },
+	{ label: __( 'Current page URL', 'flinkform' ), value: 'current_url' },
+	{ label: __( 'Current post ID', 'flinkform' ), value: 'current_post_id' },
+	{ label: __( 'Current user ID (0 if logged out)', 'flinkform' ), value: 'current_user_id' },
+	{ label: __( 'Current date (Y-m-d)', 'flinkform' ), value: 'current_date' },
+	{ label: __( 'Current date + time (ISO)', 'flinkform' ), value: 'current_datetime' },
 ];
 import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, fieldName, valueSource, staticValue } = attributes;
-	const blockProps = useBlockProps( { className: 'perform-field perform-field--hidden' } );
+	const blockProps = useBlockProps( { className: 'flinkform-field flinkform-field--hidden' } );
 
 	useEffect( () => {
 		if ( ! fieldName ) {
@@ -30,17 +30,17 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Hidden Field', 'perform-forms' ) }>
+				<PanelBody title={ __( 'Hidden Field', 'flinkform' ) }>
 					<TextControl
-						label={ __( 'Editor label', 'perform-forms' ) }
-						help={ __( 'Only shown in the editor for orientation. Not sent to visitors.', 'perform-forms' ) }
+						label={ __( 'Editor label', 'flinkform' ) }
+						help={ __( 'Only shown in the editor for orientation. Not sent to visitors.', 'flinkform' ) }
 						value={ label }
 						onChange={ ( v ) => setAttributes( { label: v } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<SelectControl
-						label={ __( 'Value source', 'perform-forms' ) }
+						label={ __( 'Value source', 'flinkform' ) }
 						value={ valueSource || 'static' }
 						options={ SOURCE_OPTIONS }
 						onChange={ ( v ) => setAttributes( { valueSource: v } ) }
@@ -49,7 +49,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					/>
 					{ valueSource === 'static' && (
 						<TextControl
-							label={ __( 'Static value', 'perform-forms' ) }
+							label={ __( 'Static value', 'flinkform' ) }
 							value={ staticValue || '' }
 							onChange={ ( v ) => setAttributes( { staticValue: v } ) }
 							__nextHasNoMarginBottom
@@ -58,12 +58,12 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					) }
 					{ valueSource !== 'static' && (
 						<Notice status="info" isDismissible={ false }>
-							{ __( 'The value is computed on the server when the form is rendered — POST values from visitors are ignored.', 'perform-forms' ) }
+							{ __( 'The value is computed on the server when the form is rendered — POST values from visitors are ignored.', 'flinkform' ) }
 						</Notice>
 					) }
 					<TextControl
-						label={ __( 'Field Name', 'perform-forms' ) }
-						help={ __( 'Key used in submission data.', 'perform-forms' ) }
+						label={ __( 'Field Name', 'flinkform' ) }
+						help={ __( 'Key used in submission data.', 'flinkform' ) }
 						value={ fieldName }
 						onChange={ ( v ) => setAttributes( { fieldName: v } ) }
 						__nextHasNoMarginBottom
@@ -75,7 +75,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			</InspectorControls>
 
 			<div { ...blockProps } style={ { padding: '8px 12px', background: '#f0f0f1', borderRadius: '4px', fontSize: '12px' } }>
-				<strong>{ __( 'Hidden:', 'perform-forms' ) }</strong> { label } <code>({ valueSource || 'static' })</code>
+				<strong>{ __( 'Hidden:', 'flinkform' ) }</strong> { label } <code>({ valueSource || 'static' })</code>
 			</div>
 		</>
 	);

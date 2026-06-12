@@ -17,7 +17,7 @@ import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, placeholder, required, helpText, fieldName, rows } = attributes;
-	const blockProps = useBlockProps( { className: 'perform-field perform-field--textarea' } );
+	const blockProps = useBlockProps( { className: 'flinkform-field flinkform-field--textarea' } );
 
 	useEffect( () => {
 		if ( ! fieldName ) {
@@ -29,29 +29,29 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Field Settings', 'perform-forms' ) }>
+				<PanelBody title={ __( 'Field Settings', 'flinkform' ) }>
 					<TextControl
-						label={ __( 'Label', 'perform-forms' ) }
+						label={ __( 'Label', 'flinkform' ) }
 						value={ label }
 						onChange={ ( v ) => setAttributes( { label: v } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TextControl
-						label={ __( 'Placeholder', 'perform-forms' ) }
+						label={ __( 'Placeholder', 'flinkform' ) }
 						value={ placeholder }
 						onChange={ ( v ) => setAttributes( { placeholder: v } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<ToggleControl
-						label={ __( 'Required', 'perform-forms' ) }
+						label={ __( 'Required', 'flinkform' ) }
 						checked={ !! required }
 						onChange={ ( v ) => setAttributes( { required: v } ) }
 						__nextHasNoMarginBottom
 					/>
 					<RangeControl
-						label={ __( 'Rows', 'perform-forms' ) }
+						label={ __( 'Rows', 'flinkform' ) }
 						value={ rows }
 						min={ 2 }
 						max={ 20 }
@@ -60,15 +60,15 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						__next40pxDefaultSize
 					/>
 					<TextControl
-						label={ __( 'Help Text', 'perform-forms' ) }
+						label={ __( 'Help Text', 'flinkform' ) }
 						value={ helpText }
 						onChange={ ( v ) => setAttributes( { helpText: v } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TextControl
-						label={ __( 'Field Name', 'perform-forms' ) }
-						help={ __( 'Key used in submission data. Auto-generated; change with care.', 'perform-forms' ) }
+						label={ __( 'Field Name', 'flinkform' ) }
+						help={ __( 'Key used in submission data. Auto-generated; change with care.', 'flinkform' ) }
 						value={ fieldName }
 						onChange={ ( v ) => setAttributes( { fieldName: v } ) }
 						__nextHasNoMarginBottom
@@ -80,18 +80,18 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<label className="perform-field__label">
+				<label className="flinkform-field__label">
 					{ label }
-					{ required && <span className="perform-field__required" aria-hidden="true"> *</span> }
+					{ required && <span className="flinkform-field__required" aria-hidden="true"> *</span> }
 				</label>
 				<textarea
-					className="perform-field__input"
+					className="flinkform-field__input"
 					placeholder={ placeholder }
 					rows={ rows }
 					disabled
 					aria-disabled="true"
 				/>
-				{ helpText && <p className="perform-field__help">{ helpText }</p> }
+				{ helpText && <p className="flinkform-field__help">{ helpText }</p> }
 			</div>
 		</>
 	);

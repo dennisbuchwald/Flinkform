@@ -2,20 +2,20 @@
 /**
  * Forms list table.
  *
- * WP_List_Table extension that powers wp-admin "PerForm → Forms". Pulls
+ * WP_List_Table extension that powers wp-admin "Flinkform → Forms". Pulls
  * the aggregate index from Forms\Indexer and presents it as a familiar
  * wp-admin grid with search, sort and per-row navigation actions.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Admin;
+namespace Flinkform\Admin;
 
-use PerForm\Forms\Indexer;
+use Flinkform\Forms\Indexer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -53,11 +53,11 @@ final class FormsListTable extends \WP_List_Table {
 	 */
 	public function get_columns(): array {
 		return [
-			'title'             => __( 'Title', 'perform-forms' ),
-			'form_id'           => __( 'Form ID', 'perform-forms' ),
-			'source'            => __( 'Source page', 'perform-forms' ),
-			'submission_count'  => __( 'Submissions', 'perform-forms' ),
-			'last_submission'   => __( 'Last submission', 'perform-forms' ),
+			'title'             => __( 'Title', 'flinkform' ),
+			'form_id'           => __( 'Form ID', 'flinkform' ),
+			'source'            => __( 'Source page', 'flinkform' ),
+			'submission_count'  => __( 'Submissions', 'flinkform' ),
+			'last_submission'   => __( 'Last submission', 'flinkform' ),
 		];
 	}
 
@@ -149,7 +149,7 @@ final class FormsListTable extends \WP_List_Table {
 	 * @return void
 	 */
 	public function no_items(): void {
-		esc_html_e( 'No forms found. Add a PerForm Form block to a page to get started.', 'perform-forms' );
+		esc_html_e( 'No forms found. Add a Flinkform Form block to a page to get started.', 'flinkform' );
 	}
 
 	/**
@@ -174,12 +174,12 @@ final class FormsListTable extends \WP_List_Table {
 		$title     = (string) ( $item['title'] ?? '' );
 		$is_orphan = empty( $item['sources'] );
 
-		$primary = esc_html( '' !== $title ? $title : __( '(Untitled form)', 'perform-forms' ) );
+		$primary = esc_html( '' !== $title ? $title : __( '(Untitled form)', 'flinkform' ) );
 		if ( ! ( $item['has_explicit_title'] ?? false ) && ! $is_orphan ) {
-			$primary .= ' <span class="perform-tag" title="' . esc_attr__( 'No explicit title set — falling back to the source page name.', 'perform-forms' ) . '">' . esc_html__( 'auto', 'perform-forms' ) . '</span>';
+			$primary .= ' <span class="flinkform-tag" title="' . esc_attr__( 'No explicit title set — falling back to the source page name.', 'flinkform' ) . '">' . esc_html__( 'auto', 'flinkform' ) . '</span>';
 		}
 		if ( $is_orphan ) {
-			$primary .= ' <span class="perform-tag perform-tag--warning">' . esc_html__( 'orphan', 'perform-forms' ) . '</span>';
+			$primary .= ' <span class="flinkform-tag flinkform-tag--warning">' . esc_html__( 'orphan', 'flinkform' ) . '</span>';
 		}
 
 		$submissions_url = add_query_arg(
@@ -194,7 +194,7 @@ final class FormsListTable extends \WP_List_Table {
 			'submissions' => sprintf(
 				'<a href="%s">%s</a>',
 				esc_url( $submissions_url ),
-				esc_html__( 'View submissions', 'perform-forms' )
+				esc_html__( 'View submissions', 'flinkform' )
 			),
 		];
 
@@ -203,14 +203,14 @@ final class FormsListTable extends \WP_List_Table {
 			$actions['edit'] = sprintf(
 				'<a href="%s">%s</a>',
 				esc_url( get_edit_post_link( (int) $first_source['post_id'] ) ?? '#' ),
-				esc_html__( 'Edit page', 'perform-forms' )
+				esc_html__( 'Edit page', 'flinkform' )
 			);
 			$permalink = get_permalink( (int) $first_source['post_id'] );
 			if ( false !== $permalink ) {
 				$actions['view'] = sprintf(
 					'<a href="%s" target="_blank" rel="noopener">%s</a>',
 					esc_url( $permalink ),
-					esc_html__( 'View on site', 'perform-forms' )
+					esc_html__( 'View on site', 'flinkform' )
 				);
 			}
 		}
@@ -227,7 +227,7 @@ final class FormsListTable extends \WP_List_Table {
 	public function column_form_id( $item ): string {
 		$uuid = (string) ( $item['form_id'] ?? '' );
 		if ( '' === $uuid ) {
-			return '<em>' . esc_html__( 'unknown', 'perform-forms' ) . '</em>';
+			return '<em>' . esc_html__( 'unknown', 'flinkform' ) . '</em>';
 		}
 		return sprintf(
 			'<code title="%s">%s…</code>',
@@ -245,7 +245,7 @@ final class FormsListTable extends \WP_List_Table {
 	public function column_source( $item ): string {
 		$sources = isset( $item['sources'] ) && is_array( $item['sources'] ) ? $item['sources'] : [];
 		if ( empty( $sources ) ) {
-			return '<em>' . esc_html__( 'no live page', 'perform-forms' ) . '</em>';
+			return '<em>' . esc_html__( 'no live page', 'flinkform' ) . '</em>';
 		}
 
 		$links = [];
@@ -254,13 +254,13 @@ final class FormsListTable extends \WP_List_Table {
 				continue;
 			}
 			$post_id    = (int) ( $source['post_id'] ?? 0 );
-			$post_title = (string) ( $source['post_title'] ?? __( '(no title)', 'perform-forms' ) );
+			$post_title = (string) ( $source['post_title'] ?? __( '(no title)', 'flinkform' ) );
 			$status     = (string) ( $source['post_status'] ?? '' );
 			$edit_url   = get_edit_post_link( $post_id );
 
 			$label = esc_html( $post_title );
 			if ( 'publish' !== $status ) {
-				$label .= ' <span class="perform-tag">' . esc_html( $status ) . '</span>';
+				$label .= ' <span class="flinkform-tag">' . esc_html( $status ) . '</span>';
 			}
 
 			$links[] = $edit_url
@@ -301,7 +301,7 @@ final class FormsListTable extends \WP_List_Table {
 	public function column_last_submission( $item ): string {
 		$gmt = (string) ( $item['last_submission_at'] ?? '' );
 		if ( '' === $gmt ) {
-			return '<em>' . esc_html__( 'never', 'perform-forms' ) . '</em>';
+			return '<em>' . esc_html__( 'never', 'flinkform' ) . '</em>';
 		}
 		return esc_html( get_date_from_gmt( $gmt, 'Y-m-d H:i' ) );
 	}

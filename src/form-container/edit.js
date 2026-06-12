@@ -31,23 +31,23 @@ import {
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 const ALLOWED_BLOCKS = [
-	'perform/section-heading',
-	'perform/page-break',
-	'perform/field-text',
-	'perform/field-email',
-	'perform/field-textarea',
-	'perform/field-number',
-	'perform/field-select',
-	'perform/field-radio',
-	'perform/field-checkbox',
-	'perform/field-toggle',
-	'perform/field-hidden',
+	'flinkform/section-heading',
+	'flinkform/page-break',
+	'flinkform/field-text',
+	'flinkform/field-email',
+	'flinkform/field-textarea',
+	'flinkform/field-number',
+	'flinkform/field-select',
+	'flinkform/field-radio',
+	'flinkform/field-checkbox',
+	'flinkform/field-toggle',
+	'flinkform/field-hidden',
 ];
 
 const TEMPLATE = [
-	[ 'perform/field-text', { label: __( 'Name', 'perform-forms' ), required: true } ],
-	[ 'perform/field-email', { label: __( 'Email', 'perform-forms' ), required: true } ],
-	[ 'perform/field-textarea', { label: __( 'Message', 'perform-forms' ), required: true } ],
+	[ 'flinkform/field-text', { label: __( 'Name', 'flinkform' ), required: true } ],
+	[ 'flinkform/field-email', { label: __( 'Email', 'flinkform' ), required: true } ],
+	[ 'flinkform/field-textarea', { label: __( 'Message', 'flinkform' ), required: true } ],
 ];
 
 function generateUuid() {
@@ -89,43 +89,43 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		? appearanceConfig.borderRadius
 		: undefined;
 
-	// Editor preview: emit the same --perform-* overrides + modifier
+	// Editor preview: emit the same --flinkform-* overrides + modifier
 	// classes the frontend gets so the in-editor block visually mirrors
 	// the saved settings. Without this the inspector previewing a custom
 	// primary colour or spacing wouldn't show it on the canvas.
 	const editorStyle = {};
 	if ( typeof primaryColor === 'string' && primaryColor !== '' ) {
-		editorStyle[ '--perform-color-primary' ] = primaryColor;
+		editorStyle[ '--flinkform-color-primary' ] = primaryColor;
 	}
 	if ( typeof borderRadius === 'number' ) {
-		editorStyle[ '--perform-border-radius' ] = `${ borderRadius }px`;
+		editorStyle[ '--flinkform-border-radius' ] = `${ borderRadius }px`;
 	}
 	if ( typeof buttonColor === 'string' && buttonColor !== '' ) {
-		editorStyle[ '--perform-button-bg' ] = buttonColor;
+		editorStyle[ '--flinkform-button-bg' ] = buttonColor;
 	}
 	if ( typeof buttonTextColor === 'string' && buttonTextColor !== '' ) {
-		editorStyle[ '--perform-button-color' ] = buttonTextColor;
+		editorStyle[ '--flinkform-button-color' ] = buttonTextColor;
 	}
 	if ( typeof buttonBorderColor === 'string' && buttonBorderColor !== '' ) {
-		editorStyle[ '--perform-button-border-color' ] = buttonBorderColor;
+		editorStyle[ '--flinkform-button-border-color' ] = buttonBorderColor;
 	}
 
 	const editorClassName = [
-		'perform-form-editor',
-		'perform-form',
-		`perform-form--button-${ submitButtonStyle }`,
-		`perform-form--field-style-${ fieldStyle }`,
-		`perform-form--spacing-${ fieldSpacing }`,
-		`perform-form--labels-${ labelPosition }`,
-		`perform-form--columns-${ columns }`,
+		'flinkform-form-editor',
+		'flinkform-form',
+		`flinkform-form--button-${ submitButtonStyle }`,
+		`flinkform-form--field-style-${ fieldStyle }`,
+		`flinkform-form--spacing-${ fieldSpacing }`,
+		`flinkform-form--labels-${ labelPosition }`,
+		`flinkform-form--columns-${ columns }`,
 	].join( ' ' );
 
 	const blockProps = useBlockProps( {
 		className: editorClassName,
 		style: editorStyle,
-		// Mirror the frontend's data-perform-id so Custom CSS rules
-		// scoped to [data-perform-id="…"] take effect in the editor too.
-		'data-perform-id': formId || undefined,
+		// Mirror the frontend's data-flinkform-id so Custom CSS rules
+		// scoped to [data-flinkform-id="…"] take effect in the editor too.
+		'data-flinkform-id': formId || undefined,
 	} );
 
 	useEffect( () => {
@@ -155,7 +155,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			return [];
 		}
 		return innerBlocks
-			.filter( ( b ) => b.name === 'perform/field-email' )
+			.filter( ( b ) => b.name === 'flinkform/field-email' )
 			.map( ( b ) => {
 				const fieldName = b.attributes?.fieldName;
 				const fieldLabel = b.attributes?.label;
@@ -179,7 +179,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		if ( ! Array.isArray( innerBlocks ) ) {
 			return 1;
 		}
-		return innerBlocks.filter( ( b ) => b.name === 'perform/page-break' ).length + 1;
+		return innerBlocks.filter( ( b ) => b.name === 'flinkform/page-break' ).length + 1;
 	}, [ innerBlocks ] );
 	const isMultiStep = stepCount > 1;
 
@@ -192,7 +192,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		const labels = [ '' ];
 		if ( Array.isArray( innerBlocks ) ) {
 			innerBlocks.forEach( ( b ) => {
-				if ( b.name === 'perform/page-break' ) {
+				if ( b.name === 'flinkform/page-break' ) {
 					const raw = b.attributes?.label;
 					labels.push( typeof raw === 'string' ? raw : '' );
 				}
@@ -299,47 +299,47 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Form Settings', 'perform-forms' ) }>
+				<PanelBody title={ __( 'Form Settings', 'flinkform' ) }>
 					<TextControl
-						label={ __( 'Form Title', 'perform-forms' ) }
-						help={ __( 'Internal name shown in the Forms admin overview. Not visible to visitors.', 'perform-forms' ) }
+						label={ __( 'Form Title', 'flinkform' ) }
+						help={ __( 'Internal name shown in the Forms admin overview. Not visible to visitors.', 'flinkform' ) }
 						value={ title }
 						onChange={ ( value ) => setAttributes( { title: value } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TextControl
-						label={ __( 'Submit Button Label', 'perform-forms' ) }
+						label={ __( 'Submit Button Label', 'flinkform' ) }
 						value={ submitLabel }
 						onChange={ ( value ) => setAttributes( { submitLabel: value } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<p style={ { fontSize: '12px', opacity: 0.7, marginTop: '12px' } }>
-						{ __( 'Form ID:', 'perform-forms' ) } <code>{ formId || '…' }</code>
+						{ __( 'Form ID:', 'flinkform' ) } <code>{ formId || '…' }</code>
 					</p>
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'After Submit', 'perform-forms' ) }
+					title={ __( 'After Submit', 'flinkform' ) }
 					initialOpen={ false }
 				>
 					<ToggleGroupControl
-						label={ __( 'On successful submission', 'perform-forms' ) }
+						label={ __( 'On successful submission', 'flinkform' ) }
 						value={ afterSubmitBehaviour }
 						onChange={ ( value ) => updateAfterSubmit( { behaviour: value } ) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="message" label={ __( 'Show message', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="redirect" label={ __( 'Redirect to URL', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="message" label={ __( 'Show message', 'flinkform' ) } />
+						<ToggleGroupControlOption value="redirect" label={ __( 'Redirect to URL', 'flinkform' ) } />
 					</ToggleGroupControl>
 
 					{ afterSubmitBehaviour === 'message' && (
 						<TextareaControl
-							label={ __( 'Success Message', 'perform-forms' ) }
-							help={ __( 'Shown in place of the form after a successful submission.', 'perform-forms' ) }
+							label={ __( 'Success Message', 'flinkform' ) }
+							help={ __( 'Shown in place of the form after a successful submission.', 'flinkform' ) }
 							value={ successMessage }
 							onChange={ ( value ) => setAttributes( { successMessage: value } ) }
 							__nextHasNoMarginBottom
@@ -349,31 +349,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ afterSubmitBehaviour === 'redirect' && (
 						<>
 							<BaseControl
-								label={ __( 'Redirect URL', 'perform-forms' ) }
-								help={ __( 'Same-origin only. Enter a path (/danke) or a full URL on this site. External URLs are silently rejected by the safe-redirect filter — operators who need cross-domain thank-you pages get a site-wide opt-in toggle in a later release.', 'perform-forms' ) }
-								id="perform-after-submit-url"
+								label={ __( 'Redirect URL', 'flinkform' ) }
+								help={ __( 'Same-origin only. Enter a path (/danke) or a full URL on this site. External URLs are silently rejected by the safe-redirect filter — operators who need cross-domain thank-you pages get a site-wide opt-in toggle in a later release.', 'flinkform' ) }
+								id="flinkform-after-submit-url"
 								__nextHasNoMarginBottom
 							>
 								<URLInput
-									id="perform-after-submit-url"
+									id="flinkform-after-submit-url"
 									value={ afterSubmitConfig.redirectUrl ?? '' }
 									onChange={ ( value ) => updateAfterSubmit( { redirectUrl: value } ) }
-									placeholder={ __( 'https://example.com/danke', 'perform-forms' ) }
-									className="perform-after-submit__url"
+									placeholder={ __( 'https://example.com/danke', 'flinkform' ) }
+									className="flinkform-after-submit__url"
 								/>
 							</BaseControl>
 
 							<ToggleControl
-								label={ __( 'Append submission ID', 'perform-forms' ) }
-								help={ __( 'Adds ?perffo_submission_id=N to the redirect URL — useful for analytics events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off because submission IDs are PII-adjacent and end up in browser history.', 'perform-forms' ) }
+								label={ __( 'Append submission ID', 'flinkform' ) }
+								help={ __( 'Adds ?flinkform_submission_id=N to the redirect URL — useful for analytics events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off because submission IDs are PII-adjacent and end up in browser history.', 'flinkform' ) }
 								checked={ !! afterSubmitConfig.appendSubmissionId }
 								onChange={ ( value ) => updateAfterSubmit( { appendSubmissionId: value } ) }
 								__nextHasNoMarginBottom
 							/>
 
 							<ToggleControl
-								label={ __( 'Append form ID', 'perform-forms' ) }
-								help={ __( 'Adds ?perffo_form_id=UUID — lets a shared thank-you page differentiate conversions by source form.', 'perform-forms' ) }
+								label={ __( 'Append form ID', 'flinkform' ) }
+								help={ __( 'Adds ?flinkform_form_id=UUID — lets a shared thank-you page differentiate conversions by source form.', 'flinkform' ) }
 								checked={ !! afterSubmitConfig.appendFormId }
 								onChange={ ( value ) => updateAfterSubmit( { appendFormId: value } ) }
 								__nextHasNoMarginBottom
@@ -383,13 +383,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Style', 'perform-forms' ) }
+					title={ __( 'Style', 'flinkform' ) }
 					initialOpen={ false }
 				>
 					<BaseControl
-						label={ __( 'Primary color', 'perform-forms' ) }
-						help={ __( 'Used for submit button, focus rings, and accent details. Leave unset to inherit from your theme.', 'perform-forms' ) }
-						id="perform-style-primary-color"
+						label={ __( 'Primary color', 'flinkform' ) }
+						help={ __( 'Used for submit button, focus rings, and accent details. Leave unset to inherit from your theme.', 'flinkform' ) }
+						id="flinkform-style-primary-color"
 						__nextHasNoMarginBottom
 					>
 						<ColorPalette
@@ -400,22 +400,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</BaseControl>
 					<ToggleGroupControl
-						label={ __( 'Field style', 'perform-forms' ) }
-						help={ __( 'Bordered: full outline. Soft: light gray border. Underline: bottom border only. Minimal: no border, subtle background.', 'perform-forms' ) }
+						label={ __( 'Field style', 'flinkform' ) }
+						help={ __( 'Bordered: full outline. Soft: light gray border. Underline: bottom border only. Minimal: no border, subtle background.', 'flinkform' ) }
 						value={ fieldStyle }
 						onChange={ ( value ) => updateAppearance( { fieldStyle: value } ) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="bordered" label={ __( 'Bordered', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="soft" label={ __( 'Soft', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="underline" label={ __( 'Underline', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="minimal" label={ __( 'Minimal', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="bordered" label={ __( 'Bordered', 'flinkform' ) } />
+						<ToggleGroupControlOption value="soft" label={ __( 'Soft', 'flinkform' ) } />
+						<ToggleGroupControlOption value="underline" label={ __( 'Underline', 'flinkform' ) } />
+						<ToggleGroupControlOption value="minimal" label={ __( 'Minimal', 'flinkform' ) } />
 					</ToggleGroupControl>
 					<RangeControl
-						label={ __( 'Border radius', 'perform-forms' ) }
-						help={ __( 'Applies to fields and the submit button. Leave at the default to inherit from your theme.', 'perform-forms' ) }
+						label={ __( 'Border radius', 'flinkform' ) }
+						help={ __( 'Applies to fields and the submit button. Leave at the default to inherit from your theme.', 'flinkform' ) }
 						value={ borderRadius }
 						onChange={ ( value ) => updateAppearance( {
 							borderRadius: typeof value === 'number' ? value : undefined,
@@ -429,25 +429,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 					<ToggleGroupControl
-						label={ __( 'Field spacing', 'perform-forms' ) }
+						label={ __( 'Field spacing', 'flinkform' ) }
 						value={ fieldSpacing }
 						onChange={ ( value ) => updateAppearance( { fieldSpacing: value } ) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="compact" label={ __( 'Compact', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="normal" label={ __( 'Normal', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="relaxed" label={ __( 'Relaxed', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="compact" label={ __( 'Compact', 'flinkform' ) } />
+						<ToggleGroupControlOption value="normal" label={ __( 'Normal', 'flinkform' ) } />
+						<ToggleGroupControlOption value="relaxed" label={ __( 'Relaxed', 'flinkform' ) } />
 					</ToggleGroupControl>
 					<ToggleGroupControl
-						label={ __( 'Label position', 'perform-forms' ) }
+						label={ __( 'Label position', 'flinkform' ) }
 						help={
 							labelPosition === 'floating'
-								? __( 'Material-style notched label: rests inside the input, then slides onto the top border on focus, cutting a notch through it. Applies to text-style fields.', 'perform-forms' )
+								? __( 'Material-style notched label: rests inside the input, then slides onto the top border on focus, cutting a notch through it. Applies to text-style fields.', 'flinkform' )
 								: labelPosition === 'placeholder'
-									? __( 'Labels are visually hidden (still accessible to screen readers). The label text is used as placeholder inside the field. Applies to text-style fields only.', 'perform-forms' )
-									: __( 'Beside, Floating and Hidden apply to text-style fields only.', 'perform-forms' )
+									? __( 'Labels are visually hidden (still accessible to screen readers). The label text is used as placeholder inside the field. Applies to text-style fields only.', 'flinkform' )
+									: __( 'Beside, Floating and Hidden apply to text-style fields only.', 'flinkform' )
 						}
 						value={ labelPosition }
 						onChange={ ( value ) => updateAppearance( { labelPosition: value } ) }
@@ -455,39 +455,39 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="above" label={ __( 'Above', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="beside" label={ __( 'Beside', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="floating" label={ __( 'Floating', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="placeholder" label={ __( 'Hidden', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="above" label={ __( 'Above', 'flinkform' ) } />
+						<ToggleGroupControlOption value="beside" label={ __( 'Beside', 'flinkform' ) } />
+						<ToggleGroupControlOption value="floating" label={ __( 'Floating', 'flinkform' ) } />
+						<ToggleGroupControlOption value="placeholder" label={ __( 'Hidden', 'flinkform' ) } />
 					</ToggleGroupControl>
 					<ToggleGroupControl
-						label={ __( 'Columns', 'perform-forms' ) }
-						help={ __( 'Two-column layout collapses to a single column on mobile. Individual fields can be set to span both columns via their own inspector.', 'perform-forms' ) }
+						label={ __( 'Columns', 'flinkform' ) }
+						help={ __( 'Two-column layout collapses to a single column on mobile. Individual fields can be set to span both columns via their own inspector.', 'flinkform' ) }
 						value={ columns }
 						onChange={ ( value ) => updateAppearance( { columns: value === 2 ? 2 : 1 } ) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value={ 1 } label={ __( '1 column', 'perform-forms' ) } />
-						<ToggleGroupControlOption value={ 2 } label={ __( '2 columns', 'perform-forms' ) } />
+						<ToggleGroupControlOption value={ 1 } label={ __( '1 column', 'flinkform' ) } />
+						<ToggleGroupControlOption value={ 2 } label={ __( '2 columns', 'flinkform' ) } />
 					</ToggleGroupControl>
 					<ToggleGroupControl
-						label={ __( 'Submit button style', 'perform-forms' ) }
+						label={ __( 'Submit button style', 'flinkform' ) }
 						value={ submitButtonStyle }
 						onChange={ ( value ) => updateAppearance( { submitButtonStyle: value } ) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="fill" label={ __( 'Fill', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="outline" label={ __( 'Outline', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="ghost" label={ __( 'Ghost', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="fill" label={ __( 'Fill', 'flinkform' ) } />
+						<ToggleGroupControlOption value="outline" label={ __( 'Outline', 'flinkform' ) } />
+						<ToggleGroupControlOption value="ghost" label={ __( 'Ghost', 'flinkform' ) } />
 					</ToggleGroupControl>
 					<BaseControl
-						label={ __( 'Button background', 'perform-forms' ) }
-						help={ __( 'Leave unset to use the primary colour.', 'perform-forms' ) }
-						id="perform-style-button-color"
+						label={ __( 'Button background', 'flinkform' ) }
+						help={ __( 'Leave unset to use the primary colour.', 'flinkform' ) }
+						id="flinkform-style-button-color"
 						__nextHasNoMarginBottom
 					>
 						<ColorPalette
@@ -498,9 +498,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</BaseControl>
 					<BaseControl
-						label={ __( 'Button text colour', 'perform-forms' ) }
-						help={ __( 'Leave unset for automatic contrast.', 'perform-forms' ) }
-						id="perform-style-button-text-color"
+						label={ __( 'Button text colour', 'flinkform' ) }
+						help={ __( 'Leave unset for automatic contrast.', 'flinkform' ) }
+						id="flinkform-style-button-text-color"
 						__nextHasNoMarginBottom
 					>
 						<ColorPalette
@@ -511,9 +511,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</BaseControl>
 					<BaseControl
-						label={ __( 'Button border colour', 'perform-forms' ) }
-						help={ __( 'Only visible when button style is "Outline". Leave unset to match the background colour.', 'perform-forms' ) }
-						id="perform-style-button-border-color"
+						label={ __( 'Button border colour', 'flinkform' ) }
+						help={ __( 'Only visible when button style is "Outline". Leave unset to match the background colour.', 'flinkform' ) }
+						id="flinkform-style-button-border-color"
 						__nextHasNoMarginBottom
 					>
 						<ColorPalette
@@ -524,23 +524,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</BaseControl>
 					<ToggleGroupControl
-						label={ __( 'Progress indicator', 'perform-forms' ) }
-						help={ __( 'Shown on multi-step forms only. Bar fills as the user advances; Dots marks each step; Numbers reads "Step X of Y".', 'perform-forms' ) }
+						label={ __( 'Progress indicator', 'flinkform' ) }
+						help={ __( 'Shown on multi-step forms only. Bar fills as the user advances; Dots marks each step; Numbers reads "Step X of Y".', 'flinkform' ) }
 						value={ progressIndicator }
 						onChange={ ( value ) => updateAppearance( { progressIndicator: value } ) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="bar" label={ __( 'Bar', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="dots" label={ __( 'Dots', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="numbers" label={ __( 'Numbers', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="none" label={ __( 'None', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="bar" label={ __( 'Bar', 'flinkform' ) } />
+						<ToggleGroupControlOption value="dots" label={ __( 'Dots', 'flinkform' ) } />
+						<ToggleGroupControlOption value="numbers" label={ __( 'Numbers', 'flinkform' ) } />
+						<ToggleGroupControlOption value="none" label={ __( 'None', 'flinkform' ) } />
 					</ToggleGroupControl>
 					{ progressIndicator !== 'none' && (
 						<ToggleControl
-							label={ __( 'Show step labels', 'perform-forms' ) }
-							help={ __( 'Display the current step’s label (from the Page Break block) beneath the indicator. Only shows when at least one Page Break has a label.', 'perform-forms' ) }
+							label={ __( 'Show step labels', 'flinkform' ) }
+							help={ __( 'Display the current step’s label (from the Page Break block) beneath the indicator. Only shows when at least one Page Break has a label.', 'flinkform' ) }
 							checked={ showStepLabels }
 							onChange={ ( value ) => updateAppearance( { showStepLabels: value } ) }
 							__nextHasNoMarginBottom
@@ -549,12 +549,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Notifications', 'perform-forms' ) }
+					title={ __( 'Notifications', 'flinkform' ) }
 					initialOpen={ false }
 				>
 					<ToggleControl
-						label={ __( 'Send admin notification', 'perform-forms' ) }
-						help={ __( 'Email the site admin when a submission is received.', 'perform-forms' ) }
+						label={ __( 'Send admin notification', 'flinkform' ) }
+						help={ __( 'Email the site admin when a submission is received.', 'flinkform' ) }
 						checked={ adminEnabled }
 						onChange={ ( value ) => updateAdminConfig( { enabled: value } ) }
 						__nextHasNoMarginBottom
@@ -562,35 +562,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ adminEnabled && (
 						<>
 							<TextControl
-								label={ __( 'To', 'perform-forms' ) }
-								help={ __( 'Comma-separated. Leave empty to use the site admin email. Supports merge tags like {field:email}.', 'perform-forms' ) }
+								label={ __( 'To', 'flinkform' ) }
+								help={ __( 'Comma-separated. Leave empty to use the site admin email. Supports merge tags like {field:email}.', 'flinkform' ) }
 								value={ adminConfig.to ?? '' }
-								placeholder={ __( 'Site admin email', 'perform-forms' ) }
+								placeholder={ __( 'Site admin email', 'flinkform' ) }
 								onChange={ ( value ) => updateAdminConfig( { to: value } ) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
 							<TextControl
-								label={ __( 'Subject', 'perform-forms' ) }
-								help={ __( 'Supports merge tags. Leave empty for the default.', 'perform-forms' ) }
+								label={ __( 'Subject', 'flinkform' ) }
+								help={ __( 'Supports merge tags. Leave empty for the default.', 'flinkform' ) }
 								value={ adminConfig.subject ?? '' }
-								placeholder={ __( 'New submission: {form:title}', 'perform-forms' ) }
+								placeholder={ __( 'New submission: {form:title}', 'flinkform' ) }
 								onChange={ ( value ) => updateAdminConfig( { subject: value } ) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
 							<TextareaControl
-								label={ __( 'Body', 'perform-forms' ) }
-								help={ __( 'Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Leave empty for an auto-generated list of all fields.', 'perform-forms' ) }
+								label={ __( 'Body', 'flinkform' ) }
+								help={ __( 'Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Leave empty for an auto-generated list of all fields.', 'flinkform' ) }
 								value={ adminConfig.body ?? '' }
-								placeholder={ __( 'Auto-generated field list', 'perform-forms' ) }
+								placeholder={ __( 'Auto-generated field list', 'flinkform' ) }
 								onChange={ ( value ) => updateAdminConfig( { body: value } ) }
 								rows={ 8 }
 								__nextHasNoMarginBottom
 							/>
 							<TextControl
-								label={ __( 'Reply-To', 'perform-forms' ) }
-								help={ __( 'Often set to {field:<emailFieldName>} so replies go to the submitter. Leave empty to use the site default.', 'perform-forms' ) }
+								label={ __( 'Reply-To', 'flinkform' ) }
+								help={ __( 'Often set to {field:<emailFieldName>} so replies go to the submitter. Leave empty to use the site default.', 'flinkform' ) }
 								value={ adminConfig.replyTo ?? '' }
 								placeholder={ firstEmailFieldName ? `{field:${ firstEmailFieldName }}` : '' }
 								onChange={ ( value ) => updateAdminConfig( { replyTo: value } ) }
@@ -603,25 +603,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<hr style={ { margin: '16px 0', opacity: 0.25 } } />
 
 					<ToggleControl
-						label={ __( 'Send confirmation to submitter', 'perform-forms' ) }
-						help={ __( 'Email a copy of the submission back to the person who filled out the form.', 'perform-forms' ) }
+						label={ __( 'Send confirmation to submitter', 'flinkform' ) }
+						help={ __( 'Email a copy of the submission back to the person who filled out the form.', 'flinkform' ) }
 						checked={ submitterEnabled }
 						onChange={ ( value ) => updateSubmitterConfig( { enabled: value } ) }
 						__nextHasNoMarginBottom
 					/>
 					{ submitterEnabled && ! hasEmailFields && (
 						<Notice status="warning" isDismissible={ false }>
-							{ __( 'Add an email field to this form to enable submitter confirmations.', 'perform-forms' ) }
+							{ __( 'Add an email field to this form to enable submitter confirmations.', 'flinkform' ) }
 						</Notice>
 					) }
 					{ submitterEnabled && hasEmailFields && (
 						<>
 							<SelectControl
-								label={ __( 'Email field', 'perform-forms' ) }
-								help={ __( 'Which field contains the submitter’s email address.', 'perform-forms' ) }
+								label={ __( 'Email field', 'flinkform' ) }
+								help={ __( 'Which field contains the submitter’s email address.', 'flinkform' ) }
 								value={ submitterConfig.emailField ?? '' }
 								options={ [
-									{ value: '', label: __( '— Select a field —', 'perform-forms' ) },
+									{ value: '', label: __( '— Select a field —', 'flinkform' ) },
 									...emailFieldOptions,
 								] }
 								onChange={ ( value ) => updateSubmitterConfig( { emailField: value } ) }
@@ -629,19 +629,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								__next40pxDefaultSize
 							/>
 							<TextControl
-								label={ __( 'Subject', 'perform-forms' ) }
-								help={ __( 'Supports merge tags. Leave empty for the default.', 'perform-forms' ) }
+								label={ __( 'Subject', 'flinkform' ) }
+								help={ __( 'Supports merge tags. Leave empty for the default.', 'flinkform' ) }
 								value={ submitterConfig.subject ?? '' }
-								placeholder={ __( 'We received your submission', 'perform-forms' ) }
+								placeholder={ __( 'We received your submission', 'flinkform' ) }
 								onChange={ ( value ) => updateSubmitterConfig( { subject: value } ) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
 							<TextareaControl
-								label={ __( 'Body', 'perform-forms' ) }
-								help={ __( 'Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Leave empty for an auto-generated thank-you with the submitted values.', 'perform-forms' ) }
+								label={ __( 'Body', 'flinkform' ) }
+								help={ __( 'Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Leave empty for an auto-generated thank-you with the submitted values.', 'flinkform' ) }
 								value={ submitterConfig.body ?? '' }
-								placeholder={ __( 'Auto-generated thank-you with submitted values', 'perform-forms' ) }
+								placeholder={ __( 'Auto-generated thank-you with submitted values', 'flinkform' ) }
 								onChange={ ( value ) => updateSubmitterConfig( { body: value } ) }
 								rows={ 8 }
 								__nextHasNoMarginBottom
@@ -656,38 +656,38 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					clientId={ clientId }
 					attributeName="submitCondition"
 					fieldSource="inner"
-					title={ __( 'Submit Condition', 'perform-forms' ) }
-					toggleLabel={ __( 'Gate the submit button', 'perform-forms' ) }
-					toggleHelp={ __( 'Disable the submit button until the rules below match. Useful for "I agree to terms" checkboxes.', 'perform-forms' ) }
+					title={ __( 'Submit Condition', 'flinkform' ) }
+					toggleLabel={ __( 'Gate the submit button', 'flinkform' ) }
+					toggleHelp={ __( 'Disable the submit button until the rules below match. Useful for "I agree to terms" checkboxes.', 'flinkform' ) }
 				/>
 
 				{ /*
-				 * Pro inspector-panel extension point. PerForm Pro injects its
+				 * Pro inspector-panel extension point. Flinkform Pro injects its
 				 * own form-container inspector panels here via:
-				 *   addFilter( 'perform.formContainer.inspectorPanels', … )
+				 *   addFilter( 'flinkform.formContainer.inspectorPanels', … )
 				 * The free core passes the full editing context; the default is
 				 * an empty list, so with no add-on nothing extra renders.
 				 * Contract: see includes/Bridge/README.md (frozen once Pro ships).
 				 */ }
 				{ applyFilters(
-					'perform.formContainer.inspectorPanels',
+					'flinkform.formContainer.inspectorPanels',
 					[],
 					{ attributes, setAttributes, clientId, formId, formFields }
 				).map( ( panel, index ) => (
-					<Fragment key={ `perform-pro-panel-${ index }` }>
+					<Fragment key={ `flinkform-pro-panel-${ index }` }>
 						{ panel }
 					</Fragment>
 				) ) }
 
 				<PanelBody
-					title={ __( 'Data Retention', 'perform-forms' ) }
+					title={ __( 'Data Retention', 'flinkform' ) }
 					initialOpen={ false }
 				>
 					<RangeControl
-						label={ __( 'Auto-delete submissions after (days)', 'perform-forms' ) }
+						label={ __( 'Auto-delete submissions after (days)', 'flinkform' ) }
 						help={ __(
-							'GDPR storage limitation: automatically delete this form’s submissions older than the chosen number of days. 0 = keep forever. Purges run daily and also remove any linked PerForm Pro webhook delivery records.',
-							'perform-forms'
+							'GDPR storage limitation: automatically delete this form’s submissions older than the chosen number of days. 0 = keep forever. Purges run daily and also remove any linked Flinkform Pro webhook delivery records.',
+							'flinkform'
 						) }
 						value={ retentionDays ?? 0 }
 						onChange={ ( value ) => setAttributes( { retentionDays: value ?? 0 } ) }
@@ -708,17 +708,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					 * are identical to render.php's output so the same
 					 * SCSS styles them in both places. */
 					<div
-						className={ `perform-form__progress perform-form__progress--${ progressIndicator }` }
+						className={ `flinkform-form__progress flinkform-form__progress--${ progressIndicator }` }
 						role="progressbar"
 						aria-valuemin={ 1 }
 						aria-valuemax={ stepCount }
 						aria-valuenow={ 1 }
 					>
 						{ progressIndicator === 'bar' && (
-							<div className="perform-form__progress-track">
+							<div className="flinkform-form__progress-track">
 								<div
-									className="perform-form__progress-fill"
-									style={ { '--perform-progress-percent': `${ ( ( 1 / stepCount ) * 100 ).toFixed( 2 ) }%` } }
+									className="flinkform-form__progress-fill"
+									style={ { '--flinkform-progress-percent': `${ ( ( 1 / stepCount ) * 100 ).toFixed( 2 ) }%` } }
 								/>
 							</div>
 						) }
@@ -726,19 +726,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							Array.from( { length: stepCount } ).map( ( _, i ) => (
 								<span
 									key={ i }
-									className={ `perform-form__progress-dot${ i === 0 ? ' is-current' : '' }` }
+									className={ `flinkform-form__progress-dot${ i === 0 ? ' is-current' : '' }` }
 									aria-hidden="true"
 								/>
 							) )
 						) }
 						{ progressIndicator === 'numbers' && (
-							<span className="perform-form__progress-label">
+							<span className="flinkform-form__progress-label">
 								{ /* translators: 1: current step number, 2: total step count */
-									sprintf( __( 'Step %1$s of %2$s', 'perform-forms' ), '1', String( stepCount ) ) }
+									sprintf( __( 'Step %1$s of %2$s', 'flinkform' ), '1', String( stepCount ) ) }
 							</span>
 						) }
 						{ showStepLabels && hasAnyStepLabel && (
-							<span className="perform-form__progress-step-label">
+							<span className="flinkform-form__progress-step-label">
 								{ stepLabels[ 0 ] }
 							</span>
 						) }

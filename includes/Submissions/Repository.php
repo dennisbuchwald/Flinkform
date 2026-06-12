@@ -3,21 +3,21 @@
  * Persistence for form submissions.
  *
  * Thin wrapper around $wpdb that owns reads and writes against the
- * `{prefix}_perffo_submissions` table. Every input value flows through
+ * `{prefix}_flinkform_submissions` table. Every input value flows through
  * prepared statements (via $wpdb->prepare or $wpdb->insert/update's
  * format arrays); identifiers and ORDER BY clauses are gated through
  * allow-lists.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Submissions;
+namespace Flinkform\Submissions;
 
-use PerForm\Database\Schema;
+use Flinkform\Database\Schema;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -164,7 +164,7 @@ final class Repository {
 
 		if ( $ok ) {
 			/** This action is documented in this file — see delete_many(). */
-			do_action( 'perffo_submissions_deleted', [ $id ] );
+			do_action( 'flinkform_submissions_deleted', [ $id ] );
 		}
 
 		return $ok;
@@ -198,7 +198,7 @@ final class Repository {
 			 * this repository).
 			 *
 			 * Add-ons hook this to cascade-delete related personal data so a
-			 * deletion never orphans it — e.g. PerForm Pro removes the webhook
+			 * deletion never orphans it — e.g. Flinkform Pro removes the webhook
 			 * delivery-log rows tied to these submissions. Critical for GDPR
 			 * erasure requests.
 			 *
@@ -206,7 +206,7 @@ final class Repository {
 			 *
 			 * @param array<int, int> $ids Submission ids that were deleted.
 			 */
-			do_action( 'perffo_submissions_deleted', $ids );
+			do_action( 'flinkform_submissions_deleted', $ids );
 		}
 
 		return $count;

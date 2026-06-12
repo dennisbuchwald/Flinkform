@@ -2,7 +2,7 @@
 /**
  * Form submission handler.
  *
- * Hooks `admin-post.php?action=perffo_submit` (both logged-in and nopriv
+ * Hooks `admin-post.php?action=flinkform_submit` (both logged-in and nopriv
  * variants) and walks every incoming submission through the same gauntlet:
  * nonce → honeypot → time-check → field validation → persist → redirect.
  *
@@ -13,32 +13,32 @@
  * Also exposes static accessors used by field render.php files to read the
  * flashed state for the form currently being rendered.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Submissions;
+namespace Flinkform\Submissions;
 
-use PerForm\Fields\HiddenResolver;
-use PerForm\Forms\Locator;
+use Flinkform\Fields\HiddenResolver;
+use Flinkform\Forms\Locator;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Processes POSTs to admin-post.php?action=perffo_submit.
+ * Processes POSTs to admin-post.php?action=flinkform_submit.
  */
 final class Handler {
 
-	private const ACTION             = 'perffo_submit';
-	private const NONCE_FIELD        = '_perffo_nonce';
-	private const HONEYPOT_FIELD     = 'perffo_hp';
-	private const TIMESTAMP_FIELD    = 'perffo_ts';
+	private const ACTION             = 'flinkform_submit';
+	private const NONCE_FIELD        = '_flinkform_nonce';
+	private const HONEYPOT_FIELD     = 'flinkform_hp';
+	private const TIMESTAMP_FIELD    = 'flinkform_ts';
 	private const MIN_FILL_SECONDS   = 2;
 	private const FLASH_TTL_SECONDS  = 60;
-	private const FLASH_COOKIE_NAME  = 'perffo_flash';
+	private const FLASH_COOKIE_NAME  = 'flinkform_flash';
 
 	/**
 	 * Errors for the form currently being rendered.
@@ -88,8 +88,8 @@ final class Handler {
 	 */
 	public function handle(): void {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce is checked below explicitly.
-		$form_id = isset( $_POST['perffo_form_id'] ) ? sanitize_text_field( wp_unslash( $_POST['perffo_form_id'] ) ) : '';
-		$post_id = isset( $_POST['perffo_post_id'] ) ? absint( wp_unslash( $_POST['perffo_post_id'] ) ) : 0;
+		$form_id = isset( $_POST['flinkform_form_id'] ) ? sanitize_text_field( wp_unslash( $_POST['flinkform_form_id'] ) ) : '';
+		$post_id = isset( $_POST['flinkform_post_id'] ) ? absint( wp_unslash( $_POST['flinkform_post_id'] ) ) : 0;
 		// phpcs:enable
 
 		if ( '' === $form_id || 0 === $post_id ) {
@@ -98,10 +98,10 @@ final class Handler {
 
 		// Nonce — the only check whose failure we surface as 403, because
 		// it usually means a real human ran into a caching/session issue.
-		if ( ! check_admin_referer( 'perffo_submit_' . $form_id, self::NONCE_FIELD ) ) {
+		if ( ! check_admin_referer( 'flinkform_submit_' . $form_id, self::NONCE_FIELD ) ) {
 			wp_die(
-				esc_html__( 'Security check failed. Please go back and try again.', 'perform-forms' ),
-				esc_html__( 'Submission rejected', 'perform-forms' ),
+				esc_html__( 'Security check failed. Please go back and try again.', 'flinkform' ),
+				esc_html__( 'Submission rejected', 'flinkform' ),
 				[ 'response' => 403 ]
 			);
 		}
@@ -137,7 +137,7 @@ final class Handler {
 		// instantly. Honeypot + time-check from Phase 1 still apply
 		// even when spam protection is 'none' (defense in depth).
 		$form_attrs = isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [];
-		if ( ! \PerForm\Spam\Guard::verify_submission( $form_id, $form_attrs ) ) {
+		if ( ! \Flinkform\Spam\Guard::verify_submission( $form_id, $form_attrs ) ) {
 			$this->silent_reject();
 		}
 
@@ -172,9 +172,9 @@ final class Handler {
 			? $definition['attributes']['submitCondition']
 			: [];
 		if ( ! empty( $submit_condition['enabled'] ) && ! empty( $submit_condition['rules'] ) ) {
-			$evaluator = new \PerForm\Conditions\RuleEvaluator();
+			$evaluator = new \Flinkform\Conditions\RuleEvaluator();
 			if ( ! $evaluator->should_show( $submit_condition, $clean ) ) {
-				$errors['_form'] = __( 'Please complete the required selection before submitting.', 'perform-forms' );
+				$errors['_form'] = __( 'Please complete the required selection before submitting.', 'flinkform' );
 			}
 		}
 
@@ -200,7 +200,7 @@ final class Handler {
 		 * @param string               $form_id UUID of the form.
 		 * @param array<string, mixed> $clean   Sanitised, validated values keyed by field name.
 		 */
-		do_action( 'perffo_before_submission', $form_id, $clean );
+		do_action( 'flinkform_before_submission', $form_id, $clean );
 
 		// Compose the self-contained payload. Storing labels and types
 		// alongside the values means each submission stays readable in the
@@ -225,7 +225,7 @@ final class Handler {
 		if ( false === $result ) {
 			$this->flash(
 				$form_id,
-				[ '_form' => __( 'Sorry, something went wrong saving your message. Please try again.', 'perform-forms' ) ],
+				[ '_form' => __( 'Sorry, something went wrong saving your message. Please try again.', 'flinkform' ) ],
 				$clean
 			);
 			$this->redirect_error( $post_id, $form_id );
@@ -239,7 +239,7 @@ final class Handler {
 		 * The primary integration point for notifications, webhooks, CRM
 		 * sync, and anything else that should happen exactly once per
 		 * accepted submission. Spam-rejected submissions never reach this
-		 * hook (see perffo_before_submission for the same guarantee).
+		 * hook (see flinkform_before_submission for the same guarantee).
 		 *
 		 * Pure action hook — listeners cannot cancel the success redirect.
 		 * The submission row is already committed by the time this fires,
@@ -252,7 +252,7 @@ final class Handler {
 		 * @param array<string, mixed> $clean         Sanitised values keyed by field name.
 		 * @param array{attributes: array<string, mixed>, fields: array<int, array<string, mixed>>} $form_def Authoritative form definition from the source post.
 		 */
-		do_action( 'perffo_after_submission', $submission_id, $form_id, $clean, $definition );
+		do_action( 'flinkform_after_submission', $submission_id, $form_id, $clean, $definition );
 
 		$this->redirect_success( $post_id, $form_id, $form_attrs, $submission_id );
 	}
@@ -301,7 +301,7 @@ final class Handler {
 	 * @return array<int, string> Field names that should be treated as hidden.
 	 */
 	private function resolve_hidden_fields( array $fields, array $clean, array $skipped_steps = [] ): array {
-		$evaluator    = new \PerForm\Conditions\RuleEvaluator();
+		$evaluator    = new \Flinkform\Conditions\RuleEvaluator();
 		$hidden       = [];
 		$skipped_set  = array_flip( array_map( 'intval', $skipped_steps ) );
 
@@ -340,7 +340,7 @@ final class Handler {
 	 * @return array<int, int> Step indices that should be treated as skipped.
 	 */
 	private function resolve_skipped_steps( array $steps, array $clean ): array {
-		$evaluator = new \PerForm\Conditions\RuleEvaluator();
+		$evaluator = new \Flinkform\Conditions\RuleEvaluator();
 		$skipped   = [];
 
 		foreach ( $steps as $step ) {
@@ -371,7 +371,7 @@ final class Handler {
 	 */
 	private function validate( array $fields ): array {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce validated by caller; each value is sanitised per field type in the loop below.
-		$raw = isset( $_POST['perffo_field'] ) && is_array( $_POST['perffo_field'] ) ? wp_unslash( $_POST['perffo_field'] ) : [];
+		$raw = isset( $_POST['flinkform_field'] ) && is_array( $_POST['flinkform_field'] ) ? wp_unslash( $_POST['flinkform_field'] ) : [];
 
 		$clean  = [];
 		$errors = [];
@@ -399,12 +399,12 @@ final class Handler {
 				$errors[ $name ] = 'toggle' === $type
 					? sprintf(
 						/* translators: %s: field label */
-						__( '%s must be checked.', 'perform-forms' ),
+						__( '%s must be checked.', 'flinkform' ),
 						$label
 					)
 					: sprintf(
 						/* translators: %s: field label */
-						__( '%s is required.', 'perform-forms' ),
+						__( '%s is required.', 'flinkform' ),
 						$label
 					);
 				$clean[ $name ] = $sanitised;
@@ -488,7 +488,7 @@ final class Handler {
 			case 'email':
 				if ( '' !== (string) $value && ! is_email( (string) $value ) ) {
 					/* translators: %s: field label */
-					return __( '%s must be a valid email address.', 'perform-forms' );
+					return __( '%s must be a valid email address.', 'flinkform' );
 				}
 				return '';
 			case 'number':
@@ -498,18 +498,18 @@ final class Handler {
 				}
 				if ( ! is_numeric( $str ) ) {
 					/* translators: %s: field label */
-					return __( '%s must be a number.', 'perform-forms' );
+					return __( '%s must be a number.', 'flinkform' );
 				}
 				$num = (float) $str;
 				$min = isset( $field['min'] ) && '' !== $field['min'] ? (float) $field['min'] : null;
 				$max = isset( $field['max'] ) && '' !== $field['max'] ? (float) $field['max'] : null;
 				if ( null !== $min && $num < $min ) {
 					/* translators: %s: field label */
-					return __( '%s is below the minimum.', 'perform-forms' );
+					return __( '%s is below the minimum.', 'flinkform' );
 				}
 				if ( null !== $max && $num > $max ) {
 					/* translators: %s: field label */
-					return __( '%s is above the maximum.', 'perform-forms' );
+					return __( '%s is above the maximum.', 'flinkform' );
 				}
 				return '';
 			case 'select':
@@ -523,7 +523,7 @@ final class Handler {
 				foreach ( $values as $v ) {
 					if ( ! in_array( (string) $v, $allowed, true ) ) {
 						/* translators: %s: field label */
-						return __( '%s contains an invalid choice.', 'perform-forms' );
+						return __( '%s contains an invalid choice.', 'flinkform' );
 					}
 				}
 				return '';
@@ -598,7 +598,7 @@ final class Handler {
 	 * @return string
 	 */
 	private function flash_key( string $token, string $form_id ): string {
-		return 'perffo_flash_' . md5( $token . '|' . $form_id );
+		return 'flinkform_flash_' . md5( $token . '|' . $form_id );
 	}
 
 	/**
@@ -620,15 +620,15 @@ final class Handler {
 	 *
 	 *   1. afterSubmit.behaviour === 'redirect' AND a non-empty
 	 *      redirectUrl is set:
-	 *        a. Build URL with optional `?perffo_submission_id` /
-	 *           `?perffo_form_id` query args.
+	 *        a. Build URL with optional `?flinkform_submission_id` /
+	 *           `?flinkform_form_id` query args.
 	 *        b. Run through wp_safe_redirect() — same-origin-only by
 	 *           default; external URLs are silently filtered to the
 	 *           home URL by WordPress core. The author-facing copy in
 	 *           the inspector documents this so it's not a surprise.
 	 *        c. On success, exit.
 	 *   2. Fall through to the legacy "redirect back to source post
-	 *      with ?perffo_status=success" behaviour. Used when the
+	 *      with ?flinkform_status=success" behaviour. Used when the
 	 *      author kept the default behaviour, when a redirect URL
 	 *      was rejected by safe-redirect (returns false), or when the
 	 *      handler runs from a code path that didn't pass form
@@ -674,12 +674,12 @@ final class Handler {
 
 		$url = add_query_arg(
 			[
-				'perffo_status' => 'success',
-				'perffo_form'   => $form_id,
+				'flinkform_status' => 'success',
+				'flinkform_form'   => $form_id,
 			],
 			get_permalink( $post_id ) ?: home_url( '/' )
 		);
-		wp_safe_redirect( $url . '#perform-form-' . $form_id );
+		wp_safe_redirect( $url . '#flinkform-form-' . $form_id );
 		exit;
 	}
 
@@ -689,8 +689,8 @@ final class Handler {
 	 *
 	 * Leaves the URL alone if it already contains the metadata
 	 * args — defensive against an author who hand-rolled the URL
-	 * with `?perffo_submission_id=` already in it (rare but
-	 * possible) so we don't end up with `?perffo_submission_id=1&perffo_submission_id=2`.
+	 * with `?flinkform_submission_id=` already in it (rare but
+	 * possible) so we don't end up with `?flinkform_submission_id=1&flinkform_submission_id=2`.
 	 *
 	 * @param string                 $raw_url
 	 * @param array<string, mixed>   $after_submit
@@ -701,11 +701,11 @@ final class Handler {
 	private function build_redirect_url( string $raw_url, array $after_submit, string $form_id, ?int $submission_id ): string {
 		$args = [];
 
-		if ( ! empty( $after_submit['appendSubmissionId'] ) && null !== $submission_id && ! str_contains( $raw_url, 'perffo_submission_id=' ) ) {
-			$args['perffo_submission_id'] = $submission_id;
+		if ( ! empty( $after_submit['appendSubmissionId'] ) && null !== $submission_id && ! str_contains( $raw_url, 'flinkform_submission_id=' ) ) {
+			$args['flinkform_submission_id'] = $submission_id;
 		}
-		if ( ! empty( $after_submit['appendFormId'] ) && ! str_contains( $raw_url, 'perffo_form_id=' ) ) {
-			$args['perffo_form_id'] = $form_id;
+		if ( ! empty( $after_submit['appendFormId'] ) && ! str_contains( $raw_url, 'flinkform_form_id=' ) ) {
+			$args['flinkform_form_id'] = $form_id;
 		}
 
 		if ( empty( $args ) ) {
@@ -725,12 +725,12 @@ final class Handler {
 	private function redirect_error( int $post_id, string $form_id ): void {
 		$url = add_query_arg(
 			[
-				'perffo_status' => 'error',
-				'perffo_form'   => $form_id,
+				'flinkform_status' => 'error',
+				'flinkform_form'   => $form_id,
 			],
 			get_permalink( $post_id ) ?: home_url( '/' )
 		);
-		wp_safe_redirect( $url . '#perform-form-' . $form_id );
+		wp_safe_redirect( $url . '#flinkform-form-' . $form_id );
 		exit;
 	}
 
@@ -788,7 +788,7 @@ final class Handler {
 			return [];
 		}
 
-		$key  = 'perffo_flash_' . md5( $token . '|' . $form_id );
+		$key  = 'flinkform_flash_' . md5( $token . '|' . $form_id );
 		$data = get_transient( $key );
 		if ( ! is_array( $data ) ) {
 			$consumed[ $form_id ] = [];

@@ -20,7 +20,7 @@ import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { label } = attributes;
-	const blockProps = useBlockProps( { className: 'perform-page-break' } );
+	const blockProps = useBlockProps( { className: 'flinkform-page-break' } );
 
 	// The step number this break opens. Step 1 is everything before the
 	// first break, so the first break opens Step 2; this number is one
@@ -43,7 +43,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			let breaksSoFar = 0;
 			for ( let i = 0; i <= ownIndex && i < siblings.length; i += 1 ) {
-				if ( siblings[ i ].name === 'perform/page-break' ) {
+				if ( siblings[ i ].name === 'flinkform/page-break' ) {
 					breaksSoFar += 1;
 				}
 			}
@@ -55,23 +55,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const stepText = label
 		? sprintf(
 			/* translators: 1: step number, 2: author-supplied step label */
-			__( 'Step %1$d — %2$s', 'perform-forms' ),
+			__( 'Step %1$d — %2$s', 'flinkform' ),
 			stepNumber,
 			label
 		)
 		: sprintf(
 			/* translators: %d: step number */
-			__( 'Step %d', 'perform-forms' ),
+			__( 'Step %d', 'flinkform' ),
 			stepNumber
 		);
 
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Page Break', 'perform-forms' ) }>
+				<PanelBody title={ __( 'Page Break', 'flinkform' ) }>
 					<TextControl
-						label={ __( 'Step label', 'perform-forms' ) }
-						help={ __( 'Optional. Shown on the progress indicator on the frontend (Phase 5c). Leave empty to fall back to "Step N".', 'perform-forms' ) }
+						label={ __( 'Step label', 'flinkform' ) }
+						help={ __( 'Optional. Shown on the progress indicator on the frontend (Phase 5c). Leave empty to fall back to "Step N".', 'flinkform' ) }
 						value={ label }
 						onChange={ ( value ) => setAttributes( { label: value } ) }
 						__nextHasNoMarginBottom
@@ -81,9 +81,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<ConditionalLogicPanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
 			</InspectorControls>
 			<div { ...blockProps }>
-				<span className="perform-page-break__rule" aria-hidden="true" />
-				<span className="perform-page-break__label">{ stepText }</span>
-				<span className="perform-page-break__rule" aria-hidden="true" />
+				<span className="flinkform-page-break__rule" aria-hidden="true" />
+				<span className="flinkform-page-break__label">{ stepText }</span>
+				<span className="flinkform-page-break__rule" aria-hidden="true" />
 			</div>
 		</>
 	);

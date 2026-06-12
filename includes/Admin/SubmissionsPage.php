@@ -8,29 +8,29 @@
  *     row action (delete, mark read/unread). Mutating handlers redirect
  *     back to a clean URL after running, so the user never has a
  *     destructive action sitting in the address bar. (CSV export is owned
- *     by PerForm Pro, which registers its own handler via the bridge.)
+ *     by Flinkform Pro, which registers its own handler via the bridge.)
  *  2. render()   — renders either the list view or the single-submission
  *     detail view depending on the `?action=view&id=...` query args.
  *  3. Inline CSS — a tiny block of styles for the unread dot, status
  *     badge and detail layout. Kept inline because there's not enough
  *     CSS here to justify an enqueued stylesheet for a hundred bytes.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Admin;
+namespace Flinkform\Admin;
 
-use PerForm\Forms\Indexer;
-use PerForm\Submissions\Repository;
+use Flinkform\Forms\Indexer;
+use Flinkform\Submissions\Repository;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Controller for the PerForm → Submissions page.
+ * Controller for the Flinkform → Submissions page.
  */
 final class SubmissionsPage {
 
@@ -44,7 +44,7 @@ final class SubmissionsPage {
 	 * Handle mutating actions early, before headers go out.
 	 *
 	 * Single-row actions and the CSV export ship with their own per-action
-	 * nonces in the URL (`perffo_action=...`). Bulk actions arrive via
+	 * nonces in the URL (`flinkform_action=...`). Bulk actions arrive via
 	 * WP_List_Table's outer form using the standard `action`/`action2`
 	 * pair plus the `bulk-submissions` nonce.
 	 *
@@ -56,7 +56,7 @@ final class SubmissionsPage {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified inside each branch.
-		$single_action = isset( $_GET['perffo_action'] ) ? sanitize_key( wp_unslash( $_GET['perffo_action'] ) ) : '';
+		$single_action = isset( $_GET['flinkform_action'] ) ? sanitize_key( wp_unslash( $_GET['flinkform_action'] ) ) : '';
 		if ( '' !== $single_action ) {
 			$this->handle_single_action( $single_action );
 			return;
@@ -96,7 +96,7 @@ final class SubmissionsPage {
 	 */
 	public function render(): void {
 		if ( ! current_user_can( Menu::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You do not have permission to view PerForm submissions.', 'perform-forms' ) );
+			wp_die( esc_html__( 'You do not have permission to view Flinkform submissions.', 'flinkform' ) );
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only routing.
@@ -119,7 +119,7 @@ final class SubmissionsPage {
 		$table->prepare_items();
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php esc_html_e( 'Submissions', 'perform-forms' ); ?></h1>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Submissions', 'flinkform' ); ?></h1>
 			<hr class="wp-header-end" />
 
 			<?php $this->maybe_print_notice(); ?>
@@ -127,7 +127,7 @@ final class SubmissionsPage {
 			<form method="get">
 				<input type="hidden" name="page" value="<?php echo esc_attr( Menu::PARENT_SLUG ); ?>" />
 				<?php
-				$table->search_box( __( 'Search submissions', 'perform-forms' ), 'perffo-submissions-search' );
+				$table->search_box( __( 'Search submissions', 'flinkform' ), 'perffo-submissions-search' );
 				$table->display();
 				?>
 			</form>
@@ -146,7 +146,7 @@ final class SubmissionsPage {
 		$submission = $this->repository->find( $id );
 
 		if ( null === $submission ) {
-			echo '<div class="wrap"><h1>' . esc_html__( 'Submission not found', 'perform-forms' ) . '</h1><p><a href="' . esc_url( $this->list_url() ) . '">' . esc_html__( '← Back to submissions', 'perform-forms' ) . '</a></p></div>';
+			echo '<div class="wrap"><h1>' . esc_html__( 'Submission not found', 'flinkform' ) . '</h1><p><a href="' . esc_url( $this->list_url() ) . '">' . esc_html__( '← Back to submissions', 'flinkform' ) . '</a></p></div>';
 			return;
 		}
 
@@ -170,55 +170,55 @@ final class SubmissionsPage {
 			? (string) $live_form['title']
 			: (string) ( $meta['form_title'] ?? '' );
 
-		$delete_nonce = wp_create_nonce( 'perffo_delete_' . $id );
+		$delete_nonce = wp_create_nonce( 'flinkform_delete_' . $id );
 		$delete_url   = add_query_arg(
 			[
 				'page'           => Menu::PARENT_SLUG,
-				'perffo_action' => 'delete',
+				'flinkform_action' => 'delete',
 				'id'             => $id,
 				'_wpnonce'       => $delete_nonce,
 			],
 			admin_url( 'admin.php' )
 		);
-		$toggle_nonce = wp_create_nonce( 'perffo_status_' . $id );
+		$toggle_nonce = wp_create_nonce( 'flinkform_status_' . $id );
 		$toggle_url   = add_query_arg(
 			[
 				'page'           => Menu::PARENT_SLUG,
-				'perffo_action' => 'mark_unread',
+				'flinkform_action' => 'mark_unread',
 				'id'             => $id,
 				'_wpnonce'       => $toggle_nonce,
 			],
 			admin_url( 'admin.php' )
 		);
 		?>
-		<div class="wrap perform-detail">
+		<div class="wrap flinkform-detail">
 			<?php $this->maybe_print_notice(); ?>
 			<h1 class="wp-heading-inline">
-				<?php esc_html_e( 'Submission', 'perform-forms' ); ?> #<?php echo (int) $submission['id']; ?>
+				<?php esc_html_e( 'Submission', 'flinkform' ); ?> #<?php echo (int) $submission['id']; ?>
 			</h1>
 			<a href="<?php echo esc_url( $this->list_url() ); ?>" class="page-title-action">
-				<?php esc_html_e( '← Back', 'perform-forms' ); ?>
+				<?php esc_html_e( '← Back', 'flinkform' ); ?>
 			</a>
 			<hr class="wp-header-end" />
 
-			<div class="perform-detail__meta">
+			<div class="flinkform-detail__meta">
 				<p>
-					<strong><?php esc_html_e( 'Received:', 'perform-forms' ); ?></strong>
+					<strong><?php esc_html_e( 'Received:', 'flinkform' ); ?></strong>
 					<?php echo esc_html( $local_ts ); ?>
 				</p>
 				<?php if ( '' !== $form_title ) : ?>
 					<p>
-						<strong><?php esc_html_e( 'Form:', 'perform-forms' ); ?></strong>
+						<strong><?php esc_html_e( 'Form:', 'flinkform' ); ?></strong>
 						<?php echo esc_html( $form_title ); ?>
 					</p>
 				<?php endif; ?>
 				<p>
-					<strong><?php esc_html_e( 'Form ID:', 'perform-forms' ); ?></strong>
+					<strong><?php esc_html_e( 'Form ID:', 'flinkform' ); ?></strong>
 					<code><?php echo esc_html( $submission['form_id'] ); ?></code>
 				</p>
 				<?php if ( '' !== $source_url ) : ?>
 					<p>
-						<strong><?php esc_html_e( 'Source page:', 'perform-forms' ); ?></strong>
+						<strong><?php esc_html_e( 'Source page:', 'flinkform' ); ?></strong>
 						<a href="<?php echo esc_url( $source_url ); ?>" target="_blank" rel="noopener">
 							<?php echo esc_html( $source_url ); ?>
 						</a>
@@ -226,11 +226,11 @@ final class SubmissionsPage {
 				<?php endif; ?>
 			</div>
 
-			<h2><?php esc_html_e( 'Fields', 'perform-forms' ); ?></h2>
+			<h2><?php esc_html_e( 'Fields', 'flinkform' ); ?></h2>
 			<?php if ( empty( $fields ) ) : ?>
-				<p><em><?php esc_html_e( 'This submission has no fields.', 'perform-forms' ); ?></em></p>
+				<p><em><?php esc_html_e( 'This submission has no fields.', 'flinkform' ); ?></em></p>
 			<?php else : ?>
-				<table class="widefat striped perform-detail__fields">
+				<table class="widefat striped flinkform-detail__fields">
 					<tbody>
 						<?php foreach ( $fields as $field ) : ?>
 							<?php if ( ! is_array( $field ) ) {
@@ -253,22 +253,22 @@ final class SubmissionsPage {
 			/**
 			 * Fires after the submission's field table, inside the detail view.
 			 *
-			 * PerForm Pro hooks this to render the "Webhook Deliveries" section
+			 * Flinkform Pro hooks this to render the "Webhook Deliveries" section
 			 * for the submission. With no add-on, nothing extra renders.
 			 *
 			 * @since 0.2.5
 			 *
 			 * @param int $id Submission id.
 			 */
-			do_action( 'perffo_submission_detail_after', $id );
+			do_action( 'flinkform_submission_detail_after', $id );
 			?>
 
-			<p class="perform-detail__actions">
+			<p class="flinkform-detail__actions">
 				<a href="<?php echo esc_url( $toggle_url ); ?>" class="button">
-					<?php esc_html_e( 'Mark as unread', 'perform-forms' ); ?>
+					<?php esc_html_e( 'Mark as unread', 'flinkform' ); ?>
 				</a>
-				<a href="<?php echo esc_url( $delete_url ); ?>" class="button button-link-delete" onclick="return confirm(<?php echo esc_attr( wp_json_encode( __( 'Delete this submission permanently?', 'perform-forms' ) ) ); ?>)">
-					<?php esc_html_e( 'Delete submission', 'perform-forms' ); ?>
+				<a href="<?php echo esc_url( $delete_url ); ?>" class="button button-link-delete" onclick="return confirm(<?php echo esc_attr( wp_json_encode( __( 'Delete this submission permanently?', 'flinkform' ) ) ); ?>)">
+					<?php esc_html_e( 'Delete submission', 'flinkform' ); ?>
 				</a>
 			</p>
 		</div>
@@ -288,7 +288,7 @@ final class SubmissionsPage {
 		// Multi-value: comma-separated list of escaped items.
 		if ( is_array( $value ) ) {
 			if ( empty( $value ) ) {
-				return '<em>' . esc_html__( 'empty', 'perform-forms' ) . '</em>';
+				return '<em>' . esc_html__( 'empty', 'flinkform' ) . '</em>';
 			}
 			return implode( ', ', array_map( 'esc_html', array_map( 'strval', $value ) ) );
 		}
@@ -297,12 +297,12 @@ final class SubmissionsPage {
 
 		if ( 'toggle' === $type ) {
 			return '1' === $value
-				? esc_html__( 'Yes', 'perform-forms' )
-				: esc_html__( 'No', 'perform-forms' );
+				? esc_html__( 'Yes', 'flinkform' )
+				: esc_html__( 'No', 'flinkform' );
 		}
 
 		if ( '' === $value ) {
-			return '<em>' . esc_html__( 'empty', 'perform-forms' ) . '</em>';
+			return '<em>' . esc_html__( 'empty', 'flinkform' ) . '</em>';
 		}
 
 		if ( 'email' === $type && is_email( $value ) ) {
@@ -342,7 +342,7 @@ final class SubmissionsPage {
 				$count  = $this->repository->update_status_many( $ids, 'read' );
 				$notice = sprintf(
 					/* translators: %d: number of submissions affected */
-					_n( '%d submission marked as read.', '%d submissions marked as read.', $count, 'perform-forms' ),
+					_n( '%d submission marked as read.', '%d submissions marked as read.', $count, 'flinkform' ),
 					$count
 				);
 				break;
@@ -350,7 +350,7 @@ final class SubmissionsPage {
 				$count  = $this->repository->update_status_many( $ids, 'unread' );
 				$notice = sprintf(
 					/* translators: %d: number of submissions affected */
-					_n( '%d submission marked as unread.', '%d submissions marked as unread.', $count, 'perform-forms' ),
+					_n( '%d submission marked as unread.', '%d submissions marked as unread.', $count, 'flinkform' ),
 					$count
 				);
 				break;
@@ -358,7 +358,7 @@ final class SubmissionsPage {
 				$count  = $this->repository->delete_many( $ids );
 				$notice = sprintf(
 					/* translators: %d: number of submissions affected */
-					_n( '%d submission deleted.', '%d submissions deleted.', $count, 'perform-forms' ),
+					_n( '%d submission deleted.', '%d submissions deleted.', $count, 'flinkform' ),
 					$count
 				);
 				break;
@@ -370,11 +370,11 @@ final class SubmissionsPage {
 	/**
 	 * Handle a single-row action (delete, mark_unread).
 	 *
-	 * CSV export is owned by PerForm Pro — it registers its own handler and
+	 * CSV export is owned by Flinkform Pro — it registers its own handler and
 	 * filter-bar button via the bridge layer, so the free core no longer
 	 * routes an 'export' action here.
 	 *
-	 * @param string $action The `perffo_action` query arg.
+	 * @param string $action The `flinkform_action` query arg.
 	 * @return void
 	 */
 	private function handle_single_action( string $action ): void {
@@ -386,17 +386,17 @@ final class SubmissionsPage {
 				if ( 0 === $id ) {
 					return;
 				}
-				check_admin_referer( 'perffo_delete_' . $id );
+				check_admin_referer( 'flinkform_delete_' . $id );
 				$this->repository->delete( $id );
-				$this->redirect_with_notice( __( 'Submission deleted.', 'perform-forms' ) );
+				$this->redirect_with_notice( __( 'Submission deleted.', 'flinkform' ) );
 				break;
 			case 'mark_unread':
 				if ( 0 === $id ) {
 					return;
 				}
-				check_admin_referer( 'perffo_status_' . $id );
+				check_admin_referer( 'flinkform_status_' . $id );
 				$this->repository->update_status( $id, 'unread' );
-				$this->redirect_with_notice( __( 'Submission marked as unread.', 'perform-forms' ) );
+				$this->redirect_with_notice( __( 'Submission marked as unread.', 'flinkform' ) );
 				break;
 		}
 	}
@@ -408,7 +408,7 @@ final class SubmissionsPage {
 	 */
 	private function maybe_print_notice(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only flash message.
-		$notice = isset( $_GET['perffo_notice'] ) ? sanitize_text_field( wp_unslash( $_GET['perffo_notice'] ) ) : '';
+		$notice = isset( $_GET['flinkform_notice'] ) ? sanitize_text_field( wp_unslash( $_GET['flinkform_notice'] ) ) : '';
 		if ( '' === $notice ) {
 			return;
 		}
@@ -427,7 +427,7 @@ final class SubmissionsPage {
 	private function redirect_with_notice( string $notice ): void {
 		$url = $this->list_url();
 		if ( '' !== $notice ) {
-			$url = add_query_arg( 'perffo_notice', rawurlencode( $notice ), $url );
+			$url = add_query_arg( 'flinkform_notice', rawurlencode( $notice ), $url );
 		}
 		wp_safe_redirect( $url );
 		exit;
@@ -451,14 +451,14 @@ final class SubmissionsPage {
 	 */
 	public static function inline_css(): string {
 		return <<<'CSS'
-.perform-unread-dot { color: #2271b1; font-size: 14px; line-height: 1; margin-right: 4px; }
-.perform-status { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; line-height: 1.4; }
-.perform-status--unread { background: #e7f5ff; color: #1d4ed8; font-weight: 600; }
-.perform-status--read { background: #f1f1f1; color: #555; }
-.perform-preview { color: #444; }
-.perform-detail__meta p { margin: 4px 0; }
-.perform-detail__fields th { vertical-align: top; }
-.perform-detail__actions { margin-top: 24px; display: flex; gap: 12px; }
+.flinkform-unread-dot { color: #2271b1; font-size: 14px; line-height: 1; margin-right: 4px; }
+.flinkform-status { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; line-height: 1.4; }
+.flinkform-status--unread { background: #e7f5ff; color: #1d4ed8; font-weight: 600; }
+.flinkform-status--read { background: #f1f1f1; color: #555; }
+.flinkform-preview { color: #444; }
+.flinkform-detail__meta p { margin: 4px 0; }
+.flinkform-detail__fields th { vertical-align: top; }
+.flinkform-detail__actions { margin-top: 24px; display: flex; gap: 12px; }
 CSS;
 	}
 }

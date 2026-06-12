@@ -1,24 +1,24 @@
 <?php
 /**
- * PerForm admin menu.
+ * Flinkform admin menu.
  *
- * Owns the top-level "PerForm" menu and dispatches every PerForm admin
+ * Owns the top-level "Flinkform" menu and dispatches every Flinkform admin
  * page registration. Each page is constructed lazily inside its menu
  * callback so unused pages don't pay any initialisation cost.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Admin;
+namespace Flinkform\Admin;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Wires the PerForm admin into wp-admin.
+ * Wires the Flinkform admin into wp-admin.
  */
 final class Menu {
 
@@ -30,7 +30,7 @@ final class Menu {
 	public const PARENT_SLUG = 'perffo-submissions';
 
 	/**
-	 * Capability required to access any PerForm admin page. `manage_options`
+	 * Capability required to access any Flinkform admin page. `manage_options`
 	 * keeps the bar at "site admin"; later phases (settings, webhooks) may
 	 * introduce finer-grained capabilities.
 	 */
@@ -53,8 +53,8 @@ final class Menu {
 	 */
 	public function register_pages(): void {
 		$submissions_hook = add_menu_page(
-			__( 'PerForm', 'perform-forms' ),
-			__( 'PerForm', 'perform-forms' ),
+			__( 'Flinkform', 'flinkform' ),
+			__( 'Flinkform', 'flinkform' ),
 			self::CAPABILITY,
 			self::PARENT_SLUG,
 			[ $this, 'render_submissions_page' ],
@@ -64,8 +64,8 @@ final class Menu {
 
 		add_submenu_page(
 			self::PARENT_SLUG,
-			__( 'Submissions', 'perform-forms' ),
-			__( 'Submissions', 'perform-forms' ),
+			__( 'Submissions', 'flinkform' ),
+			__( 'Submissions', 'flinkform' ),
 			self::CAPABILITY,
 			self::PARENT_SLUG,
 			[ $this, 'render_submissions_page' ]
@@ -73,14 +73,14 @@ final class Menu {
 
 		$forms_hook = add_submenu_page(
 			self::PARENT_SLUG,
-			__( 'Forms', 'perform-forms' ),
-			__( 'Forms', 'perform-forms' ),
+			__( 'Forms', 'flinkform' ),
+			__( 'Forms', 'flinkform' ),
 			self::CAPABILITY,
 			FormsPage::SLUG,
 			[ $this, 'render_forms_page' ]
 		);
 
-		// The Webhook Log and SMTP pages are owned by PerForm Pro, which
+		// The Webhook Log and SMTP pages are owned by Flinkform Pro, which
 		// attaches its own submenus here via add_submenu_page( Menu::PARENT_SLUG, … ).
 
 		// Enqueue page-specific admin styles via wp_add_inline_style() so no
@@ -99,7 +99,7 @@ final class Menu {
 	 * @return void
 	 */
 	public function enqueue_submissions_styles(): void {
-		wp_register_style( 'perffo-admin-submissions', false, [], PERFFO_VERSION );
+		wp_register_style( 'perffo-admin-submissions', false, [], FLINKFORM_VERSION );
 		wp_enqueue_style( 'perffo-admin-submissions' );
 		wp_add_inline_style( 'perffo-admin-submissions', SubmissionsPage::inline_css() );
 	}
@@ -110,7 +110,7 @@ final class Menu {
 	 * @return void
 	 */
 	public function enqueue_forms_styles(): void {
-		wp_register_style( 'perffo-admin-forms', false, [], PERFFO_VERSION );
+		wp_register_style( 'perffo-admin-forms', false, [], FLINKFORM_VERSION );
 		wp_enqueue_style( 'perffo-admin-forms' );
 		wp_add_inline_style( 'perffo-admin-forms', FormsPage::inline_css() );
 	}
@@ -134,7 +134,7 @@ final class Menu {
 	}
 
 	/**
-	 * Handle GET/POST actions for PerForm pages BEFORE wp-admin renders
+	 * Handle GET/POST actions for Flinkform pages BEFORE wp-admin renders
 	 * its header (so we can redirect cleanly after bulk actions etc.).
 	 *
 	 * @return void

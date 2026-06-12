@@ -1,6 +1,6 @@
 <?php
 /**
- * Spam-protection façade for PerForm.
+ * Spam-protection façade for Flinkform.
  *
  * Single integration point the rest of the codebase calls:
  *
@@ -16,14 +16,14 @@
  * touching the handler or the render.php — only Guard needs to
  * grow a strategy switch.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Spam;
+namespace Flinkform\Spam;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -64,7 +64,7 @@ final class Guard {
 		// absent the free core degrades to 'none' — honeypot + time-check
 		// (Phase 1) still apply upstream and require zero configuration.
 		if ( 'builtin' === $attr || 'auto' === $attr ) {
-			return \PerForm\Bridge\Features::has( \PerForm\Bridge\Features::SPAM_CHALLENGE )
+			return \Flinkform\Bridge\Features::has( \Flinkform\Bridge\Features::SPAM_CHALLENGE )
 				? 'builtin'
 				: 'none';
 		}
@@ -82,7 +82,7 @@ final class Guard {
 		 *
 		 * @param array<int, string> $providers Registered provider keys.
 		 */
-		$providers = (array) apply_filters( 'perffo_spam_providers', [] );
+		$providers = (array) apply_filters( 'flinkform_spam_providers', [] );
 
 		return in_array( $attr, $providers, true ) ? $attr : 'none';
 	}

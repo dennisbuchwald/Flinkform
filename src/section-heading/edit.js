@@ -7,15 +7,15 @@ import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { title, description, headingLevel } = attributes;
 	const level = headingLevel || 2;
-	const blockProps = useBlockProps( { className: 'perform-section-heading' } );
+	const blockProps = useBlockProps( { className: 'flinkform-section-heading' } );
 
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Section', 'perform-forms' ) }>
+				<PanelBody title={ __( 'Section', 'flinkform' ) }>
 					<SelectControl
-						label={ __( 'Heading level', 'perform-forms' ) }
-						help={ __( 'Pick the level that keeps your page’s heading order correct (H1 belongs to the page).', 'perform-forms' ) }
+						label={ __( 'Heading level', 'flinkform' ) }
+						help={ __( 'Pick the level that keeps your page’s heading order correct (H1 belongs to the page).', 'flinkform' ) }
 						value={ String( level ) }
 						options={ [
 							{ label: 'H2', value: '2' },
@@ -29,7 +29,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						__next40pxDefaultSize
 					/>
 					<TextareaControl
-						label={ __( 'Description', 'perform-forms' ) }
+						label={ __( 'Description', 'flinkform' ) }
 						value={ description }
 						onChange={ ( v ) => setAttributes( { description: v } ) }
 						__nextHasNoMarginBottom
@@ -41,13 +41,13 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			<div { ...blockProps }>
 				<RichText
 					tagName={ `h${ level }` }
-					className="perform-section-heading__title"
+					className="flinkform-section-heading__title"
 					value={ title }
 					onChange={ ( v ) => setAttributes( { title: v } ) }
-					placeholder={ __( 'Section title…', 'perform-forms' ) }
+					placeholder={ __( 'Section title…', 'flinkform' ) }
 				/>
 				{ description && (
-					<p className="perform-section-heading__description">{ description }</p>
+					<p className="flinkform-section-heading__description">{ description }</p>
 				) }
 			</div>
 		</>

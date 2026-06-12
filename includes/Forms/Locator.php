@@ -4,7 +4,7 @@
  *
  * Phase 1 stores form definitions as block markup inside the page they're
  * embedded on. To validate a submission we parse the source post, walk the
- * block tree, find the `perform/form` block whose `formId` attribute
+ * block tree, find the `flinkform/form` block whose `formId` attribute
  * matches the submitted UUID, and extract its field children.
  *
  * Phase 2b extends the field type map and carries per-type extras
@@ -12,14 +12,14 @@
  * so server-side validation can lean on the authoritative definition
  * rather than trusting the POST.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Forms;
+namespace Flinkform\Forms;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -31,13 +31,13 @@ final class Locator {
 	/**
 	 * Object-cache group + TTL for the parsed form definition.
 	 */
-	private const CACHE_GROUP = 'perffo_forms';
+	private const CACHE_GROUP = 'flinkform_forms';
 	private const CACHE_TTL   = 5 * MINUTE_IN_SECONDS;
 
 	/**
 	 * Block name of the form container.
 	 */
-	private const FORM_BLOCK = 'perform/form';
+	private const FORM_BLOCK = 'flinkform/form';
 
 	/**
 	 * Map of supported field block names to their canonical type.
@@ -46,16 +46,16 @@ final class Locator {
 	 * @var array<string, string>
 	 */
 	private const FIELD_BLOCKS = [
-		'perform/field-text'     => 'text',
-		'perform/field-email'    => 'email',
-		'perform/field-textarea' => 'textarea',
-		'perform/field-number'   => 'number',
-		'perform/field-toggle'   => 'toggle',
-		'perform/field-hidden'   => 'hidden',
-		'perform/field-select'   => 'select',
-		'perform/field-radio'    => 'radio',
-		'perform/field-checkbox' => 'checkbox',
-		'perform/field-consent'  => 'consent',
+		'flinkform/field-text'     => 'text',
+		'flinkform/field-email'    => 'email',
+		'flinkform/field-textarea' => 'textarea',
+		'flinkform/field-number'   => 'number',
+		'flinkform/field-toggle'   => 'toggle',
+		'flinkform/field-hidden'   => 'hidden',
+		'flinkform/field-select'   => 'select',
+		'flinkform/field-radio'    => 'radio',
+		'flinkform/field-checkbox' => 'checkbox',
+		'flinkform/field-consent'  => 'consent',
 	];
 
 	/**
@@ -158,7 +158,7 @@ final class Locator {
 		foreach ( $inner_blocks as $block ) {
 			$block_name = $block['blockName'] ?? '';
 
-			if ( 'perform/page-break' === $block_name ) {
+			if ( 'flinkform/page-break' === $block_name ) {
 				$step_index++;
 				continue;
 			}
@@ -220,7 +220,7 @@ final class Locator {
 		$steps = [ [ 'index' => 0, 'conditionalLogic' => [] ] ];
 
 		foreach ( $inner_blocks as $block ) {
-			if ( ( $block['blockName'] ?? '' ) !== 'perform/page-break' ) {
+			if ( ( $block['blockName'] ?? '' ) !== 'flinkform/page-break' ) {
 				continue;
 			}
 			$attrs = $block['attrs'] ?? [];
@@ -242,7 +242,7 @@ final class Locator {
 	 * `label` in $attrs. We pull the default from the registered block type
 	 * before falling all the way back to the (cryptic) fieldName.
 	 *
-	 * @param string               $block_name e.g. "perform/field-email".
+	 * @param string               $block_name e.g. "flinkform/field-email".
 	 * @param array<string, mixed> $attrs      Parsed attrs from post_content.
 	 * @param string               $field_name fieldName as last-resort label.
 	 * @return string

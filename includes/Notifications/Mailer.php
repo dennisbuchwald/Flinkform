@@ -2,7 +2,7 @@
 /**
  * Email notifications for accepted submissions.
  *
- * Subscriber on `perffo_after_submission`. Composes an admin notification
+ * Subscriber on `flinkform_after_submission`. Composes an admin notification
  * and dispatches it via `wp_mail()` — no SMTP module, no HTML body, no
  * configuration UI yet. Slice 3a deliberately ships with working defaults:
  * the moment the plugin update is uploaded, the site admin starts
@@ -13,14 +13,14 @@
  * if present and falls back to the defaults below for every missing key,
  * so existing forms keep working without re-saving the post.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Notifications;
+namespace Flinkform\Notifications;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -39,8 +39,8 @@ final class Mailer {
 	 * @return void
 	 */
 	public function register(): void {
-		add_action( 'perffo_after_submission', [ $this, 'send_admin_notification' ], 10, 4 );
-		add_action( 'perffo_after_submission', [ $this, 'send_submitter_confirmation' ], 11, 4 );
+		add_action( 'flinkform_after_submission', [ $this, 'send_admin_notification' ], 10, 4 );
+		add_action( 'flinkform_after_submission', [ $this, 'send_submitter_confirmation' ], 11, 4 );
 	}
 
 	/**
@@ -92,7 +92,7 @@ final class Mailer {
 		 * @param string                                                                                     $type One of 'admin' | 'submitter'.
 		 */
 		$email = (array) apply_filters(
-			'perffo_email_notification',
+			'flinkform_email_notification',
 			[
 				'to'      => $to,
 				'subject' => $subject,
@@ -159,7 +159,7 @@ final class Mailer {
 
 		/** This filter is documented in this file. */
 		$email = (array) apply_filters(
-			'perffo_email_notification',
+			'flinkform_email_notification',
 			[
 				'to'      => [ $recipient ],
 				'subject' => $subject,
@@ -200,7 +200,7 @@ final class Mailer {
 			: [];
 
 		$default_to      = (string) get_option( 'admin_email', '' );
-		$default_subject = __( 'New submission: {form:title}', 'perform-forms' );
+		$default_subject = __( 'New submission: {form:title}', 'flinkform' );
 		$default_body    = $this->default_admin_body(
 			isset( $form_def['fields'] ) && is_array( $form_def['fields'] ) ? $form_def['fields'] : []
 		);
@@ -230,7 +230,7 @@ final class Mailer {
 			? $attrs['notifications']['submitter']
 			: [];
 
-		$default_subject = __( 'We received your submission', 'perform-forms' );
+		$default_subject = __( 'We received your submission', 'flinkform' );
 		$default_body    = $this->default_submitter_body(
 			isset( $form_def['fields'] ) && is_array( $form_def['fields'] ) ? $form_def['fields'] : []
 		);
@@ -255,7 +255,7 @@ final class Mailer {
 	 */
 	private function default_admin_body( array $fields ): string {
 		$lines   = [];
-		$lines[] = __( 'A new submission was received:', 'perform-forms' );
+		$lines[] = __( 'A new submission was received:', 'flinkform' );
 		$lines[] = '';
 
 		foreach ( $fields as $field ) {
@@ -287,9 +287,9 @@ final class Mailer {
 	 */
 	private function default_submitter_body( array $fields ): string {
 		$lines   = [];
-		$lines[] = __( 'Hi,', 'perform-forms' );
+		$lines[] = __( 'Hi,', 'flinkform' );
 		$lines[] = '';
-		$lines[] = __( 'Thanks for your submission. We received the following and will be in touch shortly:', 'perform-forms' );
+		$lines[] = __( 'Thanks for your submission. We received the following and will be in touch shortly:', 'flinkform' );
 		$lines[] = '';
 
 		foreach ( $fields as $field ) {

@@ -39,14 +39,14 @@
  *     `any`, fails the overall match for `all`). Better to under-
  *     show than to leak a hidden field through a typo in storage.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Conditions;
+namespace Flinkform\Conditions;
 
 defined( 'ABSPATH' ) || exit;
 

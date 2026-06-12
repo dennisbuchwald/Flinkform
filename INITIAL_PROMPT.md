@@ -1,23 +1,23 @@
-# PerForm — Initialer Prompt für Claude (neuer Chat)
+# Flinkform — Initialer Prompt für Claude (neuer Chat)
 
 > Diesen Prompt **komplett** in einen frischen Claude-Code-Chat im Projektordner
-> `perform-forms/` einfügen. Antwortsprache: Deutsch. Arbeitsverzeichnis muss
-> `…/02_Eigenentwicklungen/perform-forms/` sein.
+> `flinkform/` einfügen. Antwortsprache: Deutsch. Arbeitsverzeichnis muss
+> `…/02_Eigenentwicklungen/flinkform/` sein.
 
 ---
 
 ## Kontext
 
-Du startest die Entwicklung des WordPress-Plugins **PerForm** komplett neu in
+Du startest die Entwicklung des WordPress-Plugins **Flinkform** komplett neu in
 diesem frischen Chat. Der bisherige Chat ging um ein anderes Plugin (den
 "Logo Slider" Carousel-Block) und ist nicht mehr aktiv. Du übernimmst hier mit
 einem fertigen Scaffold + einer ausführlichen Spec.
 
 **Plugin-Daten (fix, nicht ändern):**
-- Anzeigename: **PerForm**
-- WordPress.org-Slug: **`perform-forms`** (der reine Slug `perform` war auf WP.org schon vergeben)
-- Text Domain: `perform-forms`
-- Namespace: `PerForm\` (PSR-4, später unter `includes/`)
+- Anzeigename: **Flinkform**
+- WordPress.org-Slug: **`flinkform`** (der reine Slug `perform` war auf WP.org schon vergeben)
+- Text Domain: `flinkform`
+- Namespace: `Flinkform\` (PSR-4, später unter `includes/`)
 - Konstanten-Präfix: `PERFORM_`
 - Funktions-Präfix: `perform_`
 - Version: `0.1.0` (Scaffold)
@@ -42,7 +42,7 @@ einem fertigen Scaffold + einer ausführlichen Spec.
    (Translation-Pipeline `.po`/`.mo`/`.json`, Deploy-Script, Versionierung an
    allen Stellen synchron, Changelog-Pflege). **Übernimm aber nicht den
    Architektur-Stil** — der Carousel-Block nutzt die ältere Inline-PHP-
-   Registrierung. PerForm bekommt die *moderne* Architektur:
+   Registrierung. Flinkform bekommt die *moderne* Architektur:
    `block.json` + `render.php` + Interactivity API + PSR-4 unter `includes/`.
 
 ## Arbeitsweise (verbindlich)
@@ -53,7 +53,7 @@ einem fertigen Scaffold + einer ausführlichen Spec.
 - **WordPress Coding Standards** für PHP. Tabs zur Einrückung. `declare( strict_types = 1 );`
   in jeder PHP-Datei. Typisierte Funktions-Signaturen.
 - **i18n von Anfang an.** Jeder User-facing String durch `__()`/`_e()` mit
-  Text-Domain `'perform-forms'`. Bei Block-JS später `wp_set_script_translations()`.
+  Text-Domain `'flinkform'`. Bei Block-JS später `wp_set_script_translations()`.
 - **Security:** sanitize-in / escape-out, Nonces auf jedem Form-Submit,
   Capability-Checks im Admin, prepared statements für DB.
 - **Plugin Check** (offizielles WP.org-Tool) muss sauber sein. Im Carousel-Repo
@@ -74,7 +74,7 @@ einem fertigen Scaffold + einer ausführlichen Spec.
    - `src/form-container/render.php` (server-seitiges Rendern als `<form>` mit Nonce)
    - `includes/Blocks/FormContainer.php` (Registrierung über `init`-Hook)
 3. **Plugin-Bootstrap aktivieren:** `perform.php` → Autoloader laden,
-   `\PerForm\Plugin::instance()->init()` aufrufen.
+   `\Flinkform\Plugin::instance()->init()` aufrufen.
 4. **Erstes Submission-Setup:**
    - `includes/Database/Schema.php` mit `dbDelta()` für `{prefix}_perform_submissions`
    - Activation-Hook `perform_activate()` ruft das auf

@@ -1,6 +1,6 @@
-# PerForm
+# Flinkform
 
-[![WordPress Plugin Version](https://img.shields.io/badge/version-0.2.9-blue)](https://wordpress.org/plugins/perform-forms/)
+[![WordPress Plugin Version](https://img.shields.io/badge/version-0.2.9-blue)](https://wordpress.org/plugins/flinkform/)
 [![License](https://img.shields.io/badge/license-GPL%20v2-green)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![WordPress](https://img.shields.io/badge/WordPress-6.5%2B-blue)](https://wordpress.org/)
 [![Tested up to](https://img.shields.io/badge/tested%20up%20to-7.0-blue)](https://wordpress.org/)
@@ -8,14 +8,14 @@
 
 > Block-native forms for WordPress — conditional logic, accessible, and free.
 
-**PerForm Forms** builds forms the way WordPress should have done it from the start — inside the Block Editor, with the Interactivity API, no separate admin UI. Beautiful, accessible, privacy-first, and genuinely capable for free.
+**Flinkform Forms** builds forms the way WordPress should have done it from the start — inside the Block Editor, with the Interactivity API, no separate admin UI. Beautiful, accessible, privacy-first, and genuinely capable for free.
 
 ```
 If a first-time user cannot build and publish a working contact form in under
 5 minutes without reading any documentation, we have failed.
 ```
 
-## Why PerForm
+## Why Flinkform
 
 - **Native, not bolted on** — built with `block.json` and the Interactivity API, not a separate admin UI
 - **Beautiful by default** — inherits your theme's colours, typography and spacing from `theme.json`
@@ -52,7 +52,7 @@ npm run lint:js    # lint JavaScript
 npm run plugin-zip # produce a distributable zip
 ```
 
-Source blocks live in `src/` (compiled to `build/`); PHP classes follow PSR-4 under `includes/` (namespace `PerForm\`).
+Source blocks live in `src/` (compiled to `build/`); PHP classes follow PSR-4 under `includes/` (namespace `Flinkform\`).
 
 ## Standards
 
@@ -70,13 +70,13 @@ Source blocks live in `src/` (compiled to `build/`); PHP classes follow PSR-4 un
 
 ## Support
 
-- **Documentation**: Check the [plugin page](https://wordpress.org/plugins/perform-forms/)
-- **Support Forum**: [WordPress.org Support](https://wordpress.org/support/plugin/perform-forms/)
+- **Documentation**: Check the [plugin page](https://wordpress.org/plugins/flinkform/)
+- **Support Forum**: [WordPress.org Support](https://wordpress.org/support/plugin/flinkform/)
 - **Professional Support**: [dbw media](https://dbw-media.de/kontakt)
 
 ## About dbw media
 
-[dbw media](https://dbw-media.de) is a WordPress studio focused on custom development, Gutenberg blocks and performance. PerForm is built and maintained by [Dennis Buchwald](https://dennisbuchwald.de) — the personal brand behind dbw media.
+[dbw media](https://dbw-media.de) is a WordPress studio focused on custom development, Gutenberg blocks and performance. Flinkform is built and maintained by [Dennis Buchwald](https://dennisbuchwald.de) — the personal brand behind dbw media.
 
 ## License
 

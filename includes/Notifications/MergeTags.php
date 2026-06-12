@@ -8,25 +8,25 @@
  * Designed to be shared across notification surfaces — the Mailer uses it
  * today, webhooks and integrations will reuse the same context in later
  * phases. The context build is exposed separately so listeners on
- * `perffo_after_submission` can compose it once and reuse it.
+ * `flinkform_after_submission` can compose it once and reuse it.
  *
- * Unknown tags pass through the `perffo_resolve_merge_tag` filter; if
+ * Unknown tags pass through the `flinkform_resolve_merge_tag` filter; if
  * still unresolved they remain in the output verbatim so authors notice
  * the typo instead of silently shipping empty strings.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Notifications;
+namespace Flinkform\Notifications;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Stateless template engine for PerForm merge tags.
+ * Stateless template engine for Flinkform merge tags.
  */
 final class MergeTags {
 
@@ -68,7 +68,7 @@ final class MergeTags {
 		// would render with a trailing colon and no value — ugly in the
 		// inbox and confusing in the admin list.
 		$raw_title  = isset( $attrs['title'] ) ? trim( (string) $attrs['title'] ) : '';
-		$form_title = '' !== $raw_title ? $raw_title : __( 'Untitled form', 'perform-forms' );
+		$form_title = '' !== $raw_title ? $raw_title : __( 'Untitled form', 'flinkform' );
 
 		$context = [
 			'submission_id' => $submission_id,
@@ -97,7 +97,7 @@ final class MergeTags {
 		 * @param array<string, mixed> $clean
 		 * @param array<string, mixed> $form_def
 		 */
-		return (array) apply_filters( 'perffo_merge_tags_context', $context, $submission_id, $form_id, $clean, $form_def );
+		return (array) apply_filters( 'flinkform_merge_tags_context', $context, $submission_id, $form_id, $clean, $form_def );
 	}
 
 	/**
@@ -183,7 +183,7 @@ final class MergeTags {
 		 * @param string               $key
 		 * @param array<string, mixed> $context
 		 */
-		$resolved = apply_filters( 'perffo_resolve_merge_tag', $resolved, $namespace, $key, $context );
+		$resolved = apply_filters( 'flinkform_resolve_merge_tag', $resolved, $namespace, $key, $context );
 
 		if ( null === $resolved ) {
 			return '{' . $namespace . ':' . $key . '}';

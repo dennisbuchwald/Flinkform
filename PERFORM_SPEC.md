@@ -1,15 +1,15 @@
-# PerForm — Complete Project Specification
+# Flinkform — Complete Project Specification
 > "The last form plugin you'll ever install."
 
 ---
 
 ## 1. Vision & Mission
 
-PerForm is a free, open-source WordPress form plugin built for 2026 and beyond. It exists because every existing form solution for WordPress is either too old, too ugly, too expensive, too bloated, or too complex — often all five at once.
+Flinkform is a free, open-source WordPress form plugin built for 2026 and beyond. It exists because every existing form solution for WordPress is either too old, too ugly, too expensive, too bloated, or too complex — often all five at once.
 
 The mission is simple: build the form plugin that WordPress should have shipped natively. Beautiful by default. Fast to use. Powerful when you need it. Free, always.
 
-PerForm is not a feature race against Gravity Forms. It is a UX statement. The goal is not to have more features — it is to make the features it has feel effortless.
+Flinkform is not a feature race against Gravity Forms. It is a UX statement. The goal is not to have more features — it is to make the features it has feel effortless.
 
 **The standard:** If a first-time user cannot build and publish a working contact form in under 5 minutes without reading any documentation, we have failed.
 
@@ -45,7 +45,7 @@ The default experience should require zero configuration. Insert the Form block,
 Everything advanced is hidden until the user needs it. The editor should feel clean and uncluttered. Power users can go deep; everyone else never has to.
 
 ### Native, not bolted on
-PerForm should feel like it was built by the WordPress core team. It uses WordPress APIs, follows WordPress conventions, lives inside the Block Editor as if it were always there. No iframe embeds, no separate admin UIs that look like a different product.
+Flinkform should feel like it was built by the WordPress core team. It uses WordPress APIs, follows WordPress conventions, lives inside the Block Editor as if it were always there. No iframe embeds, no separate admin UIs that look like a different product.
 
 ### Beautiful by default, customizable always
 Forms inherit the active theme's typography, colors, and spacing automatically. They look right on any site without a single style tweak. For those who want to go further, a full style panel is available.
@@ -59,7 +59,7 @@ Forms should add minimal weight to the page. No jQuery. No large JavaScript bund
 
 ### 4.1 Form Builder (Block Editor Native)
 
-The entire form-building experience lives inside the WordPress Block Editor (Gutenberg). There is no separate form builder interface — PerForm is Gutenberg.
+The entire form-building experience lives inside the WordPress Block Editor (Gutenberg). There is no separate form builder interface — Flinkform is Gutenberg.
 
 **Form Container Block**
 The parent block that wraps all form fields. Contains global form settings (submit behavior, notifications, spam protection). Renders as a `<form>` element with all necessary attributes and nonces.
@@ -195,7 +195,7 @@ Multiple webhooks per form are supported.
 
 ### 4.8 DSGVO / GDPR Compliance
 
-Data protection is not an afterthought — it is built into the architecture from day one. PerForm must be usable by European sites without any additional configuration or legal risk.
+Data protection is not an afterthought — it is built into the architecture from day one. Flinkform must be usable by European sites without any additional configuration or legal risk.
 
 **Data minimisation by default:**
 - IP address storage is **optional** and **off by default**. The user explicitly opts in per form if they need it (e.g. for abuse prevention).
@@ -217,7 +217,7 @@ Data protection is not an afterthought — it is built into the architecture fro
 - When a CAPTCHA service is active, a notice should be shown to guide the operator to update their privacy policy accordingly.
 
 **No cookies by default:**
-- PerForm sets no cookies on the frontend unless a CAPTCHA provider that requires cookies is activated.
+- Flinkform sets no cookies on the frontend unless a CAPTCHA provider that requires cookies is activated.
 
 ### 4.8b Spam Protection & CAPTCHA
 
@@ -228,7 +228,7 @@ Data protection is not an afterthought — it is built into the architecture fro
 These two layers alone handle the majority of spam without any external service, without cookies, and without DSGVO implications.
 
 **Optional CAPTCHA (operator activates per form or globally):**
-The specific CAPTCHA solution is intentionally left open — the choice depends on the operator's privacy posture and legal requirements. PerForm should support at least two options, with a clean abstraction layer so adding more is straightforward.
+The specific CAPTCHA solution is intentionally left open — the choice depends on the operator's privacy posture and legal requirements. Flinkform should support at least two options, with a clean abstraction layer so adding more is straightforward.
 
 Candidate providers to evaluate and implement (in order of privacy-friendliness):
 1. **Cloudflare Turnstile** — invisible, no cookies in most cases, GDPR-friendlier than reCAPTCHA
@@ -243,7 +243,7 @@ The implementation should make the privacy trade-off of each option visible to t
 
 WordPress's built-in `wp_mail()` function relies on PHP's `mail()` — which is unreliable on most hosting environments and gets flagged as spam. The standard solution is a separate SMTP plugin (WP Mail SMTP has 3M+ installs — the problem is real and universal).
 
-PerForm includes an optional, built-in SMTP configuration module. It is **not enabled by default** and adds no overhead to sites that don't use it. Activating it takes one click.
+Flinkform includes an optional, built-in SMTP configuration module. It is **not enabled by default** and adds no overhead to sites that don't use it. Activating it takes one click.
 
 **Supported providers with guided setup:**
 - Gmail / Google Workspace (OAuth2)
@@ -257,14 +257,14 @@ PerForm includes an optional, built-in SMTP configuration module. It is **not en
 **Features:**
 - Test email — send a test to any address and confirm delivery
 - Connection status indicator in the admin
-- Configures `wp_mail()` globally — affects all WordPress emails, not just PerForm
+- Configures `wp_mail()` globally — affects all WordPress emails, not just Flinkform
 - From name and From email configurable
 
-This module positions PerForm as "the last plugin you need for forms AND email" — reducing plugin bloat on WordPress sites significantly.
+This module positions Flinkform as "the last plugin you need for forms AND email" — reducing plugin bloat on WordPress sites significantly.
 
 ### 4.9 Styling & Theming
 
-**Default behavior:** PerForm forms inherit the active theme's design tokens automatically. Colors, fonts, border-radius, spacing — all pulled from theme.json if available. Forms look native on any site with zero configuration.
+**Default behavior:** Flinkform forms inherit the active theme's design tokens automatically. Colors, fonts, border-radius, spacing — all pulled from theme.json if available. Forms look native on any site with zero configuration.
 
 **Style Panel (in block inspector):**
 - Primary color (submit button, focus states, progress bar)
@@ -286,7 +286,7 @@ This module positions PerForm as "the last plugin you need for forms AND email" 
 
 ### 4.10 Developer Features
 
-PerForm is built to be extended. The developer experience is a first-class concern.
+Flinkform is built to be extended. The developer experience is a first-class concern.
 
 **PHP Action & Filter Hooks:**
 - `perform_before_submission` — runs before a submission is saved, can cancel it
@@ -298,17 +298,17 @@ PerForm is built to be extended. The developer experience is a first-class conce
 - `perform_webhook_payload` — filter the webhook payload before sending
 
 **Custom Field Types:**
-Developers can register custom field block types that integrate natively into the PerForm ecosystem — they appear in the block inserter alongside core fields and support all shared settings (required, conditional logic, etc.).
+Developers can register custom field block types that integrate natively into the Flinkform ecosystem — they appear in the block inserter alongside core fields and support all shared settings (required, conditional logic, etc.).
 
 **Block Bindings API Integration:**
 Form field values can be bound to WordPress post meta, custom fields, or external data sources using the native WP 7.0 Block Bindings API. This enables pre-populated forms, edit forms for existing data, and complex dynamic workflows.
 
 **REST API:**
-- `GET /wp-json/perform/v1/forms` — list forms
-- `GET /wp-json/perform/v1/forms/{id}` — get form config
-- `POST /wp-json/perform/v1/forms/{id}/submissions` — submit a form (for headless/custom frontends)
-- `GET /wp-json/perform/v1/forms/{id}/submissions` — list submissions (authenticated)
-- `GET /wp-json/perform/v1/submissions/{id}` — get single submission (authenticated)
+- `GET /wp-json/flinkform/v1/forms` — list forms
+- `GET /wp-json/flinkform/v1/forms/{id}` — get form config
+- `POST /wp-json/flinkform/v1/forms/{id}/submissions` — submit a form (for headless/custom frontends)
+- `GET /wp-json/flinkform/v1/forms/{id}/submissions` — list submissions (authenticated)
+- `GET /wp-json/flinkform/v1/submissions/{id}` — get single submission (authenticated)
 
 **WP-CLI Commands:**
 - `wp perform forms list`
@@ -338,7 +338,7 @@ These are explicitly out of scope for the initial release. They may come later a
 
 ## 6. MVP Scope
 
-The Minimum Viable Product is the smallest version of PerForm that delivers on the core promise: beautiful, native, modern WordPress forms that are faster and more pleasant to use than anything else available.
+The Minimum Viable Product is the smallest version of Flinkform that delivers on the core promise: beautiful, native, modern WordPress forms that are faster and more pleasant to use than anything else available.
 
 ### MVP Must-Haves
 
@@ -452,7 +452,7 @@ id, form_id, data (JSON), created_at, ip_address, user_agent, user_id, status
 ## 9. Positioning & Go-to-Market
 
 **Primary channel:** WordPress.org Plugin Directory (free)
-**Plugin slug:** `perform-forms` (preferred) or `perform-wp`
+**Plugin slug:** `flinkform` (preferred) or `flinkform-wp`
 **Target review score:** 4.8+ stars
 
 **Differentiation in the directory listing:**

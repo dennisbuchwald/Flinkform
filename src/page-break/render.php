@@ -9,7 +9,7 @@
  * the container is the single source of truth for step markup, label
  * resolution, and (later) ARIA wiring.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 

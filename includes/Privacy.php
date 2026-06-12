@@ -4,20 +4,20 @@
  * exporter and personal data eraser.
  *
  * Hooks into WordPress's built-in privacy tools so site operators
- * see PerForm's data-handling disclosure on the Privacy Policy page
+ * see Flinkform's data-handling disclosure on the Privacy Policy page
  * and can fulfil data-subject access/erasure requests through the
  * standard wp-admin > Tools > Export/Erase Personal Data flow.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm;
+namespace Flinkform;
 
-use PerForm\Database\Schema;
+use Flinkform\Database\Schema;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -54,19 +54,19 @@ final class Privacy {
 
 		// esc_html__ (not __) so a malicious translation file can never inject
 		// markup into the privacy-policy page; these strings are plain prose.
-		$content = '<h2>' . esc_html__( 'PerForm — Form Submissions', 'perform-forms' ) . '</h2>';
+		$content = '<h2>' . esc_html__( 'Flinkform — Form Submissions', 'flinkform' ) . '</h2>';
 
-		$content .= '<p>' . esc_html__( 'When a visitor submits a form built with PerForm, the plugin stores the submitted field values (name, email, message, etc.) in a dedicated database table on this website. No IP addresses or browser user-agent strings are collected.', 'perform-forms' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'When a visitor submits a form built with Flinkform, the plugin stores the submitted field values (name, email, message, etc.) in a dedicated database table on this website. No IP addresses or browser user-agent strings are collected.', 'flinkform' ) . '</p>';
 
-		$content .= '<p>' . esc_html__( 'Submissions are retained until a site administrator deletes them (individually or in bulk), until the plugin is uninstalled, or — when a per-form retention period is configured — until they are older than that period, after which a daily routine deletes them automatically.', 'perform-forms' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'Submissions are retained until a site administrator deletes them (individually or in bulk), until the plugin is uninstalled, or — when a per-form retention period is configured — until they are older than that period, after which a daily routine deletes them automatically.', 'flinkform' ) . '</p>';
 
-		$content .= '<p>' . esc_html__( 'PerForm does not send any submission data to external services. (Add-ons such as PerForm Pro may add integrations — e.g. webhooks or SMTP delivery — that transmit data to third parties; those add their own privacy disclosures when active.)', 'perform-forms' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'Flinkform does not send any submission data to external services. (Add-ons such as Flinkform Pro may add integrations — e.g. webhooks or SMTP delivery — that transmit data to third parties; those add their own privacy disclosures when active.)', 'flinkform' ) . '</p>';
 
-		$content .= '<p>' . esc_html__( 'The built-in spam protection (proof-of-work challenge) runs entirely in the visitor\'s browser and on this server — no data is sent to any external anti-spam service.', 'perform-forms' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'The built-in spam protection (proof-of-work challenge) runs entirely in the visitor\'s browser and on this server — no data is sent to any external anti-spam service.', 'flinkform' ) . '</p>';
 
-		$content .= '<p>' . esc_html__( 'PerForm sets one short-lived, strictly necessary cookie ("perffo_flash", lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload. No tracking, analytics or marketing cookies are ever set.', 'perform-forms' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'Flinkform sets one short-lived, strictly necessary cookie ("flinkform_flash", lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload. No tracking, analytics or marketing cookies are ever set.', 'flinkform' ) . '</p>';
 
-		wp_add_privacy_policy_content( 'PerForm', $content );
+		wp_add_privacy_policy_content( 'Flinkform', $content );
 	}
 
 	/**
@@ -76,8 +76,8 @@ final class Privacy {
 	 * @return array<string, array<string, mixed>>
 	 */
 	public static function register_exporter( array $exporters ): array {
-		$exporters['perform-forms'] = [
-			'exporter_friendly_name' => __( 'PerForm Submissions', 'perform-forms' ),
+		$exporters['flinkform'] = [
+			'exporter_friendly_name' => __( 'Flinkform Submissions', 'flinkform' ),
 			'callback'               => [ self::class, 'export_personal_data' ],
 		];
 
@@ -91,8 +91,8 @@ final class Privacy {
 	 * @return array<string, array<string, mixed>>
 	 */
 	public static function register_eraser( array $erasers ): array {
-		$erasers['perform-forms'] = [
-			'eraser_friendly_name' => __( 'PerForm Submissions', 'perform-forms' ),
+		$erasers['flinkform'] = [
+			'eraser_friendly_name' => __( 'Flinkform Submissions', 'flinkform' ),
 			'callback'             => [ self::class, 'erase_personal_data' ],
 		];
 
@@ -130,23 +130,23 @@ final class Privacy {
 			}
 
 			$items[] = [
-				'name'  => __( 'Submitted at', 'perform-forms' ),
+				'name'  => __( 'Submitted at', 'flinkform' ),
 				'value' => $submission['created_at'],
 			];
 
 			$form_title = $submission['data']['_meta']['form_title'] ?? '';
 			if ( '' !== $form_title ) {
 				$items[] = [
-					'name'  => __( 'Form', 'perform-forms' ),
+					'name'  => __( 'Form', 'flinkform' ),
 					'value' => (string) $form_title,
 				];
 			}
 
 			$export_data[] = [
 				'group_id'          => 'perffo-submissions',
-				'group_label'       => __( 'PerForm Submissions', 'perform-forms' ),
-				'group_description' => __( 'Form submissions stored by the PerForm plugin.', 'perform-forms' ),
-				'item_id'           => 'perform-submission-' . $submission['id'],
+				'group_label'       => __( 'Flinkform Submissions', 'flinkform' ),
+				'group_description' => __( 'Form submissions stored by the Flinkform plugin.', 'flinkform' ),
+				'item_id'           => 'flinkform-submission-' . $submission['id'],
 				'data'              => $items,
 			];
 		}
@@ -210,7 +210,7 @@ final class Privacy {
 	/**
 	 * Find submissions whose JSON `data` column contains the given
 	 * email address. Uses a LIKE query against the serialised JSON —
-	 * pragmatic for the data volumes PerForm targets.
+	 * pragmatic for the data volumes Flinkform targets.
 	 *
 	 * @param string $email    Email address to search for.
 	 * @param int    $page     Page (1-based).

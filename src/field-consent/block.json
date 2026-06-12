@@ -1,15 +1,15 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "perform/field-consent",
+	"name": "flinkform/field-consent",
 	"version": "0.2.7",
 	"title": "Consent",
-	"category": "perform",
+	"category": "flinkform",
 	"icon": "privacy",
 	"description": "A required consent checkbox (e.g. a GDPR data-processing agreement) with an optional link to your privacy policy.",
 	"keywords": [ "consent", "gdpr", "privacy", "agree", "field" ],
-	"textdomain": "perform-forms",
-	"parent": [ "perform/form" ],
+	"textdomain": "flinkform",
+	"parent": [ "flinkform/form" ],
 	"supports": {
 		"html": false,
 		"reusable": false
@@ -40,7 +40,7 @@
 			"default": {}
 		}
 	},
-	"usesContext": [ "perform/formId", "perform/appearance" ],
+	"usesContext": [ "flinkform/formId", "flinkform/appearance" ],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

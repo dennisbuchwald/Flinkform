@@ -1,4 +1,4 @@
-# Audit-Prompt: PerForm + PerForm Pro
+# Audit-Prompt: Flinkform + Flinkform Pro
 
 > Diesen Prompt in einem neuen Chat (Agent mit Repo-Zugriff) verwenden, um BEIDE
 > Plugins — den kostenlosen Core UND das Pro-Add-on — sowie ihr Zusammenspiel
@@ -9,12 +9,12 @@
 
 Führe ein **vollständiges Security-, Performance-, Accessibility-, Code-Quality-,
 Frontend/SEO- und DSGVO/Datenschutz-Audit** der beiden WordPress-Plugins
-**„PerForm"** (Free-Core) und **„PerForm Pro"** (Add-on) durch — als *Paar*.
+**„Flinkform"** (Free-Core) und **„Flinkform Pro"** (Add-on) durch — als *Paar*.
 
-PerForm ist ein block-editor-natives Formular-Plugin (WordPress 7.0+, PHP 8.1+,
+Flinkform ist ein block-editor-natives Formular-Plugin (WordPress 7.0+, PHP 8.1+,
 Interactivity API, kein jQuery). Es rendert Formulare aus Gutenberg-Blöcken,
 speichert Submissions in einer eigenen Tabelle, verschickt Benachrichtigungen
-und schützt vor Spam mit einem eingebauten Proof-of-Work-Challenge. **PerForm
+und schützt vor Spam mit einem eingebauten Proof-of-Work-Challenge. **Flinkform
 Pro** ist ein separates Plugin, das über eine eingefrorene **Bridge** andockt und
 die kostenpflichtigen Features liefert: Webhooks (REST + Cron + DB-Tabellen +
 Log), SMTP-Versand, CSV-Export. Conditional Logic und Multi-Step bleiben bewusst
@@ -26,18 +26,18 @@ Beide liegen als Schwester-Verzeichnisse und als getrennte Git-Repos vor.
 
 | Plugin | Lokaler Pfad | Git-Remote | Namespace |
 |--------|--------------|------------|-----------|
-| **Free-Core** | `/Users/dennisbuchwald/Arbeitsplatz/01_Code/04_Ressource/02_Eigenentwicklungen/perform-forms` | `https://github.com/dennisbuchwald/perform-forms` | `PerForm\` |
-| **Pro-Add-on** | `/Users/dennisbuchwald/Arbeitsplatz/01_Code/04_Ressource/02_Eigenentwicklungen/perform-forms-pro` | `https://github.com/dennisbuchwald/perform-forms-pro` | `PerFormPro\` |
+| **Free-Core** | `/Users/dennisbuchwald/Arbeitsplatz/01_Code/04_Ressource/02_Eigenentwicklungen/flinkform` | `https://github.com/dennisbuchwald/flinkform` | `Flinkform\` |
+| **Pro-Add-on** | `/Users/dennisbuchwald/Arbeitsplatz/01_Code/04_Ressource/02_Eigenentwicklungen/flinkform-pro` | `https://github.com/dennisbuchwald/flinkform-pro` | `FlinkformPro\` |
 
 - Beide nutzen einen eigenen PSR-4-Autoloader (`includes/Autoloader.php`,
   Namespace → `includes/`). JS-Quellen in `src/`, kompiliert nach `build/` via
   `npm run build` (@wordpress/scripts). `build/` ist git-ignored und liegt nur im
   ausgelieferten ZIP — beim Lesen ggf. erst `npm run build` ausführen oder die
   `src/`-Quellen prüfen.
-- **Zuerst lesen** (Kontext): `perform-forms/includes/Bridge/README.md` (der
-  eingefrorene Bridge-Vertrag), `perform-forms/PERFORM_ROADMAP.md` (Phase M),
-  beide Haupt-Dateien (`perform-forms.php`, `perform-forms-pro.php`),
-  `perform-forms/PERFORM_SPEC.md` falls vorhanden.
+- **Zuerst lesen** (Kontext): `flinkform/includes/Bridge/README.md` (der
+  eingefrorene Bridge-Vertrag), `flinkform/PERFORM_ROADMAP.md` (Phase M),
+  beide Haupt-Dateien (`flinkform.php`, `flinkform-pro.php`),
+  `flinkform/PERFORM_SPEC.md` falls vorhanden.
 
 ## Architektur, die du verstehen musst, bevor du auditierst
 
@@ -95,7 +95,7 @@ Gib für JEDES Finding an, **welches Plugin** betroffen ist (Free / Pro / Bridge
 - **Cross-Plugin-Hooks:** `perform_after_submission` (vom Core gefeuert, von Pros
   `SubmissionListener` konsumiert), `perform_submissions_deleted` (GDPR-Kaskade).
 - **Namespaces & Cross-Refs:** Jede verschobene Klasse im richtigen Namespace +
-  Autoloader-auflösbar. Pro nutzt `\PerForm\…`-Klassen, die existieren
+  Autoloader-auflösbar. Pro nutzt `\Flinkform\…`-Klassen, die existieren
   (`Submissions\Repository`, `Admin\Menu`, `Settings\Secret`, `Privacy`).
 
 ### Dimension 2 — Sicherheit
@@ -139,7 +139,7 @@ Gib für JEDES Finding an, **welches Plugin** betroffen ist (Free / Pro / Bridge
 - **Frontend-Bundle:** Größe des Frontend-JS/CSS (Ziel laut Spec < 15 KB gzipped).
   Misst `build/form-container/view.js` (~966 Z. Multi-Step + Conditional-Logic).
   Conditional Asset Loading — werden Skripte/Styles NUR auf Seiten mit einem
-  PerForm-Block geladen (nicht site-weit)?
+  Flinkform-Block geladen (nicht site-weit)?
 - **Interactivity API:** Hydration-Kosten, unnötige Re-Renders, Store-Größe bei
   Multi-Step.
 - **DB pro Request:** Submission-Speicherung (`Handler` → `Repository`),
@@ -162,7 +162,7 @@ Gib für JEDES Finding an, **welches Plugin** betroffen ist (Free / Pro / Bridge
 - **Multi-Step:** Tastatur-bedienbare Navigation (Tab/Enter), Focus-Management beim
   Schrittwechsel (Focus auf den neuen Schritt/erstes Feld), Progress-Indicator mit
   ARIA (`aria-valuenow`/-`valuemax`), Schritt-Ankündigung via Live-Region
-  (`data-perform-step-announce`). Keine Layout-Shifts beim Wechsel.
+  (`data-flinkform-step-announce`). Keine Layout-Shifts beim Wechsel.
 - **Spam-Challenge:** Funktioniert die Math-Fallback-Variante ohne JS und ist sie
   zugänglich (Label, Fehler)? Kein Zugänglichkeits-Blocker durch das PoW-Widget.
 - **Interaktive Elemente:** Echte `<button>`/`<a>` statt `<div onclick>`.
@@ -177,15 +177,15 @@ Gib für JEDES Finding an, **welches Plugin** betroffen ist (Free / Pro / Bridge
 - **WP Best Practices:** Sanitization/Escaping/Nonces durchgängig; keine
   deprecated APIs; kein `@`-Error-Suppression.
 - **i18n:** Alle user-facing Strings in `__()`/`_e()`/`esc_html__()` mit der
-  RICHTIGEN Text-Domain (Free = `perform-forms`, Pro = `perform-forms-pro` — prüfe
+  RICHTIGEN Text-Domain (Free = `flinkform`, Pro = `flinkform-pro` — prüfe
   die verbatim-verschobenen Pro-Dateien auf verpasste/über-ersetzte Domains).
   **i18n-Timing:** kein `__()` vor `init` (WP 6.7+ JIT-Notice) — Cron-Schedule-
   Display-Strings, Activation-Callbacks, früh registrierte Hooks.
 - **Beschreibungstexte:** `wp_kses_post()` vs. `esc_html()` korrekt gewählt.
 - **Prefixing:** Alle globalen Funktionen/Options/Hooks/Cron `perform_`-präfixiert.
-- **Doc-Header:** `@package` (PerForm vs. PerFormPro), `@since` konsistent.
+- **Doc-Header:** `@package` (Flinkform vs. FlinkformPro), `@since` konsistent.
 - **CSS:** Custom-Properties-Konsistenz, `!important`-Nutzung, Spezifität, die
-  theme-resistente `.perform-form.perform-form`-Doppelklassen-Strategie.
+  theme-resistente `.flinkform-form.flinkform-form`-Doppelklassen-Strategie.
 - **JS:** Vanilla vs. wp.* Konsistenz, Error-Handling bei `apiFetch`/Fetch.
 - **PHP:** strict_types, Typisierung, Single-Responsibility, tote/verwaiste
   Methoden nach der Migration.

@@ -1,8 +1,8 @@
-# PerForm — Fortsetzungs-Prompt für Claude (neuer Chat)
+# Flinkform — Fortsetzungs-Prompt für Claude (neuer Chat)
 
 > Diesen Prompt **komplett** in einen frischen Claude-Code-Chat im Projektordner
-> `perform-forms/` einfügen. Antwortsprache: Deutsch. Arbeitsverzeichnis muss
-> `…/02_Eigenentwicklungen/perform-forms/` sein.
+> `flinkform/` einfügen. Antwortsprache: Deutsch. Arbeitsverzeichnis muss
+> `…/02_Eigenentwicklungen/flinkform/` sein.
 
 ---
 
@@ -27,7 +27,7 @@ in Memory + Roadmap ausführlich dokumentiert — siehe Anhang.
 
 ## Kontext
 
-Du übernimmst die Weiterentwicklung des WordPress-Plugins **PerForm**. Das ist
+Du übernimmst die Weiterentwicklung des WordPress-Plugins **Flinkform**. Das ist
 eine WP.org-Submission-fähige Form-Builder-Erweiterung mit Gutenberg-Blocks,
 dynamic rendering, server-side validation, Style-Panel mit Theme-Inheritance,
 Multi-Step-Forms, Conditional Logic, Outgoing Webhooks (n8n/Zapier/etc.),
@@ -38,23 +38,23 @@ Tracking-Metadata. Owner: dbw media. Plugin wird auf einer echten Sandbox-WP-
 Instanz mit GeneratePress getestet.
 
 **Plugin-Daten (fix, nicht ändern):**
-- Anzeigename: **PerForm**
-- WordPress.org-Slug: **`perform-forms`**
-- Text Domain: `perform-forms`
-- Namespace: `PerForm\` (PSR-4, unter `includes/`)
+- Anzeigename: **Flinkform**
+- WordPress.org-Slug: **`flinkform`**
+- Text Domain: `flinkform`
+- Namespace: `Flinkform\` (PSR-4, unter `includes/`)
 - Konstanten-Präfix: `PERFORM_`
 - Funktions-Präfix: `perform_`
 - Version: `0.1.0` (Scaffold, noch nicht bumped — Phase 8 bumpt offiziell auf `0.1.0` für die WP.org-Submission)
 - Mindestens: WordPress 7.0 + PHP 8.1
 - Autor: dbw media
-- GitHub: **https://github.com/dennisbuchwald/perform-forms**
-- Test-Umgebung: **https://sandbox.dbw-development.de/index.php/perform/**
+- GitHub: **https://github.com/dennisbuchwald/flinkform**
+- Test-Umgebung: **https://sandbox.dbw-development.de/index.php/flinkform/**
   (WordPress mit GeneratePress, Owner lädt via FTP hoch)
 
 ## Was du als Allererstes tust
 
 1. **Memory-Dateien überfliegen** im Pfad
-   `~/.claude/projects/-Users-dennisbuchwald-Arbeitsplatz-01-Code-04-Ressource-02-Eigenentwicklungen-perform-forms/memory/`
+   `~/.claude/projects/-Users-dennisbuchwald-Arbeitsplatz-01-Code-04-Ressource-02-Eigenentwicklungen-flinkform/memory/`
    — werden automatisch geladen, aber ein bewusster Read früh in der Session
    stellt sicher dass du die Konventionen kennst. Besonders wichtig:
    - `feedback_commit_author.md` — **keine Co-Authored-By-Trailer in Commits**
@@ -110,8 +110,8 @@ Instanz mit GeneratePress getestet.
 7. **Submission-Format self-contained** — Labels + Types werden mit Werten
    gespeichert, überlebt Form-Renames/Löschungen.
 8. **Eigener PSR-4-Autoloader**, kein Composer/vendor/.
-9. **Plugin-Hauptdatei `perform-forms.php`** (nicht `perform.php`).
-10. **CSS-Variablen-Kaskade:** `var(--perform-X, var(--wp--preset--Y, fallback))`
+9. **Plugin-Hauptdatei `flinkform.php`** (nicht `perform.php`).
+10. **CSS-Variablen-Kaskade:** `var(--flinkform-X, var(--wp--preset--Y, fallback))`
     — User-Override → theme.json → hartcodierter Fallback.
 11. **WP Interactivity API** für alle reaktiven Frontend-Effekte (Multi-Step,
     Webhooks-Test-Button, Conditional Logic). view.js als ES-Modul
@@ -125,7 +125,7 @@ Instanz mit GeneratePress getestet.
     Transients oder Block-Attributen.)
 13. **WP-Cron-Schedule** `perform_every_minute` (60s-Interval) treibt die
     Webhook-Delivery-Queue an.
-14. **Conditional-Logic Rule-Engine** (`PerForm\Conditions\RuleEvaluator`)
+14. **Conditional-Logic Rule-Engine** (`Flinkform\Conditions\RuleEvaluator`)
     teilt sich PHP- + JS-Side. 8 Operators, AND/ANY-Logic-Combiner.
     `is`/`is_not` sind case-insensitive.
 15. **Server is Truth** — DOM-Manipulation zum Bypass von Conditional-Logic
@@ -144,7 +144,7 @@ Instanz mit GeneratePress getestet.
 
 ### Was Phase A/B/C an Architektur dazugebracht hat
 
-20. **`PerForm\Settings\Secret`** — AES-256-CBC + random IV pro Encrypt + key
+20. **`Flinkform\Settings\Secret`** — AES-256-CBC + random IV pro Encrypt + key
     derived von `wp_salt('auth')`. Cipher-Format `perform_enc_v1:<base64(iv||cipher)>`,
     versioniert für künftige Cipher-Upgrades. Reused für: SMTP-Password
     (Phase A), künftige Provider-Secrets (Phase D Track 2).
@@ -159,7 +159,7 @@ Instanz mit GeneratePress getestet.
     `CONFLICTING_PLUGINS` als slug→label-Map. Self-disable + Admin-Notice bei
     Konflikt. Pattern: `Smtp\Transport` (Phase A-b).
 23. **SMTP-Module** (Phase A komplett):
-    - `Admin\SmtpPage` (`perform-smtp` slug) — Settings UI + Test-Email-Button
+    - `Admin\SmtpPage` (`flinkform-smtp` slug) — Settings UI + Test-Email-Button
     - `Smtp\Transport` — `phpmailer_init` Hook (P1000) + `wp_mail_from{,_name}`
       Filter + Konflikt-Detection (WP Mail SMTP / FluentSMTP / Easy WP SMTP /
       Post SMTP). Hooks registered on `init` für i18n-Safety.
@@ -218,7 +218,7 @@ Instanz mit GeneratePress getestet.
 
 ### Repository / Git
 
-- Remote: `origin → https://github.com/dennisbuchwald/perform-forms.git`
+- Remote: `origin → https://github.com/dennisbuchwald/flinkform.git`
 - Branch: `main`.
 - Letzter Commit: `22292c5 feat: Phase C — Thank-You-Redirect`.
 - Lokal ungetracked: `CONTINUE_PROMPT.md` (du liest ihn grade),
@@ -227,11 +227,11 @@ Instanz mit GeneratePress getestet.
 
 ### Hochladen aufs FTP
 
-Komplettes `perform-forms/`-Verzeichnis, **außer**:
+Komplettes `flinkform/`-Verzeichnis, **außer**:
 `node_modules/`, `src/`, `.git/`, `_wporg-svn/`, `PERFORM_*.md`,
 `CONTINUE_PROMPT.md`, `INITIAL_PROMPT.md`, `package*.json`, `deploy.sh`,
 `.editorconfig`.
-Auf dem Server: `perform-forms.php`, `uninstall.php`, `readme.txt`,
+Auf dem Server: `flinkform.php`, `uninstall.php`, `readme.txt`,
 `includes/`, `build/`, `languages/`.
 
 `build/` ist gitignored — vor jedem Upload `npm run build` lokal laufen.
@@ -244,7 +244,7 @@ Auf dem Server: `perform-forms.php`, `uninstall.php`, `readme.txt`,
   dürfen sofort losgehen.
 - **WordPress Coding Standards.** Tabs, `declare( strict_types = 1 );`,
   typisierte Signaturen.
-- **i18n** durch `__()`/`_e()` mit Text-Domain `'perform-forms'`. **Niemals
+- **i18n** durch `__()`/`_e()` mit Text-Domain `'flinkform'`. **Niemals
   vor `init`-Hook aufrufen.**
 - **Security:** sanitize-in / escape-out, Nonces, Capability-Checks, prepared
   statements.
@@ -261,7 +261,7 @@ Auf dem Server: `perform-forms.php`, `uninstall.php`, `readme.txt`,
 
 ## Phase 8 — Polish + WordPress.org Launch-Prep (jetzt dran)
 
-**Goal:** PerForm ist production-ready, accessible, performant, DSGVO-final-
+**Goal:** Flinkform ist production-ready, accessible, performant, DSGVO-final-
 reviewed, mit kompletter WordPress.org-Submission-Package. Plugin wird beim
 WP.org-Plugin-Directory eingereicht.
 
@@ -283,8 +283,8 @@ WP.org-Plugin-Directory eingereicht.
 
 **Slice 8b — Performance Audit:**
 - Frontend-Bundle-Größe verifizieren: view.js < 15 KB gzipped, conditional-
-  enqueued (nur auf Pages mit PerForm-Form).
-- LCP / FID / CLS impact: Lighthouse auf Sandbox mit + ohne PerForm-Form
+  enqueued (nur auf Pages mit Flinkform-Form).
+- LCP / FID / CLS impact: Lighthouse auf Sandbox mit + ohne Flinkform-Form
   vergleichen.
 - Critical-CSS prüfen — Style-Index sollte nicht render-blocking sein.
 - `wp_enqueue_scripts` conditional: keine Assets auf Pages ohne Form.
@@ -302,7 +302,7 @@ WP.org-Plugin-Directory eingereicht.
 - Bestätigen: Data-Retention + Deletion funktioniert (Submissions-Delete,
   Plugin-Deactivation, uninstall.php).
 - **Privacy-Notice für Site-Admin schreiben** — kurzer Abschnitt in
-  `readme.txt` "GDPR notes" der listet was PerForm verarbeitet, wo's lebt,
+  `readme.txt` "GDPR notes" der listet was Flinkform verarbeitet, wo's lebt,
   wie man's löscht.
 - **Plugin-Privacy-API-Integration** prüfen — WP hat einen
   `wp_add_privacy_policy_content()`-Hook für Plugins die Daten verarbeiten.
@@ -351,7 +351,7 @@ WP.org-Plugin-Directory eingereicht.
   in DB übrig bleiben (oder dass Daten intentional bleiben + dokumentiert ist).
 - **`uninstall.php` testen** — Plugin löschen via WP-Admin, prüfen dass alle
   Tabellen + Options + Transients weg sind.
-- **Version-Bump** in `perform-forms.php` Header + `readme.txt`:
+- **Version-Bump** in `flinkform.php` Header + `readme.txt`:
   `Stable tag: 0.1.0` und im Plugin-Header `Version: 0.1.0`.
 - **WP.org SVN-Submission** vorbereiten — Owner reicht selbst ein, aber wir
   bereiten den `_wporg-svn/`-Workspace vor.
@@ -444,7 +444,7 @@ Continuation-Chat zu wissen**:
 - **Custom-Event-Dispatch** ist der Weg, eine WP-Interactivity-Action aus
   einem free-standing DOM-Listener zu triggern. Pattern: `data-wp-on--<custom-
   event>` auf dem Wrapper, dispatchEvent im Listener. Reference: Commit
-  `bc63e67` (perform-skipped-changed).
+  `bc63e67` (flinkform-skipped-changed).
 - **`requestAnimationFrame`-Defer** ist nötig wenn `focus()` direkt nach
   `ctx.X = …` läuft. Reference: Commit `c430563`.
 
@@ -458,9 +458,9 @@ Continuation-Chat zu wissen**:
 
 ### CSS-Doppel-Klassen-Strategie
 
-- Field-level rules unter `.perform-form.perform-form` für (0,3,0)
+- Field-level rules unter `.flinkform-form.flinkform-form` für (0,3,0)
   Specificity damit Theme-Overrides nicht reingrätschen. Form-Chrome
-  (`__form`, `__submit`, `__step`, `__spam`) hat normale `.perform-form`-Scope.
+  (`__form`, `__submit`, `__step`, `__spam`) hat normale `.flinkform-form`-Scope.
   Strategie ist im Top-Kommentar von `src/form-container/style.scss`
   dokumentiert. **Niemals `!important`.**
 
@@ -492,14 +492,14 @@ Referenz: `includes/Admin/SmtpPage.php`. Memory:
 
 ### Verschlüsselung von Sensitive Settings
 
-`PerForm\Settings\Secret` ist die kanonische Stelle. Wird in Phase D Track 2
+`Flinkform\Settings\Secret` ist die kanonische Stelle. Wird in Phase D Track 2
 für CAPTCHA-Secrets reused. Ein Salt-Rotate in `wp-config.php` invalidiert
 alle Stored Secrets (Operator muss neu eingeben — intentional, keine
 in-Plugin-Key-Rotation-Logik nötig).
 
 ### Plugin-Konflikt-Detection
 
-`PerForm\Smtp\Transport` zeigt das Pattern. Phase D Track 2 sollte das auch
+`Flinkform\Smtp\Transport` zeigt das Pattern. Phase D Track 2 sollte das auch
 nutzen für externe CAPTCHA-Provider die mit anderen Anti-Spam-Plugins
 kollidieren könnten. `get_option('active_plugins')` direkt (NICHT
 `is_plugin_active()`, weil das auf Frontend nicht verfügbar ist).

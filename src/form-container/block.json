@@ -1,14 +1,14 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "perform/form",
+	"name": "flinkform/form",
 	"version": "0.1.0",
-	"title": "PerForm Form",
-	"category": "perform",
+	"title": "Flinkform Form",
+	"category": "flinkform",
 	"icon": "feedback",
 	"description": "A form container. Add field blocks inside to build your form.",
-	"keywords": ["form", "contact", "perform"],
-	"textdomain": "perform-forms",
+	"keywords": ["form", "contact", "formular", "flinkform"],
+	"textdomain": "flinkform",
 	"supports": {
 		"html": false,
 		"align": ["wide", "full"],
@@ -64,8 +64,8 @@
 		}
 	},
 	"providesContext": {
-		"perform/formId": "formId",
-		"perform/appearance": "appearance"
+		"flinkform/formId": "formId",
+		"flinkform/appearance": "appearance"
 	},
 	"editorScript": "file:./index.js",
 	"viewScriptModule": "file:./view.js",

@@ -2,7 +2,7 @@
 /**
  * Forms discovery and aggregation.
  *
- * Scans every post that embeds a `perform/form` block, aggregates the
+ * Scans every post that embeds a `flinkform/form` block, aggregates the
  * results by form UUID, and caches the index in a transient. A
  * lightweight LIKE query on post_content keeps the scan cheap for sites
  * with thousands of posts; the cache absorbs repeat hits inside one
@@ -15,14 +15,14 @@
  * in the markup" decision — at the cost of a scan-based admin list,
  * which we mitigate with caching.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Forms;
+namespace Flinkform\Forms;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -34,12 +34,12 @@ final class Indexer {
 	/**
 	 * Block name of the form container — the only one we look for.
 	 */
-	private const FORM_BLOCK = 'perform/form';
+	private const FORM_BLOCK = 'flinkform/form';
 
 	/**
 	 * Cache key.
 	 */
-	private const CACHE_KEY = 'perffo_forms_index';
+	private const CACHE_KEY = 'flinkform_forms_index';
 
 	/**
 	 * Cache lifetime in seconds. Five minutes is short enough that a stale
@@ -115,7 +115,7 @@ final class Indexer {
 
 	/**
 	 * save_post handler — only invalidates if the post actually contains
-	 * a PerForm form block. Avoids stomping the cache on every unrelated
+	 * a Flinkform form block. Avoids stomping the cache on every unrelated
 	 * post save.
 	 *
 	 * @param int      $post_id
@@ -188,7 +188,7 @@ final class Indexer {
 	}
 
 	/**
-	 * Walk a parsed block tree, recording every perform/form block we hit.
+	 * Walk a parsed block tree, recording every flinkform/form block we hit.
 	 *
 	 * @param array<int, array<string, mixed>> $blocks
 	 * @param \WP_Post                         $post
@@ -246,7 +246,7 @@ final class Indexer {
 		// Pull per-form submission counts + last-submission times in one
 		// query — cheaper than N round-trips through the Repository.
 		$stats_by_form = [];
-		$submissions_table = $wpdb->prefix . 'perffo_submissions';
+		$submissions_table = $wpdb->prefix . 'flinkform_submissions';
 		if ( $this->table_exists( $submissions_table ) ) {
 			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom submissions table; only the controlled table name is interpolated, no user input in this aggregate.
 			$rows = $wpdb->get_results(
@@ -324,11 +324,11 @@ final class Indexer {
 		if ( is_array( $source ) && ! empty( $source['post_title'] ) ) {
 			return sprintf(
 				/* translators: %s: source post title */
-				__( 'Form on "%s"', 'perform-forms' ),
+				__( 'Form on "%s"', 'flinkform' ),
 				(string) $source['post_title']
 			);
 		}
-		return __( '(Untitled form)', 'perform-forms' );
+		return __( '(Untitled form)', 'flinkform' );
 	}
 
 	/**

@@ -6,22 +6,22 @@
  * 0 = keep forever). A daily cron deletes submissions older than that period.
  *
  * Deletion runs through `Submissions\Repository::delete_many()`, so the
- * `perffo_submissions_deleted` action fires and any related PerForm Pro
+ * `flinkform_submissions_deleted` action fires and any related Flinkform Pro
  * webhook delivery rows are cascade-deleted too — no orphaned personal data.
  *
  * The per-form retention values are read from the form index (`Forms\Indexer`),
  * which already tracks every form; no separate store is maintained.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.2.7
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Submissions;
+namespace Flinkform\Submissions;
 
-use PerForm\Forms\Indexer;
+use Flinkform\Forms\Indexer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -33,7 +33,7 @@ final class Retention {
 	/**
 	 * Daily cron hook that runs the purge.
 	 */
-	public const CRON_HOOK = 'perffo_purge_submissions';
+	public const CRON_HOOK = 'flinkform_purge_submissions';
 
 	/**
 	 * Max rows deleted per form per run — keeps a single cron tick bounded on
@@ -76,7 +76,7 @@ final class Retention {
 			$ids    = $repo->find_ids_older_than( $form_id, $cutoff, self::PER_FORM_CAP );
 
 			if ( ! empty( $ids ) ) {
-				// delete_many() fires perffo_submissions_deleted → Pro cascade.
+				// delete_many() fires flinkform_submissions_deleted → Pro cascade.
 				$repo->delete_many( $ids );
 			}
 		}

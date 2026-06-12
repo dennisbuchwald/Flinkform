@@ -10,7 +10,7 @@ import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, required, helpText, fieldName, options } = attributes;
-	const blockProps = useBlockProps( { className: 'perform-field perform-field--checkbox' } );
+	const blockProps = useBlockProps( { className: 'flinkform-field flinkform-field--checkbox' } );
 
 	useEffect( () => {
 		if ( ! fieldName ) {
@@ -24,36 +24,36 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Field Settings', 'perform-forms' ) }>
+				<PanelBody title={ __( 'Field Settings', 'flinkform' ) }>
 					<TextControl
-						label={ __( 'Label', 'perform-forms' ) }
+						label={ __( 'Label', 'flinkform' ) }
 						value={ label }
 						onChange={ ( v ) => setAttributes( { label: v } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<ToggleControl
-						label={ __( 'Required (at least one)', 'perform-forms' ) }
+						label={ __( 'Required (at least one)', 'flinkform' ) }
 						checked={ !! required }
 						onChange={ ( v ) => setAttributes( { required: v } ) }
 						__nextHasNoMarginBottom
 					/>
 					<TextControl
-						label={ __( 'Help Text', 'perform-forms' ) }
+						label={ __( 'Help Text', 'flinkform' ) }
 						value={ helpText }
 						onChange={ ( v ) => setAttributes( { helpText: v } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TextControl
-						label={ __( 'Field Name', 'perform-forms' ) }
+						label={ __( 'Field Name', 'flinkform' ) }
 						value={ fieldName }
 						onChange={ ( v ) => setAttributes( { fieldName: v } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Options', 'perform-forms' ) }>
+				<PanelBody title={ __( 'Options', 'flinkform' ) }>
 					<OptionsEditor
 						options={ safeOptions }
 						onChange={ ( next ) => setAttributes( { options: next } ) }
@@ -64,9 +64,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			</InspectorControls>
 
 			<fieldset { ...blockProps }>
-				<legend className="perform-field__label">
+				<legend className="flinkform-field__label">
 					{ label }
-					{ required && <span className="perform-field__required" aria-hidden="true"> *</span> }
+					{ required && <span className="flinkform-field__required" aria-hidden="true"> *</span> }
 				</legend>
 				{ safeOptions.map( ( opt, i ) => (
 					<label key={ i } style={ { display: 'flex', alignItems: 'center', gap: '6px', margin: '4px 0' } }>
@@ -74,7 +74,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						<span>{ opt.label || opt.value || '' }</span>
 					</label>
 				) ) }
-				{ helpText && <p className="perform-field__help">{ helpText }</p> }
+				{ helpText && <p className="flinkform-field__help">{ helpText }</p> }
 			</fieldset>
 		</>
 	);

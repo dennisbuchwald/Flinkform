@@ -1,11 +1,11 @@
-# PerForm — MVP Build Roadmap
+# Flinkform — MVP Build Roadmap
 > How we build it, in what order, and why.
 
 ---
 
 ## How to use this document
 
-This roadmap defines the exact sequence in which PerForm is built. Each phase has a clear goal, a definition of "done", and a list of what is explicitly NOT included yet.
+This roadmap defines the exact sequence in which Flinkform is built. Each phase has a clear goal, a definition of "done", and a list of what is explicitly NOT included yet.
 
 **The rule:** A phase must be complete, tested, and working before the next phase begins. No exceptions. This is not a waterfall — if something needs to change mid-phase, change it. But do not start Phase 3 while Phase 2 is half-finished.
 
@@ -17,7 +17,7 @@ After each phase: the developer (or owner) reviews the result on a real WordPres
 **Goal:** A valid, installable WordPress plugin that does nothing yet, but is structured correctly and ready to build on.
 
 ### What gets built:
-- Plugin directory and main entry file (`perform-forms.php`) with correct plugin header (Name, Description, Version, Author, Text Domain, Requires at least: WordPress 7.0, Requires PHP: 8.1)
+- Plugin directory and main entry file (`flinkform.php`) with correct plugin header (Name, Description, Version, Author, Text Domain, Requires at least: WordPress 7.0, Requires PHP: 8.1)
 - Autoloader for PHP classes (PSR-4 via Composer, or a simple custom autoloader)
 - Basic class structure: `Plugin` (bootstrap), `Activator`, `Deactivator`
 - `composer.json` and `package.json` set up
@@ -41,10 +41,10 @@ Everything else.
 ### What gets built:
 
 **Blocks:**
-- `perform/form` — Form Container block. Wraps all fields. Renders as a `<form>` element with nonce, action, hidden form ID field. Block inspector shows: form title (internal), submit button label.
-- `perform/field-text` — Single-line text input. Inspector: label, placeholder, required toggle, help text.
-- `perform/field-email` — Email input. Inspector: same as text + basic email format validation.
-- `perform/field-textarea` — Multi-line text. Inspector: same as text + rows setting.
+- `flinkform/form` — Form Container block. Wraps all fields. Renders as a `<form>` element with nonce, action, hidden form ID field. Block inspector shows: form title (internal), submit button label.
+- `flinkform/field-text` — Single-line text input. Inspector: label, placeholder, required toggle, help text.
+- `flinkform/field-email` — Email input. Inspector: same as text + basic email format validation.
+- `flinkform/field-textarea` — Multi-line text. Inspector: same as text + rows setting.
 
 **Frontend rendering:**
 - All blocks render via `render.php` (dynamic blocks). No JavaScript required to display the form.
@@ -77,16 +77,16 @@ Admin UI for submissions, email notifications, styling, more field types, multi-
 ### What gets built:
 
 **Additional field blocks:**
-- `perform/field-number` — numeric input, inspector: min, max, step
-- `perform/field-select` — dropdown, inspector: options editor (add/remove/reorder options), single vs. multi-select toggle
-- `perform/field-radio` — radio button group, inspector: options editor
-- `perform/field-checkbox` — checkbox group, inspector: options editor
-- `perform/field-toggle` — single checkbox (agree to terms style), inspector: label, required
-- `perform/field-hidden` — hidden input, inspector: field name, value (static text, or dynamic: current URL, current user ID, current date)
-- `perform/section-heading` — not a field, just a visual divider with optional title and description text
+- `flinkform/field-number` — numeric input, inspector: min, max, step
+- `flinkform/field-select` — dropdown, inspector: options editor (add/remove/reorder options), single vs. multi-select toggle
+- `flinkform/field-radio` — radio button group, inspector: options editor
+- `flinkform/field-checkbox` — checkbox group, inspector: options editor
+- `flinkform/field-toggle` — single checkbox (agree to terms style), inspector: label, required
+- `flinkform/field-hidden` — hidden input, inspector: field name, value (static text, or dynamic: current URL, current user ID, current date)
+- `flinkform/section-heading` — not a field, just a visual divider with optional title and description text
 
 **Submissions admin panel:**
-- Menu item in wp-admin: "PerForm" → "Submissions"
+- Menu item in wp-admin: "Flinkform" → "Submissions"
 - List view using `WP_List_Table` (DataViews can be a Phase 4+ upgrade): columns = date, form name, status (read/unread), short preview of first text field
 - Clickable row → single submission detail view showing all field labels and their submitted values, formatted cleanly
 - Mark as read / unread (bulk action + per-row action)
@@ -96,7 +96,7 @@ Admin UI for submissions, email notifications, styling, more field types, multi-
 - CSV export: button that downloads all submissions for the selected form as a `.csv` file
 
 **Forms admin panel:**
-- Menu item: "PerForm" → "Forms"
+- Menu item: "Flinkform" → "Forms"
 - Simple list of all forms that exist (pulled from the blocks registered in posts/pages)
 - Note: forms are not stored separately — they live as blocks inside posts. This list is a convenience view derived from scanning block content. Implementer should decide the best approach (e.g. a registered post type `perform_form` vs. scanning post content). Recommendation: a lightweight `perform_form` CPT that stores form config separately from the page it's embedded on — this makes the submissions list and form management much cleaner. Final decision to implementer.
 
@@ -138,7 +138,7 @@ Configured in the same "Notifications" section:
 - Subject, Message: same merge tag system
 
 **Email sending:**
-Uses WordPress's `wp_mail()` — works with the default PHP mail and with any SMTP plugin the user has installed. PerForm does not configure SMTP at this phase (that is Phase 7+). The optional SMTP module comes later.
+Uses WordPress's `wp_mail()` — works with the default PHP mail and with any SMTP plugin the user has installed. Flinkform does not configure SMTP at this phase (that is Phase 7+). The optional SMTP module comes later.
 
 **Post-submit behaviour (per form):**
 Configured in the Form block's inspector panel, under a new "After Submit" section (always visible):
@@ -198,7 +198,7 @@ Multi-step, conditional logic, webhooks, CAPTCHA options, SMTP module.
 
 ### What gets built:
 
-**`perform/page-break` block:**
+**`flinkform/page-break` block:**
 - Inserted between field blocks inside the Form container.
 - In the editor: renders as a visible divider with a step label (e.g. "Step 2: Contact Details") — makes the step structure visually clear while editing.
 - Inspector: optional step label (shown in progress indicator on frontend).
@@ -251,7 +251,7 @@ Conditional logic (step skipping), webhooks, CAPTCHA options, SMTP module.
 
 **Webhook log:**
 - Accessible from the submission detail view: shows last N delivery attempts for that specific submission with status and truncated response.
-- Also accessible from a global "Webhook Log" tab in the PerForm admin area for a bird's-eye view.
+- Also accessible from a global "Webhook Log" tab in the Flinkform admin area for a bird's-eye view.
 
 **Multiple webhooks:**
 - Multiple webhook configurations per form are supported (add/remove in inspector).
@@ -306,14 +306,14 @@ SMTP module, CAPTCHA options (optional, can be added any time from Phase 1 onwar
 ### What gets built (split across A-a → A-c slices):
 
 **Slice A-a ✅ shipped — Settings page + storage + crypto helper:**
-- New admin page `PerForm → SMTP` (`SmtpPage::SLUG = 'perform-smtp'`) wired into `Admin\Menu`. Same `render()` + `dispatch()` controller pattern used by SubmissionsPage / FormsPage / WebhookLogPage.
+- New admin page `Flinkform → SMTP` (`SmtpPage::SLUG = 'flinkform-smtp'`) wired into `Admin\Menu`. Same `render()` + `dispatch()` controller pattern used by SubmissionsPage / FormsPage / WebhookLogPage.
 - Single autoloaded `wp_options` key `perform_smtp_settings` holds the full config array (`enabled`, `provider`, `host`, `port`, `encryption`, `auth`, `username`, `password`, `from_email`, `from_name`).
-- New `PerForm\Settings\Secret` helper — AES-256-CBC + random IV + key derived from `wp_salt('auth')`. Cipher format `perform_enc_v1:<base64(iv||ciphertext)>` (versioned for future cipher upgrades). Reused by all future modules that persist secrets (Phase B CAPTCHA secrets, Phase D OAuth refresh tokens).
+- New `Flinkform\Settings\Secret` helper — AES-256-CBC + random IV + key derived from `wp_salt('auth')`. Cipher format `perform_enc_v1:<base64(iv||ciphertext)>` (versioned for future cipher upgrades). Reused by all future modules that persist secrets (Phase B CAPTCHA secrets, Phase D OAuth refresh tokens).
 - Provider-preset dropdown with auto-fill JS for: Custom · Gmail (App-Password) · Outlook.com · SendGrid · Mailgun · Brevo · Postmark · Amazon SES. Two intentionally-disabled entries (Microsoft 365, Google Workspace) point operators at Phase D's OAuth2 release.
 - Password field renders empty on page reload + treats "empty submit" as "keep the existing cipher" — plaintext never round-trips through the browser.
 
 **Slice A-b ✅ shipped — PHPMailer hook + plugin-conflict detection:**
-- New class `PerForm\Smtp\Transport` (separate namespace from `Notifications\Mailer` — "what to send" vs. "how to send" stay split at the namespace level).
+- New class `Flinkform\Smtp\Transport` (separate namespace from `Notifications\Mailer` — "what to send" vs. "how to send" stay split at the namespace level).
 - `phpmailer_init` callback at priority 1000 — applies the stored config to the active PHPMailer instance only when `enabled = true` AND no known SMTP plugin is active AND a usable host/port/(plaintext password) is available.
 - Encryption mapping: `tls` → `ENCRYPTION_STARTTLS`, `ssl` → `ENCRYPTION_SMTPS`, `none` → opt-out (also disables `SMTPAutoTLS` so opportunistic STARTTLS doesn't sneak back in).
 - Conflict detection against `wp-mail-smtp/wp_mail_smtp.php`, `fluent-smtp/fluent-smtp.php`, `easy-wp-smtp/easy-wp-smtp.php`, `post-smtp/postman-smtp.php` via `get_option('active_plugins')` (front-end safe — `is_plugin_active()` lives in wp-admin only). Detected conflict self-disables the override and renders an admin notice on every wp-admin page.
@@ -322,7 +322,7 @@ SMTP module, CAPTCHA options (optional, can be added any time from Phase 1 onwar
 
 **Slice A-c ✅ shipped — Live diagnostic status block:**
 - Refactored `Transport::detect_conflict()` to `public static` so the settings page can call it without an instance, and added `Transport::get_status()` returning a 5-field diagnostic snapshot (`transport_loaded`, `enabled`, `configured` + reason, `conflict`, `effective`).
-- New status block at the top of the SMTP settings page with traffic-light badges per row + a single bold "Effective: Active / Inactive" verdict at the bottom answering "will the next wp_mail() actually route via PerForm?".
+- New status block at the top of the SMTP settings page with traffic-light badges per row + a single bold "Effective: Active / Inactive" verdict at the bottom answering "will the next wp_mail() actually route via Flinkform?".
 - Partial-upload defense: if `class_exists(Transport::class)` is false (e.g. operator uploaded only the new SmtpPage.php but not the new Transport.php), the block renders a single red row pointing at the missing file instead of fataling.
 - Effective-state border highlight (green = active, red = inactive) so the verdict is visible without reading any text.
 
@@ -335,7 +335,7 @@ SMTP module, CAPTCHA options (optional, can be added any time from Phase 1 onwar
 - Test button stays visible even when SMTP is inactive — operator gets a yellow "test will fall through to WordPress default" warning so the behaviour is intentional, not surprising. Useful for verifying the fallback path too.
 
 ### Definition of done (Phase A — complete):
-Operator configures SMTP credentials on a sandbox WordPress, ticks the enable toggle, clicks "Send test email", and the mail arrives via the configured provider (verified by checking the `Received:` headers). Other SMTP plugin installed → PerForm SMTP self-disables and shows a notice. Form submission triggers the admin notification through the configured SMTP. The status block above the form continuously shows whether the override is effective; the "Last test" row records the most recent verification.
+Operator configures SMTP credentials on a sandbox WordPress, ticks the enable toggle, clicks "Send test email", and the mail arrives via the configured provider (verified by checking the `Received:` headers). Other SMTP plugin installed → Flinkform SMTP self-disables and shows a notice. Form submission triggers the admin notification through the configured SMTP. The status block above the form continuously shows whether the override is effective; the "Last test" row records the most recent verification.
 
 ### Not included (Phase D — post-launch):
 OAuth2 for Workspace / M365, multi-account configs per form, OAuth-token rotation logic, hosted OAuth-proxy decision.
@@ -350,16 +350,16 @@ OAuth2 for Workspace / M365, multi-account configs per form, OAuth-token rotatio
 Owner-chosen strategy: **built-in challenge first, external providers later** as opt-in. The built-in challenge is zero-setup, requires no third-party account, and is 100% GDPR-clean (no external calls, no cookies, no third-party scripts). Mainstream provider integration comes after the in-house path is solid.
 
 **Slice B-a ✅ shipped — Built-in challenge end-to-end (zero setup, default-on):**
-- New `PerForm\Spam\Challenge` — HMAC-signed JSON token format (`v|f|s|d|a|e|n`, base64-url-encoded + dot-separated HMAC), 5-minute TTL, single-use replay protection via transient. HMAC key derives from `wp_salt('auth')` matching `Settings\Secret`.
+- New `Flinkform\Spam\Challenge` — HMAC-signed JSON token format (`v|f|s|d|a|e|n`, base64-url-encoded + dot-separated HMAC), 5-minute TTL, single-use replay protection via transient. HMAC key derives from `wp_salt('auth')` matching `Settings\Secret`.
 - Two strategies share the same token: Proof-of-Work (default, ~18 bits = ~50–500 ms transparent in browser via `crypto.subtle.digest`) + Math fallback (visible "what is 3 + 7?" for no-JS visitors; answer is sha256-hashed against the salt so brute-force isn't viable within the TTL).
-- New `PerForm\Spam\Renderer` — emits the challenge markup (`<input type="hidden" name="perform_spam_token">` + solution input + math fallback row) into the form. Markup carries the data attributes the PoW solver needs (`data-perform-pow-salt`, `data-perform-pow-difficulty`).
-- New `PerForm\Spam\Guard` — façade (`should_protect()` + `verify_submission()`) the Submissions\Handler + form-container/render.php call. Resolves the form's `spamProtection` block attribute (`'auto' | 'builtin' | 'none'`) into an active strategy. Today only `'builtin'` and `'none'` are meaningful; B-b will extend the switch to `'turnstile' | 'hcaptcha' | 'recaptcha-v3'`.
+- New `Flinkform\Spam\Renderer` — emits the challenge markup (`<input type="hidden" name="perform_spam_token">` + solution input + math fallback row) into the form. Markup carries the data attributes the PoW solver needs (`data-flinkform-pow-salt`, `data-flinkform-pow-difficulty`).
+- New `Flinkform\Spam\Guard` — façade (`should_protect()` + `verify_submission()`) the Submissions\Handler + form-container/render.php call. Resolves the form's `spamProtection` block attribute (`'auto' | 'builtin' | 'none'`) into an active strategy. Today only `'builtin'` and `'none'` are meaningful; B-b will extend the switch to `'turnstile' | 'hcaptcha' | 'recaptcha-v3'`.
 - `form-container` block gets a new `spamProtection` attribute (default `'auto'`), inspector panel "Spam Protection" with strategy select + warning when set to `'none'`.
 - Frontend PoW solver appended to `form-container/view.js` (+1 KiB minified, ~3 KB gzipped total). Runs on main thread with `await setTimeout(0)` yield every 1024 iterations to keep UI responsive; hides the math row via the `hidden` attribute the moment a solution is found.
 - Hook in `Submissions\Handler::handle()` between time-check and field validation: a failed challenge results in silent_reject() the same way honeypot hits do. Honeypot + time-check from Phase 1 still apply even when `spamProtection='none'` (defense in depth).
 - Existing forms in the wild inherit `spamProtection='auto'` via the block-attribute default — protection activates on next form render, no migration needed.
 
-**Phase B — closed at B-a (2026-05-26).** Owner-decision after B-a verification: the built-in challenge alone covers the realistic threat model for PerForm's audience (small-to-mid-sized German Mittelstand WordPress sites doing contact / lead / newsletter forms). External providers (Cloudflare Turnstile / hCaptcha / reCAPTCHA v3) are valuable mainly for high-profile sites with targeted attackers — not the launch audience. Moved to **Phase D** (post-launch) so we can ship v0.1 faster, keep the DSGVO-story unconditionally clean (no third-party scripts, no consent banners, no privacy-policy disclosure logic), and minimise WP.org-review friction (plugins without external service dependencies pass easier).
+**Phase B — closed at B-a (2026-05-26).** Owner-decision after B-a verification: the built-in challenge alone covers the realistic threat model for Flinkform's audience (small-to-mid-sized German Mittelstand WordPress sites doing contact / lead / newsletter forms). External providers (Cloudflare Turnstile / hCaptcha / reCAPTCHA v3) are valuable mainly for high-profile sites with targeted attackers — not the launch audience. Moved to **Phase D** (post-launch) so we can ship v0.1 faster, keep the DSGVO-story unconditionally clean (no third-party scripts, no consent banners, no privacy-policy disclosure logic), and minimise WP.org-review friction (plugins without external service dependencies pass easier).
 
 The architecture in B-a is already prepared for B-b/B-c when they ship as part of Phase D: `Guard::resolve_strategy()` is the single extension point, the form-container `spamProtection` attribute is already an enum (`'auto' | 'builtin' | 'none'` today; `'turnstile' | 'hcaptcha' | 'recaptcha-v3'` plug in cleanly).
 
@@ -410,7 +410,7 @@ Site-wide "allow external redirects" toggle for operators with cross-domain than
 ### Track 1 — OAuth2 for SMTP (Workspace + M365)
 Original Phase D content. See "Phase A SMTP Module" for context.
 
-- BYO vs. hosted oauth.perform-forms.com proxy decision is reserved for Phase D kickoff with field data instead of speculation.
+- BYO vs. hosted oauth.flinkform.com proxy decision is reserved for Phase D kickoff with field data instead of speculation.
 - Adds ~3 weeks (authorization-code flow + token storage + refresh logic + PHPMailer XOAUTH2 + per-provider quirks).
 
 ### Track 2 — External CAPTCHA providers (Cloudflare Turnstile, hCaptcha, reCAPTCHA v3)
@@ -436,13 +436,13 @@ Memory is autoloaded into every Claude session for this repo, so a future "lass 
 
 ### Open architecture decision for OAuth2 SMTP track:
 - **BYO OAuth-App:** operator registers their own OAuth client in Google Cloud Console / Azure → WP.org-clean, but high UX friction for non-developer operators.
-- **Hosted OAuth-Proxy:** PerForm runs `oauth.perform-forms.com` with registered apps → comfortable for operators, but adds hosting + compliance cost and needs careful WP.org-review argumentation (precedent: WP Mail SMTP and FluentSMTP both ship this).
+- **Hosted OAuth-Proxy:** Flinkform runs `oauth.flinkform.com` with registered apps → comfortable for operators, but adds hosting + compliance cost and needs careful WP.org-review argumentation (precedent: WP Mail SMTP and FluentSMTP both ship this).
 - **BYO with detailed wizard:** middle ground — detailed step-by-step wizard with screenshots + direct console links + copy-paste snippets.
 
 ---
 
 ## Phase 8 — Polish, Accessibility & WordPress.org Launch Prep
-**Goal:** PerForm is production-ready, accessible, performant, and ready to be submitted to the WordPress.org plugin directory.
+**Goal:** Flinkform is production-ready, accessible, performant, and ready to be submitted to the WordPress.org plugin directory.
 
 ### What gets built:
 
@@ -457,7 +457,7 @@ Memory is autoloaded into every Claude session for this repo, so a future "lass 
 **Performance audit:**
 - Measure total JS bundle size added to the frontend. Target: under 15kb gzipped.
 - Measure page load impact on a simple page with one form. Target: no meaningful difference vs. a page without a form.
-- Ensure `wp_enqueue_scripts` is conditional — assets only load on pages that contain a PerForm form.
+- Ensure `wp_enqueue_scripts` is conditional — assets only load on pages that contain a Flinkform form.
 
 **DSGVO / GDPR final review:**
 - Confirm no data is sent to external services by default.
@@ -487,7 +487,7 @@ Plugin submitted to WordPress.org plugin directory. No blocking issues from the 
 ---
 
 ## Phase M — Freemium Release (Free-Core + Pro-Addon)
-**Goal:** Turn PerForm into a sellable product. The free version stays on WordPress.org as the funnel; the paid features ship as a separate Pro add-on plugin that docks onto a stable extension layer in the free core. Owner wants to move toward release ASAP, so this phase is architected to be **platform-agnostic** — the actual sales/license platform is wired in only at the very last slice.
+**Goal:** Turn Flinkform into a sellable product. The free version stays on WordPress.org as the funnel; the paid features ship as a separate Pro add-on plugin that docks onto a stable extension layer in the free core. Owner wants to move toward release ASAP, so this phase is architected to be **platform-agnostic** — the actual sales/license platform is wired in only at the very last slice.
 
 **Decided (2026-06-01, this session):**
 - **Architecture = Model B** — Free-Core (in .org repo) + separate Pro add-on plugin (Yoast-style), *not* one license-gated codebase. Reason: the Pro code never enters the public .org repo, and Pro can be released/updated without going through the .org review team each time.
@@ -499,25 +499,25 @@ Plugin submitted to WordPress.org plugin directory. No blocking issues from the 
 ### What gets built (split across M-a → M-h slices):
 
 **Sub-track E — Free/Pro architecture foundation (no selling yet):**
-- **M-a:** ✅ shipped. Defined the extension/bridge layer in the free core — a small, *stable*, documented set of hooks the Pro add-on docks onto, all in the existing `perform_*` hook idiom (not the `performforms/...` placeholder names sketched earlier). Cut seams: `PerForm\Bridge\Features` capability façade (mirrors the Guard façade) backed by the `perform_pro_features` filter → graceful degradation keystone; `perform_register_modules` action (Pro foothold at end of `Plugin::init()`); `perform_block_dirs` filter (Pro registers blocks/field types from its own build dir); `perform_spam_providers` filter (Phase-D CAPTCHA providers, degrades to `builtin`). `notification_routes` deferred — the `Mailer` is already cleanly factored, so it's added additively in M-c when Pro multi-route actually lands. Contract frozen + documented in `includes/Bridge/README.md`. **No modules moved yet; free core behaves identically.**
-- **M-b:** ✅ shipped. Scaffolded the Pro add-on as a *separate* plugin (`../perform-forms-pro/`, its own repo — Pro code never enters the free repo). Docks via the M-a hooks: advertises capabilities through `perform_pro_features`, wires modules on `perform_register_modules` (near-empty by design — the dock is what's proven). Dual dependency guard: `Requires Plugins: perform-forms` header (WP 6.5+) for presence + a runtime `PERFORM_PRO_MIN_CORE` version guard that pauses Pro with an admin notice when the core is missing/too old. Success dock shows a confirmation notice listing the active capabilities. **Free core bumped 0.1.0 → 0.2.0** (the version that introduces the public bridge API; unreleased, so nothing breaks).
+- **M-a:** ✅ shipped. Defined the extension/bridge layer in the free core — a small, *stable*, documented set of hooks the Pro add-on docks onto, all in the existing `perform_*` hook idiom (not the `performforms/...` placeholder names sketched earlier). Cut seams: `Flinkform\Bridge\Features` capability façade (mirrors the Guard façade) backed by the `perform_pro_features` filter → graceful degradation keystone; `perform_register_modules` action (Pro foothold at end of `Plugin::init()`); `perform_block_dirs` filter (Pro registers blocks/field types from its own build dir); `perform_spam_providers` filter (Phase-D CAPTCHA providers, degrades to `builtin`). `notification_routes` deferred — the `Mailer` is already cleanly factored, so it's added additively in M-c when Pro multi-route actually lands. Contract frozen + documented in `includes/Bridge/README.md`. **No modules moved yet; free core behaves identically.**
+- **M-b:** ✅ shipped. Scaffolded the Pro add-on as a *separate* plugin (`../flinkform-pro/`, its own repo — Pro code never enters the free repo). Docks via the M-a hooks: advertises capabilities through `perform_pro_features`, wires modules on `perform_register_modules` (near-empty by design — the dock is what's proven). Dual dependency guard: `Requires Plugins: flinkform` header (WP 6.5+) for presence + a runtime `PERFORM_PRO_MIN_CORE` version guard that pauses Pro with an admin notice when the core is missing/too old. Success dock shows a confirmation notice listing the active capabilities. **Free core bumped 0.1.0 → 0.2.0** (the version that introduces the public bridge API; unreleased, so nothing breaks).
 - **M-c:** Move the Pro-bound modules out of the free core into the add-on, one per sub-slice, each with graceful degradation. Difficulty order discovered by mapping the actual entanglement (the original "Webhooks first" guess was wrong — Webhooks is the *most* entangled: editor UI + 2 DB tables + cron + log page): **easiest first to establish the pattern at low risk.**
-  - **M-c-a:** ✅ shipped — **CSV export** (server-side only: one button + one class, no editor UI / DB / cron). Free core: deleted `Submissions\Exporter`, removed the `export` action from `SubmissionsPage::dispatch()`, replaced the export button with the `perform_submissions_table_actions` seam. Pro: own `PerFormPro\` autoloader + `Export\CsvExporter` (reads the free core's `Submissions\Repository`) + `Export\ExportController` (renders the button via the seam, handles the request on `admin_init` with its own capability + nonce gate). Establishes the move pattern: *module → Pro, free core fires a seam, Pro owns UI + handler.*
-  - **M-c-b:** ✅ shipped (v0.2.1). **SMTP** moved to Pro: `Transport` (phpmailer_init overrides + conflict detection) + the 1281-line `SmtpPage` settings screen, copied verbatim into `PerFormPro\Smtp\*` (namespace + text-domain swapped, logic untouched). `Settings\Secret` stays in the free core as shared crypto (Pro uses `\PerForm\Settings\Secret`). Free core: removed the SMTP submenu + render + dispatch case from `Admin\Menu`, removed the Transport wiring from `Plugin::init()`. Pro: `Smtp\Module` re-attaches the submenu under `Menu::PARENT_SLUG` (admin_menu priority 20, after the parent exists) + dispatches on admin_init + boots Transport — no new core seam needed (reuses `Menu::PARENT_SLUG`/`CAPABILITY` constants). **Versioning introduced:** patch-bump per slice so uploads are verifiable in the plugins list; `PERFORM_PRO_MIN_CORE` bumped to 0.2.1 so Pro can't run against a 0.2.0 core that still ships its own SMTP page (would double the menu). Free degradation: no Pro = no SMTP page, mail goes through default `wp_mail()`.
-  - **M-c-c:** ✅ shipped (v0.2.2). **Editor extensibility mechanism.** Free core: `form-container/edit.js` applies the JS filter `perform.formContainer.inspectorPanels` (`@wordpress/hooks`, auto-pulls `wp-hooks` into the block's editor deps) and renders the returned panels inside `<InspectorControls>`; passes `{ attributes, setAttributes, clientId, formId, formFields }`. Pro: a deliberately build-free vanilla `wp.*` script (`assets/editor.js`, enqueued via `Editor\Extensions` on `enqueue_block_editor_assets`) `addFilter`s a proof panel ("PerForm Pro is active…"). Mechanism is identical whether the fill is built or hand-written, so the Pro build pipeline is deferred until a module ships JSX that needs it. Documented as extension point #6 in `includes/Bridge/README.md`. This is the prerequisite for the 3 editor-UI modules below.
+  - **M-c-a:** ✅ shipped — **CSV export** (server-side only: one button + one class, no editor UI / DB / cron). Free core: deleted `Submissions\Exporter`, removed the `export` action from `SubmissionsPage::dispatch()`, replaced the export button with the `perform_submissions_table_actions` seam. Pro: own `FlinkformPro\` autoloader + `Export\CsvExporter` (reads the free core's `Submissions\Repository`) + `Export\ExportController` (renders the button via the seam, handles the request on `admin_init` with its own capability + nonce gate). Establishes the move pattern: *module → Pro, free core fires a seam, Pro owns UI + handler.*
+  - **M-c-b:** ✅ shipped (v0.2.1). **SMTP** moved to Pro: `Transport` (phpmailer_init overrides + conflict detection) + the 1281-line `SmtpPage` settings screen, copied verbatim into `FlinkformPro\Smtp\*` (namespace + text-domain swapped, logic untouched). `Settings\Secret` stays in the free core as shared crypto (Pro uses `\Flinkform\Settings\Secret`). Free core: removed the SMTP submenu + render + dispatch case from `Admin\Menu`, removed the Transport wiring from `Plugin::init()`. Pro: `Smtp\Module` re-attaches the submenu under `Menu::PARENT_SLUG` (admin_menu priority 20, after the parent exists) + dispatches on admin_init + boots Transport — no new core seam needed (reuses `Menu::PARENT_SLUG`/`CAPABILITY` constants). **Versioning introduced:** patch-bump per slice so uploads are verifiable in the plugins list; `PERFORM_PRO_MIN_CORE` bumped to 0.2.1 so Pro can't run against a 0.2.0 core that still ships its own SMTP page (would double the menu). Free degradation: no Pro = no SMTP page, mail goes through default `wp_mail()`.
+  - **M-c-c:** ✅ shipped (v0.2.2). **Editor extensibility mechanism.** Free core: `form-container/edit.js` applies the JS filter `perform.formContainer.inspectorPanels` (`@wordpress/hooks`, auto-pulls `wp-hooks` into the block's editor deps) and renders the returned panels inside `<InspectorControls>`; passes `{ attributes, setAttributes, clientId, formId, formFields }`. Pro: a deliberately build-free vanilla `wp.*` script (`assets/editor.js`, enqueued via `Editor\Extensions` on `enqueue_block_editor_assets`) `addFilter`s a proof panel ("Flinkform Pro is active…"). Mechanism is identical whether the fill is built or hand-written, so the Pro build pipeline is deferred until a module ships JSX that needs it. Documented as extension point #6 in `includes/Bridge/README.md`. This is the prerequisite for the 3 editor-UI modules below.
   - **M-c-d:** Webhooks — the last module move, split into two safe sub-slices (backend + UI are coupled via REST, so they can't be torn apart arbitrarily, but the UI can move first while the backend keeps serving the same REST namespace):
-    - **M-c-d-1:** ✅ shipped (v0.2.4). **Pro JSX build pipeline + Integrations panel move.** Set up `@wordpress/scripts` in the Pro repo (`package.json`, `src/index.js` entry, build → `build/index.js` + `index.asset.php`). Moved `integrations-panel.js` (665 lines) verbatim into Pro `src/` (text-domain swapped), registered onto the M-c-c `perform.formContainer.inspectorPanels` filter. `Editor\Extensions` now enqueues the built bundle (deps/version from the asset manifest); the vanilla M-c-c proof script is gone. Free core: removed the `IntegrationsPanel` import + render from `form-container/edit.js`, deleted the orphaned panel file, rebuilt. **Webhook REST/DB/cron stay in the free core for now** → coherent intermediate state (Pro shows the panel, calls the free core's `/perform/v1/webhooks`). min-core → 0.2.4 (older core would render the panel twice).
-    - **M-c-d-2:** ✅ shipped (v0.2.5). **Webhook backend moved to Pro.** Relocated 7 PHP classes (RestController, Dispatcher, Deliverer, Repository, DeliveryRepository, SubmissionListener, ConditionEvaluator) → `PerFormPro\Webhooks` (REST namespace stays `perform/v1`). New `PerFormPro\Database\Schema` owns the 2 tables (same names, adopted in place via dbDelta) with the auto-migrate recipe (`perform_pro_db_version` option, `maybe_upgrade()` on boot) + Pro `Activator`/`Deactivator`/`uninstall.php`: activation creates tables + schedules the every-minute cron; deactivation clears only the cron (data survives a lapse); uninstall drops the tables. Moved `WebhookLogPage` + `WebhookLogListTable` → Pro (submenu via `Webhooks\Module`, like SMTP). The submission-detail deliveries section + Resend moved to `PerFormPro\Webhooks\SubmissionDetail`, injected via a new free-core seam `perform_submission_detail_after` (Resend handled on admin_init with its own cap+nonce). Free core stripped of all webhook code/tables/cron + Privacy line updated. `webhooks` now advertised. min-core → 0.2.5. **Module migration complete: Pro = CSV + SMTP + Webhooks.**
+    - **M-c-d-1:** ✅ shipped (v0.2.4). **Pro JSX build pipeline + Integrations panel move.** Set up `@wordpress/scripts` in the Pro repo (`package.json`, `src/index.js` entry, build → `build/index.js` + `index.asset.php`). Moved `integrations-panel.js` (665 lines) verbatim into Pro `src/` (text-domain swapped), registered onto the M-c-c `perform.formContainer.inspectorPanels` filter. `Editor\Extensions` now enqueues the built bundle (deps/version from the asset manifest); the vanilla M-c-c proof script is gone. Free core: removed the `IntegrationsPanel` import + render from `form-container/edit.js`, deleted the orphaned panel file, rebuilt. **Webhook REST/DB/cron stay in the free core for now** → coherent intermediate state (Pro shows the panel, calls the free core's `/flinkform/v1/webhooks`). min-core → 0.2.4 (older core would render the panel twice).
+    - **M-c-d-2:** ✅ shipped (v0.2.5). **Webhook backend moved to Pro.** Relocated 7 PHP classes (RestController, Dispatcher, Deliverer, Repository, DeliveryRepository, SubmissionListener, ConditionEvaluator) → `FlinkformPro\Webhooks` (REST namespace stays `flinkform/v1`). New `FlinkformPro\Database\Schema` owns the 2 tables (same names, adopted in place via dbDelta) with the auto-migrate recipe (`perform_pro_db_version` option, `maybe_upgrade()` on boot) + Pro `Activator`/`Deactivator`/`uninstall.php`: activation creates tables + schedules the every-minute cron; deactivation clears only the cron (data survives a lapse); uninstall drops the tables. Moved `WebhookLogPage` + `WebhookLogListTable` → Pro (submenu via `Webhooks\Module`, like SMTP). The submission-detail deliveries section + Resend moved to `FlinkformPro\Webhooks\SubmissionDetail`, injected via a new free-core seam `perform_submission_detail_after` (Resend handled on admin_init with its own cap+nonce). Free core stripped of all webhook code/tables/cron + Privacy line updated. `webhooks` now advertised. min-core → 0.2.5. **Module migration complete: Pro = CSV + SMTP + Webhooks.**
   - **Conditional Logic and Multi-Step are NOT moved** — they stay in the free core (see the revised matrix above). After M-c-d, Pro = CSV + SMTP + Webhooks (+ future CAPTCHA / payments / integrations).
   - **M-c-e:** ✅ shipped (v0.2.6). **Audit-driven polish** (see `AUDIT_PROMPT.md` — a multi-agent audit ran after the migration). Fixes:
-    - **GDPR (Critical):** new `PerFormPro\Privacy` — privacy-policy content for webhooks + SMTP; a personal-data **exporter** for the webhook delivery log; an **erasure cascade** via a new free-core seam `perform_submissions_deleted` (fired from `Submissions\Repository::delete()`/`delete_many()`, consumed by Pro to delete delivery rows — race-free, also covers manual admin deletion). New free-core public lookup `PerForm\Privacy::find_submission_ids_by_email()`. New `DeliveryRepository::delete_for_submissions()`.
+    - **GDPR (Critical):** new `FlinkformPro\Privacy` — privacy-policy content for webhooks + SMTP; a personal-data **exporter** for the webhook delivery log; an **erasure cascade** via a new free-core seam `perform_submissions_deleted` (fired from `Submissions\Repository::delete()`/`delete_many()`, consumed by Pro to delete delivery rows — race-free, also covers manual admin deletion). New free-core public lookup `Flinkform\Privacy::find_submission_ids_by_email()`. New `DeliveryRepository::delete_for_submissions()`.
     - **Correctness:** SMTP option cleanup moved from the free `uninstall.php` to the Pro `uninstall.php` (free no longer touches Pro data).
     - **Security:** SSRF defence-in-depth on webhooks — `reject_unsafe_urls` in the Deliverer + a `wp_http_validate_url()` `validate_callback` on the REST `url` arg.
-    - **Standards/build:** `@package PerForm`→`PerFormPro` + `@since` corrected in the 12 verbatim-moved Pro files; free `package.json` version 0.1.0→0.2.6; `.distignore` added to both plugins.
+    - **Standards/build:** `@package Flinkform`→`FlinkformPro` + `@since` corrected in the 12 verbatim-moved Pro files; free `package.json` version 0.1.0→0.2.6; `.distignore` added to both plugins.
     - Deferred to **M-g**: the `readme.txt` rewrite (still says "no premium tier" + lists Pro features as free) — blocks the .org upload, not polishing.
   - **M-c-f:** ✅ shipped (v0.2.7). **Comprehensive 2nd audit + full fix.** A multi-agent 8-dimension audit (the rewritten `AUDIT_PROMPT.md`) scored 66/80 (82.5%); only `readme.txt` blocked launch. All actionable findings fixed:
     - **Launch blockers → GO:** full Free/Pro `readme.txt` rewrite; corrected the "no cookies" claim (disclosed the strictly-necessary `perform_flash` cookie).
-    - **2 new features:** Consent block (`perform/field-consent`, always required, auto privacy-policy link, canonical type `consent`); per-form **auto-purge** (`retentionDays` inspector attr + `Submissions\Retention` daily cron deleting via `delete_many()` so the GDPR cascade fires; `Indexer` tracks `retention_days`).
+    - **2 new features:** Consent block (`flinkform/field-consent`, always required, auto privacy-policy link, canonical type `consent`); per-form **auto-purge** (`retentionDays` inspector attr + `Submissions\Retention` daily cron deleting via `delete_many()` so the GDPR cascade fires; `Indexer` tracks `retention_days`).
     - **Security:** Mailer Reply-To CRLF strip; webhook SSRF defence-in-depth.
     - **A11y:** blanket `prefers-reduced-motion`; multi-step persistent `role=alert` errors + client validation of required checkbox groups; section-heading `headingLevel`; math-fallback `required`; back-button contrast.
     - **Perf:** `Forms\Locator` object-cache; Pro dispatcher wall-clock guard.
@@ -553,7 +553,7 @@ Positioning of Free: *"A genuinely powerful form builder — conditional logic a
 **Architecture consequences:**
 - Cleanly-separable modules move to Pro: `Exporter` (M-c-a ✅), `Smtp` (M-c-b ✅), `Webhooks` (M-c-d, next). These have isolated surfaces (own admin pages / one inspector panel / own tables).
 - `Conditions` + multi-step stay in the free core — too woven into the block rendering/editing to extract without a fragile refactor.
-- **SMTP-to-Pro mitigation (still relevant):** free stays on `wp_mail()`; a tasteful "Deliverability issues? PerForm Pro adds SMTP" admin notice + readme FAQ frames the limit as an upsell. (Follow-up polish.)
+- **SMTP-to-Pro mitigation (still relevant):** free stays on `wp_mail()`; a tasteful "Deliverability issues? Flinkform Pro adds SMTP" admin notice + readme FAQ frames the limit as an upsell. (Follow-up polish.)
 
 **Pricing model (decided direction):** annual subscription with site tiers (1 / 5 / unlimited), ~30% first-year discount, auto-renew. Lifetime deals only as a one-off launch booster (e.g. AppSumo), never permanent — they kill recurring revenue.
 
@@ -577,7 +577,7 @@ CAPTCHA integration is a parallel concern — it does not block any phase and ca
 **Minimum to implement:**
 - A CAPTCHA abstraction layer: a PHP interface that any CAPTCHA provider implements. This ensures adding a new provider later is a matter of adding a class, not rewriting core logic.
 - At least one provider implemented for launch. Recommended first choice: **Cloudflare Turnstile** (privacy-friendly, no cookies in most flows, free tier, DSGVO-compatible).
-- Settings UI: global PerForm settings page → CAPTCHA section → provider selector dropdown → API key inputs → test button.
+- Settings UI: global Flinkform settings page → CAPTCHA section → provider selector dropdown → API key inputs → test button.
 - Privacy notice: each provider shows a one-line privacy note explaining what data is shared with the third party (e.g. "Cloudflare Turnstile may process your IP address to detect bots. See Cloudflare's privacy policy.").
 - Frontend: CAPTCHA widget rendered inside the Form block on the last step (or only step) before the submit button.
 - Server-side verification: every submission is verified against the CAPTCHA provider's API before being accepted.

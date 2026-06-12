@@ -57,10 +57,10 @@ export function OptionsEditor( { options, onChange } ) {
 	};
 
 	return (
-		<div className="perform-options-editor">
+		<div className="flinkform-options-editor">
 			{ safeOptions.length === 0 && (
 				<p style={ { fontSize: '12px', opacity: 0.7 } }>
-					{ __( 'No options yet — add the first one below.', 'perform-forms' ) }
+					{ __( 'No options yet — add the first one below.', 'flinkform' ) }
 				</p>
 			) }
 
@@ -76,14 +76,14 @@ export function OptionsEditor( { options, onChange } ) {
 					} }
 				>
 					<TextControl
-						label={ index === 0 ? __( 'Label', 'perform-forms' ) : undefined }
+						label={ index === 0 ? __( 'Label', 'flinkform' ) : undefined }
 						value={ opt.label || '' }
 						onChange={ ( v ) => updateLabel( index, v ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TextControl
-						label={ index === 0 ? __( 'Value', 'perform-forms' ) : undefined }
+						label={ index === 0 ? __( 'Value', 'flinkform' ) : undefined }
 						value={ opt.value || '' }
 						onChange={ ( v ) => update( index, { value: v } ) }
 						__nextHasNoMarginBottom
@@ -93,14 +93,14 @@ export function OptionsEditor( { options, onChange } ) {
 						<Button
 							size="small"
 							icon="arrow-up-alt2"
-							label={ __( 'Move up', 'perform-forms' ) }
+							label={ __( 'Move up', 'flinkform' ) }
 							onClick={ () => move( index, -1 ) }
 							disabled={ index === 0 }
 						/>
 						<Button
 							size="small"
 							icon="arrow-down-alt2"
-							label={ __( 'Move down', 'perform-forms' ) }
+							label={ __( 'Move down', 'flinkform' ) }
 							onClick={ () => move( index, 1 ) }
 							disabled={ index === safeOptions.length - 1 }
 						/>
@@ -108,7 +108,7 @@ export function OptionsEditor( { options, onChange } ) {
 							size="small"
 							icon="trash"
 							isDestructive
-							label={ __( 'Remove option', 'perform-forms' ) }
+							label={ __( 'Remove option', 'flinkform' ) }
 							onClick={ () => remove( index ) }
 						/>
 					</div>
@@ -116,7 +116,7 @@ export function OptionsEditor( { options, onChange } ) {
 			) ) }
 
 			<Button variant="secondary" size="small" onClick={ add }>
-				{ __( '+ Add option', 'perform-forms' ) }
+				{ __( '+ Add option', 'flinkform' ) }
 			</Button>
 		</div>
 	);

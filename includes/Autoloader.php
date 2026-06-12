@@ -1,19 +1,19 @@
 <?php
 /**
- * PSR-4 autoloader for the PerForm plugin.
+ * PSR-4 autoloader for the Flinkform plugin.
  *
- * Maps the `PerForm\` namespace to the `includes/` directory. Kept
+ * Maps the `Flinkform\` namespace to the `includes/` directory. Kept
  * dependency-free on purpose: no Composer, no `vendor/`, no overhead in the
  * shipped ZIP. One class, one register() call, done.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm;
+namespace Flinkform;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Autoloader {
 
-	private const NAMESPACE_PREFIX = 'PerForm\\';
+	private const NAMESPACE_PREFIX = 'Flinkform\\';
 
 	/**
 	 * Register the autoloader with SPL.
@@ -45,7 +45,7 @@ final class Autoloader {
 		}
 
 		$relative = substr( $class, strlen( self::NAMESPACE_PREFIX ) );
-		$path     = PERFFO_PLUGIN_DIR . 'includes/' . str_replace( '\\', '/', $relative ) . '.php';
+		$path     = FLINKFORM_PLUGIN_DIR . 'includes/' . str_replace( '\\', '/', $relative ) . '.php';
 
 		if ( is_readable( $path ) ) {
 			require_once $path;

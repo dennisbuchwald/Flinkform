@@ -7,14 +7,14 @@
  * block registration, REST routes, admin pages, etc. without touching the
  * main plugin file again.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm;
+namespace Flinkform;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -42,7 +42,7 @@ final class Plugin {
 	 * Boot subsystems.
 	 *
 	 * Called once on `plugins_loaded`. Wires the block registry, the
-	 * submission handler and the admin menu — every other PerForm
+	 * submission handler and the admin menu — every other Flinkform
 	 * capability builds on top of these three.
 	 *
 	 * @return void
@@ -74,19 +74,19 @@ final class Plugin {
 			)
 		)->register();
 
-		// Notifications subscribe to perffo_after_submission. Registered
+		// Notifications subscribe to flinkform_after_submission. Registered
 		// unconditionally — even REST-context saves should mail the admin.
 		( new Notifications\Mailer() )->register();
 
-		// Webhooks are owned by PerForm Pro (REST CRUD, cron dispatcher,
+		// Webhooks are owned by Flinkform Pro (REST CRUD, cron dispatcher,
 		// submission listener, the delivery tables + the Webhook Log page).
 		// Pro wires the whole subsystem via the bridge's
-		// perffo_register_modules hook and owns its own DB schema + cron
+		// flinkform_register_modules hook and owns its own DB schema + cron
 		// lifecycle. The free core ships no webhook code.
 
-		// SMTP transport is owned by PerForm Pro — it registers the Transport
+		// SMTP transport is owned by Flinkform Pro — it registers the Transport
 		// (phpmailer_init overrides + conflict detection) via the bridge's
-		// perffo_register_modules hook. The free core sends mail through the
+		// flinkform_register_modules hook. The free core sends mail through the
 		// WordPress default (wp_mail) transport.
 
 		// GDPR / DSGVO privacy integration — privacy-policy content,
@@ -107,7 +107,7 @@ final class Plugin {
 		}
 
 		/**
-		 * Pro add-on foothold — the single, well-timed hook the PerForm Pro
+		 * Pro add-on foothold — the single, well-timed hook the Flinkform Pro
 		 * add-on docks onto to wire its own subsystems.
 		 *
 		 * Fires once on `plugins_loaded`, after the free core has wired all of
@@ -121,7 +121,7 @@ final class Plugin {
 		 *
 		 * @since 0.2.0
 		 */
-		do_action( 'perffo_register_modules' );
+		do_action( 'flinkform_register_modules' );
 	}
 
 	/**

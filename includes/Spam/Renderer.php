@@ -6,11 +6,11 @@
  * `render.php` injects into every protected `<form>`. The markup
  * carries:
  *
- *   - One hidden input  `perffo_spam_token`     — the HMAC-signed
+ *   - One hidden input  `flinkform_spam_token`     — the HMAC-signed
  *                                                  token from Challenge::mint().
- *   - One hidden input  `perffo_spam_solution`  — populated by the
+ *   - One hidden input  `flinkform_spam_solution`  — populated by the
  *                                                  PoW solver in view.js.
- *   - One visible input `perffo_spam_answer`   — math fallback,
+ *   - One visible input `flinkform_spam_answer`   — math fallback,
  *                                                  shown via @media or
  *                                                  noscript-equivalent
  *                                                  defaults to hidden
@@ -24,14 +24,14 @@
  * fails and the script never runs, so the `hidden` attribute is
  * removed by the noscript fallback below).
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Spam;
+namespace Flinkform\Spam;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -45,21 +45,21 @@ final class Renderer {
 	 *
 	 * @var string
 	 */
-	public const FIELD_TOKEN = 'perffo_spam_token';
+	public const FIELD_TOKEN = 'flinkform_spam_token';
 
 	/**
 	 * Hidden input name carrying the PoW solution (integer string).
 	 *
 	 * @var string
 	 */
-	public const FIELD_SOLUTION = 'perffo_spam_solution';
+	public const FIELD_SOLUTION = 'flinkform_spam_solution';
 
 	/**
 	 * Visible input name for the math fallback answer.
 	 *
 	 * @var string
 	 */
-	public const FIELD_ANSWER = 'perffo_spam_answer';
+	public const FIELD_ANSWER = 'flinkform_spam_answer';
 
 	/**
 	 * Render the spam-challenge block for a form.
@@ -76,15 +76,15 @@ final class Renderer {
 		$diff     = (int) ( $challenge['pow']['difficulty'] ?? Challenge::POW_DIFFICULTY );
 		$question = (string) ( $challenge['math']['question'] ?? '' );
 
-		// data-perform-spam wraps the whole block so view.js can
+		// data-flinkform-spam wraps the whole block so view.js can
 		// pick it up via a single querySelector per form. The
-		// data-perform-pow-* attributes carry the parameters the
+		// data-flinkform-pow-* attributes carry the parameters the
 		// solver needs — no extra fetch, no JSON inside an
 		// attribute, no parse step.
-		$markup  = '<div class="perform-form__spam"';
-		$markup .= ' data-perform-spam="1"';
-		$markup .= ' data-perform-pow-salt="' . esc_attr( $salt ) . '"';
-		$markup .= ' data-perform-pow-difficulty="' . esc_attr( (string) $diff ) . '"';
+		$markup  = '<div class="flinkform-form__spam"';
+		$markup .= ' data-flinkform-spam="1"';
+		$markup .= ' data-flinkform-pow-salt="' . esc_attr( $salt ) . '"';
+		$markup .= ' data-flinkform-pow-difficulty="' . esc_attr( (string) $diff ) . '"';
 		$markup .= '>';
 
 		// Token + solution: always hidden, always present. The
@@ -92,7 +92,7 @@ final class Renderer {
 		// into FIELD_ANSWER. Either one passing server-side
 		// satisfies Challenge::verify().
 		$markup .= '<input type="hidden" name="' . esc_attr( self::FIELD_TOKEN ) . '" value="' . esc_attr( $token ) . '" />';
-		$markup .= '<input type="hidden" name="' . esc_attr( self::FIELD_SOLUTION ) . '" value="" data-perform-spam-solution />';
+		$markup .= '<input type="hidden" name="' . esc_attr( self::FIELD_SOLUTION ) . '" value="" data-flinkform-spam-solution />';
 
 		// Math row — visible by default for JS-disabled visitors,
 		// hidden by view.js as soon as PoW succeeds. The `hidden`
@@ -107,18 +107,18 @@ final class Renderer {
 		// applied client-side. Until view.js runs, the math row is
 		// visible — that's a fraction of a second on fast paths,
 		// invisible to the user on the typical sub-100ms hydration.
-		$math_id = 'perform-spam-answer-' . substr( md5( $form_id ), 0, 8 );
+		$math_id = 'flinkform-spam-answer-' . substr( md5( $form_id ), 0, 8 );
 		$hint_id = $math_id . '-hint';
 
-		$markup .= '<div class="perform-form__spam-math" data-perform-spam-math>';
-		$markup .= '<label class="perform-form__spam-label" for="' . esc_attr( $math_id ) . '">';
+		$markup .= '<div class="flinkform-form__spam-math" data-flinkform-spam-math>';
+		$markup .= '<label class="flinkform-form__spam-label" for="' . esc_attr( $math_id ) . '">';
 		$markup .= esc_html( $question );
 		$markup .= '</label>';
 		// `required` gives JS-off visitors proper inline validation. On the
 		// JS path view.js clears AND removes `required` when it hides this row
 		// after the PoW solves, so a hidden field never blocks submission.
 		$markup .= ' <input type="text" id="' . esc_attr( $math_id ) . '" name="' . esc_attr( self::FIELD_ANSWER ) . '" value="" autocomplete="off" inputmode="numeric" pattern="[0-9]*" size="4" required aria-describedby="' . esc_attr( $hint_id ) . '" />';
-		$markup .= '<p class="perform-form__spam-hint" id="' . esc_attr( $hint_id ) . '">' . esc_html__( 'Spam protection — answer the question above to submit the form.', 'perform-forms' ) . '</p>';
+		$markup .= '<p class="flinkform-form__spam-hint" id="' . esc_attr( $hint_id ) . '">' . esc_html__( 'Spam protection — answer the question above to submit the form.', 'flinkform' ) . '</p>';
 		$markup .= '</div>';
 
 		$markup .= '</div>';

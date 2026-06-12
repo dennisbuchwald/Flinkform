@@ -1,15 +1,15 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "perform/section-heading",
+	"name": "flinkform/section-heading",
 	"version": "0.1.0",
 	"title": "Section Heading",
-	"category": "perform",
+	"category": "flinkform",
 	"icon": "heading",
 	"description": "A visual divider with an optional title and description. Not a field — nothing is submitted.",
 	"keywords": ["heading", "divider", "section"],
-	"textdomain": "perform-forms",
-	"parent": ["perform/form"],
+	"textdomain": "flinkform",
+	"parent": ["flinkform/form"],
 	"supports": {
 		"html": false,
 		"reusable": false
@@ -36,7 +36,7 @@
 			"default": {}
 		}
 	},
-	"usesContext": ["perform/formId", "perform/appearance"],
+	"usesContext": ["flinkform/formId", "flinkform/appearance"],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

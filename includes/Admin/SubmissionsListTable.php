@@ -2,21 +2,21 @@
 /**
  * Submissions list table.
  *
- * WP_List_Table extension that powers the wp-admin "PerForm → Submissions"
+ * WP_List_Table extension that powers the wp-admin "Flinkform → Submissions"
  * list view. Filtering, sorting and pagination are delegated to the
  * Repository — this class only wires query state to UI state.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Admin;
+namespace Flinkform\Admin;
 
-use PerForm\Forms\Indexer;
-use PerForm\Submissions\Repository;
+use Flinkform\Forms\Indexer;
+use Flinkform\Submissions\Repository;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -70,10 +70,10 @@ final class SubmissionsListTable extends \WP_List_Table {
 	public function get_columns(): array {
 		return [
 			'cb'         => '<input type="checkbox" />',
-			'created_at' => __( 'Date', 'perform-forms' ),
-			'form_id'    => __( 'Form', 'perform-forms' ),
-			'preview'    => __( 'Preview', 'perform-forms' ),
-			'status'     => __( 'Status', 'perform-forms' ),
+			'created_at' => __( 'Date', 'flinkform' ),
+			'form_id'    => __( 'Form', 'flinkform' ),
+			'preview'    => __( 'Preview', 'flinkform' ),
+			'status'     => __( 'Status', 'flinkform' ),
 		];
 	}
 
@@ -97,9 +97,9 @@ final class SubmissionsListTable extends \WP_List_Table {
 	 */
 	protected function get_bulk_actions(): array {
 		return [
-			'mark_read'   => __( 'Mark as read', 'perform-forms' ),
-			'mark_unread' => __( 'Mark as unread', 'perform-forms' ),
-			'delete'      => __( 'Delete', 'perform-forms' ),
+			'mark_read'   => __( 'Mark as read', 'flinkform' ),
+			'mark_unread' => __( 'Mark as unread', 'flinkform' ),
+			'delete'      => __( 'Delete', 'flinkform' ),
 		];
 	}
 
@@ -139,7 +139,7 @@ final class SubmissionsListTable extends \WP_List_Table {
 	 * @return void
 	 */
 	public function no_items(): void {
-		esc_html_e( 'No submissions yet.', 'perform-forms' );
+		esc_html_e( 'No submissions yet.', 'flinkform' );
 	}
 
 	/**
@@ -185,11 +185,11 @@ final class SubmissionsListTable extends \WP_List_Table {
 			],
 			admin_url( 'admin.php' )
 		);
-		$delete_nonce = wp_create_nonce( 'perffo_delete_' . $id );
+		$delete_nonce = wp_create_nonce( 'flinkform_delete_' . $id );
 		$delete_url   = add_query_arg(
 			[
 				'page'           => Menu::PARENT_SLUG,
-				'perffo_action' => 'delete',
+				'flinkform_action' => 'delete',
 				'id'             => $id,
 				'_wpnonce'       => $delete_nonce,
 			],
@@ -202,16 +202,16 @@ final class SubmissionsListTable extends \WP_List_Table {
 			esc_html( $local_ts )
 		);
 		if ( $is_unread ) {
-			$label = '<span class="perform-unread-dot" aria-hidden="true">●</span> ' . $label;
+			$label = '<span class="flinkform-unread-dot" aria-hidden="true">●</span> ' . $label;
 		}
 
 		$actions = [
-			'view'   => sprintf( '<a href="%s">%s</a>', esc_url( $view_url ), esc_html__( 'View', 'perform-forms' ) ),
+			'view'   => sprintf( '<a href="%s">%s</a>', esc_url( $view_url ), esc_html__( 'View', 'flinkform' ) ),
 			'delete' => sprintf(
 				'<a href="%s" class="submitdelete" onclick="return confirm(%s)">%s</a>',
 				esc_url( $delete_url ),
-				esc_js( wp_json_encode( __( 'Delete this submission permanently?', 'perform-forms' ) ) ),
-				esc_html__( 'Delete', 'perform-forms' )
+				esc_js( wp_json_encode( __( 'Delete this submission permanently?', 'flinkform' ) ) ),
+				esc_html__( 'Delete', 'flinkform' )
 			),
 		];
 
@@ -231,7 +231,7 @@ final class SubmissionsListTable extends \WP_List_Table {
 	public function column_form_id( $item ): string {
 		$uuid = isset( $item['form_id'] ) ? (string) $item['form_id'] : '';
 		if ( '' === $uuid ) {
-			return '<em>' . esc_html__( 'unknown', 'perform-forms' ) . '</em>';
+			return '<em>' . esc_html__( 'unknown', 'flinkform' ) . '</em>';
 		}
 
 		$short    = substr( $uuid, 0, 8 ) . '…';
@@ -305,10 +305,10 @@ final class SubmissionsListTable extends \WP_List_Table {
 			}
 
 			$preview = wp_html_excerpt( $display, 60, '…' );
-			return sprintf( '<span class="perform-preview"><strong>%s:</strong> %s</span>', esc_html( $label ), esc_html( $preview ) );
+			return sprintf( '<span class="flinkform-preview"><strong>%s:</strong> %s</span>', esc_html( $label ), esc_html( $preview ) );
 		}
 
-		return '<em>' . esc_html__( 'empty', 'perform-forms' ) . '</em>';
+		return '<em>' . esc_html__( 'empty', 'flinkform' ) . '</em>';
 	}
 
 	/**
@@ -319,9 +319,9 @@ final class SubmissionsListTable extends \WP_List_Table {
 	 */
 	public function column_status( $item ): string {
 		$status = isset( $item['status'] ) ? (string) $item['status'] : 'unread';
-		$label  = 'read' === $status ? __( 'Read', 'perform-forms' ) : __( 'Unread', 'perform-forms' );
+		$label  = 'read' === $status ? __( 'Read', 'flinkform' ) : __( 'Unread', 'flinkform' );
 		return sprintf(
-			'<span class="perform-status perform-status--%s">%s</span>',
+			'<span class="flinkform-status flinkform-status--%s">%s</span>',
 			esc_attr( $status ),
 			esc_html( $label )
 		);
@@ -342,9 +342,9 @@ final class SubmissionsListTable extends \WP_List_Table {
 		$current      = $this->filters;
 		?>
 		<div class="alignleft actions">
-			<label class="screen-reader-text" for="filter-form-id"><?php esc_html_e( 'Filter by form', 'perform-forms' ); ?></label>
+			<label class="screen-reader-text" for="filter-form-id"><?php esc_html_e( 'Filter by form', 'flinkform' ); ?></label>
 			<select name="form_id" id="filter-form-id">
-				<option value=""><?php esc_html_e( 'All forms', 'perform-forms' ); ?></option>
+				<option value=""><?php esc_html_e( 'All forms', 'flinkform' ); ?></option>
 				<?php foreach ( $form_options as $uuid => $label ) : ?>
 					<option value="<?php echo esc_attr( $uuid ); ?>" <?php selected( $current['form_id'] ?? '', $uuid ); ?>>
 						<?php echo esc_html( $label ); ?>
@@ -352,43 +352,43 @@ final class SubmissionsListTable extends \WP_List_Table {
 				<?php endforeach; ?>
 			</select>
 
-			<label class="screen-reader-text" for="filter-status"><?php esc_html_e( 'Filter by status', 'perform-forms' ); ?></label>
+			<label class="screen-reader-text" for="filter-status"><?php esc_html_e( 'Filter by status', 'flinkform' ); ?></label>
 			<select name="status" id="filter-status">
-				<option value=""><?php esc_html_e( 'All statuses', 'perform-forms' ); ?></option>
-				<option value="unread" <?php selected( $current['status'] ?? '', 'unread' ); ?>><?php esc_html_e( 'Unread', 'perform-forms' ); ?></option>
-				<option value="read" <?php selected( $current['status'] ?? '', 'read' ); ?>><?php esc_html_e( 'Read', 'perform-forms' ); ?></option>
+				<option value=""><?php esc_html_e( 'All statuses', 'flinkform' ); ?></option>
+				<option value="unread" <?php selected( $current['status'] ?? '', 'unread' ); ?>><?php esc_html_e( 'Unread', 'flinkform' ); ?></option>
+				<option value="read" <?php selected( $current['status'] ?? '', 'read' ); ?>><?php esc_html_e( 'Read', 'flinkform' ); ?></option>
 			</select>
 
 			<input
 				type="date"
 				name="date_from"
 				value="<?php echo esc_attr( $current['date_from'] ?? '' ); ?>"
-				aria-label="<?php esc_attr_e( 'From date', 'perform-forms' ); ?>"
-				placeholder="<?php esc_attr_e( 'From', 'perform-forms' ); ?>"
+				aria-label="<?php esc_attr_e( 'From date', 'flinkform' ); ?>"
+				placeholder="<?php esc_attr_e( 'From', 'flinkform' ); ?>"
 			/>
 			<input
 				type="date"
 				name="date_to"
 				value="<?php echo esc_attr( $current['date_to'] ?? '' ); ?>"
-				aria-label="<?php esc_attr_e( 'To date', 'perform-forms' ); ?>"
-				placeholder="<?php esc_attr_e( 'To', 'perform-forms' ); ?>"
+				aria-label="<?php esc_attr_e( 'To date', 'flinkform' ); ?>"
+				placeholder="<?php esc_attr_e( 'To', 'flinkform' ); ?>"
 			/>
 
-			<?php submit_button( __( 'Filter', 'perform-forms' ), '', 'filter_action', false ); ?>
+			<?php submit_button( __( 'Filter', 'flinkform' ), '', 'filter_action', false ); ?>
 
 			<?php
 			/**
 			 * Render extra actions in the submissions filter bar.
 			 *
 			 * The free core ships the filter controls; Pro-only actions — the
-			 * CSV export button (PerForm Pro) — attach here so they appear
+			 * CSV export button (Flinkform Pro) — attach here so they appear
 			 * inline with Filter without the free core shipping their code.
 			 *
 			 * @since 0.2.0
 			 *
 			 * @param array<string, string> $current Active filter values (form_id, status, date_from, date_to, search).
 			 */
-			do_action( 'perffo_submissions_table_actions', $current );
+			do_action( 'flinkform_submissions_table_actions', $current );
 			?>
 		</div>
 		<?php
@@ -417,7 +417,7 @@ final class SubmissionsListTable extends \WP_List_Table {
 			$short = substr( $uuid, 0, 8 ) . '…';
 			$label = '' !== $title ? sprintf( '%s (%s)', $title, $short ) : $short;
 			if ( empty( $form['sources'] ) ) {
-				$label .= ' ' . __( '(deleted)', 'perform-forms' );
+				$label .= ' ' . __( '(deleted)', 'flinkform' );
 			}
 			$options[ $uuid ] = $label;
 		}

@@ -6,7 +6,7 @@
  *
  * @var array<string, mixed> $attributes
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
@@ -28,16 +28,16 @@ if ( '' === $title && '' === $description ) {
 	return;
 }
 
-$heading_class = 'perform-section-heading';
+$heading_class = 'flinkform-section-heading';
 if ( $full_width ) {
-	$heading_class .= ' perform-section-heading--full-width';
+	$heading_class .= ' flinkform-section-heading--full-width';
 }
 ?>
-<div class="<?php echo esc_attr( $heading_class ); ?>"<?php echo \PerForm\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?>>
+<div class="<?php echo esc_attr( $heading_class ); ?>"<?php echo \Flinkform\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?>>
 	<?php if ( '' !== $title ) : ?>
-		<<?php echo esc_attr( $heading_tag ); ?> class="perform-section-heading__title"><?php echo wp_kses_post( $title ); ?></<?php echo esc_attr( $heading_tag ); ?>>
+		<<?php echo esc_attr( $heading_tag ); ?> class="flinkform-section-heading__title"><?php echo wp_kses_post( $title ); ?></<?php echo esc_attr( $heading_tag ); ?>>
 	<?php endif; ?>
 	<?php if ( '' !== $description ) : ?>
-		<p class="perform-section-heading__description"><?php echo esc_html( $description ); ?></p>
+		<p class="flinkform-section-heading__description"><?php echo esc_html( $description ); ?></p>
 	<?php endif; ?>
 </div>

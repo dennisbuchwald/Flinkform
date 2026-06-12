@@ -29,7 +29,7 @@
  *     ],
  *   }
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 import { __ } from '@wordpress/i18n';
@@ -114,7 +114,7 @@ export default function ConditionalLogicPanel( {
 
 	const fieldOptions = useMemo(
 		() => [
-			{ value: '', label: __( '— Select a field —', 'perform-forms' ) },
+			{ value: '', label: __( '— Select a field —', 'flinkform' ) },
 			...siblingFields.map( ( f ) => ( {
 				value: f.name,
 				label: f.label ? `${ f.label } (${ f.name })` : f.name,
@@ -176,12 +176,12 @@ export default function ConditionalLogicPanel( {
 
 	return (
 		<PanelBody
-			title={ title ?? __( 'Conditional Logic', 'perform-forms' ) }
+			title={ title ?? __( 'Conditional Logic', 'flinkform' ) }
 			initialOpen={ false }
 		>
 			<ToggleControl
-				label={ toggleLabel ?? __( 'Enable conditional logic', 'perform-forms' ) }
-				help={ toggleHelp ?? __( 'Show this only when the rules below match. Hidden fields are excluded from the submission, both client- and server-side.', 'perform-forms' ) }
+				label={ toggleLabel ?? __( 'Enable conditional logic', 'flinkform' ) }
+				help={ toggleHelp ?? __( 'Show this only when the rules below match. Hidden fields are excluded from the submission, both client- and server-side.', 'flinkform' ) }
 				checked={ ruleSet.enabled }
 				onChange={ toggleEnabled }
 				__nextHasNoMarginBottom
@@ -191,20 +191,20 @@ export default function ConditionalLogicPanel( {
 				<>
 					{ siblingFields.length === 0 && (
 						<Notice status="warning" isDismissible={ false }>
-							{ __( 'Add at least one other field block to the form to use conditional logic.', 'perform-forms' ) }
+							{ __( 'Add at least one other field block to the form to use conditional logic.', 'flinkform' ) }
 						</Notice>
 					) }
 
 					<ToggleGroupControl
-						label={ __( 'Match', 'perform-forms' ) }
+						label={ __( 'Match', 'flinkform' ) }
 						value={ ruleSet.logic }
 						onChange={ ( value ) => update( { logic: value === 'any' ? 'any' : 'all' } ) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="all" label={ __( 'ALL', 'perform-forms' ) } />
-						<ToggleGroupControlOption value="any" label={ __( 'ANY', 'perform-forms' ) } />
+						<ToggleGroupControlOption value="all" label={ __( 'ALL', 'flinkform' ) } />
+						<ToggleGroupControlOption value="any" label={ __( 'ANY', 'flinkform' ) } />
 					</ToggleGroupControl>
 
 					{ ruleSet.rules.map( ( rule, index ) => (
@@ -224,7 +224,7 @@ export default function ConditionalLogicPanel( {
 						style={ { marginTop: '8px' } }
 						disabled={ siblingFields.length === 0 }
 					>
-						{ __( '+ Add rule', 'perform-forms' ) }
+						{ __( '+ Add rule', 'flinkform' ) }
 					</Button>
 				</>
 			) }
@@ -239,14 +239,14 @@ export default function ConditionalLogicPanel( {
  */
 function RuleRow( { rule, fieldOptions, onChange, onRemove } ) {
 	const operatorOptions = [
-		{ value: 'is', label: __( 'is', 'perform-forms' ) },
-		{ value: 'is_not', label: __( 'is not', 'perform-forms' ) },
-		{ value: 'contains', label: __( 'contains', 'perform-forms' ) },
-		{ value: 'not_contains', label: __( 'does not contain', 'perform-forms' ) },
-		{ value: 'is_empty', label: __( 'is empty', 'perform-forms' ) },
-		{ value: 'is_not_empty', label: __( 'is not empty', 'perform-forms' ) },
-		{ value: 'greater_than', label: __( 'greater than', 'perform-forms' ) },
-		{ value: 'less_than', label: __( 'less than', 'perform-forms' ) },
+		{ value: 'is', label: __( 'is', 'flinkform' ) },
+		{ value: 'is_not', label: __( 'is not', 'flinkform' ) },
+		{ value: 'contains', label: __( 'contains', 'flinkform' ) },
+		{ value: 'not_contains', label: __( 'does not contain', 'flinkform' ) },
+		{ value: 'is_empty', label: __( 'is empty', 'flinkform' ) },
+		{ value: 'is_not_empty', label: __( 'is not empty', 'flinkform' ) },
+		{ value: 'greater_than', label: __( 'greater than', 'flinkform' ) },
+		{ value: 'less_than', label: __( 'less than', 'flinkform' ) },
 	];
 
 	const usesValue = ! EMPTY_STATE_OPERATORS.has( rule.operator );
@@ -261,7 +261,7 @@ function RuleRow( { rule, fieldOptions, onChange, onRemove } ) {
 			} }
 		>
 			<SelectControl
-				label={ __( 'Field', 'perform-forms' ) }
+				label={ __( 'Field', 'flinkform' ) }
 				value={ rule.field ?? '' }
 				options={ fieldOptions }
 				onChange={ ( value ) => onChange( { field: value } ) }
@@ -270,7 +270,7 @@ function RuleRow( { rule, fieldOptions, onChange, onRemove } ) {
 			/>
 
 			<SelectControl
-				label={ __( 'Operator', 'perform-forms' ) }
+				label={ __( 'Operator', 'flinkform' ) }
 				value={ rule.operator ?? 'is' }
 				options={ operatorOptions }
 				onChange={ ( value ) => {
@@ -289,7 +289,7 @@ function RuleRow( { rule, fieldOptions, onChange, onRemove } ) {
 
 			{ usesValue && (
 				<TextControl
-					label={ __( 'Value', 'perform-forms' ) }
+					label={ __( 'Value', 'flinkform' ) }
 					value={ rule.value ?? '' }
 					onChange={ ( value ) => onChange( { value } ) }
 					__nextHasNoMarginBottom
@@ -304,7 +304,7 @@ function RuleRow( { rule, fieldOptions, onChange, onRemove } ) {
 					onClick={ onRemove }
 					style={ { padding: 0 } }
 				>
-					{ __( 'Remove rule', 'perform-forms' ) }
+					{ __( 'Remove rule', 'flinkform' ) }
 				</Button>
 			</div>
 		</div>

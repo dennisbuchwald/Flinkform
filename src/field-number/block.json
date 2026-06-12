@@ -1,10 +1,10 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "perform/field-number",
+	"name": "flinkform/field-number",
 	"version": "0.1.0",
 	"title": "Number Field",
-	"category": "perform",
+	"category": "flinkform",
 	"icon": "calculator",
 	"description": "A numeric input with optional min, max and step.",
 	"keywords": [
@@ -12,9 +12,9 @@
 		"numeric",
 		"field"
 	],
-	"textdomain": "perform-forms",
+	"textdomain": "flinkform",
 	"parent": [
-		"perform/form"
+		"flinkform/form"
 	],
 	"supports": {
 		"html": false,
@@ -63,8 +63,8 @@
 		}
 	},
 	"usesContext": [
-		"perform/formId",
-		"perform/appearance"
+		"flinkform/formId",
+		"flinkform/appearance"
 	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"

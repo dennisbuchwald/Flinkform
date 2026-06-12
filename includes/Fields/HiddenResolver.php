@@ -8,14 +8,14 @@
  * a visitor can't tamper with the hidden value via DevTools — whatever
  * the browser sends is ignored, the source dictates the truth.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Fields;
+namespace Flinkform\Fields;
 
 defined( 'ABSPATH' ) || exit;
 

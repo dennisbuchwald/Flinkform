@@ -1,6 +1,6 @@
-# PerForm — Landing Page & Content Strategy
+# Flinkform — Landing Page & Content Strategy
 
-> Ideas for the marketing site and content engine around perform-forms.
+> Ideas for the marketing site and content engine around flinkform.
 
 ---
 
@@ -8,13 +8,13 @@
 
 This is a **brainstorm and idea capture** document — not a finished spec. It collects the marketing surfaces that will drive adoption: the landing page itself, the comparison content, and the blog content engine. Each section can grow over time as we lock in copy, design, and structure.
 
-The goal of the landing page is **one thing**: convince a frustrated WordPress user who has used Contact Form 7, WPForms, or Gravity Forms that PerForm is the upgrade they've been waiting for — without making it feel like just another marketing site.
+The goal of the landing page is **one thing**: convince a frustrated WordPress user who has used Contact Form 7, WPForms, or Gravity Forms that Flinkform is the upgrade they've been waiting for — without making it feel like just another marketing site.
 
 ---
 
 ## 1. Core Idea — The Comparison Chart
 
-The centerpiece of the landing page is an **interactive comparison chart** that puts PerForm side-by-side with every major WordPress form plugin. The user can **tap / swipe** through competitors and see a clear positive/negative gegenüberstellung for each one.
+The centerpiece of the landing page is an **interactive comparison chart** that puts Flinkform side-by-side with every major WordPress form plugin. The user can **tap / swipe** through competitors and see a clear positive/negative gegenüberstellung for each one.
 
 ### Why this works
 
@@ -25,7 +25,7 @@ The centerpiece of the landing page is an **interactive comparison chart** that 
 ### Interaction pattern
 
 - **Desktop:** tab interface. Each competitor is a tab. Clicking switches the comparison view.
-- **Mobile:** swipeable card stack (or horizontally scrollable tabs). Each card shows one competitor vs. PerForm.
+- **Mobile:** swipeable card stack (or horizontally scrollable tabs). Each card shows one competitor vs. Flinkform.
 - **Default tab:** Contact Form 7 (most-used, most likely visitor context).
 - Animation: smooth horizontal slide between competitors — feels tactile, not laggy.
 
@@ -44,7 +44,7 @@ The centerpiece of the landing page is an **interactive comparison chart** that 
 
 ### Comparison criteria (rows in the chart)
 
-Each row is a feature or quality dimension. PerForm column gets a ✓ / clear win, competitor column shows the actual reality (not a strawman — be honest).
+Each row is a feature or quality dimension. Flinkform column gets a ✓ / clear win, competitor column shows the actual reality (not a strawman — be honest).
 
 Suggested categories:
 
@@ -164,20 +164,20 @@ The blog is the SEO engine. People search for "alternative to Contact Form 7" or
 
 Each post follows the same template (see template below) so the series feels cohesive and is easy to produce.
 
-1. **PerForm vs. Contact Form 7 — A Modern Alternative for 2026**
-2. **PerForm vs. WPForms — All the Features, None of the Paywall**
-3. **PerForm vs. Gravity Forms — Free, Open Source, and Block Editor Native**
-4. **PerForm vs. Ninja Forms — Why the Editor Experience Matters**
-5. **PerForm vs. Fluent Forms — Side-by-Side Comparison**
-6. **PerForm vs. Forminator — Which Free Form Plugin Wins in 2026?**
-7. **PerForm vs. Formidable Forms — A Developer's Perspective**
-8. **PerForm vs. Elementor Forms — You Don't Need Elementor Pro for Great Forms**
-9. **PerForm vs. Bricks Forms — Block Editor vs. Builder**
+1. **Flinkform vs. Contact Form 7 — A Modern Alternative for 2026**
+2. **Flinkform vs. WPForms — All the Features, None of the Paywall**
+3. **Flinkform vs. Gravity Forms — Free, Open Source, and Block Editor Native**
+4. **Flinkform vs. Ninja Forms — Why the Editor Experience Matters**
+5. **Flinkform vs. Fluent Forms — Side-by-Side Comparison**
+6. **Flinkform vs. Forminator — Which Free Form Plugin Wins in 2026?**
+7. **Flinkform vs. Formidable Forms — A Developer's Perspective**
+8. **Flinkform vs. Elementor Forms — You Don't Need Elementor Pro for Great Forms**
+9. **Flinkform vs. Bricks Forms — Block Editor vs. Builder**
 10. **Best Free WordPress Form Plugins for 2026 (Honest Roundup)** — round-up post that links to all of the above
 
 ### Optional second wave (specific intent)
 
-- **How to migrate from Contact Form 7 to PerForm** (assumes importer exists)
+- **How to migrate from Contact Form 7 to Flinkform** (assumes importer exists)
 - **How to add conditional logic to a WordPress form for free**
 - **How to track form conversions in GA4 / Meta Pixel** (positions the redirect feature)
 - **How to set up GDPR-compliant forms in WordPress**
@@ -190,19 +190,19 @@ Every "vs." post follows the same structure to keep production fast and the read
 1. **TL;DR table** — 5-row condensed version of the landing page comparison chart, scoped to this one competitor.
 2. **Who [competitor] is for** — fair, generous summary. No strawmen.
 3. **Where [competitor] falls short in 2026** — honest, sourced criticism.
-4. **What PerForm does differently** — feature-by-feature with screenshots.
+4. **What Flinkform does differently** — feature-by-feature with screenshots.
 5. **Pricing comparison** — clear table.
-6. **When you should _not_ switch to PerForm** — credibility move. If the answer is "you're already deeply invested in Gravity Forms add-ons", say so.
+6. **When you should _not_ switch to Flinkform** — credibility move. If the answer is "you're already deeply invested in Gravity Forms add-ons", say so.
 7. **How to migrate** — step-by-step if an importer exists, manual workflow if not.
 8. **Final verdict** — one paragraph, no hedging.
 
 ### SEO notes
 
-- Target the exact-match query in the H1 (`<competitor> alternative`, `<competitor> vs PerForm`).
+- Target the exact-match query in the H1 (`<competitor> alternative`, `<competitor> vs Flinkform`).
 - Every post should answer "is it free?", "is it open source?", "does it support [feature]?" in the first 200 words — these are People-Also-Ask candidates.
 - Internal link from every post → the landing page comparison chart anchor.
 - Internal link from the landing page comparison chart → the relevant post.
-- Schema: `Article` + `SoftwareApplication` for PerForm and each competitor.
+- Schema: `Article` + `SoftwareApplication` for Flinkform and each competitor.
 
 ---
 
@@ -210,13 +210,13 @@ Every "vs." post follows the same structure to keep production fast and the read
 
 Things to decide before any of this can ship:
 
-- [ ] **Domain & hosting** — where does the landing page live? (perform-forms.com? perform.wordpress-style? subdomain?)
-- [ ] **Stack** — is the landing page itself built on WordPress (dogfooding, including PerForm for the contact form)? Or a static site (Astro / Eleventy)? Dogfooding is the more compelling story.
+- [ ] **Domain & hosting** — where does the landing page live? (flinkform.com? perform.wordpress-style? subdomain?)
+- [ ] **Stack** — is the landing page itself built on WordPress (dogfooding, including Flinkform for the contact form)? Or a static site (Astro / Eleventy)? Dogfooding is the more compelling story.
 - [ ] **Design direction** — modern, calm, opinionated. Mood-board needed. Reference points: Linear, Plausible, Fathom, Cal.com landing pages.
 - [ ] **Comparison data sourcing** — who maintains the comparison rows over time? (Competitors change pricing, ship features. This needs an owner.)
 - [ ] **Migration story for each competitor** — which ones get an actual importer in v1.0? (At minimum: Contact Form 7, because of install base.)
 - [ ] **Brand voice** — direct, dry, slightly opinionated. No marketing fluff. Closer to a developer tool than a SaaS landing page.
-- [ ] **Newsletter / launch list** — pre-launch capture form (built with PerForm, naturally).
+- [ ] **Newsletter / launch list** — pre-launch capture form (built with Flinkform, naturally).
 
 ---
 

@@ -9,7 +9,7 @@
  * @var string               $content
  * @var WP_Block             $block
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
@@ -19,11 +19,11 @@ defined( 'ABSPATH' ) || exit;
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
-$form_id     = isset( $block->context['perform/formId'] ) ? (string) $block->context['perform/formId'] : '';
+$form_id     = isset( $block->context['flinkform/formId'] ) ? (string) $block->context['flinkform/formId'] : '';
 $label       = isset( $attributes['label'] ) && is_string( $attributes['label'] ) ? $attributes['label'] : '';
 $placeholder = isset( $attributes['placeholder'] ) && is_string( $attributes['placeholder'] ) ? $attributes['placeholder'] : '';
-$perffo_appearance = isset( $block->context['perform/appearance'] ) && is_array( $block->context['perform/appearance'] ) ? $block->context['perform/appearance'] : [];
-if ( '' === $placeholder && ( $perffo_appearance['labelPosition'] ?? '' ) === 'placeholder' && '' !== $label ) {
+$flinkform_appearance = isset( $block->context['flinkform/appearance'] ) && is_array( $block->context['flinkform/appearance'] ) ? $block->context['flinkform/appearance'] : [];
+if ( '' === $placeholder && ( $flinkform_appearance['labelPosition'] ?? '' ) === 'placeholder' && '' !== $label ) {
 	$placeholder = $label . ( ! empty( $attributes['required'] ) ? '*' : '' );
 }
 $required    = ! empty( $attributes['required'] );
@@ -35,24 +35,24 @@ if ( '' === $field_name || '' === $form_id ) {
 	return;
 }
 
-$value     = \PerForm\Submissions\Handler::flash_value( $field_name );
-$error     = \PerForm\Submissions\Handler::flash_error( $field_name );
-$field_uid = 'perform-field-' . md5( $form_id . '-' . $field_name );
+$value     = \Flinkform\Submissions\Handler::flash_value( $field_name );
+$error     = \Flinkform\Submissions\Handler::flash_error( $field_name );
+$field_uid = 'flinkform-field-' . md5( $form_id . '-' . $field_name );
 $help_id   = $help_text ? $field_uid . '-help' : '';
 $error_id  = $error ? $field_uid . '-error' : '';
 $described = trim( $help_id . ' ' . $error_id );
 ?>
-<div class="perform-field perform-field--textarea<?php echo $error ? ' perform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' perform-field--full-width' : ''; ?>"<?php echo \PerForm\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?> data-perform-field-name="<?php echo esc_attr( $field_name ); ?>">
-	<label class="perform-field__label" for="<?php echo esc_attr( $field_uid ); ?>">
+<div class="flinkform-field flinkform-field--textarea<?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"<?php echo \Flinkform\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?> data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>">
+	<label class="flinkform-field__label" for="<?php echo esc_attr( $field_uid ); ?>">
 		<?php echo esc_html( $label ); ?>
 		<?php if ( $required ) : ?>
-			<span class="perform-field__required" aria-hidden="true"> *</span>
+			<span class="flinkform-field__required" aria-hidden="true"> *</span>
 		<?php endif; ?>
 	</label>
 	<textarea
 		id="<?php echo esc_attr( $field_uid ); ?>"
-		name="perffo_field[<?php echo esc_attr( $field_name ); ?>]"
-		class="perform-field__input"
+		name="flinkform_field[<?php echo esc_attr( $field_name ); ?>]"
+		class="flinkform-field__input"
 		rows="<?php echo esc_attr( (string) $rows ); ?>"
 		placeholder="<?php echo esc_attr( $placeholder ); ?>"
 		<?php echo $required ? 'required aria-required="true"' : ''; ?>
@@ -60,12 +60,12 @@ $described = trim( $help_id . ' ' . $error_id );
 		<?php echo $error ? 'aria-invalid="true"' : ''; ?>
 	><?php echo esc_textarea( (string) $value ); ?></textarea>
 	<?php if ( $help_text ) : ?>
-		<p class="perform-field__help" id="<?php echo esc_attr( $help_id ); ?>">
+		<p class="flinkform-field__help" id="<?php echo esc_attr( $help_id ); ?>">
 			<?php echo esc_html( $help_text ); ?>
 		</p>
 	<?php endif; ?>
 	<?php if ( $error ) : ?>
-		<p class="perform-field__error" id="<?php echo esc_attr( $error_id ); ?>" role="alert">
+		<p class="flinkform-field__error" id="<?php echo esc_attr( $error_id ); ?>" role="alert">
 			<?php echo esc_html( $error ); ?>
 		</p>
 	<?php endif; ?>

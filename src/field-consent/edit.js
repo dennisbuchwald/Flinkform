@@ -9,7 +9,7 @@ import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { consentText, linkPrivacyPolicy, fieldName } = attributes;
-	const blockProps = useBlockProps( { className: 'perform-field perform-field--consent' } );
+	const blockProps = useBlockProps( { className: 'flinkform-field flinkform-field--consent' } );
 
 	useEffect( () => {
 		if ( ! fieldName ) {
@@ -21,23 +21,23 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Consent Settings', 'perform-forms' ) }>
+				<PanelBody title={ __( 'Consent Settings', 'flinkform' ) }>
 					<TextareaControl
-						label={ __( 'Consent text', 'perform-forms' ) }
-						help={ __( 'Shown next to the checkbox. The visitor must tick it to submit.', 'perform-forms' ) }
+						label={ __( 'Consent text', 'flinkform' ) }
+						help={ __( 'Shown next to the checkbox. The visitor must tick it to submit.', 'flinkform' ) }
 						value={ consentText }
 						onChange={ ( v ) => setAttributes( { consentText: v } ) }
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
-						label={ __( 'Append a link to the privacy policy', 'perform-forms' ) }
-						help={ __( 'Links to the page set under Settings → Privacy.', 'perform-forms' ) }
+						label={ __( 'Append a link to the privacy policy', 'flinkform' ) }
+						help={ __( 'Links to the page set under Settings → Privacy.', 'flinkform' ) }
 						checked={ !! linkPrivacyPolicy }
 						onChange={ ( v ) => setAttributes( { linkPrivacyPolicy: v } ) }
 						__nextHasNoMarginBottom
 					/>
 					<TextControl
-						label={ __( 'Field Name', 'perform-forms' ) }
+						label={ __( 'Field Name', 'flinkform' ) }
 						value={ fieldName }
 						onChange={ ( v ) => setAttributes( { fieldName: v } ) }
 						__nextHasNoMarginBottom
@@ -49,15 +49,15 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<label className="perform-field__option" style={ { display: 'flex', alignItems: 'flex-start', gap: '8px' } }>
+				<label className="flinkform-field__option" style={ { display: 'flex', alignItems: 'flex-start', gap: '8px' } }>
 					<input type="checkbox" disabled aria-disabled="true" />
 					<span>
 						{ consentText }
-						<span className="perform-field__required" aria-hidden="true"> *</span>
+						<span className="flinkform-field__required" aria-hidden="true"> *</span>
 						{ linkPrivacyPolicy && (
 							<>
 								{ ' ' }
-								<em>{ __( '(privacy policy link)', 'perform-forms' ) }</em>
+								<em>{ __( '(privacy policy link)', 'flinkform' ) }</em>
 							</>
 						) }
 					</span>

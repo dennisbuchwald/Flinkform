@@ -3,7 +3,7 @@
  * Pro-capability façade — the single source of truth for the Free/Pro split.
  *
  * The free core never ships any of these capabilities active. The Pro add-on
- * switches them on by hooking the `perffo_pro_features` filter (from its main
+ * switches them on by hooking the `flinkform_pro_features` filter (from its main
  * file, before `plugins_loaded` fires). Every free-core code path that touches
  * a Pro-bound module asks here first, so the core degrades gracefully when Pro
  * is absent instead of erroring:
@@ -20,17 +20,17 @@
  * call sites.
  *
  * CONTRACT: see includes/Bridge/README.md. Once the Pro add-on ships, the
- * `perffo_pro_features` filter name and the capability keys below are frozen —
+ * `flinkform_pro_features` filter name and the capability keys below are frozen —
  * additive changes only.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.2.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Bridge;
+namespace Flinkform\Bridge;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -44,7 +44,7 @@ final class Features {
 	 *
 	 * These are the stable identifiers the Pro add-on advertises and the free
 	 * core checks against. Mapped 1:1 to the Free/Pro feature matrix in
-	 * PERFFO_ROADMAP.md (Phase M).
+	 * FLINKFORM_ROADMAP.md (Phase M).
 	 */
 	public const WEBHOOKS           = 'webhooks';
 	public const SUBMISSIONS_EXPORT = 'submissions_export';
@@ -70,7 +70,7 @@ final class Features {
 	 * @return array<string, true> Set of active capability keys.
 	 */
 	public static function all(): array {
-		$raw = (array) apply_filters( 'perffo_pro_features', [] );
+		$raw = (array) apply_filters( 'flinkform_pro_features', [] );
 		$set = [];
 
 		foreach ( $raw as $key => $value ) {

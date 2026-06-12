@@ -1,10 +1,10 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "perform/field-hidden",
+	"name": "flinkform/field-hidden",
 	"version": "0.1.0",
 	"title": "Hidden Field",
-	"category": "perform",
+	"category": "flinkform",
 	"icon": "hidden",
 	"description": "An invisible field that records context with the submission (page URL, user, date, or a static value).",
 	"keywords": [
@@ -12,9 +12,9 @@
 		"meta",
 		"context"
 	],
-	"textdomain": "perform-forms",
+	"textdomain": "flinkform",
 	"parent": [
-		"perform/form"
+		"flinkform/form"
 	],
 	"supports": {
 		"html": false,
@@ -47,8 +47,8 @@
 		}
 	},
 	"usesContext": [
-		"perform/formId",
-		"perform/appearance"
+		"flinkform/formId",
+		"flinkform/appearance"
 	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"

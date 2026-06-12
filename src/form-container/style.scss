@@ -1,5 +1,5 @@
 /**
- * PerForm — frontend base styles.
+ * Flinkform — frontend base styles.
  *
  * SPECIFICITY STRATEGY
  * --------------------
@@ -11,7 +11,7 @@
  *   .ast-input-fields input[type="text"]            (0,2,1)  Astra
  *   body.some-theme input[type="text"]              (0,2,2)  legacy themes
  *
- * A plain `.perform-field__input` selector lands at (0,1,0) and loses
+ * A plain `.flinkform-field__input` selector lands at (0,1,0) and loses
  * to every one of those. That produces forms whose text inputs render
  * in the theme's flat style while textareas — which most themes target
  * with weaker selectors — render with our intended border/radius. The
@@ -20,22 +20,22 @@
  * "Bordered" + 32 px radius.
  *
  * To beat the entire observed range without resorting to !important,
- * every field-level rule is scoped under `.perform-form.perform-form`
+ * every field-level rule is scoped under `.flinkform-form.flinkform-form`
  * — a deliberate selector-doubling. Both classes resolve to the same
  * wrapper element (it really only has one class with that name), but
  * the compiled selector counts as two classes, lifting specificity to
- * (0,2,0). Combined with `.perform-field` or `.perform-field__input`
+ * (0,2,0). Combined with `.flinkform-field` or `.flinkform-field__input`
  * the rule lands at (0,3,0), which outranks every common theme pattern
  * including the focus-state ones. Our compiled `:focus-visible` rule
  * goes one further to (0,4,0).
  *
  * Form-chrome selectors (`&__form`, `&__success`, `&__submit`) keep
- * their normal `.perform-form` scope. They use unique BEM names that
+ * their normal `.flinkform-form` scope. They use unique BEM names that
  * no theme targets directly, so the spec bump would be specificity
  * debt for the variants without any compatibility win.
  *
  * Modifier rules at the bottom of the file all use the same
- * `.perform-form.perform-form--X` doubled-class wrapper so they sit at
+ * `.flinkform-form.flinkform-form--X` doubled-class wrapper so they sit at
  * the same (0,3,0) specificity as the base and win conflicts via
  * source order (modifiers appear after base).
  *
@@ -51,10 +51,10 @@
  *
  * CASCADE
  * -------
- * Visual values resolve through `--perform-*` custom properties with
+ * Visual values resolve through `--flinkform-*` custom properties with
  * this fallback chain:
  *
- *   1. Inline style="--perform-X: …" from render.php (Style panel)
+ *   1. Inline style="--flinkform-X: …" from render.php (Style panel)
  *   2. theme.json `--wp--preset--*` / `--wp--custom--*` defaults
  *   3. Hard-coded fallback baked into var() for non-theme.json themes
  */
@@ -66,7 +66,7 @@
  * technology. Used for live-region step announcements in multi-step
  * forms and other a11y-only content.
  * ------------------------------------------------------------------ */
-.perform-sr-only {
+.flinkform-sr-only {
 	position: absolute;
 	width: 1px;
 	height: 1px;
@@ -82,13 +82,13 @@
  * Block-level chrome
  *
  * Form, success/error banners, actions row, submit button. Selectors
- * use unique BEM names; plain .perform-form specificity is enough.
+ * use unique BEM names; plain .flinkform-form specificity is enough.
  * ------------------------------------------------------------------ */
-.perform-form {
-	--perform-color-primary: var(--wp--preset--color--primary, currentColor);
-	--perform-color-on-primary: var(--wp--preset--color--background, #fff);
-	--perform-border-radius: var(--wp--custom--border--radius, 6px);
-	--perform-field-gap: var(--wp--preset--spacing--40, 1.25rem);
+.flinkform-form {
+	--flinkform-color-primary: var(--wp--preset--color--primary, currentColor);
+	--flinkform-color-on-primary: var(--wp--preset--color--background, #fff);
+	--flinkform-border-radius: var(--wp--custom--border--radius, 6px);
+	--flinkform-field-gap: var(--wp--preset--spacing--40, 1.25rem);
 	// Page background colour the floating-label "notch" overlay paints
 	// itself with. Pulls from theme.json so the value tracks the active
 	// theme's actual page colour (light/dark mode included). This is the
@@ -101,17 +101,17 @@
 	// rare reverse case (theme manually goes dark without exposing
 	// --wp--preset--color--background, leaving us with the #fff fallback
 	// against a dark page).
-	--perform-page-background: var(--wp--preset--color--background, #fff);
+	--flinkform-page-background: var(--wp--preset--color--background, #fff);
 
 	&__form {
 		display: flex;
 		flex-direction: column;
-		gap: var(--perform-field-gap);
+		gap: var(--flinkform-field-gap);
 	}
 
 	&__success {
 		padding: 1rem 1.25rem;
-		border-radius: var(--perform-border-radius);
+		border-radius: var(--flinkform-border-radius);
 		background: rgba(0, 128, 0, 0.08);
 		color: var(--wp--preset--color--foreground, currentColor);
 		border-left: 3px solid currentColor;
@@ -119,7 +119,7 @@
 
 	&__error--global {
 		padding: 0.75rem 1rem;
-		border-radius: var(--perform-border-radius);
+		border-radius: var(--flinkform-border-radius);
 		background: rgba(204, 0, 0, 0.08);
 		color: #b80000;
 		border-left: 3px solid currentColor;
@@ -130,8 +130,8 @@
 	}
 
 	/* Multi-step layout — emitted only when the form contains at least
-	 * one `perform/page-break` block. Single-step forms keep the legacy
-	 * flat field list and never see `.perform-form__step` markup.
+	 * one `flinkform/page-break` block. Single-step forms keep the legacy
+	 * flat field list and never see `.flinkform-form__step` markup.
 	 *
 	 * Slice 5a renders every step visibly with a separator between
 	 * adjacent pairs so the server-side step splitting is verifiable
@@ -139,7 +139,7 @@
 	 * non-current steps via the Interactivity API and the separator
 	 * will be removed at that point. */
 	// :not([hidden]) is on purpose — without it our `display: flex`
-	// rule (`.perform-form .perform-form__step`, specificity 0,2,0)
+	// rule (`.flinkform-form .flinkform-form__step`, specificity 0,2,0)
 	// outranks the UA `[hidden] { display: none }` (0,1,0), so the
 	// `hidden` attribute Interactivity sets on non-current steps in
 	// 5b would have no effect. Guarding with :not([hidden]) makes the
@@ -156,7 +156,7 @@
 	&__step:not([hidden]) {
 		display: flex;
 		flex-direction: column;
-		gap: var(--perform-field-gap);
+		gap: var(--flinkform-field-gap);
 		opacity: 1;
 		transform: translateY(0);
 		transition: opacity 0.15s ease-out, transform 0.15s ease-out;
@@ -201,21 +201,21 @@
 	 * unique BEM names that no theme targets, so the doubled-class
 	 * specificity strategy from the field rules doesn't apply. */
 	&__progress {
-		margin-bottom: var(--perform-field-gap);
+		margin-bottom: var(--flinkform-field-gap);
 	}
 
 	&__progress--bar {
-		.perform-form__progress-track {
+		.flinkform-form__progress-track {
 			height: 4px;
 			border-radius: 999px;
 			background: color-mix(in srgb, currentColor 12%, transparent);
 			overflow: hidden;
 		}
 
-		.perform-form__progress-fill {
+		.flinkform-form__progress-fill {
 			height: 100%;
-			width: var(--perform-progress-percent, 0%);
-			background: var(--perform-color-primary);
+			width: var(--flinkform-progress-percent, 0%);
+			background: var(--flinkform-color-primary);
 			border-radius: 999px;
 			// Reactive width updates from the Interactivity binding
 			// look better as a smooth slide than a hard jump. Limited
@@ -240,12 +240,12 @@
 		transition: background 0.15s ease, transform 0.15s ease;
 
 		&.is-completed {
-			background: var(--perform-color-primary);
+			background: var(--flinkform-color-primary);
 			opacity: 0.7;
 		}
 
 		&.is-current {
-			background: var(--perform-color-primary);
+			background: var(--flinkform-color-primary);
 			// Tiny scale-up makes "you are here" obvious without
 			// adding extra DOM (no inset ring, no glow) — works on
 			// both light and dark themes.
@@ -280,11 +280,11 @@
 
 	// Multi-step navigation row (Slice 5b). The action row stays a
 	// simple single-button block until Interactivity has hydrated and
-	// flagged the form with `data-perform-enhanced`; that's the
+	// flagged the form with `data-flinkform-enhanced`; that's the
 	// reliable "JS is on, the bindings are wired up" signal. From
 	// that point on it becomes a flex row with the Back button pushed
 	// to the left and Next/Submit anchored to the right.
-	&[data-perform-enhanced] &__actions {
+	&[data-flinkform-enhanced] &__actions {
 		display: flex;
 		justify-content: flex-end;
 		align-items: center;
@@ -320,7 +320,7 @@
 		// 0.75 keeps the muted look while staying clear of the WCAG AA
 		// contrast cliff that 0.7 can cross on lighter colour schemes.
 		opacity: 0.75;
-		border-radius: var(--perform-border-radius);
+		border-radius: var(--flinkform-border-radius);
 		transition: opacity 0.15s ease;
 
 		// margin-right:auto pushes Back to the far left of the action
@@ -335,7 +335,7 @@
 		}
 
 		&:focus-visible {
-			outline: 2px solid var(--perform-color-primary);
+			outline: 2px solid var(--flinkform-color-primary);
 			outline-offset: 2px;
 		}
 	}
@@ -372,12 +372,12 @@
 	}
 
 	// Submit-button base — shared across all three style variants.
-	// The variant modifiers below (.perform-form--button-*) layer their
+	// The variant modifiers below (.flinkform-form--button-*) layer their
 	// background/border/colour rules on top.
 	&__submit {
 		font: inherit;
 		padding: 0.65em 1.5em;
-		border-radius: var(--perform-border-radius);
+		border-radius: var(--flinkform-border-radius);
 		cursor: pointer;
 		transition: opacity 0.15s ease, background-color 0.15s ease;
 
@@ -387,26 +387,26 @@
 		}
 
 		&:focus-visible {
-			outline: 2px solid var(--perform-color-primary);
+			outline: 2px solid var(--flinkform-color-primary);
 			outline-offset: 2px;
 		}
 	}
 
 	// Variant: filled (default). Primary colour fill, contrast text, no border.
-	// --perform-button-bg / --perform-button-color / --perform-button-border-color
+	// --flinkform-button-bg / --flinkform-button-color / --flinkform-button-border-color
 	// are per-form overrides from the Style panel; when unset they fall
 	// back through the primary colour → theme → hard-coded chain.
 	&--button-fill &__submit {
 		border: 0;
-		background: var(--perform-button-bg, var(--perform-color-primary));
-		color: var(--perform-button-color, var(--perform-color-on-primary));
+		background: var(--flinkform-button-bg, var(--flinkform-color-primary));
+		color: var(--flinkform-button-color, var(--flinkform-color-on-primary));
 	}
 
 	// Variant: outline. Transparent fill, primary border + text.
 	&--button-outline &__submit {
-		border: 1px solid var(--perform-button-border-color, var(--perform-button-bg, var(--perform-color-primary)));
+		border: 1px solid var(--flinkform-button-border-color, var(--flinkform-button-bg, var(--flinkform-color-primary)));
 		background: transparent;
-		color: var(--perform-button-color, var(--perform-button-bg, var(--perform-color-primary)));
+		color: var(--flinkform-button-color, var(--flinkform-button-bg, var(--flinkform-color-primary)));
 	}
 
 	// Variant: ghost. Transparent everything, primary text. Subtle hover
@@ -415,11 +415,11 @@
 	&--button-ghost &__submit {
 		border: 0;
 		background: transparent;
-		color: var(--perform-button-color, var(--perform-button-bg, var(--perform-color-primary)));
+		color: var(--flinkform-button-color, var(--flinkform-button-bg, var(--flinkform-color-primary)));
 
 		&:hover,
 		&:focus-visible {
-			background: color-mix(in srgb, var(--perform-button-bg, var(--perform-color-primary)) 10%, transparent);
+			background: color-mix(in srgb, var(--flinkform-button-bg, var(--flinkform-color-primary)) 10%, transparent);
 			opacity: 1;
 		}
 	}
@@ -428,12 +428,12 @@
 /* ---------------------------------------------------------------------
  * Field-level rules
  *
- * Wrapped in `.perform-form.perform-form` (selector doubled — same
+ * Wrapped in `.flinkform-form.flinkform-form` (selector doubled — same
  * element, two class matches) to lift specificity to (0,3,0) and beat
  * the theme input rules documented in the strategy comment above.
  * ------------------------------------------------------------------ */
-.perform-form.perform-form {
-	.perform-field {
+.flinkform-form.flinkform-form {
+	.flinkform-field {
 		display: flex;
 		flex-direction: column;
 		gap: 0.4rem;
@@ -468,7 +468,7 @@
 			background-color: transparent;
 			color: inherit;
 			border: 1px solid currentColor;
-			border-radius: var(--perform-border-radius);
+			border-radius: var(--flinkform-border-radius);
 			box-shadow: none;
 			outline: 0;
 
@@ -486,7 +486,7 @@
 			}
 
 			&:focus-visible {
-				outline: 2px solid var(--perform-color-primary);
+				outline: 2px solid var(--flinkform-color-primary);
 				outline-offset: 2px;
 			}
 		}
@@ -517,7 +517,7 @@
 			margin: 0;
 			padding: 0;
 
-			legend.perform-field__label {
+			legend.flinkform-field__label {
 				padding: 0;
 				margin-bottom: 0.4rem;
 			}
@@ -538,7 +538,7 @@
 				// Explicit focus ring — don't rely on the browser default,
 				// which some themes strip from checkboxes/radios.
 				&:focus-visible {
-					outline: 2px solid var(--perform-color-primary);
+					outline: 2px solid var(--flinkform-color-primary);
 					outline-offset: 2px;
 				}
 			}
@@ -557,7 +557,7 @@
 				margin-top: 0.2em;
 
 				&:focus-visible {
-					outline: 2px solid var(--perform-color-primary);
+					outline: 2px solid var(--flinkform-color-primary);
 					outline-offset: 2px;
 				}
 			}
@@ -569,7 +569,7 @@
 		}
 	}
 
-	.perform-section-heading {
+	.flinkform-section-heading {
 		&__title {
 			margin: 1.5rem 0 0.25rem;
 		}
@@ -585,8 +585,8 @@
  * Style panel modifiers (Phase 4b)
  *
  * Each control on the Form block's Style panel toggles a single class
- * on .perform-form. All modifier rules scope through the same
- * `.perform-form.perform-form--X` doubled-class wrapper so they sit
+ * on .flinkform-form. All modifier rules scope through the same
+ * `.flinkform-form.flinkform-form--X` doubled-class wrapper so they sit
  * at the same (0,3,0) specificity as the base block — and win on
  * conflict via source order since they appear after base.
  * ------------------------------------------------------------------ */
@@ -597,31 +597,31 @@
  * premium contact forms (CF7 defaults, Typeform embeds). Focus
  * darkens the border to the primary colour instead of adding an
  * outline ring — feels less "technical". */
-.perform-form.perform-form--field-style-soft {
-	.perform-field__input {
+.flinkform-form.flinkform-form--field-style-soft {
+	.flinkform-field__input {
 		border-color: #d0d0d0;
 		box-shadow: none;
 
 		&:focus,
 		&:focus-visible {
-			border-color: var(--perform-color-primary);
+			border-color: var(--flinkform-color-primary);
 			// Transparent outline (not `none`) so Windows High Contrast /
 			// forced-colors mode — which drops box-shadow — still renders a
 			// visible system focus ring. Invisible in normal rendering.
 			outline: 2px solid transparent;
 			outline-offset: 2px;
-			box-shadow: 0 0 0 1px var(--perform-color-primary);
+			box-shadow: 0 0 0 1px var(--flinkform-color-primary);
 		}
 	}
 
-	.perform-field--has-error .perform-field__input {
+	.flinkform-field--has-error .flinkform-field__input {
 		border-color: #b80000;
 		box-shadow: 0 0 0 1px #b80000;
 	}
 }
 
-.perform-form.perform-form--field-style-underline {
-	.perform-field__input {
+.flinkform-form.flinkform-form--field-style-underline {
+	.flinkform-field__input {
 		border-width: 0 0 1px 0;
 		border-radius: 0;
 		padding-left: 0;
@@ -629,8 +629,8 @@
 	}
 }
 
-.perform-form.perform-form--field-style-minimal {
-	.perform-field__input {
+.flinkform-form.flinkform-form--field-style-minimal {
+	.flinkform-field__input {
 		border: 0;
 		// 6% currentColor on top of nothing — works on light and dark
 		// theme backgrounds without us having to know either of them.
@@ -638,27 +638,27 @@
 		background-color: color-mix(in srgb, currentColor 6%, transparent);
 	}
 
-	.perform-field--has-error .perform-field__input {
+	.flinkform-field--has-error .flinkform-field__input {
 		// Errors still need a visible cue without a border to colour.
 		box-shadow: inset 0 0 0 1px #b80000;
 	}
 }
 
 /* Field spacing — compact | normal (default) | relaxed.
- * Overrides --perform-field-gap, which feeds both the form gap and
+ * Overrides --flinkform-field-gap, which feeds both the form gap and
  * the per-field internal gap below. */
-.perform-form.perform-form--spacing-compact {
-	--perform-field-gap: 0.75rem;
+.flinkform-form.flinkform-form--spacing-compact {
+	--flinkform-field-gap: 0.75rem;
 
-	.perform-field {
+	.flinkform-field {
 		gap: 0.3rem;
 	}
 }
 
-.perform-form.perform-form--spacing-relaxed {
-	--perform-field-gap: 2rem;
+.flinkform-form.flinkform-form--spacing-relaxed {
+	--flinkform-field-gap: 2rem;
 
-	.perform-field {
+	.flinkform-field {
 		gap: 0.6rem;
 	}
 }
@@ -670,29 +670,29 @@
  * the default block layout because a side-by-side or floating legend
  * doesn't translate semantically. */
 
-.perform-form.perform-form--labels-beside {
-	.perform-field--text,
-	.perform-field--email,
-	.perform-field--textarea,
-	.perform-field--number,
-	.perform-field--select {
+.flinkform-form.flinkform-form--labels-beside {
+	.flinkform-field--text,
+	.flinkform-field--email,
+	.flinkform-field--textarea,
+	.flinkform-field--number,
+	.flinkform-field--select {
 		flex-direction: row;
 		align-items: baseline;
 		gap: 1rem;
 
-		> .perform-field__label {
+		> .flinkform-field__label {
 			flex: 0 0 30%;
 			min-width: 6rem;
 			margin: 0;
 		}
 
-		> .perform-field__input,
-		> select.perform-field__input {
+		> .flinkform-field__input,
+		> select.flinkform-field__input {
 			flex: 1;
 		}
 
-		> .perform-field__help,
-		> .perform-field__error {
+		> .flinkform-field__help,
+		> .flinkform-field__error {
 			flex-basis: 100%;
 			margin-left: calc(30% + 1rem);
 		}
@@ -704,73 +704,73 @@
  * form, regardless of what the desktop layout says. Individual fields
  * can opt out of the 1fr cell via the per-field "Full width" toggle,
  * which writes `fullWidth: true` into the field attribute and
- * renders `.perform-field--full-width` on the wrapper. That class
+ * renders `.flinkform-field--full-width` on the wrapper. That class
  * is a no-op in 1-column mode (no grid running), so a user can flip
  * a form back and forth without losing per-field choices.
  *
  * Multi-step forms move the grid one level down: the form itself
- * stacks step wrappers vertically while each `.perform-form__step`
+ * stacks step wrappers vertically while each `.flinkform-form__step`
  * becomes its own 2-column grid. Without this carve-out a step would
  * occupy a single 1fr grid cell and its fields would lay out inside
  * that one cell — visibly broken. The `--multi-step` modifier class
  * is appended by render.php so the switch is explicit (no `:has()`
  * tightrope) and 5b's JS can also key off it. */
-.perform-form.perform-form--columns-2 {
-	.perform-form__form {
+.flinkform-form.flinkform-form--columns-2 {
+	.flinkform-form__form {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		column-gap: var(--perform-field-gap);
-		row-gap: var(--perform-field-gap);
+		column-gap: var(--flinkform-field-gap);
+		row-gap: var(--flinkform-field-gap);
 	}
 
-	.perform-field--full-width,
-	.perform-section-heading--full-width,
-	.perform-form__error--global,
-	.perform-form__actions,
-	.perform-form__hp,
-	.perform-form__spam {
+	.flinkform-field--full-width,
+	.flinkform-section-heading--full-width,
+	.flinkform-form__error--global,
+	.flinkform-form__actions,
+	.flinkform-form__hp,
+	.flinkform-form__spam {
 		grid-column: 1 / -1;
 	}
 
 	@media (max-width: 600px) {
-		.perform-form__form {
+		.flinkform-form__form {
 			display: flex;
 			flex-direction: column;
-			gap: var(--perform-field-gap);
+			gap: var(--flinkform-field-gap);
 		}
 	}
 }
 
-.perform-form.perform-form--columns-2.perform-form--multi-step {
+.flinkform-form.flinkform-form--columns-2.flinkform-form--multi-step {
 	/* Form-level layout: stack steps + step-separators + actions vertically. */
-	.perform-form__form {
+	.flinkform-form__form {
 		display: flex;
 		flex-direction: column;
-		gap: var(--perform-field-gap);
+		gap: var(--flinkform-field-gap);
 	}
 
 	/* Per-step layout: this is where the 2-column grid actually lives
 	 * in multi-step mode. The same full-width rules above continue to
 	 * apply because they target descendants, not direct children, so
-	 * `.perform-field--full-width` inside a step still resolves to
+	 * `.flinkform-field--full-width` inside a step still resolves to
 	 * `grid-column: 1 / -1` against the step's grid context.
 	 *
 	 * `:not([hidden])` mirrors the same UA-specificity dance as the
 	 * base step rule — without it the (0,4,0) grid declaration here
 	 * would outrank `[hidden]` (0,1,0) and keep non-current steps
 	 * visible in 2-column multi-step mode. */
-	.perform-form__step:not([hidden]) {
+	.flinkform-form__step:not([hidden]) {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		column-gap: var(--perform-field-gap);
-		row-gap: var(--perform-field-gap);
+		column-gap: var(--flinkform-field-gap);
+		row-gap: var(--flinkform-field-gap);
 	}
 
 	@media (max-width: 600px) {
-		.perform-form__step:not([hidden]) {
+		.flinkform-form__step:not([hidden]) {
 			display: flex;
 			flex-direction: column;
-			gap: var(--perform-field-gap);
+			gap: var(--flinkform-field-gap);
 		}
 	}
 }
@@ -784,13 +784,13 @@
  * Mirrors the "clean" CF7-style look where there are no visible labels
  * above the fields. The required asterisk is appended to the placeholder
  * text by the field render.php so it stays visible. */
-.perform-form.perform-form--labels-placeholder {
-	.perform-field--text,
-	.perform-field--email,
-	.perform-field--textarea,
-	.perform-field--number,
-	.perform-field--select {
-		> .perform-field__label {
+.flinkform-form.flinkform-form--labels-placeholder {
+	.flinkform-field--text,
+	.flinkform-field--email,
+	.flinkform-field--textarea,
+	.flinkform-field--number,
+	.flinkform-field--select {
+		> .flinkform-field__label {
 			position: absolute;
 			width: 1px;
 			height: 1px;
@@ -809,7 +809,7 @@
  * In the resting state the label sits inside the input, vertically
  * centred. Once the input receives focus or carries a value, the label
  * slides up so its vertical midpoint sits on the top border, then paints
- * a `--perform-page-background`-coloured strip behind itself that visually
+ * a `--flinkform-page-background`-coloured strip behind itself that visually
  * cuts a notch through the border. The cascade for that variable falls
  * through theme.json (so it matches dark/light themes automatically),
  * with a sensible hard-coded fallback for themes without theme.json.
@@ -817,7 +817,7 @@
  * Mechanics — pure CSS, no JS:
  *   - Label is position:absolute over the input.
  *   - State triggers: `:focus-within` (input has focus) OR
- *     `:has(.perform-field__input:not(:placeholder-shown))` (input has
+ *     `:has(.flinkform-field__input:not(:placeholder-shown))` (input has
  *     a value). Inputs without a placeholder always count as "filled"
  *     under :placeholder-shown semantics, so for them the label simply
  *     starts in the lifted position rather than animating from resting.
@@ -828,21 +828,21 @@
  *
  * Textareas pin the resting label to the top of the input instead of
  * vertically centring it, so multi-line content doesn't slide under it. */
-.perform-form.perform-form--labels-floating {
-	.perform-field--text,
-	.perform-field--email,
-	.perform-field--textarea,
-	.perform-field--number {
+.flinkform-form.flinkform-form--labels-floating {
+	.flinkform-field--text,
+	.flinkform-field--email,
+	.flinkform-field--textarea,
+	.flinkform-field--number {
 		position: relative;
 		gap: 0;
 		margin-top: 0.5em; // breathing room for the lifted label
 
-		> .perform-field__input {
+		> .flinkform-field__input {
 			padding-top: 1em;
 			padding-bottom: 0.6em;
 		}
 
-		> .perform-field__label {
+		> .flinkform-field__label {
 			position: absolute;
 			top: 50%;
 			left: 0.55em;
@@ -857,32 +857,32 @@
 			transition: top 0.15s ease, transform 0.15s ease, opacity 0.15s ease, font-weight 0.15s ease, background 0.15s ease;
 		}
 
-		&:focus-within > .perform-field__label,
-		&:has(.perform-field__input:not(:placeholder-shown)) > .perform-field__label {
+		&:focus-within > .flinkform-field__label,
+		&:has(.flinkform-field__input:not(:placeholder-shown)) > .flinkform-field__label {
 			top: 0;
 			transform: translateY(-50%) scale(0.85);
 			opacity: 1;
 			font-weight: 600;
 			// The notch: this background paints over the input's top
 			// border at exactly the spot the label is sitting on.
-			background: var(--perform-page-background);
+			background: var(--flinkform-page-background);
 		}
 
 		// Textareas pin the resting label near the top so multi-line
 		// content doesn't slide under it. The lifted position is the
 		// same as for single-line fields (sitting on the top border).
-		&.perform-field--textarea {
-			> .perform-field__input {
+		&.flinkform-field--textarea {
+			> .flinkform-field__input {
 				padding-top: 1.2em;
 			}
 
-			> .perform-field__label {
+			> .flinkform-field__label {
 				top: 1em;
 				transform: translateY(0);
 			}
 
-			&:focus-within > .perform-field__label,
-			&:has(.perform-field__input:not(:placeholder-shown)) > .perform-field__label {
+			&:focus-within > .flinkform-field__label,
+			&:has(.flinkform-field__input:not(:placeholder-shown)) > .flinkform-field__label {
 				top: 0;
 				transform: translateY(-50%) scale(0.85);
 			}
@@ -893,17 +893,17 @@
 /* ---------------------------------------------------------------------
  * Page Break — editor-only divider
  *
- * The `perform/page-break` block has no frontend output (its render.php
+ * The `flinkform/page-break` block has no frontend output (its render.php
  * returns nothing — the form container slices steps based on inner-block
  * positions). The rules below style its in-editor appearance: a slim
  * horizontal rule with an inline step label so authors can see step
  * boundaries inside the block canvas while editing.
  *
- * Scoped on a single class because no theme targets `.perform-page-break`;
+ * Scoped on a single class because no theme targets `.flinkform-page-break`;
  * the doubled-class pattern from the strategy comment is reserved for
  * field-level selectors that themes do touch.
  * ------------------------------------------------------------------ */
-.perform-page-break {
+.flinkform-page-break {
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
@@ -934,16 +934,16 @@
  * the PoW solver hasn't finished yet — the solver removes the row
  * (via the `hidden` attribute) the moment it has a solution.
  *
- * Doubled `.perform-form` selector for theme-resistant specificity,
+ * Doubled `.flinkform-form` selector for theme-resistant specificity,
  * same convention as the rest of this stylesheet (see specificity
  * strategy comment near the top).
  * ------------------------------------------------------------------ */
-.perform-form.perform-form .perform-form__spam {
+.flinkform-form.flinkform-form .flinkform-form__spam {
 	/* No visual chrome by default — the math row, when visible,
 	 * looks like a normal labeled field. */
 }
 
-.perform-form.perform-form .perform-form__spam-math {
+.flinkform-form.flinkform-form .flinkform-form__spam-math {
 	display: block;
 
 	/* When the PoW solver sets `hidden`, the math row disappears
@@ -953,11 +953,11 @@
 	}
 }
 
-.perform-form.perform-form .perform-form__spam-label {
+.flinkform-form.flinkform-form .flinkform-form__spam-label {
 	display: block;
 	font-weight: 500;
 	margin-bottom: 4px;
-	color: var(--perform-color-text, currentColor);
+	color: var(--flinkform-color-text, currentColor);
 
 	input[type="text"] {
 		display: inline-block;
@@ -965,14 +965,14 @@
 		min-width: 60px;
 		max-width: 80px;
 		padding: 4px 8px;
-		border: 1px solid var(--perform-color-border, currentColor);
-		border-radius: var(--perform-border-radius, 4px);
+		border: 1px solid var(--flinkform-color-border, currentColor);
+		border-radius: var(--flinkform-border-radius, 4px);
 		font-size: inherit;
-		background: var(--perform-color-input-background, transparent);
+		background: var(--flinkform-color-input-background, transparent);
 	}
 }
 
-.perform-form.perform-form .perform-form__spam-hint {
+.flinkform-form.flinkform-form .flinkform-form__spam-hint {
 	margin: 4px 0 0;
 	font-size: 12px;
 	opacity: 0.7;

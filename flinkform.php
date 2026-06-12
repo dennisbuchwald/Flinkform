@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:       PerForm Forms
- * Plugin URI:        https://wordpress.org/plugins/perform-forms/
+ * Plugin Name:       Flinkform - Forms for the Block Editor
+ * Plugin URI:        https://wordpress.org/plugins/flinkform/
  * Description:       Block-native form builder for the WordPress Block Editor — theme.json styling, conditional logic, Interactivity API.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Requires at least: 6.5
  * Tested up to:      7.0
  * Requires PHP:      8.1
@@ -11,10 +11,10 @@
  * Author URI:        https://dbw-media.de
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       perform-forms
+ * Text Domain:       flinkform
  * Domain Path:       /languages
  *
- * @package PerForm
+ * @package Flinkform
  */
 
 declare( strict_types = 1 );
@@ -28,15 +28,15 @@ defined( 'ABSPATH' ) || exit;
  * every subsystem (block registration, asset enqueueing, activation,
  * uninstall) so a version bump or a relocation only ever happens here.
  */
-define( 'PERFFO_VERSION', '0.3.0' );
-define( 'PERFFO_PLUGIN_FILE', __FILE__ );
-define( 'PERFFO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'PERFFO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'PERFFO_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'FLINKFORM_VERSION', '0.4.0' );
+define( 'FLINKFORM_PLUGIN_FILE', __FILE__ );
+define( 'FLINKFORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'FLINKFORM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'FLINKFORM_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 // Register the PSR-4 autoloader before anything else touches the namespace.
-require_once PERFFO_PLUGIN_DIR . 'includes/Autoloader.php';
-\PerForm\Autoloader::register();
+require_once FLINKFORM_PLUGIN_DIR . 'includes/Autoloader.php';
+\Flinkform\Autoloader::register();
 
 /**
  * Boot the plugin runtime on `plugins_loaded`.
@@ -47,10 +47,10 @@ require_once PERFFO_PLUGIN_DIR . 'includes/Autoloader.php';
  *
  * @return void
  */
-function perffo_bootstrap(): void {
-	\PerForm\Plugin::instance()->init();
+function flinkform_bootstrap(): void {
+	\Flinkform\Plugin::instance()->init();
 }
-add_action( 'plugins_loaded', 'perffo_bootstrap' );
+add_action( 'plugins_loaded', 'flinkform_bootstrap' );
 
-register_activation_hook( __FILE__, [ \PerForm\Activator::class, 'activate' ] );
-register_deactivation_hook( __FILE__, [ \PerForm\Deactivator::class, 'deactivate' ] );
+register_activation_hook( __FILE__, [ \Flinkform\Activator::class, 'activate' ] );
+register_deactivation_hook( __FILE__, [ \Flinkform\Deactivator::class, 'deactivate' ] );

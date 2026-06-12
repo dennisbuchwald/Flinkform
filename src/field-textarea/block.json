@@ -1,10 +1,10 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "perform/field-textarea",
+	"name": "flinkform/field-textarea",
 	"version": "0.1.0",
 	"title": "Textarea Field",
-	"category": "perform",
+	"category": "flinkform",
 	"icon": "editor-alignleft",
 	"description": "A multi-line text input.",
 	"keywords": [
@@ -12,9 +12,9 @@
 		"message",
 		"field"
 	],
-	"textdomain": "perform-forms",
+	"textdomain": "flinkform",
 	"parent": [
-		"perform/form"
+		"flinkform/form"
 	],
 	"supports": {
 		"html": false,
@@ -55,8 +55,8 @@
 		}
 	},
 	"usesContext": [
-		"perform/formId",
-		"perform/appearance"
+		"flinkform/formId",
+		"flinkform/appearance"
 	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"

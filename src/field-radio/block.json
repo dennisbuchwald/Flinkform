@@ -1,10 +1,10 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "perform/field-radio",
+	"name": "flinkform/field-radio",
 	"version": "0.1.0",
 	"title": "Radio Group",
-	"category": "perform",
+	"category": "flinkform",
 	"icon": "marker",
 	"description": "A single choice from a list of options.",
 	"keywords": [
@@ -12,9 +12,9 @@
 		"choice",
 		"field"
 	],
-	"textdomain": "perform-forms",
+	"textdomain": "flinkform",
 	"parent": [
-		"perform/form"
+		"flinkform/form"
 	],
 	"supports": {
 		"html": false,
@@ -60,8 +60,8 @@
 		}
 	},
 	"usesContext": [
-		"perform/formId",
-		"perform/appearance"
+		"flinkform/formId",
+		"flinkform/appearance"
 	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"

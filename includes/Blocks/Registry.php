@@ -2,24 +2,24 @@
 /**
  * Central block registration.
  *
- * Registers the PerForm block category and every shipped block by pointing
+ * Registers the Flinkform block category and every shipped block by pointing
  * register_block_type() at its `block.json` under `/build`. Build assets
  * (scripts, styles, render.php) are picked up automatically from the
  * compiled block manifest.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Blocks;
+namespace Flinkform\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Discovers and registers all PerForm blocks with WordPress.
+ * Discovers and registers all Flinkform blocks with WordPress.
  */
 final class Registry {
 
@@ -56,7 +56,7 @@ final class Registry {
 	}
 
 	/**
-	 * Add the "PerForm" block category to the inserter.
+	 * Add the "Flinkform" block category to the inserter.
 	 *
 	 * @param array<int, array<string, string>> $categories Existing categories.
 	 * @return array<int, array<string, string>>
@@ -65,8 +65,8 @@ final class Registry {
 		return array_merge(
 			[
 				[
-					'slug'  => 'perform',
-					'title' => __( 'PerForm', 'perform-forms' ),
+					'slug'  => 'flinkform',
+					'title' => __( 'Flinkform', 'flinkform' ),
 					'icon'  => 'feedback',
 				],
 			],
@@ -75,10 +75,10 @@ final class Registry {
 	}
 
 	/**
-	 * Register every PerForm block from its compiled `block.json` directory.
+	 * Register every Flinkform block from its compiled `block.json` directory.
 	 *
 	 * The free core's blocks live under its own `/build`. The map is exposed
-	 * through `perffo_block_dirs` so the Pro add-on can append its blocks
+	 * through `flinkform_block_dirs` so the Pro add-on can append its blocks
 	 * (e.g. Pro field types) pointing at the *add-on's* build directory — Pro
 	 * block code never ships inside the free core. Keys are block slugs (used
 	 * to de-duplicate), values are absolute paths to the directory holding the
@@ -94,21 +94,21 @@ final class Registry {
 			// Multi-step (page-break) is a Pro capability — skip registration
 			// when Pro is absent so the block never appears in the inserter.
 			// The render code in form-container stays for graceful degradation.
-			if ( 'page-break' === $block && ! \PerForm\Bridge\Features::has( \PerForm\Bridge\Features::MULTI_STEP ) ) {
+			if ( 'page-break' === $block && ! \Flinkform\Bridge\Features::has( \Flinkform\Bridge\Features::MULTI_STEP ) ) {
 				continue;
 			}
 
-			$dirs[ $block ] = PERFFO_PLUGIN_DIR . 'build/' . $block;
+			$dirs[ $block ] = FLINKFORM_PLUGIN_DIR . 'build/' . $block;
 		}
 
 		/**
-		 * Filter the set of block directories PerForm registers.
+		 * Filter the set of block directories Flinkform registers.
 		 *
 		 * @since 0.2.0
 		 *
 		 * @param array<string, string> $dirs Map of block slug => absolute path to the block.json directory.
 		 */
-		$dirs = (array) apply_filters( 'perffo_block_dirs', $dirs );
+		$dirs = (array) apply_filters( 'flinkform_block_dirs', $dirs );
 
 		foreach ( $dirs as $path ) {
 			if ( is_string( $path ) && is_dir( $path ) ) {

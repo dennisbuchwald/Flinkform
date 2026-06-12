@@ -7,25 +7,25 @@
  * button that drops the cached scan in case it goes stale ahead of
  * the auto-invalidation hooks (rare, but reassuring to have).
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Admin;
+namespace Flinkform\Admin;
 
-use PerForm\Forms\Indexer;
+use Flinkform\Forms\Indexer;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Controller for the PerForm → Forms page.
+ * Controller for the Flinkform → Forms page.
  */
 final class FormsPage {
 
-	public const SLUG = 'perform-forms';
+	public const SLUG = 'flinkform';
 
 	private Indexer $indexer;
 
@@ -44,14 +44,14 @@ final class FormsPage {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified inside.
-		$action = isset( $_GET['perffo_action'] ) ? sanitize_key( wp_unslash( $_GET['perffo_action'] ) ) : '';
+		$action = isset( $_GET['flinkform_action'] ) ? sanitize_key( wp_unslash( $_GET['flinkform_action'] ) ) : '';
 		if ( 'refresh' !== $action ) {
 			return;
 		}
 
-		check_admin_referer( 'perffo_forms_refresh' );
+		check_admin_referer( 'flinkform_forms_refresh' );
 		$this->indexer->invalidate();
-		wp_safe_redirect( add_query_arg( 'perffo_notice', rawurlencode( __( 'Forms index refreshed.', 'perform-forms' ) ), $this->list_url() ) );
+		wp_safe_redirect( add_query_arg( 'flinkform_notice', rawurlencode( __( 'Forms index refreshed.', 'flinkform' ) ), $this->list_url() ) );
 		exit;
 	}
 
@@ -62,7 +62,7 @@ final class FormsPage {
 	 */
 	public function render(): void {
 		if ( ! current_user_can( Menu::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You do not have permission to view PerForm forms.', 'perform-forms' ) );
+			wp_die( esc_html__( 'You do not have permission to view Flinkform forms.', 'flinkform' ) );
 		}
 
 		$table = new FormsListTable( $this->indexer );
@@ -72,17 +72,17 @@ final class FormsPage {
 			add_query_arg(
 				[
 					'page'           => self::SLUG,
-					'perffo_action' => 'refresh',
+					'flinkform_action' => 'refresh',
 				],
 				admin_url( 'admin.php' )
 			),
-			'perffo_forms_refresh'
+			'flinkform_forms_refresh'
 		);
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php esc_html_e( 'Forms', 'perform-forms' ); ?></h1>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Forms', 'flinkform' ); ?></h1>
 			<a href="<?php echo esc_url( $refresh_url ); ?>" class="page-title-action">
-				<?php esc_html_e( 'Refresh index', 'perform-forms' ); ?>
+				<?php esc_html_e( 'Refresh index', 'flinkform' ); ?>
 			</a>
 			<hr class="wp-header-end" />
 
@@ -91,7 +91,7 @@ final class FormsPage {
 			<form method="get">
 				<input type="hidden" name="page" value="<?php echo esc_attr( self::SLUG ); ?>" />
 				<?php
-				$table->search_box( __( 'Search forms', 'perform-forms' ), 'perform-forms-search' );
+				$table->search_box( __( 'Search forms', 'flinkform' ), 'flinkform-search' );
 				$table->display();
 				?>
 			</form>
@@ -106,7 +106,7 @@ final class FormsPage {
 	 */
 	private function maybe_print_notice(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only.
-		$notice = isset( $_GET['perffo_notice'] ) ? sanitize_text_field( wp_unslash( $_GET['perffo_notice'] ) ) : '';
+		$notice = isset( $_GET['flinkform_notice'] ) ? sanitize_text_field( wp_unslash( $_GET['flinkform_notice'] ) ) : '';
 		if ( '' === $notice ) {
 			return;
 		}
@@ -131,7 +131,7 @@ final class FormsPage {
 	 */
 	public static function inline_css(): string {
 		return <<<'CSS'
-.perform-tag {
+.flinkform-tag {
 	display: inline-block;
 	margin-left: 6px;
 	padding: 1px 8px;
@@ -142,7 +142,7 @@ final class FormsPage {
 	font-weight: 400;
 	text-transform: lowercase;
 }
-.perform-tag--warning {
+.flinkform-tag--warning {
 	background: #fff4e5;
 	color: #b85c00;
 }

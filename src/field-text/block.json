@@ -1,10 +1,10 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "perform/field-text",
+	"name": "flinkform/field-text",
 	"version": "0.1.0",
 	"title": "Text Field",
-	"category": "perform",
+	"category": "flinkform",
 	"icon": "editor-textcolor",
 	"description": "A single-line text input.",
 	"keywords": [
@@ -12,9 +12,9 @@
 		"input",
 		"field"
 	],
-	"textdomain": "perform-forms",
+	"textdomain": "flinkform",
 	"parent": [
-		"perform/form"
+		"flinkform/form"
 	],
 	"supports": {
 		"html": false,
@@ -51,8 +51,8 @@
 		}
 	},
 	"usesContext": [
-		"perform/formId",
-		"perform/appearance"
+		"flinkform/formId",
+		"flinkform/appearance"
 	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"

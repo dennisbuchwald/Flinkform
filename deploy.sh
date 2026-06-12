@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# WordPress.org Deployment Script für PerForm
+# WordPress.org Deployment Script für Flinkform
 # Author: dbw media
 # Usage: ./deploy.sh [VERSION]
 #
@@ -8,7 +8,7 @@
 # Diese existiert ERST, nachdem WordPress.org das Plugin approved und einen Slug
 # vergeben hat. Erstmaliges Auschecken (nach Approval):
 #
-#   svn checkout https://plugins.svn.wordpress.org/perform-forms _wporg-svn
+#   svn checkout https://plugins.svn.wordpress.org/flinkform _wporg-svn
 #
 # Vor der ersten Veröffentlichung gibt's noch kein SVN-Repo — dann das Plugin als
 # ZIP einreichen über https://wordpress.org/plugins/developers/add
@@ -47,16 +47,16 @@ fi
 VERSION="$1"
 SVN_USERNAME="dbwmediadennis"
 SVN_PATH="./_wporg-svn"
-SVN_URL="https://plugins.svn.wordpress.org/perform-forms"
+SVN_URL="https://plugins.svn.wordpress.org/flinkform"
 
-info "Starting deployment for PerForm v$VERSION"
+info "Starting deployment for Flinkform v$VERSION"
 
 # 1. Prüfungen
 info "Running pre-deployment checks..."
 
 # In richtigem Projektordner?
-if [ ! -f "perform-forms.php" ]; then
-    error "Not in the correct project directory! perform-forms.php not found."
+if [ ! -f "flinkform.php" ]; then
+    error "Not in the correct project directory! flinkform.php not found."
 fi
 
 # SVN Working Copy vorhanden?
@@ -169,7 +169,7 @@ sleep 3
 if svn list tags/ 2>/dev/null | grep -q "$VERSION/"; then
     success "Tag $VERSION successfully created"
 else
-    warning "Tag verification inconclusive — check https://plugins.svn.wordpress.org/perform-forms/tags/ manually"
+    warning "Tag verification inconclusive — check https://plugins.svn.wordpress.org/flinkform/tags/ manually"
 fi
 
 cd ..
@@ -179,7 +179,7 @@ echo ""
 success "🚀 DEPLOYMENT SUCCESSFUL!"
 echo ""
 info "Version $VERSION has been deployed to WordPress.org"
-info "Check: https://wordpress.org/plugins/perform-forms/"
+info "Check: https://wordpress.org/plugins/flinkform/"
 info "Plugin will be available in ~15 minutes"
 echo ""
 warning "Don't forget to:"

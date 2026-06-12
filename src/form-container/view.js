@@ -1,5 +1,5 @@
 /**
- * PerForm Form — Interactivity API view module.
+ * Flinkform Form — Interactivity API view module.
  *
  * Drives Slice 5b's multi-step navigation: hides non-current steps,
  * wires Next/Back/Submit visibility, validates the current step's
@@ -24,25 +24,25 @@
  * picks up the state. Server-side validation continues to run on the
  * final submit — the client check is UX, not security.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
 
-const NAMESPACE = 'perform/form';
+const NAMESPACE = 'flinkform/form';
 
 // ---------------------------------------------------------------------
 // Conditional-logic frontend evaluator (Phase 7b)
 //
 // Independent of the Interactivity store because conditional logic
-// applies to every PerForm form on the page, including single-step
+// applies to every Flinkform form on the page, including single-step
 // forms that never set up the multi-step context. Wiring it through
 // the store would gate the feature on the wrapper carrying
 // `data-wp-interactive`; doing it as a free-standing module-init means
-// any form with a `[data-perform-condition]` wrapper inside it works.
+// any form with a `[data-flinkform-condition]` wrapper inside it works.
 //
-// On module load we walk every `.perform-form__form`, build a list of
+// On module load we walk every `.flinkform-form__form`, build a list of
 // its conditional wrappers, bind a single `input` listener per form,
 // and on every change re-evaluate every wrapper's rule set against
 // the form's current values. The server runs the same rule set in
@@ -61,11 +61,11 @@ if ( typeof document !== 'undefined' ) {
 }
 
 function initConditionalLogic() {
-	const forms = document.querySelectorAll( '.perform-form__form' );
+	const forms = document.querySelectorAll( '.flinkform-form__form' );
 	forms.forEach( ( form ) => {
-		const fieldWrappers   = form.querySelectorAll( '[data-perform-condition]' );
-		const stepWrappers    = form.querySelectorAll( '.perform-form__step[data-perform-step-condition]' );
-		const submitButtons   = form.querySelectorAll( '.perform-form__submit[data-perform-submit-condition]' );
+		const fieldWrappers   = form.querySelectorAll( '[data-flinkform-condition]' );
+		const stepWrappers    = form.querySelectorAll( '.flinkform-form__step[data-flinkform-step-condition]' );
+		const submitButtons   = form.querySelectorAll( '.flinkform-form__submit[data-flinkform-submit-condition]' );
 
 		if ( fieldWrappers.length === 0 && stepWrappers.length === 0 && submitButtons.length === 0 ) {
 			return;
@@ -94,7 +94,7 @@ function initConditionalLogic() {
 			form.addEventListener( 'submit', ( event ) => {
 				const values = gatherFormValues( form );
 				for ( const btn of submitButtons ) {
-					const raw = btn.getAttribute( 'data-perform-submit-condition' );
+					const raw = btn.getAttribute( 'data-flinkform-submit-condition' );
 					if ( ! raw ) {
 						continue;
 					}
@@ -130,7 +130,7 @@ function evaluateAll( form, fieldWrappers, stepWrappers, submitButtons = [] ) {
 
 	// Field-level conditions: toggle wrapper hidden + disable inputs.
 	fieldWrappers.forEach( ( wrapper ) => {
-		const raw = wrapper.getAttribute( 'data-perform-condition' );
+		const raw = wrapper.getAttribute( 'data-flinkform-condition' );
 		if ( ! raw ) {
 			return;
 		}
@@ -153,7 +153,7 @@ function evaluateAll( form, fieldWrappers, stepWrappers, submitButtons = [] ) {
 		}
 	} );
 
-	// Step-level conditions (Phase 7c): set a `data-perform-skipped`
+	// Step-level conditions (Phase 7c): set a `data-flinkform-skipped`
 	// marker on the wrapper so the Interactivity action can read the
 	// up-to-date skip state when the user clicks Next / Back. The
 	// step's own visibility is still driven by the multi-step
@@ -161,7 +161,7 @@ function evaluateAll( form, fieldWrappers, stepWrappers, submitButtons = [] ) {
 	// matching are two independent toggles.
 	let skippedChanged = false;
 	stepWrappers.forEach( ( wrapper ) => {
-		const raw = wrapper.getAttribute( 'data-perform-step-condition' );
+		const raw = wrapper.getAttribute( 'data-flinkform-step-condition' );
 		if ( ! raw ) {
 			return;
 		}
@@ -174,11 +174,11 @@ function evaluateAll( form, fieldWrappers, stepWrappers, submitButtons = [] ) {
 		}
 
 		const shouldShow = evaluateRuleSet( ruleSet, values );
-		const isSkipped  = wrapper.getAttribute( 'data-perform-skipped' ) === 'true';
+		const isSkipped  = wrapper.getAttribute( 'data-flinkform-skipped' ) === 'true';
 
 		if ( ! shouldShow ) {
 			if ( ! isSkipped ) {
-				wrapper.setAttribute( 'data-perform-skipped', 'true' );
+				wrapper.setAttribute( 'data-flinkform-skipped', 'true' );
 				skippedChanged = true;
 			}
 			// Disable inputs in skipped steps — same reasoning as
@@ -187,7 +187,7 @@ function evaluateAll( form, fieldWrappers, stepWrappers, submitButtons = [] ) {
 			toggleInputs( wrapper, true );
 		} else {
 			if ( isSkipped ) {
-				wrapper.removeAttribute( 'data-perform-skipped' );
+				wrapper.removeAttribute( 'data-flinkform-skipped' );
 				skippedChanged = true;
 			}
 			toggleInputs( wrapper, false );
@@ -196,14 +196,14 @@ function evaluateAll( form, fieldWrappers, stepWrappers, submitButtons = [] ) {
 
 	// Notify the Interactivity store that the skipped-set has shifted
 	// so it can recompute the progress indicator. The wrapper-level
-	// `data-wp-on--perform-skipped-changed` binding turns this custom
+	// `data-wp-on--flinkform-skipped-changed` binding turns this custom
 	// event into a call to `actions.onSkippedChanged`, where the
 	// progress context values get re-derived inside an element-scope
 	// that getContext() can actually resolve.
 	if ( skippedChanged ) {
-		const wrapper = form.closest( '.perform-form' );
+		const wrapper = form.closest( '.flinkform-form' );
 		if ( wrapper ) {
-			wrapper.dispatchEvent( new CustomEvent( 'perform-skipped-changed', { bubbles: false } ) );
+			wrapper.dispatchEvent( new CustomEvent( 'flinkform-skipped-changed', { bubbles: false } ) );
 		}
 	}
 
@@ -215,7 +215,7 @@ function evaluateAll( form, fieldWrappers, stepWrappers, submitButtons = [] ) {
 	// focus lands on the button).
 	if ( submitButtons && submitButtons.length > 0 ) {
 		submitButtons.forEach( ( btn ) => {
-			const raw = btn.getAttribute( 'data-perform-submit-condition' );
+			const raw = btn.getAttribute( 'data-flinkform-submit-condition' );
 			if ( ! raw ) {
 				return;
 			}
@@ -267,18 +267,18 @@ function toggleInputs( wrapper, disable ) {
 			// we ourselves set on the previous tick, or `false`
 			// branch below would treat all inputs as "was already
 			// disabled" and leak the disabled state forward forever.
-			if ( ! el.hasAttribute( 'data-perform-was-disabled' ) ) {
-				el.setAttribute( 'data-perform-was-disabled', el.disabled ? '1' : '0' );
+			if ( ! el.hasAttribute( 'data-flinkform-was-disabled' ) ) {
+				el.setAttribute( 'data-flinkform-was-disabled', el.disabled ? '1' : '0' );
 			}
 			el.disabled = true;
 		} else {
 			// Only re-enable if WE disabled it (not if the markup
 			// shipped it as disabled, e.g. read-only state from the
 			// server). The marker tells us which.
-			if ( el.getAttribute( 'data-perform-was-disabled' ) === '0' ) {
+			if ( el.getAttribute( 'data-flinkform-was-disabled' ) === '0' ) {
 				el.disabled = false;
 			}
-			el.removeAttribute( 'data-perform-was-disabled' );
+			el.removeAttribute( 'data-flinkform-was-disabled' );
 		}
 	} );
 }
@@ -298,11 +298,11 @@ function gatherFormValues( form ) {
 
 	form.querySelectorAll( 'input[name], textarea[name], select[name]' ).forEach( ( el ) => {
 		const rawName = el.getAttribute( 'name' );
-		// Field inputs are emitted as `perffo_field[<name>]` — extract
+		// Field inputs are emitted as `flinkform_field[<name>]` — extract
 		// the inner name so the values map matches the field-name shape
 		// the conditional-logic rules reference (and the server's
 		// `$clean` map uses too).
-		const match = rawName.match( /^perffo_field\[([^\]]+)\](\[\])?$/ );
+		const match = rawName.match( /^flinkform_field\[([^\]]+)\](\[\])?$/ );
 		if ( ! match ) {
 			return;
 		}
@@ -345,7 +345,7 @@ function gatherFormValues( form ) {
 }
 
 /**
- * Mirror of `PerForm\Conditions\RuleEvaluator::should_show()` in JS.
+ * Mirror of `Flinkform\Conditions\RuleEvaluator::should_show()` in JS.
  *
  * @param {object} ruleSet
  * @param {Object<string, any>} values
@@ -507,13 +507,13 @@ const { state } = store( NAMESPACE, {
 	actions: {
 		nextStep() {
 			const ctx = getContext();
-			const wrapper = getElement().ref.closest( '.perform-form' );
+			const wrapper = getElement().ref.closest( '.flinkform-form' );
 			if ( ! wrapper ) {
 				return;
 			}
 
 			const currentStepEl = wrapper.querySelector(
-				`.perform-form__step[data-step-index="${ ctx.currentStep }"]`
+				`.flinkform-form__step[data-step-index="${ ctx.currentStep }"]`
 			);
 			if ( ! currentStepEl ) {
 				return;
@@ -563,7 +563,7 @@ const { state } = store( NAMESPACE, {
 			if ( ctx.currentStep <= 0 ) {
 				return;
 			}
-			const wrapper = getElement().ref.closest( '.perform-form' );
+			const wrapper = getElement().ref.closest( '.flinkform-form' );
 			const target  = findPrevVisibleStep( wrapper, ctx.currentStep );
 			if ( null === target ) {
 				return;
@@ -591,9 +591,9 @@ const { state } = store( NAMESPACE, {
 			const ctx        = getContext();
 			const wrapper    = getElement().ref;
 			const currentEl  = wrapper.querySelector(
-				`.perform-form__step[data-step-index="${ ctx.currentStep }"]`
+				`.flinkform-form__step[data-step-index="${ ctx.currentStep }"]`
 			);
-			const isCurrentNowSkipped = currentEl && currentEl.getAttribute( 'data-perform-skipped' ) === 'true';
+			const isCurrentNowSkipped = currentEl && currentEl.getAttribute( 'data-flinkform-skipped' ) === 'true';
 
 			if ( isCurrentNowSkipped ) {
 				let target = findNextVisibleStep( wrapper, ctx.currentStep, ctx.totalSteps );
@@ -634,23 +634,23 @@ function clearStepErrors( stepEl ) {
 		.querySelectorAll( '[aria-invalid="true"]' )
 		.forEach( ( el ) => el.removeAttribute( 'aria-invalid' ) );
 	stepEl
-		.querySelectorAll( '.perform-field__error--client' )
+		.querySelectorAll( '.flinkform-field__error--client' )
 		.forEach( ( el ) => el.remove() );
 	stepEl
-		.querySelectorAll( '.perform-field--has-error' )
-		.forEach( ( el ) => el.classList.remove( 'perform-field--has-error' ) );
+		.querySelectorAll( '.flinkform-field--has-error' )
+		.forEach( ( el ) => el.classList.remove( 'flinkform-field--has-error' ) );
 }
 
 /**
  * Required checkbox GROUPS with nothing checked — the `:invalid` selector
  * can't catch these because group requiredness isn't an HTML `required`.
- * The fieldset carries `data-perform-required` when required (see render.php).
+ * The fieldset carries `data-flinkform-required` when required (see render.php).
  *
  * @param {HTMLElement} stepEl
  * @return {HTMLElement[]} Offending group fieldsets.
  */
 function requiredCheckboxGroupsMissing( stepEl ) {
-	return Array.from( stepEl.querySelectorAll( '[data-perform-required]' ) ).filter(
+	return Array.from( stepEl.querySelectorAll( '[data-flinkform-required]' ) ).filter(
 		( group ) => ! group.querySelector( 'input[type="checkbox"]:checked' )
 	);
 }
@@ -663,7 +663,7 @@ function requiredCheckboxGroupsMissing( stepEl ) {
  * @param {string}      message Localised message (browser validationMessage).
  */
 function showFieldError( field, message ) {
-	const wrapper = field.closest( '.perform-field' );
+	const wrapper = field.closest( '.flinkform-field' );
 	if ( wrapper ) {
 		field.setAttribute( 'aria-invalid', 'true' );
 		renderFieldError( wrapper, field, message );
@@ -676,14 +676,14 @@ function showFieldError( field, message ) {
  * @param {HTMLElement} group The fieldset.
  */
 function markGroupError( group ) {
-	renderFieldError( group, null, group.getAttribute( 'data-perform-required-message' ) || '' );
+	renderFieldError( group, null, group.getAttribute( 'data-flinkform-required-message' ) || '' );
 }
 
 /**
- * Inject/update a `.perform-field__error--client` message inside a field
+ * Inject/update a `.flinkform-field__error--client` message inside a field
  * wrapper. Mirrors the server-side error markup so styling + semantics match.
  *
- * @param {HTMLElement}      wrapper The `.perform-field` container.
+ * @param {HTMLElement}      wrapper The `.flinkform-field` container.
  * @param {HTMLElement|null} field   The control to link (null for groups).
  * @param {string}           message The message text.
  */
@@ -691,15 +691,15 @@ function renderFieldError( wrapper, field, message ) {
 	if ( ! message ) {
 		return;
 	}
-	wrapper.classList.add( 'perform-field--has-error' );
+	wrapper.classList.add( 'flinkform-field--has-error' );
 
-	let errorEl = wrapper.querySelector( '.perform-field__error--client' );
+	let errorEl = wrapper.querySelector( '.flinkform-field__error--client' );
 	if ( ! errorEl ) {
-		const name = wrapper.getAttribute( 'data-perform-field-name' ) || 'field';
+		const name = wrapper.getAttribute( 'data-flinkform-field-name' ) || 'field';
 		errorEl = document.createElement( 'p' );
-		errorEl.className = 'perform-field__error perform-field__error--client';
+		errorEl.className = 'flinkform-field__error flinkform-field__error--client';
 		errorEl.setAttribute( 'role', 'alert' );
-		errorEl.id = 'perform-client-error-' + name;
+		errorEl.id = 'flinkform-client-error-' + name;
 		wrapper.appendChild( errorEl );
 	}
 	errorEl.textContent = message;
@@ -735,7 +735,7 @@ function renderFieldError( wrapper, field, message ) {
  */
 function syncProgressContext( ctx, wrapper = null ) {
 	// Step-skipping awareness (Phase 7c). When the wrapper is in scope
-	// we count the `data-perform-skipped="true"` markers the
+	// we count the `data-flinkform-skipped="true"` markers the
 	// standalone listener leaves on currently-skipped steps and
 	// adjust the indicator's totals + position so the user sees
 	// "Step 2 of 3" turn into "Step 2 of 2" the moment a step drops
@@ -744,7 +744,7 @@ function syncProgressContext( ctx, wrapper = null ) {
 	let totalSkipped         = 0;
 	let skippedBeforeCurrent = 0;
 	if ( wrapper ) {
-		wrapper.querySelectorAll( '.perform-form__step[data-perform-skipped="true"]' ).forEach( ( s ) => {
+		wrapper.querySelectorAll( '.flinkform-form__step[data-flinkform-skipped="true"]' ).forEach( ( s ) => {
 			totalSkipped += 1;
 			const idx = parseInt( s.getAttribute( 'data-step-index' ) || '0', 10 );
 			if ( idx < ctx.currentStep ) {
@@ -757,7 +757,7 @@ function syncProgressContext( ctx, wrapper = null ) {
 	const effectiveCurrent = Math.max( 1, ctx.currentStep + 1 - skippedBeforeCurrent );
 
 	ctx.ariaValueNow     = effectiveCurrent;
-	ctx.progressBarStyle = `--perform-progress-percent:${ ( ( effectiveCurrent / effectiveTotal ) * 100 ).toFixed( 2 ) }%`;
+	ctx.progressBarStyle = `--flinkform-progress-percent:${ ( ( effectiveCurrent / effectiveTotal ) * 100 ).toFixed( 2 ) }%`;
 
 	const template = state.progressTemplate;
 	if ( typeof template === 'string' && template !== '' ) {
@@ -787,7 +787,7 @@ function syncProgressContext( ctx, wrapper = null ) {
 
 /**
  * Find the next visible step index strictly after `current`, skipping
- * over any `[data-perform-skipped="true"]` step. Returns null when
+ * over any `[data-flinkform-skipped="true"]` step. Returns null when
  * there's no visible step left (= we're already on the last visible
  * step).
  *
@@ -801,8 +801,8 @@ function findNextVisibleStep( wrapper, current, total ) {
 		return current < total - 1 ? current + 1 : null;
 	}
 	for ( let i = current + 1; i < total; i++ ) {
-		const step = wrapper.querySelector( `.perform-form__step[data-step-index="${ i }"]` );
-		if ( step && step.getAttribute( 'data-perform-skipped' ) === 'true' ) {
+		const step = wrapper.querySelector( `.flinkform-form__step[data-step-index="${ i }"]` );
+		if ( step && step.getAttribute( 'data-flinkform-skipped' ) === 'true' ) {
 			continue;
 		}
 		return i;
@@ -823,8 +823,8 @@ function findPrevVisibleStep( wrapper, current ) {
 		return current > 0 ? current - 1 : null;
 	}
 	for ( let i = current - 1; i >= 0; i-- ) {
-		const step = wrapper.querySelector( `.perform-form__step[data-step-index="${ i }"]` );
-		if ( step && step.getAttribute( 'data-perform-skipped' ) === 'true' ) {
+		const step = wrapper.querySelector( `.flinkform-form__step[data-step-index="${ i }"]` );
+		if ( step && step.getAttribute( 'data-flinkform-skipped' ) === 'true' ) {
 			continue;
 		}
 		return i;
@@ -840,7 +840,7 @@ function findPrevVisibleStep( wrapper, current ) {
  * @param {string}      progressLabel The "Step X of Y" text to announce.
  */
 function announceStepChange( wrapper, progressLabel ) {
-	const region = wrapper.querySelector( '[data-perform-step-announce]' );
+	const region = wrapper.querySelector( '[data-flinkform-step-announce]' );
 	if ( region ) {
 		// Clear first, then set on next tick — screen readers re-announce
 		// identical text only when the node content actually changes.
@@ -894,7 +894,7 @@ function deferFocus( wrapper, stepIndex ) {
  */
 function focusFirstFieldOfStep( wrapper, stepIndex ) {
 	const step = wrapper.querySelector(
-		`.perform-form__step[data-step-index="${ stepIndex }"]`
+		`.flinkform-form__step[data-step-index="${ stepIndex }"]`
 	);
 	if ( ! step ) {
 		return;
@@ -918,9 +918,9 @@ function focusFirstFieldOfStep( wrapper, stepIndex ) {
 // ---------------------------------------------------------------------
 // Built-in spam challenge — proof-of-work solver (Phase B-a)
 //
-// Each protected form renders a `.perform-form__spam` block with
-// `data-perform-pow-salt` + `data-perform-pow-difficulty` attributes and
-// a hidden `[data-perform-spam-solution]` input. We find the salt/
+// Each protected form renders a `.flinkform-form__spam` block with
+// `data-flinkform-pow-salt` + `data-flinkform-pow-difficulty` attributes and
+// a hidden `[data-flinkform-spam-solution]` input. We find the salt/
 // difficulty, compute sha256(salt + n) for increasing n until the hex
 // hash matches the leading-zero requirement, then write the winning n
 // into the hidden input. The visible math fallback is hidden once we
@@ -949,15 +949,15 @@ if ( typeof document !== 'undefined' ) {
 }
 
 function initSpamChallenge() {
-	const blocks = document.querySelectorAll( '.perform-form__spam[data-perform-spam]' );
+	const blocks = document.querySelectorAll( '.flinkform-form__spam[data-flinkform-spam]' );
 	blocks.forEach( ( block ) => {
-		const salt       = block.getAttribute( 'data-perform-pow-salt' ) || '';
+		const salt       = block.getAttribute( 'data-flinkform-pow-salt' ) || '';
 		const difficulty = parseInt(
-			block.getAttribute( 'data-perform-pow-difficulty' ) || '0',
+			block.getAttribute( 'data-flinkform-pow-difficulty' ) || '0',
 			10
 		);
-		const solutionInput = block.querySelector( '[data-perform-spam-solution]' );
-		const mathRow       = block.querySelector( '[data-perform-spam-math]' );
+		const solutionInput = block.querySelector( '[data-flinkform-spam-solution]' );
+		const mathRow       = block.querySelector( '[data-flinkform-spam-math]' );
 
 		if ( ! salt || ! difficulty || ! solutionInput ) {
 			// Mis-rendered block — leave the math fallback visible so

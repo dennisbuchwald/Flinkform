@@ -3,18 +3,18 @@
  * Plugin activation handler.
  *
  * Runs once when the plugin is activated via the WordPress admin. Phase 0
- * is a no-op — Phase 1 will create the `{prefix}_perffo_submissions`
+ * is a no-op — Phase 1 will create the `{prefix}_flinkform_submissions`
  * table here via dbDelta and seed the schema version option for future
- * migrations (see PERFFO_SPEC.md §4.3 / §7).
+ * migrations (see FLINKFORM_SPEC.md §4.3 / §7).
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm;
+namespace Flinkform;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -41,7 +41,7 @@ final class Activator {
 			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', Submissions\Retention::CRON_HOOK );
 		}
 
-		// The webhook dispatcher cron lives with PerForm Pro now — Pro's own
+		// The webhook dispatcher cron lives with Flinkform Pro now — Pro's own
 		// activation handler creates the webhook tables and schedules the cron.
 		// The free core only owns the submissions table.
 	}

@@ -11,7 +11,7 @@
  * @var array<string, mixed> $attributes
  * @var WP_Block             $block
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.2.7
  */
 
@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
-$form_id     = isset( $block->context['perform/formId'] ) ? (string) $block->context['perform/formId'] : '';
+$form_id     = isset( $block->context['flinkform/formId'] ) ? (string) $block->context['flinkform/formId'] : '';
 $consent_txt = isset( $attributes['consentText'] ) && is_string( $attributes['consentText'] ) ? $attributes['consentText'] : '';
 $link_pp     = ! empty( $attributes['linkPrivacyPolicy'] );
 $field_name  = isset( $attributes['fieldName'] ) && is_string( $attributes['fieldName'] ) ? $attributes['fieldName'] : '';
@@ -30,25 +30,25 @@ if ( '' === $field_name || '' === $form_id ) {
 	return;
 }
 
-$value      = \PerForm\Submissions\Handler::flash_value( $field_name );
+$value      = \Flinkform\Submissions\Handler::flash_value( $field_name );
 $is_checked = '' !== (string) ( is_array( $value ) ? reset( $value ) : $value );
 
-$error    = \PerForm\Submissions\Handler::flash_error( $field_name );
-$uid      = 'perform-field-' . md5( $form_id . '-' . $field_name );
+$error    = \Flinkform\Submissions\Handler::flash_error( $field_name );
+$uid      = 'flinkform-field-' . md5( $form_id . '-' . $field_name );
 $error_id = $error ? $uid . '-error' : '';
 
 $privacy_url = $link_pp ? (string) get_privacy_policy_url() : '';
 ?>
 <div
-	class="perform-field perform-field--consent<?php echo $error ? ' perform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' perform-field--full-width' : ''; ?>"
-	<?php echo \PerForm\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?>
-	data-perform-field-name="<?php echo esc_attr( $field_name ); ?>"
+	class="flinkform-field flinkform-field--consent<?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"
+	<?php echo \Flinkform\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?>
+	data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>"
 >
-	<label class="perform-field__option perform-field__consent-label" for="<?php echo esc_attr( $uid ); ?>">
+	<label class="flinkform-field__option flinkform-field__consent-label" for="<?php echo esc_attr( $uid ); ?>">
 		<input
 			type="checkbox"
 			id="<?php echo esc_attr( $uid ); ?>"
-			name="perffo_field[<?php echo esc_attr( $field_name ); ?>]"
+			name="flinkform_field[<?php echo esc_attr( $field_name ); ?>]"
 			value="1"
 			required
 			aria-required="true"
@@ -57,17 +57,17 @@ $privacy_url = $link_pp ? (string) get_privacy_policy_url() : '';
 		/>
 		<span>
 			<?php echo esc_html( $consent_txt ); ?>
-			<span class="perform-field__required" aria-hidden="true"> *</span>
+			<span class="flinkform-field__required" aria-hidden="true"> *</span>
 			<?php if ( '' !== $privacy_url ) : ?>
 				<a href="<?php echo esc_url( $privacy_url ); ?>" target="_blank" rel="noopener noreferrer">
-					<?php esc_html_e( 'Privacy Policy', 'perform-forms' ); ?>
-					<span class="perform-sr-only"><?php esc_html_e( '(opens in a new tab)', 'perform-forms' ); ?></span>
+					<?php esc_html_e( 'Privacy Policy', 'flinkform' ); ?>
+					<span class="flinkform-sr-only"><?php esc_html_e( '(opens in a new tab)', 'flinkform' ); ?></span>
 				</a>
 			<?php endif; ?>
 		</span>
 	</label>
 	<?php if ( $error ) : ?>
-		<p class="perform-field__error" id="<?php echo esc_attr( $error_id ); ?>" role="alert">
+		<p class="flinkform-field__error" id="<?php echo esc_attr( $error_id ); ?>" role="alert">
 			<?php echo esc_html( $error ); ?>
 		</p>
 	<?php endif; ?>

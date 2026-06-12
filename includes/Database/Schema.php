@@ -7,25 +7,25 @@
  * DDLs through `dbDelta()`, so re-activations and partial-version
  * upgrades are idempotent.
  *
- * @package PerForm
+ * @package Flinkform
  * @since 0.1.0
  */
 
 declare( strict_types = 1 );
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace PerForm\Database;
+namespace Flinkform\Database;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Creates and tracks every PerForm table.
+ * Creates and tracks every Flinkform table.
  *
  * Schema-version history:
  *   1 — initial submissions table (Phase 1)
  *   2 — webhooks + webhook_deliveries tables (Phase 6a)
  *
- * As of M-c-d-2 the webhook tables moved to PerForm Pro (PerFormPro\Database\
+ * As of M-c-d-2 the webhook tables moved to Flinkform Pro (FlinkformPro\Database\
  * Schema), which owns their creation + lifecycle. The free core keeps DB_VERSION
  * at 2 (the submissions table is unchanged) and simply no longer manages the
  * webhook tables; Pro adopts the existing tables in place (same names, dbDelta).
@@ -41,7 +41,7 @@ final class Schema {
 	/**
 	 * Option key holding the currently installed schema version.
 	 */
-	public const OPTION_DB_VERSION = 'perffo_db_version';
+	public const OPTION_DB_VERSION = 'flinkform_db_version';
 
 	/**
 	 * Resolve the fully-qualified submissions table name.
@@ -50,11 +50,11 @@ final class Schema {
 	 */
 	public static function table_name(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'perffo_submissions';
+		return $wpdb->prefix . 'flinkform_submissions';
 	}
 
 	/**
-	 * Create or migrate every PerForm table and persist the schema version.
+	 * Create or migrate every Flinkform table and persist the schema version.
 	 *
 	 * Safe to call multiple times — dbDelta() is the contract that makes
 	 * this idempotent.
@@ -100,7 +100,7 @@ final class Schema {
 	}
 
 	/**
-	 * Drop every PerForm table and forget the schema version.
+	 * Drop every Flinkform table and forget the schema version.
 	 *
 	 * Called from uninstall.php — never from deactivation.
 	 *
