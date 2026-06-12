@@ -60,13 +60,14 @@ final class Guard {
 			return 'none';
 		}
 
-		// The built-in PoW + math challenge is a Pro capability. When Pro is
-		// absent the free core degrades to 'none' — honeypot + time-check
-		// (Phase 1) still apply upstream and require zero configuration.
+		// The built-in PoW + math challenge ships in the free core — it is
+		// the privacy-first answer to external CAPTCHA services and a core
+		// selling point of the plugin. (An earlier slice gated it on the
+		// Pro SPAM_CHALLENGE capability; that contradicted the published
+		// feature matrix and is gone as of 0.4.0.) Honeypot + time-check
+		// still apply upstream regardless.
 		if ( 'builtin' === $attr || 'auto' === $attr ) {
-			return \Flinkform\Bridge\Features::has( \Flinkform\Bridge\Features::SPAM_CHALLENGE )
-				? 'builtin'
-				: 'none';
+			return 'builtin';
 		}
 
 		/**

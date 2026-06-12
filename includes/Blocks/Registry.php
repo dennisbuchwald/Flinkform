@@ -94,13 +94,10 @@ final class Registry {
 	public function register_blocks(): void {
 		$dirs = [];
 		foreach ( self::BLOCKS as $block ) {
-			// Multi-step (page-break) is a Pro capability — skip registration
-			// when Pro is absent so the block never appears in the inserter.
-			// The render code in form-container stays for graceful degradation.
-			if ( 'page-break' === $block && ! \Flinkform\Bridge\Features::has( \Flinkform\Bridge\Features::MULTI_STEP ) ) {
-				continue;
-			}
-
+			// Multi-step (page-break) is part of the free core since 0.2.7
+			// — no capability gate. (An earlier slice gated it on the Pro
+			// MULTI_STEP capability; that contradicted the published
+			// feature matrix and is gone as of 0.4.0.)
 			$dirs[ $block ] = FLINKFORM_PLUGIN_DIR . 'build/' . $block;
 		}
 
