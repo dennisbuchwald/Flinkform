@@ -55,8 +55,65 @@ const EMPTY_OPERATORS = new Set( [ 'is_empty', 'is_not_empty' ] );
 if ( typeof document !== 'undefined' ) {
 	if ( document.readyState === 'loading' ) {
 		document.addEventListener( 'DOMContentLoaded', initConditionalLogic );
+		document.addEventListener( 'DOMContentLoaded', initSubmitFeedback );
 	} else {
 		initConditionalLogic();
+		initSubmitFeedback();
+	}
+}
+
+// ---------------------------------------------------------------------
+// Submit feedback — loading state + success-card focus.
+//
+// 1. When a form's POST navigation actually starts (submit event that
+//    nobody preventDefault-ed — validation guards run earlier in the
+//    capture phase), the submit button gets `.is-loading` + disabled +
+//    aria-busy so slow servers don't leave the visitor without feedback.
+//    The mutation is deferred a tick so disabling the button can never
+//    interfere with the submission itself.
+// 2. After the success redirect, the server renders the success card
+//    (tabindex="-1"). We move focus to it so screen readers announce
+//    the confirmation and the page scrolls to the right spot. Smooth
+//    scrolling only under no-preference.
+// ---------------------------------------------------------------------
+function initSubmitFeedback() {
+	document.querySelectorAll( '.flinkform-form__form' ).forEach( ( form ) => {
+		form.addEventListener( 'submit', ( event ) => {
+			if ( event.defaultPrevented ) {
+				return;
+			}
+			window.setTimeout( () => {
+				form.querySelectorAll( '.flinkform-form__submit' ).forEach( ( btn ) => {
+					btn.classList.add( 'is-loading' );
+					btn.setAttribute( 'aria-busy', 'true' );
+					btn.disabled = true;
+				} );
+			}, 0 );
+		} );
+	} );
+
+	// Restore submit buttons when the page is served from the back/forward
+	// cache — otherwise navigating back to the form leaves a disabled,
+	// spinning button behind.
+	window.addEventListener( 'pageshow', ( event ) => {
+		if ( ! event.persisted ) {
+			return;
+		}
+		document.querySelectorAll( '.flinkform-form__submit.is-loading' ).forEach( ( btn ) => {
+			btn.classList.remove( 'is-loading' );
+			btn.removeAttribute( 'aria-busy' );
+			btn.disabled = false;
+		} );
+	} );
+
+	const success = document.querySelector( '.flinkform-form__success' );
+	if ( success ) {
+		const reduceMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+		success.focus( { preventScroll: true } );
+		success.scrollIntoView( {
+			behavior: reduceMotion ? 'auto' : 'smooth',
+			block: 'center',
+		} );
 	}
 }
 

@@ -109,12 +109,77 @@
 		gap: var(--flinkform-field-gap);
 	}
 
+	/* Success card — replaces the form after a successful submission.
+	 * The checkmark is an inline SVG whose ring + check strokes are drawn
+	 * via stroke-dashoffset; the card itself fades/lifts in. Every
+	 * animation lives inside a no-preference media query, so visitors
+	 * with prefers-reduced-motion get the fully drawn, static card. */
 	&__success {
-		padding: 1rem 1.25rem;
+		--flinkform-color-success: var(--wp--preset--color--vivid-green-cyan, #1a7f37);
+
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1.5rem 1.5rem;
 		border-radius: var(--flinkform-border-radius);
-		background: rgba(0, 128, 0, 0.08);
+		background: color-mix(in srgb, var(--flinkform-color-success) 7%, transparent);
+		border: 1px solid color-mix(in srgb, var(--flinkform-color-success) 25%, transparent);
 		color: var(--wp--preset--color--foreground, currentColor);
-		border-left: 3px solid currentColor;
+		font-size: 1.05em;
+
+		&:focus {
+			outline: 2px solid var(--flinkform-color-success);
+			outline-offset: 2px;
+		}
+	}
+
+	&__success-icon {
+		flex: 0 0 auto;
+		inline-size: 2.75rem;
+		block-size: 2.75rem;
+
+		svg {
+			inline-size: 100%;
+			block-size: 100%;
+			display: block;
+		}
+	}
+
+	&__success-ring {
+		stroke: var(--flinkform-color-success);
+		stroke-width: 2.5;
+		stroke-linecap: round;
+		// Circumference of r=24 ≈ 150.8; fully drawn by default.
+		stroke-dasharray: 151;
+		stroke-dashoffset: 0;
+		transform-origin: 50% 50%;
+		transform: rotate(-90deg);
+	}
+
+	&__success-check {
+		stroke: var(--flinkform-color-success);
+		stroke-width: 3.5;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		// Path length ≈ 33; fully drawn by default.
+		stroke-dasharray: 34;
+		stroke-dashoffset: 0;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		&__success {
+			animation: flinkform-success-card 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+		}
+
+		&__success-ring {
+			stroke-dashoffset: 151;
+			animation: flinkform-success-draw 0.55s cubic-bezier(0.65, 0, 0.45, 1) 0.15s forwards;
+		}
+
+		&__success-check {
+			stroke-dashoffset: 34;
+			animation: flinkform-success-draw 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.65s forwards;
+		}
 	}
 
 	&__error--global {
@@ -379,6 +444,7 @@
 		padding: 0.65em 1.5em;
 		border-radius: var(--flinkform-border-radius);
 		cursor: pointer;
+		position: relative;
 		transition: opacity 0.15s ease, background-color 0.15s ease;
 
 		&:hover,
@@ -389,6 +455,34 @@
 		&:focus-visible {
 			outline: 2px solid var(--flinkform-color-primary);
 			outline-offset: 2px;
+		}
+
+		/* Submitting state — view.js sets .is-loading (+ disabled +
+		 * aria-busy) the moment the browser starts the POST navigation,
+		 * so slow servers don't leave the visitor wondering. The ring
+		 * spinner only spins under no-preference; reduced-motion users
+		 * get the dimmed/disabled state without rotation. */
+		&.is-loading {
+			cursor: progress;
+			opacity: 0.75;
+
+			&::after {
+				content: "";
+				display: inline-block;
+				inline-size: 0.85em;
+				block-size: 0.85em;
+				margin-inline-start: 0.55em;
+				vertical-align: -0.1em;
+				border-radius: 50%;
+				border: 2px solid currentColor;
+				border-inline-end-color: transparent;
+			}
+
+			@media (prefers-reduced-motion: no-preference) {
+				&::after {
+					animation: flinkform-spin 0.7s linear infinite;
+				}
+			}
 		}
 	}
 
@@ -976,4 +1070,30 @@
 	margin: 4px 0 0;
 	font-size: 12px;
 	opacity: 0.7;
+}
+
+/* Keyframes for the success card + submit spinner. Referenced only from
+ * inside prefers-reduced-motion: no-preference blocks above. */
+@keyframes flinkform-success-card {
+	from {
+		opacity: 0;
+		transform: translateY(8px) scale(0.985);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes flinkform-success-draw {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+@keyframes flinkform-spin {
+	to {
+		transform: rotate(360deg);
+	}
 }

@@ -262,10 +262,21 @@ if ( $is_multi_step && ! $is_success ) {
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
 if ( $is_success ) :
+	// The success card replaces the whole form. The SVG checkmark is drawn
+	// via a CSS stroke animation (style.scss); with prefers-reduced-motion
+	// it renders fully drawn and static. tabindex="-1" lets view.js move
+	// focus here after the redirect so screen readers announce the result
+	// and keyboard users continue from the right place.
 	?>
 	<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-		<div class="flinkform-form__success" role="status" aria-live="polite">
-			<?php echo esc_html( $success_msg ); ?>
+		<div class="flinkform-form__success" role="status" aria-live="polite" tabindex="-1">
+			<span class="flinkform-form__success-icon" aria-hidden="true">
+				<svg viewBox="0 0 52 52" focusable="false">
+					<circle class="flinkform-form__success-ring" cx="26" cy="26" r="24" fill="none" />
+					<path class="flinkform-form__success-check" fill="none" d="M15 27.2l7.6 7.6L37.4 19.4" />
+				</svg>
+			</span>
+			<span class="flinkform-form__success-text"><?php echo esc_html( $success_msg ); ?></span>
 		</div>
 	</div>
 	<?php
