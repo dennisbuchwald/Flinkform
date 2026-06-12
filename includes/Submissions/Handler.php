@@ -399,17 +399,22 @@ final class Handler {
 			$sanitised = $this->sanitise( $type, $incoming, $field );
 
 			if ( $required && $this->is_empty( $sanitised ) ) {
-				$errors[ $name ] = 'toggle' === $type
-					? sprintf(
-						/* translators: %s: field label */
-						__( '%s must be checked.', 'flinkform' ),
-						$label
-					)
-					: sprintf(
-						/* translators: %s: field label */
-						__( '%s is required.', 'flinkform' ),
-						$label
-					);
+				$custom_message = isset( $field['requiredMessage'] ) ? (string) $field['requiredMessage'] : '';
+				if ( '' !== $custom_message ) {
+					$errors[ $name ] = $custom_message;
+				} else {
+					$errors[ $name ] = 'toggle' === $type
+						? sprintf(
+							/* translators: %s: field label */
+							__( '%s must be checked.', 'flinkform' ),
+							$label
+						)
+						: sprintf(
+							/* translators: %s: field label */
+							__( '%s is required.', 'flinkform' ),
+							$label
+						);
+				}
 				$clean[ $name ] = $sanitised;
 				continue;
 			}

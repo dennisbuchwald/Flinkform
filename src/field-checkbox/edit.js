@@ -9,7 +9,7 @@ import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
-	const { label, required, helpText, fieldName, options } = attributes;
+	const { label, required, requiredMessage, helpText, fieldName, options } = attributes;
 	const blockProps = useBlockProps( { className: 'flinkform-field flinkform-field--checkbox' } );
 
 	useEffect( () => {
@@ -38,6 +38,17 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						onChange={ ( v ) => setAttributes( { required: v } ) }
 						__nextHasNoMarginBottom
 					/>
+					{ !! required && (
+						<TextControl
+							label={ __( 'Required Message', 'flinkform' ) }
+							help={ __( 'Shown when the visitor submits without selecting an option. Leave empty for the default.', 'flinkform' ) }
+							placeholder={ __( 'Please select at least one option.', 'flinkform' ) }
+							value={ requiredMessage }
+							onChange={ ( v ) => setAttributes( { requiredMessage: v } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 					<TextControl
 						label={ __( 'Help Text', 'flinkform' ) }
 						value={ helpText }

@@ -190,6 +190,9 @@ final class Locator {
 				// no rule was configured — the evaluator reads that
 				// as "always visible" and the strip is a no-op.
 				'conditionalLogic' => isset( $attrs['conditionalLogic'] ) && is_array( $attrs['conditionalLogic'] ) ? $attrs['conditionalLogic'] : [],
+				// Author-customised required-error message (checkbox group
+				// today; empty string falls back to the generic message).
+				'requiredMessage'  => isset( $attrs['requiredMessage'] ) && is_string( $attrs['requiredMessage'] ) ? trim( $attrs['requiredMessage'] ) : '',
 			];
 
 			// Carry type-specific extras through to the handler. Defaults

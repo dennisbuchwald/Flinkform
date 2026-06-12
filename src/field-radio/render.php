@@ -37,6 +37,7 @@ $described = trim( $help_id . ' ' . $error_id );
 	class="flinkform-field flinkform-field--radio<?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"
 	<?php echo $described ? 'aria-describedby="' . esc_attr( $described ) . '"' : ''; ?>
 	<?php echo $error ? 'aria-invalid="true"' : ''; ?>
+	<?php echo $required ? 'aria-required="true"' : ''; ?>
 	<?php echo \Flinkform\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?>
 	data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>"
 >

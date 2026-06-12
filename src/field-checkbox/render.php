@@ -34,14 +34,20 @@ $group_uid = 'flinkform-field-' . md5( $form_id . '-' . $field_name );
 $help_id   = $help_text ? $group_uid . '-help' : '';
 $error_id  = $error ? $group_uid . '-error' : '';
 $described = trim( $help_id . ' ' . $error_id );
+
+// Author-customisable "nothing selected" message with a translated default.
+$required_message = isset( $attributes['requiredMessage'] ) && is_string( $attributes['requiredMessage'] ) && '' !== trim( $attributes['requiredMessage'] )
+	? $attributes['requiredMessage']
+	: __( 'Please select at least one option.', 'flinkform' );
 ?>
 <fieldset
 	class="flinkform-field flinkform-field--checkbox<?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"
 	<?php echo $described ? 'aria-describedby="' . esc_attr( $described ) . '"' : ''; ?>
 	<?php echo $error ? 'aria-invalid="true"' : ''; ?>
+	<?php echo $required ? 'aria-required="true"' : ''; ?>
 	<?php echo \Flinkform\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?>
 	data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>"
-	<?php echo $required ? 'data-flinkform-required="1" data-flinkform-required-message="' . esc_attr__( 'Please select at least one option.', 'flinkform' ) . '"' : ''; ?>
+	<?php echo $required ? 'data-flinkform-required="1" data-flinkform-required-message="' . esc_attr( $required_message ) . '"' : ''; ?>
 >
 	<legend class="flinkform-field__label">
 		<?php echo esc_html( $label ); ?>

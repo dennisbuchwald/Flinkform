@@ -128,14 +128,41 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'data-flinkform-id': formId || undefined,
 	} );
 
+	// Duplicate detection: duplicating a form block copies its attributes,
+	// formId included — two forms with the same UUID would share their
+	// submissions, notifications and spam tokens. The first occurrence in
+	// the document keeps the UUID; every later copy re-keys itself.
+	const isDuplicateFormId = useSelect(
+		( select ) => {
+			if ( ! formId ) {
+				return false;
+			}
+			const { getBlocks } = select( 'core/block-editor' );
+			const matches = [];
+			const walk = ( blocks ) => {
+				for ( const block of blocks ) {
+					if ( block.name === 'flinkform/form' && block.attributes?.formId === formId ) {
+						matches.push( block.clientId );
+					}
+					if ( block.innerBlocks?.length ) {
+						walk( block.innerBlocks );
+					}
+				}
+			};
+			walk( getBlocks() );
+			return matches.length > 1 && matches[ 0 ] !== clientId;
+		},
+		[ formId, clientId ]
+	);
+
 	useEffect( () => {
-		if ( ! formId ) {
+		if ( ! formId || isDuplicateFormId ) {
 			setAttributes( { formId: generateUuid() } );
 		}
-		// Intentionally only runs once per mount — formId is immutable
-		// after first assignment.
+		// formId is immutable after assignment except when this block is a
+		// duplicate of another form in the same document.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [] );
+	}, [ formId, isDuplicateFormId ] );
 
 	// Walk the form's inner blocks to find the first email field. Powers
 	// the Reply-To auto-fill below and will feed the submitter-confirmation

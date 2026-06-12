@@ -57,6 +57,10 @@
 		"conditionalLogic": {
 			"type": "object",
 			"default": {}
+		},
+		"requiredMessage": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"usesContext": [
