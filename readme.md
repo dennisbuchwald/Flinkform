@@ -72,11 +72,11 @@ Source blocks live in `src/` (compiled to `build/`); PHP classes follow PSR-4 un
 
 - **Documentation**: Check the [plugin page](https://wordpress.org/plugins/flinkform/)
 - **Support Forum**: [WordPress.org Support](https://wordpress.org/support/plugin/flinkform/)
-- **Professional Support**: [dbw media](https://dbw-media.de/kontakt)
+- **Professional Support**: [dennisbuchwald.de](https://dennisbuchwald.de)
 
-## About dbw media
+## About
 
-[dbw media](https://dbw-media.de) is a WordPress studio focused on custom development, Gutenberg blocks and performance. Flinkform is built and maintained by [Dennis Buchwald](https://dennisbuchwald.de) — the personal brand behind dbw media.
+Flinkform is built and maintained by [Dennis Buchwald](https://dennisbuchwald.de) — WordPress developer focused on Gutenberg-native development, performance and privacy.
 
 ## License
 
@@ -84,4 +84,4 @@ GPL v2 or later. See [the GPL](https://www.gnu.org/licenses/gpl-2.0.html) for de
 
 ---
 
-Built by [dbw media](https://dbw-media.de) — professional WordPress development.
+Built by [Dennis Buchwald](https://dennisbuchwald.de).

@@ -1,15 +1,15 @@
 <?php
 /**
  * Plugin Name:       Flinkform - Forms for the Block Editor
- * Plugin URI:        https://wordpress.org/plugins/flinkform/
+ * Plugin URI:        https://dennisbuchwald.de/apps/flinkform
  * Description:       Block-native form builder for the WordPress Block Editor — theme.json styling, conditional logic, Interactivity API.
  * Version:           0.4.0
  * Requires at least: 6.5
  * Tested up to:      7.0
  * Requires PHP:      8.1
- * Author:            dbw media
- * Author URI:        https://dbw-media.de
- * License:           GPL v2 or later
+ * Author:            Dennis Buchwald
+ * Author URI:        https://dennisbuchwald.de
+ * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       flinkform
  * Domain Path:       /languages
