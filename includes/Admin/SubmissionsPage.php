@@ -127,7 +127,7 @@ final class SubmissionsPage {
 			<form method="get">
 				<input type="hidden" name="page" value="<?php echo esc_attr( Menu::PARENT_SLUG ); ?>" />
 				<?php
-				$table->search_box( __( 'Search submissions', 'flinkform' ), 'perffo-submissions-search' );
+				$table->search_box( __( 'Search submissions', 'flinkform' ), 'flinkform-submissions-search' );
 				$table->display();
 				?>
 			</form>

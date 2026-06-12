@@ -592,21 +592,21 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 // for WP.org compliance. Both are gated behind Pro capabilities so they
 // never execute in the free-only plugin.
 if ( \Flinkform\Spam\Guard::should_protect( $attributes ) ) {
-	wp_register_script( 'perffo-boot', false, [], FLINKFORM_VERSION, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
-	wp_enqueue_script( 'perffo-boot' );
+	wp_register_script( 'flinkform-boot', false, [], FLINKFORM_VERSION, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+	wp_enqueue_script( 'flinkform-boot' );
 	wp_add_inline_script(
-		'perffo-boot',
+		'flinkform-boot',
 		'(function(){document.querySelectorAll("[data-flinkform-spam-math]").forEach(function(m){m.setAttribute("hidden","")})})();'
 	);
 }
 
 if ( $is_multi_step ) {
-	if ( ! wp_script_is( 'perffo-boot', 'registered' ) ) {
-		wp_register_script( 'perffo-boot', false, [], FLINKFORM_VERSION, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
+	if ( ! wp_script_is( 'flinkform-boot', 'registered' ) ) {
+		wp_register_script( 'flinkform-boot', false, [], FLINKFORM_VERSION, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
 	}
-	wp_enqueue_script( 'perffo-boot' );
+	wp_enqueue_script( 'flinkform-boot' );
 	wp_add_inline_script(
-		'perffo-boot',
+		'flinkform-boot',
 		'(function(){var h=function(e){if(e)e.setAttribute("hidden","")};document.querySelectorAll(".flinkform-form--multi-step:not([data-flinkform-enhanced])").forEach(function(f){f.setAttribute("data-flinkform-enhanced","");f.querySelectorAll(".flinkform-form__step").forEach(function(s){if(s.getAttribute("data-step-index")!=="0")h(s)});f.querySelectorAll(".flinkform-form__step-separator").forEach(function(s){h(s)});h(f.querySelector(".flinkform-form__nav--back"));f.querySelectorAll(".flinkform-form__submit:not(.flinkform-form__nav--next)").forEach(function(s){h(s)})})})();'
 	);
 }

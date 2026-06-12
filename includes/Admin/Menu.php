@@ -27,7 +27,7 @@ final class Menu {
 	 * the Submissions list, since that's what site operators look at
 	 * most often).
 	 */
-	public const PARENT_SLUG = 'perffo-submissions';
+	public const PARENT_SLUG = 'flinkform-submissions';
 
 	/**
 	 * Capability required to access any Flinkform admin page. `manage_options`
@@ -99,9 +99,9 @@ final class Menu {
 	 * @return void
 	 */
 	public function enqueue_submissions_styles(): void {
-		wp_register_style( 'perffo-admin-submissions', false, [], FLINKFORM_VERSION );
-		wp_enqueue_style( 'perffo-admin-submissions' );
-		wp_add_inline_style( 'perffo-admin-submissions', SubmissionsPage::inline_css() );
+		wp_register_style( 'flinkform-admin-submissions', false, [], FLINKFORM_VERSION );
+		wp_enqueue_style( 'flinkform-admin-submissions' );
+		wp_add_inline_style( 'flinkform-admin-submissions', SubmissionsPage::inline_css() );
 	}
 
 	/**
@@ -110,9 +110,9 @@ final class Menu {
 	 * @return void
 	 */
 	public function enqueue_forms_styles(): void {
-		wp_register_style( 'perffo-admin-forms', false, [], FLINKFORM_VERSION );
-		wp_enqueue_style( 'perffo-admin-forms' );
-		wp_add_inline_style( 'perffo-admin-forms', FormsPage::inline_css() );
+		wp_register_style( 'flinkform-admin-forms', false, [], FLINKFORM_VERSION );
+		wp_enqueue_style( 'flinkform-admin-forms' );
+		wp_add_inline_style( 'flinkform-admin-forms', FormsPage::inline_css() );
 	}
 
 	/**

@@ -143,7 +143,7 @@ final class Privacy {
 			}
 
 			$export_data[] = [
-				'group_id'          => 'perffo-submissions',
+				'group_id'          => 'flinkform-submissions',
 				'group_label'       => __( 'Flinkform Submissions', 'flinkform' ),
 				'group_description' => __( 'Form submissions stored by the Flinkform plugin.', 'flinkform' ),
 				'item_id'           => 'flinkform-submission-' . $submission['id'],
