@@ -983,13 +983,16 @@ function focusFirstFieldOfStep( wrapper, stepIndex ) {
 // into the hidden input. The visible math fallback is hidden once we
 // have a solution so JS-on visitors never see it.
 //
-// Compute strategy: main-thread async with yield-every-1000 iterations.
-// Avoids Web Workers (no extra script asset to register, no inline-blob
-// CSP friction). Average wall time at difficulty=18 is ~50-500 ms on
-// modern CPUs, sometimes up to ~2 s on low-end mobile. crypto.subtle
-// is available on every browser shipped since 2016 — we don't fall
-// back any further; visitors on truly ancient browsers see the math
-// challenge and answer it manually.
+// Compute strategy: a Web Worker (spawned from a same-origin Blob URL)
+// runs the hash loop completely off the main thread — zero jank, no
+// starved click handlers. When the worker can't start (restrictive CSP
+// blocking blob: workers, ancient browser), we fall back to the
+// main-thread async loop with periodic yields. The earlier main-thread-
+// only strategy at difficulty 18 hashed ~260k digests through
+// crypto.subtle's per-call overhead — tens of seconds on mobile and a
+// flooded event loop that made multi-step buttons feel dead. Visitors
+// on browsers without Web Crypto see the math fallback and answer it
+// manually.
 //
 // SSR + Interactivity-API friendliness: the solver runs as a free-
 // standing DOM init (not through the Interactivity store) so it works
@@ -1027,7 +1030,8 @@ function initSpamChallenge() {
 			return;
 		}
 
-		solvePoW( salt, difficulty )
+		solvePoWInWorker( salt, difficulty )
+			.catch( () => solvePoW( salt, difficulty ) )
 			.then( ( solution ) => {
 				solutionInput.value = String( solution );
 				// PoW solved → math row is redundant; hide it. We
@@ -1056,13 +1060,94 @@ function initSpamChallenge() {
 }
 
 /**
- * Compute the PoW solution.
+ * Compute the PoW solution in a dedicated Web Worker.
  *
- * Loops with a microtask yield every 1024 iterations so the UI thread
+ * The worker is spawned from a same-origin Blob URL (no extra asset, no
+ * remote code) and runs the identical hash loop without ever touching
+ * the main thread. Rejects when the worker can't start (CSP without
+ * blob: worker-src) or errors — the caller falls back to the
+ * main-thread loop below.
+ *
+ * @param {string} salt        base64url-encoded server-supplied salt
+ * @param {number} difficulty  leading-zero bits required
+ * @returns {Promise<number>}  the winning integer
+ */
+function solvePoWInWorker( salt, difficulty ) {
+	return new Promise( ( resolve, reject ) => {
+		let worker;
+		let blobUrl;
+		try {
+			const src = `
+				self.onmessage = async ( e ) => {
+					const { salt, difficulty } = e.data;
+					const encoder = new TextEncoder();
+					const fullHex = Math.floor( difficulty / 4 );
+					const extraBits = difficulty % 4;
+					const mask = ( 0x0f << ( 4 - extraBits ) ) & 0x0f;
+					const hexChars = '0123456789abcdef';
+					let n = 0;
+					try {
+						for ( ;; ) {
+							const digest = await self.crypto.subtle.digest( 'SHA-256', encoder.encode( salt + '|' + n ) );
+							const bytes = new Uint8Array( digest );
+							let hex = '';
+							for ( let i = 0; i <= fullHex; i++ ) {
+								hex += hexChars[ bytes[ i ] >> 4 ] + hexChars[ bytes[ i ] & 0x0f ];
+							}
+							let ok = true;
+							for ( let i = 0; i < fullHex; i++ ) {
+								if ( hex[ i ] !== '0' ) { ok = false; break; }
+							}
+							if ( ok && ( extraBits === 0 || ( parseInt( hex[ fullHex ], 16 ) & mask ) === 0 ) ) {
+								self.postMessage( { solution: n } );
+								return;
+							}
+							n++;
+						}
+					} catch ( err ) {
+						self.postMessage( { error: String( err ) } );
+					}
+				};
+			`;
+			blobUrl = URL.createObjectURL( new Blob( [ src ], { type: 'application/javascript' } ) );
+			worker  = new Worker( blobUrl );
+		} catch ( e ) {
+			if ( blobUrl ) {
+				URL.revokeObjectURL( blobUrl );
+			}
+			reject( e );
+			return;
+		}
+
+		const cleanup = () => {
+			worker.terminate();
+			URL.revokeObjectURL( blobUrl );
+		};
+
+		worker.onmessage = ( e ) => {
+			cleanup();
+			if ( e.data && typeof e.data.solution === 'number' ) {
+				resolve( e.data.solution );
+			} else {
+				reject( new Error( e.data && e.data.error ? e.data.error : 'PoW worker failed' ) );
+			}
+		};
+		worker.onerror = ( e ) => {
+			cleanup();
+			reject( e );
+		};
+
+		worker.postMessage( { salt, difficulty } );
+	} );
+}
+
+/**
+ * Main-thread fallback: compute the PoW solution.
+ *
+ * Loops with a microtask yield every 256 iterations so the UI thread
  * stays responsive. crypto.subtle.digest is async; the inner await
  * already lets the event loop breathe, but Chromium specifically can
- * starve repaint cycles when the yields are too tight — 1024 is the
- * sweet spot between "responsive" and "not artificially slow".
+ * starve repaint cycles when the yields are too tight.
  *
  * @param {string} salt        base64url-encoded server-supplied salt
  * @param {number} difficulty  leading-zero bits required
@@ -1099,7 +1184,7 @@ async function solvePoW( salt, difficulty ) {
 		}
 
 		n++;
-		if ( ( n & 1023 ) === 0 ) {
+		if ( ( n & 255 ) === 0 ) {
 			// Yield to give the UI thread a chance to repaint.
 			// 0-ms timeout is the standard "next tick" pattern.
 			await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );

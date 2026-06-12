@@ -789,6 +789,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					template={ TEMPLATE }
 					templateLock={ false }
 				/>
+				{ /* Submit-button preview — mirrors the frontend's actions
+				     row so authors see the button (label, style, colours)
+				     while editing. Non-interactive on purpose. */ }
+				<div className="flinkform-form__actions">
+					<button
+						type="button"
+						className="flinkform-form__submit"
+						disabled
+						aria-disabled="true"
+						style={ { cursor: 'default' } }
+					>
+						{ submitLabel || __( 'Send', 'flinkform' ) }
+					</button>
+				</div>
 			</div>
 		</>
 	);

@@ -79,14 +79,17 @@ final class Challenge {
 
 	/**
 	 * PoW difficulty (in leading-zero bits the sha256 must satisfy).
-	 * 18 bits = 1 in 262,144 hashes — about 50-500ms on modern CPUs,
-	 * up to ~2s on low-end mobile. Spambot economics break above
-	 * 16 bits (the per-submission cost exceeds the per-submission
-	 * revenue of click-spam farms).
+	 * 13 bits = 1 in 8,192 hashes on average. Browser-side hashing goes
+	 * through crypto.subtle with significant per-call overhead, so this
+	 * lands around 0.2-2s even on low-end mobile (solved in a Web
+	 * Worker, so the page never blocks). The PoW is one friction layer
+	 * among several — honeypot, HMAC-signed render timestamp and the
+	 * single-use token do the heavy lifting; difficulty 18 (the old
+	 * value) cost real visitors tens of seconds on phones.
 	 *
 	 * @var int
 	 */
-	public const POW_DIFFICULTY = 18;
+	public const POW_DIFFICULTY = 13;
 
 	/**
 	 * Salt length in bytes. 16 bytes = 128 bits of randomness —
