@@ -1,6 +1,6 @@
 # Flinkform
 
-[![WordPress Plugin Version](https://img.shields.io/badge/version-0.2.9-blue)](https://wordpress.org/plugins/flinkform/)
+[![WordPress Plugin Version](https://img.shields.io/badge/version-0.4.0-blue)](https://wordpress.org/plugins/flinkform/)
 [![License](https://img.shields.io/badge/license-GPL%20v2-green)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![WordPress](https://img.shields.io/badge/WordPress-6.5%2B-blue)](https://wordpress.org/)
 [![Tested up to](https://img.shields.io/badge/tested%20up%20to-7.0-blue)](https://wordpress.org/)
@@ -8,7 +8,7 @@
 
 > Block-native forms for WordPress — conditional logic, accessible, and free.
 
-**Flinkform Forms** builds forms the way WordPress should have done it from the start — inside the Block Editor, with the Interactivity API, no separate admin UI. Beautiful, accessible, privacy-first, and genuinely capable for free.
+**Flinkform** builds forms the way WordPress should have done it from the start — inside the Block Editor, with the Interactivity API, no separate admin UI. Beautiful, accessible, privacy-first, and genuinely capable for free.
 
 ```
 If a first-time user cannot build and publish a working contact form in under
@@ -20,13 +20,13 @@ If a first-time user cannot build and publish a working contact form in under
 - **Native, not bolted on** — built with `block.json` and the Interactivity API, not a separate admin UI
 - **Beautiful by default** — inherits your theme's colours, typography and spacing from `theme.json`
 - **Modern stack** — WordPress 6.5+, PHP 8.1+, no jQuery, frontend JS under 15 KB gzipped
-- **Conditional logic** — show/hide fields based on user input, included in the free core
+- **Multi-step + conditional logic** — page breaks with progress indicator, show/hide fields, skip steps — all in the free core
 - **WCAG 2.1 AA** — full keyboard navigation, screen-reader support, `aria-live` announcements
 - **Privacy by design** — no external services, no tracking cookies, no IP logging; everything stays on your server
 
 ## Features (free core)
 
-- **10 field types** — Text, Email, Textarea, Number, Select, Radio, Checkbox, Toggle, Hidden, Consent — plus Section Heading
+- **13 field types** — Text, Email, Textarea, Number, Date, URL, Phone, Select, Radio, Checkbox, Toggle, Hidden, Consent — plus Section Heading
 - **Conditional logic** — show/hide fields based on user input
 - **Theme-aware styling** — `theme.json` inheritance, field styles (bordered / underline / minimal), label positions, dark mode
 - **Notifications** — admin + optional confirmation email via `wp_mail`, with merge tags
@@ -37,7 +37,7 @@ If a first-time user cannot build and publish a working contact form in under
 ## Architecture
 
 - **Rendering** — dynamic blocks with server-side `render.php`; frontend interactivity via `@wordpress/interactivity` (script modules)
-- **Database** — a dedicated `{prefix}perform_submissions` table (not posts/meta)
+- **Database** — a dedicated `{prefix}flinkform_submissions` table (not posts/meta)
 - **Extensible** — the core exposes frozen extension seams (filters/actions) so integrations can hook in without modifying the core
 - **Build** — `@wordpress/scripts`
 - **Stack** — WordPress 6.5+, PHP 8.1+, no jQuery, JS budget under 15 KB gzipped

@@ -1,24 +1,25 @@
-=== Flinkform Forms ===
+=== Flinkform - Forms for the Block Editor ===
 Contributors: dbwmediadennis
 Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Block-native form builder for the WordPress Block Editor — theme.json styling, conditional logic, Interactivity API.
+Block-native form builder for the WordPress Block Editor — theme.json styling, multi-step forms, conditional logic, Interactivity API.
 
 == Description ==
 
-Flinkform Forms is a form builder that lives entirely inside the WordPress Block Editor. Forms are composed from native blocks (`block.json` v3), styled through `theme.json` design tokens, and powered by the Interactivity API — no separate admin UI, no shortcodes, no jQuery.
+Flinkform is a form builder that lives entirely inside the WordPress Block Editor. Forms are composed from native blocks (`block.json` v3), styled through `theme.json` design tokens, and powered by the Interactivity API — no separate admin UI, no shortcodes, no jQuery.
 
 = How it works =
 
 * **Block Editor native** — forms are built with `block.json` and the Interactivity API, directly inside the editor
 * **theme.json styling** — forms inherit your theme's typography, colours and spacing automatically
 * **Modern stack** — WordPress 6.5+, PHP 8.1+, no jQuery, frontend JS under 15 KB gzipped
+* **Multi-step forms** — split long forms into steps with a Page Break block, included in the free core
 * **Conditional logic** — show/hide fields based on user input, included in the free core
 * **WCAG 2.1 AA** — full keyboard navigation, screen-reader compatible, aria-live announcements
 * **Privacy by design** — no external services, no tracking cookies, no IP tracking — everything stays on your server
@@ -26,14 +27,15 @@ Flinkform Forms is a form builder that lives entirely inside the WordPress Block
 = Features (free core) =
 
 **Form building**
-* 10 field types: Text, Email, Textarea, Number, Select, Radio, Checkbox, Toggle, Hidden, Section Heading
-* Conditional logic — show/hide fields based on user input
+* 13 field types: Text, Email, Textarea, Number, Date, URL, Phone, Select, Radio, Checkbox, Toggle, Hidden, Section Heading
+* Dedicated Consent field for privacy-policy agreement
+* Multi-step forms with Page Break block, per-step validation and progress indicator (bar, dots or numbers)
+* Conditional logic — show/hide fields, skip steps, gate the submit button
 * Two-column layout with per-field full-width override
 
 **Styling**
 * Automatic theme.json inheritance (colours, typography, spacing, border radius)
-* Style panel: primary colour, field style (bordered/underline/minimal), label position (above/beside/floating), submit button style (fill/outline/ghost)
-* Dark mode support via `prefers-color-scheme`
+* Style panel: primary colour, field style (bordered/soft/underline/minimal), label position (above/beside/floating/placeholder), submit button style (fill/outline/ghost)
 
 **Notifications**
 * Admin notification email on every submission (configurable recipient, merge tags)
@@ -41,7 +43,8 @@ Flinkform Forms is a form builder that lives entirely inside the WordPress Block
 * Sends through your site's standard WordPress mail (`wp_mail`)
 
 **Spam protection**
-* Always-on honeypot + time-based check (zero configuration)
+* Always-on honeypot + signed time-based check (zero configuration)
+* Built-in proof-of-work challenge with accessible math fallback for visitors without JavaScript
 * No external service, no API keys, no tracking cookies, 100% GDPR-friendly
 
 **After submission**
@@ -52,6 +55,7 @@ Flinkform Forms is a form builder that lives entirely inside the WordPress Block
 * Submissions list with search, filter by form, sort, bulk actions
 * Single-submission detail view with all field labels and values
 * Mark as read/unread
+* Per-form data retention with automatic daily purge
 
 == Installation ==
 
@@ -63,9 +67,9 @@ Flinkform Forms is a form builder that lives entirely inside the WordPress Block
 
 == Frequently Asked Questions ==
 
-= Is Flinkform Forms free? =
+= Is Flinkform free? =
 
-Yes. Flinkform Forms is GPLv2-licensed and completely free — including conditional logic. Everything you need to build and run real forms is in the core.
+Yes. Flinkform is GPLv2-licensed and completely free — including multi-step forms and conditional logic. Everything you need to build and run real forms is in the core.
 
 = What WordPress version do I need? =
 
@@ -75,26 +79,27 @@ WordPress 6.5 or higher and PHP 8.1 or higher. Flinkform uses modern WordPress A
 
 Yes. Flinkform reads your theme's design tokens from `theme.json` and inherits colours, typography, spacing and border radius automatically. Forms look native on any modern WordPress theme — tested with GeneratePress, Twenty Twenty-Five, Astra and Kadence.
 
-= My notification emails don't arrive. What can I do? =
+= Does Flinkform support multi-step forms? =
 
-Email deliverability depends on your host. Many hosts send `wp_mail()` unreliably. If your notifications don't arrive, install a dedicated SMTP plugin (such as WP Mail SMTP or FluentSMTP) to route mail through a proper provider — it will handle delivery for Flinkform too.
+Yes, in the free core. Insert a **Page Break** block between fields to split the form into steps, choose a progress indicator style (bar, dots or numbers), and benefit from per-step validation. Steps can even be skipped conditionally based on earlier answers.
 
 = How does the spam protection work? =
 
-Flinkform Forms uses a two-layer approach that requires no setup:
+Flinkform uses a layered approach that requires no setup:
 
 1. **Honeypot** — a hidden field that bots fill in but humans never see
-2. **Time check** — submissions faster than a couple of seconds after page load are rejected
+2. **Signed time check** — submissions faster than a couple of seconds after page load are rejected; the timestamp is cryptographically signed so bots cannot forge it
+3. **Proof-of-work challenge** — the visitor's browser solves a small computational puzzle in the background; visitors without JavaScript get a simple math question instead
 
 No external service is contacted. No tracking cookies are set. No personal data is shared.
 
-= Does Flinkform Forms support multi-step forms? =
-
-Multi-step forms are available as a premium feature. Insert a **Page Break** block between fields to split the form into steps, choose a progress indicator style, and benefit from per-step validation.
-
 = Is Flinkform GDPR-compliant? =
 
-Flinkform is designed with privacy by default — see the Privacy section below for the full detail. In short: no IP addresses or user-agent strings are stored, no data ever leaves your server, and Flinkform integrates with WordPress's privacy tools for data-subject access and erasure requests.
+Flinkform is designed with privacy by default — see the Privacy section below for the full detail. In short: no IP addresses or user-agent strings are stored, no data ever leaves your server, no external spam service is used, and Flinkform integrates with WordPress's privacy tools for data-subject access and erasure requests.
+
+= My notification emails don't arrive. What can I do? =
+
+Email deliverability depends on your host. Many hosts send `wp_mail()` unreliably. If your notifications don't arrive, install a dedicated SMTP plugin to route mail through a proper provider — it will handle delivery for Flinkform too.
 
 = Can I redirect to a thank-you page after submission? =
 
@@ -112,8 +117,15 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 == Changelog ==
 
+= 0.4.0 =
+* Renamed the plugin to Flinkform (new slug, text domain, prefixes `flinkform_`/`FLINKFORM_`, block namespace `flinkform/*`)
+* Security: the spam time-check timestamp is now HMAC-signed and form-bound, so it can no longer be forged
+* Security: additional sanitisation on the notification Reply-To header
+* Reliability: the daily retention purge is now guarded against overlapping cron runs
+* Corrected the FAQ: multi-step forms are part of the free core (and always were since 0.2.7)
+
 = 0.3.0 =
-* Renamed all WordPress-global prefixes from `perform_` to `flinkform_` (constants, options, transients, hooks, form fields, script/style handles, menu slugs) to satisfy WordPress.org naming requirements
+* Renamed all WordPress-global prefixes to satisfy WordPress.org naming requirements
 * Revised readme description to remove promotional language
 
 = 0.2.9 =
@@ -128,23 +140,17 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 = 0.2.7 =
 * Architecture refactor: the core stays fully free (incl. multi-step + conditional logic); integration features (webhooks, SMTP, CSV export) were factored out of the core
-* Privacy: full WordPress privacy-tools integration (exporter + eraser); accurate disclosure of the single strictly-necessary `flinkform_flash` cookie
+* Privacy: full WordPress privacy-tools integration (exporter + eraser); accurate disclosure of the single strictly-necessary flash cookie
 * Accessibility: broader `prefers-reduced-motion` coverage; required spam-math fallback for no-JS visitors
 * Hardening: defence-in-depth against mail-header injection; open-redirect-safe thank-you redirects
-* Numerous internal correctness, security and standards improvements
 
 = 0.1.0 =
 * Initial build
-* 10 field types, multi-step forms, conditional logic, email notifications with merge tags
-* Built-in spam protection (honeypot + time-check + proof-of-work + math fallback)
-* Style panel with theme.json inheritance; per-form thank-you redirect
-* Submissions admin with search, filter and bulk actions
-* WCAG 2.1 AA accessibility; privacy-by-design
 
 == Upgrade Notice ==
 
-= 0.2.7 =
-Multi-step and conditional logic stay in the free core; integration features (webhooks, SMTP, CSV export) were factored out of the core.
+= 0.4.0 =
+The plugin was renamed to Flinkform. All settings prefixes changed; this version is intended for fresh installations.
 
 == Privacy ==
 
@@ -155,12 +161,14 @@ Flinkform is built with privacy by default. Here is what the free core does and 
 
 **What the free core does NOT do:**
 * It stores no IP addresses and no browser user-agent strings
-* It sets no tracking, analytics or marketing cookies. Flinkform sets exactly one strictly-necessary cookie — `flinkform_flash` (lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload
+* It sets no tracking, analytics or marketing cookies. Flinkform sets exactly one strictly-necessary cookie — `flinkform_flash` (lifetime ~60 seconds, httpOnly) — and only when a form submission fails validation, to carry the error message and the visitor's input across the page reload. Successful submissions set no cookie at all
 * It contacts no external service
 
+**Data retention:**
+* By default, submissions are retained until you delete them. To comply with the storage-limitation principle (GDPR Art. 5), set a per-form retention period (Form block → Data Retention) and Flinkform deletes older submissions automatically each day
+* Individual submissions can be deleted from the admin submissions screen at any time
+
 **Data deletion:**
-* Individual submissions can be deleted from the admin submissions screen
-* Optionally, set a per-form retention period (Form block → Data Retention) and Flinkform deletes older submissions automatically each day
 * All free-core data (the submissions table) is permanently removed when the plugin is uninstalled through the WordPress admin
 * Flinkform integrates with WordPress's privacy tools (Tools > Export Personal Data / Erase Personal Data) to support data-subject access and erasure requests
 
