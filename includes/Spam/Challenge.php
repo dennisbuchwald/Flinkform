@@ -50,10 +50,10 @@
 
 declare( strict_types = 1 );
 
-defined( 'ABSPATH' ) || exit;
-
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace PerForm\Spam;
+
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Token mint + verify + replay-guard for built-in spam challenges.
