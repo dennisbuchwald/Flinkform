@@ -95,10 +95,14 @@ final class Mailer {
 		$email = (array) apply_filters(
 			'flinkform_email_notification',
 			[
-				'to'      => $to,
-				'subject' => $subject,
-				'body'    => $body,
-				'headers' => $headers,
+				'to'          => $to,
+				'subject'     => $subject,
+				'body'        => $body,
+				'headers'     => $headers,
+				// File paths for wp_mail()'s attachments parameter. Empty in
+				// the free core; add-ons append here (e.g. Pro attaches a
+				// File Upload field's stored file to the admin notification).
+				'attachments' => [],
 			],
 			$context,
 			$form_def,
@@ -114,7 +118,8 @@ final class Mailer {
 			$recipients,
 			(string) $email['subject'],
 			(string) ( $email['body'] ?? '' ),
-			isset( $email['headers'] ) && is_array( $email['headers'] ) ? $email['headers'] : []
+			isset( $email['headers'] ) && is_array( $email['headers'] ) ? $email['headers'] : [],
+			isset( $email['attachments'] ) && is_array( $email['attachments'] ) ? $email['attachments'] : []
 		);
 	}
 
@@ -162,10 +167,11 @@ final class Mailer {
 		$email = (array) apply_filters(
 			'flinkform_email_notification',
 			[
-				'to'      => [ $recipient ],
-				'subject' => $subject,
-				'body'    => $body,
-				'headers' => [],
+				'to'          => [ $recipient ],
+				'subject'     => $subject,
+				'body'        => $body,
+				'headers'     => [],
+				'attachments' => [],
 			],
 			$context,
 			$form_def,
@@ -181,7 +187,8 @@ final class Mailer {
 			$recipients,
 			(string) $email['subject'],
 			(string) ( $email['body'] ?? '' ),
-			isset( $email['headers'] ) && is_array( $email['headers'] ) ? $email['headers'] : []
+			isset( $email['headers'] ) && is_array( $email['headers'] ) ? $email['headers'] : [],
+			isset( $email['attachments'] ) && is_array( $email['attachments'] ) ? $email['attachments'] : []
 		);
 	}
 
