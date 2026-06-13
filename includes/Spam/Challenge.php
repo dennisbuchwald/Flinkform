@@ -2,6 +2,20 @@
 /**
  * Spam-protection challenge — cryptographic core.
  *
+ * @package Flinkform
+ * @since 0.1.0
+ */
+
+declare( strict_types = 1 );
+
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Flinkform\Spam;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Token mint + verify + replay-guard for built-in spam challenges.
+ *
  * Two strategies share the same HMAC-signed token format so the
  * Submissions\Handler verification path can decide what kind of
  * solution it expects without keeping state of its own:
@@ -43,20 +57,6 @@
  * stable across requests for the same install. Rotating auth salts
  * invalidates outstanding challenges (operator just re-renders the
  * form) which is acceptable for a 5-minute TTL feature.
- *
- * @package Flinkform
- * @since 0.1.0
- */
-
-declare( strict_types = 1 );
-
-// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace Flinkform\Spam;
-
-defined( 'ABSPATH' ) || exit;
-
-/**
- * Token mint + verify + replay-guard for built-in spam challenges.
  */
 final class Challenge {
 
