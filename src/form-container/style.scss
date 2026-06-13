@@ -85,7 +85,14 @@
  * use unique BEM names; plain .flinkform-form specificity is enough.
  * ------------------------------------------------------------------ */
 .flinkform-form {
-	--flinkform-color-primary: var(--wp--preset--color--primary, currentColor);
+	// Primary accent (submit button fill, focus rings). Falls back to a
+	// concrete dark colour — NOT currentColor — when the theme exposes no
+	// `--wp--preset--color--primary` and the author hasn't picked one in
+	// the Style panel. currentColor was unreliable: in some themes/contexts
+	// it resolves light, leaving the submit button white-on-white and
+	// effectively invisible. #1e1e1e guarantees a visible button out of the
+	// box (matching WordPress' default near-black), white label on top.
+	--flinkform-color-primary: var(--wp--preset--color--primary, #1e1e1e);
 	--flinkform-color-on-primary: var(--wp--preset--color--background, #fff);
 	--flinkform-border-radius: var(--wp--custom--border--radius, 6px);
 	--flinkform-field-gap: var(--wp--preset--spacing--40, 1.25rem);
