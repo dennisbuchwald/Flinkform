@@ -12,6 +12,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import {
 	ColorPalette,
 	InnerBlocks,
+	Inserter,
 	InspectorControls,
 	URLInput,
 	useBlockProps,
@@ -20,6 +21,7 @@ import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	BaseControl,
+	Button,
 	Notice,
 	PanelBody,
 	RangeControl,
@@ -788,6 +790,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					allowedBlocks={ getAllowedBlocks() }
 					template={ TEMPLATE }
 					templateLock={ false }
+					renderAppender={ () => (
+						<Inserter
+							rootClientId={ clientId }
+							isAppender
+							// Quick-inserter restricted to the form's allowed
+							// field blocks — the same picker the floating "+"
+							// opens, but behind a clearly visible, branded
+							// button so authors actually find the other fields.
+							renderToggle={ ( { onToggle, disabled } ) => (
+								<Button
+									className="flinkform-add-field"
+									onClick={ onToggle }
+									disabled={ disabled }
+									icon="plus"
+									__next40pxDefaultSize
+								>
+									{ __( 'Add field', 'flinkform' ) }
+								</Button>
+							) }
+						/>
+					) }
 				/>
 				{ /* Submit-button preview — mirrors the frontend's actions
 				     row so authors see the button (label, style, colours)

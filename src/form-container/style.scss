@@ -1097,3 +1097,51 @@
 		transform: rotate(360deg);
 	}
 }
+
+/* ---------------------------------------------------------------------
+ * Editor-only: "Add field" appender button.
+ *
+ * Replaces the easily-missed floating "+" inside the form with a clearly
+ * visible, branded button. The selector only matches in the block editor
+ * (the markup is rendered by edit.js' renderAppender), so shipping it in
+ * the shared style sheet is harmless on the frontend. Doubled class beats
+ * the editor's default Button styles without !important.
+ * ------------------------------------------------------------------ */
+.flinkform-add-field.flinkform-add-field {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4em;
+	margin-top: 0.85rem;
+	padding: 0.5em 1.1em;
+	height: auto;
+	border: 0;
+	border-radius: 6px;
+	color: #fff;
+	font-weight: 600;
+	background: linear-gradient(
+		135deg,
+		#ea2b1f,
+		#ff3c6f,
+		#ff4fdd,
+		#7e56ff,
+		#00b2ff
+	);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+	transition: opacity 0.15s ease, transform 0.15s ease;
+
+	svg {
+		fill: #fff;
+	}
+
+	&:hover,
+	&:focus {
+		color: #fff;
+		opacity: 0.92;
+		transform: translateY(-1px);
+	}
+
+	&:focus-visible {
+		outline: 2px solid #7e56ff;
+		outline-offset: 2px;
+	}
+}

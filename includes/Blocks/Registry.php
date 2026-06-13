@@ -65,12 +65,15 @@ final class Registry {
 	 * @return array<int, array<string, string>>
 	 */
 	public function register_category( array $categories ): array {
+		// No category icon on purpose: WordPress renders it next to the
+		// "Flinkform" heading in the inserter, and no other block plugin
+		// (GenerateBlocks, core, …) does this — it just looks off. The
+		// branded gradient lives on the Form block icon itself instead.
 		return array_merge(
 			[
 				[
 					'slug'  => 'flinkform',
 					'title' => __( 'Flinkform', 'flinkform' ),
-					'icon'  => 'feedback',
 				],
 			],
 			$categories
