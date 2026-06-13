@@ -15,11 +15,12 @@ import Edit from './edit';
 import './style.scss';
 
 /**
- * Branded inserter icon — the form glyph filled with the Flinkform logo
- * gradient (Magenta #FD3965 → violet → Indigo #6070F0, sampled straight
- * from the logo artwork). Only the main Form block carries the gradient;
- * the field blocks keep their plain currentColor dashicons so the in-form
- * inserter stays calm and theme-adaptive.
+ * Branded inserter icon — the form glyph filled with the official
+ * dbw-media brand gradient (135°, 5 stops: red #ea2b1f → pink #ff3c6f →
+ * magenta #ff4fdd → violet #7e56ff → blue #00b2ff). Single source of
+ * truth: Second-Brain/dbw-media.md. Only the main Form block carries the
+ * gradient; the field blocks keep their plain currentColor dashicons so
+ * the in-form inserter stays calm and theme-adaptive.
  *
  * The form rows are punched out with a <mask> (true transparency) rather
  * than painted, so the icon reads correctly on both the light inserter
@@ -30,9 +31,11 @@ const icon = (
 	<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 		<defs>
 			<linearGradient id="flinkform-icon-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-				<stop offset="0" stopColor="#FD3965" />
-				<stop offset="0.55" stopColor="#B84BD9" />
-				<stop offset="1" stopColor="#6070F0" />
+				<stop offset="0" stopColor="#ea2b1f" />
+				<stop offset="0.25" stopColor="#ff3c6f" />
+				<stop offset="0.5" stopColor="#ff4fdd" />
+				<stop offset="0.75" stopColor="#7e56ff" />
+				<stop offset="1" stopColor="#00b2ff" />
 			</linearGradient>
 			<mask id="flinkform-icon-mask">
 				<rect x="3.5" y="3" width="17" height="18" rx="3" fill="#fff" />
