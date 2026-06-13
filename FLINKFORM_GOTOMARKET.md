@@ -48,30 +48,72 @@ ihrer Kunden haften.
 - Freemius unterstützt Affiliate-Programme out of the box. Agenturen, die es
   einsetzen, verdienen an Weiterempfehlungen mit. Niedrigschwellig, skaliert.
 
-### 6. Agentur-Direktansprache (siehe Rechts-Hinweis unten!)
-- Lead-Recherche (Agenturen finden) ist ok.
-- Ansprache NICHT als Massen-Cold-Mail, sondern:
-  - personalisierte LinkedIn-Nachricht an vernetzte Agentur-Inhaber,
-  - warme Kontakte aus dem dbw-media-Netzwerk,
-  - bei echtem sachlichen Bezug, hochpersonalisiert, kein Massenversand.
+### 6. Agentur-Direktansprache inkl. Cold Mail (siehe Rechts-Hinweis unten!)
+- Lead-Recherche (Agenturen finden, z.B. via Lead-Tool) ist ok.
+- Bevorzugt: personalisierte LinkedIn-Nachricht an vernetzte Agentur-Inhaber,
+  warme Kontakte aus dem dbw-media-Netzwerk.
+- Cold Mail wird bewusst getestet (Entscheidung Dennis, Risiko bekannt) - dann
+  aber kontrolliert nach den Regeln im Cold-Mail-Abschnitt unten, NICHT als
+  anonymer Massenversand.
 
 ### 7. Community / Events
 - WordCamps, WP-Meetups DACH, Agentur-Slack/Facebook-Gruppen.
 - Nicht spammen, sondern mit dem Privacy-Thema echten Mehrwert bringen.
 
-## WICHTIG: Cold Mail im DACH-Raum (Rechts- & Marken-Hinweis)
+## Cold Mail an Agenturen (bewusst getestet - Risiko & wie man es richtig macht)
 
+Dennis will Cold Mail als Kanal testen. Das Risiko ist bekannt; hier der ehrliche
+Rahmen plus die Regeln, um es so rechtssicher und markenschonend wie möglich zu
+fahren.
+
+### Das Risiko (ehrlich, kein Rechtsrat)
 - **B2B-Kaltakquise per E-Mail ohne vorherige Einwilligung ist in Deutschland
-  grundsätzlich wettbewerbswidrig (§ 7 UWG)** - auch zwischen Unternehmen.
-  Massen-Cold-Mail an gescrapte Adressen ist abmahnfähig. (Kein Rechtsrat; im
-  Zweifel anwaltlich absichern.)
-- **Marken-Eigentor:** Flinkform ist ein Privacy-/DSGVO-Produkt. Wenn ausgerechnet
-  der Datenschutz-Anbieter per Cold-Mail-Spam akquiriert, zerstört das die
-  Glaubwürdigkeit, sobald es öffentlich wird. Das Risiko steht in keinem
-  Verhältnis zum Nutzen.
-- **Fazit:** Lead-Tool zum Finden ja, Massen-Cold-Mail nein. Personalisierte
-  LinkedIn-/Netzwerk-Ansprache + Content-Pull erreichen dieselbe Zielgruppe
-  markentreu und rechtssicher.
+  grundsätzlich wettbewerbswidrig (§ 7 Abs. 2 UWG)** - auch zwischen Unternehmen.
+  Es gibt nur eine schmale Ausnahme (mutmaßliche Einwilligung bei klarem sachlichen
+  Interesse des Empfängers am Angebot). Massenversand an gescrapte Adressen fällt
+  NICHT darunter und ist abmahnfähig. Im Zweifel anwaltlich absichern.
+- **Marken-Risiko:** Flinkform ist ein Privacy-Produkt. Spam-Vorwürfe träfen die
+  Glaubwürdigkeit härter als bei einem x-beliebigen Tool. Deshalb Qualität vor
+  Masse, kein Tracking, sauberer Stil.
+
+### Wenn Cold Mail, dann nach diesen Regeln (Risiko minimieren)
+- **Nur B2B**, nie an Privatpersonen/Verbraucher. Empfänger ausschließlich
+  WordPress-/Webagenturen, für die das Angebot sachlich einschlägig ist (stärkt
+  die "mutmaßliche Einwilligung"-Argumentation, bleibt aber Graubereich).
+- **Hochpersonalisiert, niedrige Stückzahl, manuell** statt anonymer Massenversand.
+  Lieber 20 gute, recherchierte Mails/Woche als 2.000 generische. Genau der
+  Massenversand ist das, was abgemahnt wird.
+- **An die Funktion/Rolle** (info@, kontakt@, oder namentlich den Inhaber bei
+  klarem Bezug), sauberes Impressum/Absender, **einfache Abmeldung** in jeder Mail.
+- **Kein Tracking-Pixel, keine externen Tracker** - passt zur Privacy-Marke und
+  reduziert Angriffsfläche.
+- **DACH-Recht beachten:** AT/CH haben eigene Regeln. Außerhalb DACH (z.B. US/UK)
+  ist B2B-Cold-Mail mit Opt-out meist zulässig - dort ist das Risiko geringer.
+- Volumen langsam hochfahren, Antwort-/Beschwerderate beobachten, bei Beschwerden
+  sofort stoppen.
+
+### Beispiel-Mail (kurz, personalisiert, wertorientiert)
+> Betreff: reCAPTCHA auf euren Kundenformularen - DSGVO-Risiko?
+>
+> Hallo [Name],
+> kurz und ehrlich: Die meisten Kontaktformulare, die ich auf Agentur-Kundenseiten
+> sehe, laden Google reCAPTCHA - das BVwG hat 2024 entschieden, dass das ohne
+> Einwilligung DSGVO-widrig ist. Wir haben dafür Flinkform gebaut: block-natives
+> WordPress-Formular-Plugin, Spamschutz komplett ohne externe Dienste, kein
+> IP-Logging. Free auf wordpress.org, Pro mit Agentur-Lizenz.
+> Falls das für eure Kunden relevant ist, schick ich dir gern den Link - sonst
+> einfach ignorieren. [Abmeldelink]
+> Viele Grüße, Dennis
+
+- Mehrwert + sachlicher Bezug + Opt-out, kein Druck. Das ist der Ton, der bei
+  Agentur-Inhabern funktioniert und das Marken-Risiko minimiert.
+- A/B-Test gegen die LinkedIn-Variante: messen, welcher Kanal pro Aufwand mehr
+  qualifizierte Installs/Trials bringt, dann auf den Gewinner fokussieren.
+
+### Fazit
+Cold Mail bleibt der riskanteste Kanal (rechtlich + Marke). Wenn getestet, dann
+qualitativ und kontrolliert wie oben - parallel weiter auf die risikoärmeren Kanäle
+(LinkedIn, Netzwerk, Content-Pull) setzen, die dieselbe Zielgruppe erreichen.
 
 ## Anreize / Rabatte
 
@@ -91,4 +133,5 @@ ihrer Kunden haften.
 2. Content-Engine starten (BVwG-Artikel zuerst), parallel LinkedIn-Präsenz.
 3. Freemius + Pro live, Launch-Lifetime-Aktion.
 4. Partnerschaften (Hoster/DSGVO-Berater) + Affiliate aktivieren.
-5. Direktansprache nur warm/personalisiert, nie als Cold-Mail-Masse.
+5. Direktansprache: warm/personalisiert priorisieren; Cold Mail nur kontrolliert
+   und qualitativ nach den Regeln oben testen (kein Massenversand).
