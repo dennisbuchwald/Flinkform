@@ -32,6 +32,15 @@ import {
 } from '@wordpress/components';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
+// Inline plus glyph for the "Add field" appender button. Inline (not
+// @wordpress/icons) to avoid pulling in an extra dependency; the white
+// fill comes from the button's CSS (svg { fill: #fff }).
+const ADD_FIELD_ICON = (
+	<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+		<path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z" />
+	</svg>
+);
+
 const CORE_ALLOWED_BLOCKS = [
 	'flinkform/section-heading',
 	'flinkform/page-break',
@@ -794,16 +803,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<Inserter
 							rootClientId={ clientId }
 							isAppender
-							// Quick-inserter restricted to the form's allowed
-							// field blocks — the same picker the floating "+"
-							// opens, but behind a clearly visible, branded
+							// __experimentalIsQuick opens the compact quick
+							// inserter (only the form's allowed field blocks +
+							// a "Browse all" link to the full library) instead
+							// of the full inserter. Restores the pre-button
+							// behaviour, just behind a clearly visible branded
 							// button so authors actually find the other fields.
+							__experimentalIsQuick
 							renderToggle={ ( { onToggle, disabled } ) => (
 								<Button
 									className="flinkform-add-field"
 									onClick={ onToggle }
 									disabled={ disabled }
-									icon="plus"
+									icon={ ADD_FIELD_ICON }
 									__next40pxDefaultSize
 								>
 									{ __( 'Add field', 'flinkform' ) }
