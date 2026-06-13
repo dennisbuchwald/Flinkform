@@ -10,6 +10,65 @@ This is a **brainstorm and idea capture** document — not a finished spec. It c
 
 The goal of the landing page is **one thing**: convince a frustrated WordPress user who has used Contact Form 7, WPForms, or Gravity Forms that Flinkform is the upgrade they've been waiting for — without making it feel like just another marketing site.
 
+> **Language note:** the actual landing-page copy ships in **German first** (DACH
+> target audience), English second. In the German copy: no em-dash "—" / no
+> en-dash "–" as a thought-separator (KI-marker) — recast with comma/colon/period.
+
+---
+
+## 0. The headline angle — Privacy / DSGVO first
+
+This is the spine of the whole site, not a feature among many. Everyone else is a
+form builder that *also* mentions GDPR; Flinkform is **the privacy-first form
+plugin** that happens to be a great block-native builder.
+
+**The hook (DACH-specific, legally loaded):**
+- 2024 the Austrian BVwG ruled that **Google reCAPTCHA without prior consent
+  violates the GDPR** (it builds a "digital fingerprint" from IP, browser, OS).
+  CNIL (FR) fined €125,000 for reCAPTCHA without consent.
+- **Every** major form plugin defaults to a US CAPTCHA service (reCAPTCHA,
+  hCaptcha, Cloudflare Turnstile). Flinkform is the one that does **not** — its
+  proof-of-work spam protection runs entirely in the browser + on your server,
+  no third-party request, no consent banner needed for it.
+- Message: *"Dein Kontaktformular schickt gerade Besucherdaten in die USA — ohne
+  dass du es weißt. Flinkform nicht."*
+
+**Three privacy pillars to hammer (hero + dedicated section):**
+1. **Keine externen Dienste.** No IP/UA logging, no tracking, no telemetry, no
+   US CAPTCHA. Everything stays on your server.
+2. **DSGVO-Werkzeuge eingebaut.** Consent field, per-form retention auto-purge,
+   WordPress exporter/eraser integration, honest cookie disclosure.
+3. **Made in Germany / EU-first.** Spricht die Zielgruppe (Agenturen, die für
+   ihre Kunden haften) direkt an. Vertrauen schlägt Feature-Liste.
+
+**Why this wins:** the target buyer (DACH agencies + freelancers) is *liable* for
+their clients' GDPR compliance. They don't buy "more fields" — they buy peace of
+mind. The BVwG ruling turns a technical detail into a sales argument.
+
+---
+
+## 0b. The "we do it better" table (fill-in, defensible)
+
+The honest, filled-in comparison. Tap-through chart in section 1 uses this data.
+Keep it citable — link every competitor claim to their pricing/docs.
+
+| | **Flinkform** | Contact Form 7 | WPForms (Lite/Pro) | Gravity Forms | SureForms |
+|---|---|---|---|---|---|
+| **Spam without US service** | ✅ Proof-of-work, on-server | ⚠️ needs reCAPTCHA/Akismet | ⚠️ reCAPTCHA/Turnstile | ⚠️ reCAPTCHA/Turnstile | ⚠️ reCAPTCHA/hCaptcha |
+| **No IP/UA stored by default** | ✅ | ⚠️ Akismet sends data | ❌ stores entries+meta | ❌ | ⚠️ |
+| **Block-editor native** | ✅ every field a block | ❌ shortcode | ❌ separate builder | ❌ separate builder | ✅ |
+| **Multi-step free** | ✅ | ❌ | ❌ Pro | ❌ paid | ✅ |
+| **Conditional logic free** | ✅ | ❌ (addon) | ❌ Pro $99+ | ❌ paid | ✅ |
+| **Looks good out of the box** | ✅ theme.json | ❌ unstyled | ⚠️ own styles | ⚠️ own styles | ✅ |
+| **Frontend JS** | ✅ <15 KB, no jQuery | ⚠️ jQuery | ⚠️ heavier | ⚠️ heavier | ⚠️ React-based |
+| **Price (single site)** | **59 €** | free | $99/yr | $59/yr | $59/yr |
+| **Made in / data location** | 🇩🇪 EU-first | JP, self-host | US | US | IN/US |
+
+Honesty guardrails: SureForms is genuinely good and block-native too — our edge
+over them is **privacy default + theme.json inheritance + <15 KB**, NOT "they're
+bad". Against CF7/WPForms/Gravity the edge is broader (native editor, free
+features, privacy). Never strawman; the team and savvy buyers will check.
+
 ---
 
 ## 1. Core Idea — The Comparison Chart
@@ -71,17 +130,20 @@ Suggested categories:
 
 - Multi-step forms (free)
 - Conditional logic (free)
-- Webhooks (free)
-- Email notifications with per-form recipient
-- Redirect to thank-you page (for GA4 / Meta Pixel conversion tracking)
-- Spam protection (honeypot + time-check + Cloudflare Turnstile)
+- Email notifications with per-form recipient (free)
+- 13 field types; redirect to thank-you page (GA4 / Meta Pixel conversion tracking)
+- Spam protection: honeypot + signed time-check + proof-of-work (all free, no service)
+- Pro: webhooks, SMTP delivery + send log, CSV export, file upload, newsletter integrations
 
-**Privacy & GDPR**
+**Privacy & GDPR** (the headline argument — see section 0)
 
-- Zero external service calls by default
-- No tracking, no telemetry
-- Cloudflare Turnstile as default CAPTCHA (most GDPR-friendly)
-- IP / user agent not stored unless explicitly enabled
+- Zero external service calls in the free core, by default
+- No IP / user-agent storage, no tracking, no telemetry
+- Proof-of-work spam protection instead of reCAPTCHA/Turnstile — NO third-party
+  CAPTCHA service is contacted. This is THE differentiator; never pitch Turnstile,
+  it would contradict the whole positioning.
+- One strictly-necessary cookie (`flinkform_flash`), set only on failed submit
+- WordPress privacy-tools integration (exporter + eraser), per-form retention
 
 **Performance**
 
@@ -203,6 +265,39 @@ Every "vs." post follows the same structure to keep production fast and the read
 - Internal link from every post → the landing page comparison chart anchor.
 - Internal link from the landing page comparison chart → the relevant post.
 - Schema: `Article` + `SoftwareApplication` for Flinkform and each competitor.
+
+---
+
+## 3b. Pricing & licensing (decided 2026-06-13)
+
+Sold via **Freemius** (Merchant of Record — handles EU-VAT, license validation,
+update delivery). SDK goes into the **Pro plugin only**; the free core on
+wp.org stays Freemius-free. Free→Pro funnel = the wp.org listing.
+
+All Pro tiers get **all features** — tiers differ only by **site count** (simpler
+to communicate, no killer feature locked behind the top tier).
+
+| Plan | Price/yr | Sites | Target |
+|---|---|---|---|
+| Single | **59 €** | 1 | Freelancer, single site |
+| Agency | **149 €** | up to 25 | **Core target — the revenue driver** |
+| Unlimited | **299 €** | ∞ | Large agencies, power users |
+| Lifetime (launch only) | **399 € once** | up to 25 | First 3 months only, then retire — early cash for marketing |
+
+Rationale: stay at/above SureForms' 59 € (we're the premium privacy product, not
+the cheap one — 49 € would signal "lesser"). Agency tier undercuts WPForms Elite
+($599) and roughly matches Gravity Elite ($259) → "a bit cheaper than the big
+players" without underselling. Renewal/abo model: revenue accumulates across
+years (new customers + renewals, WP renewal rate ~50-70%).
+
+Realistic revenue (after ~7% Freemius fee, ~90 €/customer blended):
+- Conservative (yr 1, 1.5k installs × 1.5%): ~1.8k €/yr
+- Realistic (yr 2, 5k installs × 2%): ~8.4k €/yr
+- Optimistic (yr 2-3, 15k installs × 2.5%): ~31k €/yr
+
+**The lever is active installs, not price.** Pricing is within market norms;
+the work is getting installs via the free plugin + DACH privacy content (BVwG
+ruling as the content spearhead).
 
 ---
 
