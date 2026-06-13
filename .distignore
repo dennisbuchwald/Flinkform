@@ -26,8 +26,13 @@ includes/Bridge/README.md
 /deploy.sh
 
 # Development docs — the only doc that ships is readme.txt (WordPress.org).
+# Explicit entries + glob guards so a new dev doc never leaks into the
+# distributed zip (WP.org flags internal specs/prompts inside a plugin).
 /readme.md
 /AUDIT_PROMPT.md
+/*_PROMPT.md
+/PERFORM_*.md
+/FLINKFORM_*.md
 /CONTINUE_PROMPT.md
 /INITIAL_PROMPT.md
 /PERFORM_LANDINGPAGE.md

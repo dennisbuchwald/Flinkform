@@ -217,6 +217,17 @@ final class Challenge {
 
 		// Replay-guard: a successful verify burns the token. If
 		// the transient is already set, this is a replay attempt.
+		//
+		// Known, accepted trade-off: the get_transient/set_transient pair
+		// is not atomic, so a burst of parallel requests carrying the SAME
+		// already-solved token could slip a handful through before the
+		// burn lands. The exposure is small — one solved challenge yields
+		// only a few extra submissions inside a millisecond window, and
+		// every one still has to clear the honeypot and the signed
+		// minimum-fill-time gate. A truly atomic single-use lock (add_option
+		// on the DB unique index, or wp_cache_add) would need its own
+		// expiry/cleanup story; that machinery is not worth it versus the
+		// marginal gain an attacker gets here.
 		$used_key = 'flinkform_spam_used_' . md5( (string) ( $payload['n'] ?? '' ) );
 		if ( false !== get_transient( $used_key ) ) {
 			return false;

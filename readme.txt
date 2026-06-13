@@ -2,7 +2,7 @@
 Contributors: dbwmediadennis
 Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
-Tested up to: 7.0
+Tested up to: 6.8
 Requires PHP: 8.1
 Stable tag: 0.4.0
 License: GPLv2 or later
