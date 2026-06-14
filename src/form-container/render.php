@@ -468,7 +468,7 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 			if ( function_exists( 'wp_interactivity_state' ) ) {
 				$ns_state = [
 					'progressTemplate' => sprintf(
-						/* translators: 1: placeholder for current step number, 2: placeholder for total step count */
+						/* translators: 1: current step number, 2: total step count */
 						__( 'Step %1$s of %2$s', 'flinkform' ),
 						'%CURRENT%',
 						'%TOTAL%'

@@ -1,0 +1,2059 @@
+# Copyright (C) 2026 Dennis Buchwald
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Flinkform - Forms for the Block Editor 0.4.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/flinkform\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-14T14:25:30+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: flinkform\n"
+
+#. Plugin Name of the plugin
+#: flinkform.php
+msgid "Flinkform - Forms for the Block Editor"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: flinkform.php
+msgid "https://www.dennisbuchwald.de/apps/flinkform"
+msgstr ""
+
+#. Description of the plugin
+#: flinkform.php
+msgid "Block-native form builder for the WordPress Block Editor — theme.json styling, conditional logic, Interactivity API."
+msgstr ""
+
+#. Author of the plugin
+#: flinkform.php
+msgid "Dennis Buchwald"
+msgstr ""
+
+#. Author URI of the plugin
+#: flinkform.php
+msgid "https://www.dennisbuchwald.de"
+msgstr ""
+
+#: build/field-checkbox/render.php:41
+#: build/field-checkbox/index.js:1
+msgid "Please select at least one option."
+msgstr ""
+
+#: build/field-consent/render.php:63
+msgid "Privacy Policy"
+msgstr ""
+
+#: build/field-consent/render.php:64
+msgid "(opens in a new tab)"
+msgstr ""
+
+#: build/form-container/render.php:32
+#: build/form-container/index.js:2
+msgid "Send"
+msgstr ""
+
+#: build/form-container/render.php:33
+msgid "Thank you!"
+msgstr ""
+
+#. translators: 1: current step number, 2: total step count
+#: build/form-container/render.php:233
+#: build/form-container/render.php:472
+#: build/form-container/index.js:2
+#, php-format,js-format
+msgid "Step %1$s of %2$s"
+msgstr ""
+
+#. translators: 1: step number, 2: author-supplied step label
+#: build/form-container/render.php:378
+#: build/page-break/index.js:2
+#, php-format,js-format
+msgid "Step %1$d — %2$s"
+msgstr ""
+
+#. translators: %d: step number
+#: build/form-container/render.php:381
+#: build/page-break/index.js:3
+#, php-format,js-format
+msgid "Step %d"
+msgstr ""
+
+#: build/form-container/render.php:424
+msgid "Leave this field empty"
+msgstr ""
+
+#: build/form-container/render.php:553
+msgid "Back"
+msgstr ""
+
+#: build/form-container/render.php:561
+msgid "Next"
+msgstr ""
+
+#: build/form-container/render.php:596
+msgid "Please complete the required selection above to enable submission."
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:56
+msgid "Title"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:57
+msgid "Form ID"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:58
+msgid "Source page"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:59
+#: includes/Admin/Menu.php:67
+#: includes/Admin/Menu.php:68
+#: includes/Admin/SubmissionsPage.php:122
+msgid "Submissions"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:60
+msgid "Last submission"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:152
+msgid "No forms found. Add a Flinkform Form block to a page to get started."
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:177
+#: includes/Forms/Indexer.php:331
+msgid "(Untitled form)"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:179
+msgid "No explicit title set — falling back to the source page name."
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:179
+msgid "auto"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:182
+msgid "orphan"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:197
+msgid "View submissions"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:206
+msgid "Edit page"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:213
+msgid "View on site"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:230
+#: includes/Admin/SubmissionsListTable.php:234
+msgid "unknown"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:248
+msgid "no live page"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:257
+msgid "(no title)"
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:304
+msgid "never"
+msgstr ""
+
+#: includes/Admin/FormsPage.php:54
+msgid "Forms index refreshed."
+msgstr ""
+
+#: includes/Admin/FormsPage.php:65
+msgid "You do not have permission to view Flinkform forms."
+msgstr ""
+
+#: includes/Admin/FormsPage.php:83
+#: includes/Admin/Menu.php:76
+#: includes/Admin/Menu.php:77
+msgid "Forms"
+msgstr ""
+
+#: includes/Admin/FormsPage.php:85
+msgid "Refresh index"
+msgstr ""
+
+#: includes/Admin/FormsPage.php:94
+msgid "Search forms"
+msgstr ""
+
+#: includes/Admin/Menu.php:56
+#: includes/Admin/Menu.php:57
+#: includes/Blocks/Registry.php:76
+msgid "Flinkform"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:73
+msgid "Date"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:74
+#: includes/Privacy.php:140
+msgid "Form"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:75
+msgid "Preview"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:76
+msgid "Status"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:100
+msgid "Mark as read"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:101
+#: includes/Admin/SubmissionsPage.php:268
+msgid "Mark as unread"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:102
+#: includes/Admin/SubmissionsListTable.php:214
+msgid "Delete"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:142
+msgid "No submissions yet."
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:209
+msgid "View"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:213
+#: includes/Admin/SubmissionsPage.php:270
+msgid "Delete this submission permanently?"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:311
+#: includes/Admin/SubmissionsPage.php:291
+#: includes/Admin/SubmissionsPage.php:305
+msgid "empty"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:322
+#: includes/Admin/SubmissionsListTable.php:359
+msgid "Read"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:322
+#: includes/Admin/SubmissionsListTable.php:358
+msgid "Unread"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:345
+msgid "Filter by form"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:347
+msgid "All forms"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:355
+msgid "Filter by status"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:357
+msgid "All statuses"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:366
+msgid "From date"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:367
+msgid "From"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:373
+msgid "To date"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:374
+#: build/form-container/index.js:1
+msgid "To"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:377
+msgid "Filter"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:420
+msgid "(deleted)"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:99
+msgid "You do not have permission to view Flinkform submissions."
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:130
+msgid "Search submissions"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:149
+msgid "Submission not found"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:149
+msgid "← Back to submissions"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:197
+msgid "Submission"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:200
+msgid "← Back"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:206
+msgid "Received:"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:211
+msgid "Form:"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:216
+#: build/form-container/index.js:1
+msgid "Form ID:"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:221
+msgid "Source page:"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:229
+msgid "Fields"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:231
+msgid "This submission has no fields."
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:271
+msgid "Delete submission"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:300
+msgid "Yes"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:301
+msgid "No"
+msgstr ""
+
+#. translators: %d: number of submissions affected
+#: includes/Admin/SubmissionsPage.php:345
+#, php-format
+msgid "%d submission marked as read."
+msgid_plural "%d submissions marked as read."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of submissions affected
+#: includes/Admin/SubmissionsPage.php:353
+#, php-format
+msgid "%d submission marked as unread."
+msgid_plural "%d submissions marked as unread."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of submissions affected
+#: includes/Admin/SubmissionsPage.php:361
+#, php-format
+msgid "%d submission deleted."
+msgid_plural "%d submissions deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/SubmissionsPage.php:391
+msgid "Submission deleted."
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:399
+msgid "Submission marked as unread."
+msgstr ""
+
+#. translators: %s: source post title
+#: includes/Forms/Indexer.php:327
+#, php-format
+msgid "Form on \"%s\""
+msgstr ""
+
+#: includes/Notifications/Mailer.php:211
+#: build/form-container/index.js:1
+msgid "New submission: {form:title}"
+msgstr ""
+
+#: includes/Notifications/Mailer.php:241
+#: build/form-container/index.js:1
+msgid "We received your submission"
+msgstr ""
+
+#: includes/Notifications/Mailer.php:266
+msgid "A new submission was received:"
+msgstr ""
+
+#: includes/Notifications/Mailer.php:298
+msgid "Hi,"
+msgstr ""
+
+#: includes/Notifications/Mailer.php:300
+msgid "Thanks for your submission. We received the following and will be in touch shortly:"
+msgstr ""
+
+#: includes/Notifications/MergeTags.php:71
+msgid "Untitled form"
+msgstr ""
+
+#: includes/Privacy.php:57
+msgid "Flinkform — Form Submissions"
+msgstr ""
+
+#: includes/Privacy.php:59
+msgid "When a visitor submits a form built with Flinkform, the plugin stores the submitted field values (name, email, message, etc.) in a dedicated database table on this website. No IP addresses or browser user-agent strings are collected."
+msgstr ""
+
+#: includes/Privacy.php:61
+msgid "Submissions are retained until a site administrator deletes them (individually or in bulk), until the plugin is uninstalled, or — when a per-form retention period is configured — until they are older than that period, after which a daily routine deletes them automatically."
+msgstr ""
+
+#: includes/Privacy.php:63
+msgid "Flinkform does not send any submission data to external services. (Add-ons such as Flinkform Pro may add integrations — e.g. webhooks or SMTP delivery — that transmit data to third parties; those add their own privacy disclosures when active.)"
+msgstr ""
+
+#: includes/Privacy.php:65
+msgid "The built-in spam protection (proof-of-work challenge) runs entirely in the visitor's browser and on this server — no data is sent to any external anti-spam service."
+msgstr ""
+
+#: includes/Privacy.php:67
+msgid "Flinkform sets one short-lived, strictly necessary cookie (\"flinkform_flash\", lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload. No tracking, analytics or marketing cookies are ever set."
+msgstr ""
+
+#: includes/Privacy.php:80
+#: includes/Privacy.php:95
+#: includes/Privacy.php:147
+msgid "Flinkform Submissions"
+msgstr ""
+
+#: includes/Privacy.php:133
+msgid "Submitted at"
+msgstr ""
+
+#: includes/Privacy.php:148
+msgid "Form submissions stored by the Flinkform plugin."
+msgstr ""
+
+#. translators: 1: first integer 2-9, 2: second integer 2-9
+#: includes/Spam/Challenge.php:158
+#, php-format
+msgid "What is %1$d + %2$d?"
+msgstr ""
+
+#: includes/Spam/Renderer.php:121
+msgid "Spam protection — answer the question above to submit the form."
+msgstr ""
+
+#: includes/Submissions/Handler.php:103
+msgid "Security check failed. Please go back and try again."
+msgstr ""
+
+#: includes/Submissions/Handler.php:104
+msgid "Submission rejected"
+msgstr ""
+
+#: includes/Submissions/Handler.php:180
+msgid "Please complete the required selection before submitting."
+msgstr ""
+
+#: includes/Submissions/Handler.php:258
+msgid "Sorry, something went wrong saving your message. Please try again."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:436
+#, php-format
+msgid "%s must be checked."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:441
+#, php-format
+msgid "%s is required."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:552
+#, php-format
+msgid "%s must be a valid email address."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:563
+#, php-format
+msgid "%s must be a valid web address (https://…)."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:573
+#, php-format
+msgid "%s must be a valid date."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:580
+#, php-format
+msgid "%s is before the earliest allowed date."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:584
+#, php-format
+msgid "%s is after the latest allowed date."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:595
+#, php-format
+msgid "%s must be a valid phone number."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:605
+#, php-format
+msgid "%s must be a number."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:612
+#, php-format
+msgid "%s is below the minimum."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:616
+#, php-format
+msgid "%s is above the maximum."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:630
+#, php-format
+msgid "%s contains an invalid choice."
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+msgid "No options yet — add the first one below."
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+msgid "Label"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "Value"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+msgid "Move up"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+msgid "Move down"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+msgid "Remove option"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+msgid "+ Add option"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/section-heading/index.js:1
+msgid "Layout"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/section-heading/index.js:1
+msgid "Full width"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/section-heading/index.js:1
+msgid "Make this field span both columns of the form."
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "— Select a field —"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "Conditional Logic"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "Enable conditional logic"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "Show this only when the rules below match. Hidden fields are excluded from the submission, both client- and server-side."
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "Add at least one other field block to the form to use conditional logic."
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "Match"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "ALL"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "ANY"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "+ Add rule"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "is"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "is not"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "contains"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "does not contain"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "is empty"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "is not empty"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "greater than"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "less than"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "Field"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "Operator"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+#: build/form-container/index.js:1
+#: build/page-break/index.js:1
+#: build/section-heading/index.js:1
+msgid "Remove rule"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+msgid "Field Settings"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+msgid "Required (at least one)"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+msgid "Required Message"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+msgid "Shown when the visitor submits without selecting an option. Leave empty for the default."
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+msgid "Help Text"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-consent/index.js:1
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-hidden/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+msgid "Field Name"
+msgstr ""
+
+#: build/field-checkbox/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+msgid "Options"
+msgstr ""
+
+#: build/field-consent/index.js:1
+msgid "Consent Settings"
+msgstr ""
+
+#: build/field-consent/index.js:1
+msgid "Consent text"
+msgstr ""
+
+#: build/field-consent/index.js:1
+msgid "Shown next to the checkbox. The visitor must tick it to submit."
+msgstr ""
+
+#: build/field-consent/index.js:1
+msgid "Append a link to the privacy policy"
+msgstr ""
+
+#: build/field-consent/index.js:1
+msgid "Links to the page set under Settings → Privacy."
+msgstr ""
+
+#: build/field-consent/index.js:1
+msgid "(privacy policy link)"
+msgstr ""
+
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-radio/index.js:1
+#: build/field-select/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-url/index.js:1
+msgid "Required"
+msgstr ""
+
+#: build/field-date/index.js:1
+msgid "Earliest Date"
+msgstr ""
+
+#: build/field-date/index.js:1
+msgid "Latest Date"
+msgstr ""
+
+#: build/field-date/index.js:1
+#: build/field-email/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-toggle/index.js:1
+#: build/field-url/index.js:1
+msgid "Key used in submission data. Auto-generated; change with care."
+msgstr ""
+
+#: build/field-email/index.js:1
+#: build/field-number/index.js:1
+#: build/field-phone/index.js:1
+#: build/field-text/index.js:1
+#: build/field-textarea/index.js:1
+#: build/field-url/index.js:1
+msgid "Placeholder"
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Static value"
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Current page URL"
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Current post ID"
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Current user ID (0 if logged out)"
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Current date (Y-m-d)"
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Current date + time (ISO)"
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Hidden Field"
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Editor label"
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Only shown in the editor for orientation. Not sent to visitors."
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Value source"
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "The value is computed on the server when the form is rendered — POST values from visitors are ignored."
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Key used in submission data."
+msgstr ""
+
+#: build/field-hidden/index.js:1
+msgid "Hidden:"
+msgstr ""
+
+#: build/field-number/index.js:1
+msgid "Min"
+msgstr ""
+
+#: build/field-number/index.js:1
+msgid "Max"
+msgstr ""
+
+#: build/field-number/index.js:1
+msgid "Step"
+msgstr ""
+
+#: build/field-number/index.js:1
+msgid "Decimal step, e.g. 0.01 for currency. Leave empty for whole numbers."
+msgstr ""
+
+#: build/field-select/index.js:1
+msgid "Placeholder (single select only)"
+msgstr ""
+
+#: build/field-select/index.js:1
+msgid "Allow multiple selections"
+msgstr ""
+
+#: build/field-textarea/index.js:1
+msgid "Rows"
+msgstr ""
+
+#: build/field-toggle/index.js:1
+msgid "Shown next to the checkbox. Plain HTML allowed."
+msgstr ""
+
+#: build/field-toggle/index.js:1
+msgid "Required (must be checked)"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Name"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Email"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Message"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Form Settings"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Form Title"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Internal name shown in the Forms admin overview. Not visible to visitors."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Submit Button Label"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "After Submit"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "On successful submission"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Show message"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Redirect to URL"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Success Message"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Shown in place of the form after a successful submission."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Redirect URL"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Same-origin only. Enter a path (/danke) or a full URL on this site. External URLs are silently rejected by the safe-redirect filter — operators who need cross-domain thank-you pages get a site-wide opt-in toggle in a later release."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "https://example.com/danke"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Append submission ID"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Adds ?flinkform_submission_id=N to the redirect URL — useful for analytics events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off because submission IDs are PII-adjacent and end up in browser history."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Append form ID"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Adds ?flinkform_form_id=UUID — lets a shared thank-you page differentiate conversions by source form."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Style"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Primary color"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Used for submit button, focus rings, and accent details. Leave unset to inherit from your theme."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Field style"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Bordered: full outline. Soft: light gray border. Underline: bottom border only. Minimal: no border, subtle background."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Bordered"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Soft"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Underline"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Minimal"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Border radius"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Applies to fields and the submit button. Leave at the default to inherit from your theme."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Field spacing"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Compact"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Normal"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Relaxed"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Label position"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Material-style notched label: rests inside the input, then slides onto the top border on focus, cutting a notch through it. Applies to text-style fields."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Labels are visually hidden (still accessible to screen readers). The label text is used as placeholder inside the field. Applies to text-style fields only."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Beside, Floating and Hidden apply to text-style fields only."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Above"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Beside"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Floating"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Hidden"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Columns"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Two-column layout collapses to a single column on mobile. Individual fields can be set to span both columns via their own inspector."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "1 column"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "2 columns"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Submit button style"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Fill"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Outline"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Ghost"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Button background"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Leave unset to use the primary colour."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Button text colour"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Leave unset for automatic contrast."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Button border colour"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Only visible when button style is \"Outline\". Leave unset to match the background colour."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Progress indicator"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Shown on multi-step forms only. Bar fills as the user advances; Dots marks each step; Numbers reads \"Step X of Y\"."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Bar"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Dots"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Numbers"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "None"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Show step labels"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Display the current step’s label (from the Page Break block) beneath the indicator. Only shows when at least one Page Break has a label."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Notifications"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Send admin notification"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Email the site admin when a submission is received."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Comma-separated. Leave empty to use the site admin email. Supports merge tags like {field:email}."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Site admin email"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Subject"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Supports merge tags. Leave empty for the default."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Body"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Leave empty for an auto-generated list of all fields."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Auto-generated field list"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Reply-To"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Often set to {field:<emailFieldName>} so replies go to the submitter. Leave empty to use the site default."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Send confirmation to submitter"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Email a copy of the submission back to the person who filled out the form."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Add an email field to this form to enable submitter confirmations."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Email field"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Which field contains the submitter’s email address."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Leave empty for an auto-generated thank-you with the submitted values."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Auto-generated thank-you with submitted values"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Submit Condition"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Gate the submit button"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Disable the submit button until the rules below match. Useful for \"I agree to terms\" checkboxes."
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Data Retention"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "Auto-delete submissions after (days)"
+msgstr ""
+
+#: build/form-container/index.js:1
+msgid "GDPR storage limitation: automatically delete this form’s submissions older than the chosen number of days. 0 = keep forever. Purges run daily and also remove any linked Flinkform Pro webhook delivery records."
+msgstr ""
+
+#: build/form-container/index.js:2
+msgid "Add field"
+msgstr ""
+
+#: build/page-break/index.js:3
+msgid "Page Break"
+msgstr ""
+
+#: build/page-break/index.js:3
+msgid "Step label"
+msgstr ""
+
+#: build/page-break/index.js:3
+msgid "Optional. Shown on the progress indicator on the frontend (Phase 5c). Leave empty to fall back to \"Step N\"."
+msgstr ""
+
+#: build/section-heading/index.js:1
+msgid "Section"
+msgstr ""
+
+#: build/section-heading/index.js:1
+msgid "Heading level"
+msgstr ""
+
+#: build/section-heading/index.js:1
+msgid "Pick the level that keeps your page’s heading order correct (H1 belongs to the page)."
+msgstr ""
+
+#: build/section-heading/index.js:1
+msgid "Description"
+msgstr ""
+
+#: build/section-heading/index.js:1
+msgid "Section title…"
+msgstr ""
+
+#: build/field-checkbox/block.json
+msgctxt "block title"
+msgid "Checkbox Group"
+msgstr ""
+
+#: build/field-checkbox/block.json
+msgctxt "block description"
+msgid "Multiple choices from a list of options."
+msgstr ""
+
+#: build/field-checkbox/block.json
+#: build/field-toggle/block.json
+msgctxt "block keyword"
+msgid "checkbox"
+msgstr ""
+
+#: build/field-checkbox/block.json
+msgctxt "block keyword"
+msgid "multi"
+msgstr ""
+
+#: build/field-checkbox/block.json
+#: build/field-consent/block.json
+#: build/field-date/block.json
+#: build/field-email/block.json
+#: build/field-number/block.json
+#: build/field-phone/block.json
+#: build/field-radio/block.json
+#: build/field-select/block.json
+#: build/field-text/block.json
+#: build/field-textarea/block.json
+#: build/field-url/block.json
+msgctxt "block keyword"
+msgid "field"
+msgstr ""
+
+#: build/field-consent/block.json
+msgctxt "block title"
+msgid "Consent"
+msgstr ""
+
+#: build/field-consent/block.json
+msgctxt "block description"
+msgid "A required consent checkbox (e.g. a GDPR data-processing agreement) with an optional link to your privacy policy."
+msgstr ""
+
+#: build/field-consent/block.json
+#: build/field-toggle/block.json
+msgctxt "block keyword"
+msgid "consent"
+msgstr ""
+
+#: build/field-consent/block.json
+msgctxt "block keyword"
+msgid "gdpr"
+msgstr ""
+
+#: build/field-consent/block.json
+msgctxt "block keyword"
+msgid "privacy"
+msgstr ""
+
+#: build/field-consent/block.json
+#: build/field-toggle/block.json
+msgctxt "block keyword"
+msgid "agree"
+msgstr ""
+
+#: build/field-date/block.json
+msgctxt "block title"
+msgid "Date Field"
+msgstr ""
+
+#: build/field-date/block.json
+msgctxt "block description"
+msgid "A date picker input."
+msgstr ""
+
+#: build/field-date/block.json
+msgctxt "block keyword"
+msgid "date"
+msgstr ""
+
+#: build/field-date/block.json
+msgctxt "block keyword"
+msgid "datum"
+msgstr ""
+
+#: build/field-date/block.json
+msgctxt "block keyword"
+msgid "calendar"
+msgstr ""
+
+#: build/field-date/block.json
+#: build/field-email/block.json
+#: build/field-phone/block.json
+#: build/field-text/block.json
+#: build/field-url/block.json
+msgctxt "block keyword"
+msgid "input"
+msgstr ""
+
+#: build/field-email/block.json
+msgctxt "block title"
+msgid "Email Field"
+msgstr ""
+
+#: build/field-email/block.json
+msgctxt "block description"
+msgid "An email input with format validation."
+msgstr ""
+
+#: build/field-email/block.json
+msgctxt "block keyword"
+msgid "email"
+msgstr ""
+
+#: build/field-hidden/block.json
+msgctxt "block title"
+msgid "Hidden Field"
+msgstr ""
+
+#: build/field-hidden/block.json
+msgctxt "block description"
+msgid "An invisible field that records context with the submission (page URL, user, date, or a static value)."
+msgstr ""
+
+#: build/field-hidden/block.json
+msgctxt "block keyword"
+msgid "hidden"
+msgstr ""
+
+#: build/field-hidden/block.json
+msgctxt "block keyword"
+msgid "meta"
+msgstr ""
+
+#: build/field-hidden/block.json
+msgctxt "block keyword"
+msgid "context"
+msgstr ""
+
+#: build/field-number/block.json
+msgctxt "block title"
+msgid "Number Field"
+msgstr ""
+
+#: build/field-number/block.json
+msgctxt "block description"
+msgid "A numeric input with optional min, max and step."
+msgstr ""
+
+#: build/field-number/block.json
+msgctxt "block keyword"
+msgid "number"
+msgstr ""
+
+#: build/field-number/block.json
+msgctxt "block keyword"
+msgid "numeric"
+msgstr ""
+
+#: build/field-phone/block.json
+msgctxt "block title"
+msgid "Phone Field"
+msgstr ""
+
+#: build/field-phone/block.json
+msgctxt "block description"
+msgid "A phone number input."
+msgstr ""
+
+#: build/field-phone/block.json
+msgctxt "block keyword"
+msgid "phone"
+msgstr ""
+
+#: build/field-phone/block.json
+msgctxt "block keyword"
+msgid "tel"
+msgstr ""
+
+#: build/field-phone/block.json
+msgctxt "block keyword"
+msgid "telefon"
+msgstr ""
+
+#: build/field-radio/block.json
+msgctxt "block title"
+msgid "Radio Group"
+msgstr ""
+
+#: build/field-radio/block.json
+msgctxt "block description"
+msgid "A single choice from a list of options."
+msgstr ""
+
+#: build/field-radio/block.json
+msgctxt "block keyword"
+msgid "radio"
+msgstr ""
+
+#: build/field-radio/block.json
+msgctxt "block keyword"
+msgid "choice"
+msgstr ""
+
+#: build/field-select/block.json
+msgctxt "block title"
+msgid "Dropdown"
+msgstr ""
+
+#: build/field-select/block.json
+msgctxt "block description"
+msgid "A dropdown — single or multi-select."
+msgstr ""
+
+#: build/field-select/block.json
+msgctxt "block keyword"
+msgid "select"
+msgstr ""
+
+#: build/field-select/block.json
+msgctxt "block keyword"
+msgid "dropdown"
+msgstr ""
+
+#: build/field-text/block.json
+msgctxt "block title"
+msgid "Text Field"
+msgstr ""
+
+#: build/field-text/block.json
+msgctxt "block description"
+msgid "A single-line text input."
+msgstr ""
+
+#: build/field-text/block.json
+msgctxt "block keyword"
+msgid "text"
+msgstr ""
+
+#: build/field-textarea/block.json
+msgctxt "block title"
+msgid "Textarea Field"
+msgstr ""
+
+#: build/field-textarea/block.json
+msgctxt "block description"
+msgid "A multi-line text input."
+msgstr ""
+
+#: build/field-textarea/block.json
+msgctxt "block keyword"
+msgid "textarea"
+msgstr ""
+
+#: build/field-textarea/block.json
+msgctxt "block keyword"
+msgid "message"
+msgstr ""
+
+#: build/field-toggle/block.json
+msgctxt "block title"
+msgid "Toggle / Checkbox"
+msgstr ""
+
+#: build/field-toggle/block.json
+msgctxt "block description"
+msgid "A single checkbox — great for terms-of-service style consents."
+msgstr ""
+
+#: build/field-toggle/block.json
+msgctxt "block keyword"
+msgid "toggle"
+msgstr ""
+
+#: build/field-url/block.json
+msgctxt "block title"
+msgid "URL Field"
+msgstr ""
+
+#: build/field-url/block.json
+msgctxt "block description"
+msgid "A website URL input with format validation."
+msgstr ""
+
+#: build/field-url/block.json
+msgctxt "block keyword"
+msgid "url"
+msgstr ""
+
+#: build/field-url/block.json
+msgctxt "block keyword"
+msgid "website"
+msgstr ""
+
+#: build/field-url/block.json
+msgctxt "block keyword"
+msgid "link"
+msgstr ""
+
+#: build/form-container/block.json
+msgctxt "block title"
+msgid "Flinkform Form"
+msgstr ""
+
+#: build/form-container/block.json
+msgctxt "block description"
+msgid "A form container. Add field blocks inside to build your form."
+msgstr ""
+
+#: build/form-container/block.json
+msgctxt "block keyword"
+msgid "form"
+msgstr ""
+
+#: build/form-container/block.json
+msgctxt "block keyword"
+msgid "contact"
+msgstr ""
+
+#: build/form-container/block.json
+msgctxt "block keyword"
+msgid "formular"
+msgstr ""
+
+#: build/form-container/block.json
+msgctxt "block keyword"
+msgid "flinkform"
+msgstr ""
+
+#: build/page-break/block.json
+msgctxt "block title"
+msgid "Page Break"
+msgstr ""
+
+#: build/page-break/block.json
+msgctxt "block description"
+msgid "Splits the form into steps. Place between field blocks to start a new step in a multi-step form."
+msgstr ""
+
+#: build/page-break/block.json
+msgctxt "block keyword"
+msgid "page break"
+msgstr ""
+
+#: build/page-break/block.json
+msgctxt "block keyword"
+msgid "step"
+msgstr ""
+
+#: build/page-break/block.json
+msgctxt "block keyword"
+msgid "multi-step"
+msgstr ""
+
+#: build/page-break/block.json
+msgctxt "block keyword"
+msgid "wizard"
+msgstr ""
+
+#: build/page-break/block.json
+msgctxt "block keyword"
+msgid "funnel"
+msgstr ""
+
+#: build/section-heading/block.json
+msgctxt "block title"
+msgid "Section Heading"
+msgstr ""
+
+#: build/section-heading/block.json
+msgctxt "block description"
+msgid "A visual divider with an optional title and description. Not a field — nothing is submitted."
+msgstr ""
+
+#: build/section-heading/block.json
+msgctxt "block keyword"
+msgid "heading"
+msgstr ""
+
+#: build/section-heading/block.json
+msgctxt "block keyword"
+msgid "divider"
+msgstr ""
+
+#: build/section-heading/block.json
+msgctxt "block keyword"
+msgid "section"
+msgstr ""
