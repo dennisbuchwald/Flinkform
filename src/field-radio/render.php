@@ -38,7 +38,7 @@ $described = trim( $help_id . ' ' . $error_id );
 	<?php echo $described ? 'aria-describedby="' . esc_attr( $described ) . '"' : ''; ?>
 	<?php echo $error ? 'aria-invalid="true"' : ''; ?>
 	<?php echo $required ? 'aria-required="true"' : ''; ?>
-	<?php echo \Flinkform\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?>
+	<?php $flinkform_condition = \Flinkform\Conditions\Wrapper::condition_value( $attributes['conditionalLogic'] ?? [] ); echo $flinkform_condition ? ' data-flinkform-condition="' . esc_attr( $flinkform_condition ) . '"' : ''; ?>
 	data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>"
 >
 	<legend class="flinkform-field__label">

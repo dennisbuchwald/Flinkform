@@ -41,7 +41,7 @@ $privacy_url = $link_pp ? (string) get_privacy_policy_url() : '';
 ?>
 <div
 	class="flinkform-field flinkform-field--consent<?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"
-	<?php echo \Flinkform\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?>
+	<?php $flinkform_condition = \Flinkform\Conditions\Wrapper::condition_value( $attributes['conditionalLogic'] ?? [] ); echo $flinkform_condition ? ' data-flinkform-condition="' . esc_attr( $flinkform_condition ) . '"' : ''; ?>
 	data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>"
 >
 	<label class="flinkform-field__option flinkform-field__consent-label" for="<?php echo esc_attr( $uid ); ?>">

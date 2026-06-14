@@ -41,7 +41,7 @@ $help_id   = $help_text ? $field_uid . '-help' : '';
 $error_id  = $error ? $field_uid . '-error' : '';
 $described = trim( $help_id . ' ' . $error_id );
 ?>
-<div class="flinkform-field flinkform-field--url<?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"<?php echo \Flinkform\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?> data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>">
+<div class="flinkform-field flinkform-field--url<?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"<?php $flinkform_condition = \Flinkform\Conditions\Wrapper::condition_value( $attributes['conditionalLogic'] ?? [] ); echo $flinkform_condition ? ' data-flinkform-condition="' . esc_attr( $flinkform_condition ) . '"' : ''; ?> data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>">
 	<label class="flinkform-field__label" for="<?php echo esc_attr( $field_uid ); ?>">
 		<?php echo esc_html( $label ); ?>
 		<?php if ( $required ) : ?>

@@ -30,16 +30,19 @@ defined( 'ABSPATH' ) || exit;
 final class Wrapper {
 
 	/**
-	 * Render the `data-flinkform-condition` attribute (with a leading
-	 * space) for a block whose `conditionalLogic` is enabled. Returns
-	 * an empty string when the rule set is missing, disabled, or
-	 * carries no rules — so the block's HTML stays byte-identical to
-	 * its pre-Phase-7 output on every form that doesn't use the feature.
+	 * Build the raw JSON payload a conditional-logic block exposes to the
+	 * frontend evaluator. Returns an empty string when the rule set is
+	 * missing, disabled, or carries no rules.
+	 *
+	 * NOTE: the returned value is intentionally NOT escaped — callers must
+	 * escape it at output with `esc_attr()` (escaping late). The frontend
+	 * reads it back via `JSON.parse( el.dataset.* )`, so the value is plain
+	 * JSON and `esc_attr()` is the correct context for the data attribute.
 	 *
 	 * @param mixed $rule_set The block's `conditionalLogic` attribute (object-shaped array, or anything).
-	 * @return string `' data-flinkform-condition="..."'` or `''`.
+	 * @return string A JSON string, or `''` when no condition applies.
 	 */
-	public static function data_attribute( $rule_set, string $attr_name = 'data-flinkform-condition' ): string {
+	public static function condition_value( $rule_set ): string {
 		if ( ! is_array( $rule_set ) || empty( $rule_set['enabled'] ) ) {
 			return '';
 		}
@@ -72,6 +75,6 @@ final class Wrapper {
 			) ),
 		];
 
-		return ' ' . $attr_name . '="' . esc_attr( (string) wp_json_encode( $payload ) ) . '"';
+		return (string) wp_json_encode( $payload );
 	}
 }

@@ -123,6 +123,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Security: additional sanitisation on the notification Reply-To header
 * Reliability: the daily retention purge is now guarded against overlapping cron runs
 * Corrected the FAQ: multi-step forms are part of the free core (and always were since 0.2.7)
+* Fixed the plugin and author URIs to use a resolvable host (www.dennisbuchwald.de)
+* Documented the public source repository and build steps in the readme (Source Code section)
+* Output escaping: conditional-logic data attributes are now escaped late at render time (esc_attr), and submission detail values are output via wp_kses_post()
 
 = 0.3.0 =
 * Renamed all WordPress-global prefixes to satisfy WordPress.org naming requirements
@@ -174,10 +177,15 @@ Flinkform is built with privacy by default. Here is what the free core does and 
 
 == Source Code ==
 
-The source code for this plugin is available at:
-https://github.com/dennisbuchwald/flinkform
+The complete, uncompiled source code (including the `src/` directory with the
+unminified JavaScript/CSS that compiles into `build/`) is publicly available at:
+https://github.com/dennisbuchwald/Flinkform
 
-Build instructions:
-1. Clone the repository
-2. Run `npm install`
-3. Run `npm run build`
+Build instructions (Node.js 18+ and npm required):
+1. Clone the repository: `git clone https://github.com/dennisbuchwald/Flinkform.git`
+2. Install dependencies: `npm install`
+3. Build the compiled assets into `build/`: `npm run build`
+
+The build is powered by `@wordpress/scripts` (webpack). The `src/` sources are
+excluded from the distributed plugin zip to keep it small; this repository is
+the canonical, reviewable source.

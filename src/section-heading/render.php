@@ -33,7 +33,7 @@ if ( $full_width ) {
 	$heading_class .= ' flinkform-section-heading--full-width';
 }
 ?>
-<div class="<?php echo esc_attr( $heading_class ); ?>"<?php echo \Flinkform\Conditions\Wrapper::data_attribute( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- data_attribute() returns an esc_attr()-escaped attribute string. ?>>
+<div class="<?php echo esc_attr( $heading_class ); ?>"<?php $flinkform_condition = \Flinkform\Conditions\Wrapper::condition_value( $attributes['conditionalLogic'] ?? [] ); echo $flinkform_condition ? ' data-flinkform-condition="' . esc_attr( $flinkform_condition ) . '"' : ''; ?>>
 	<?php if ( '' !== $title ) : ?>
 		<<?php echo esc_attr( $heading_tag ); ?> class="flinkform-section-heading__title"><?php echo wp_kses_post( $title ); ?></<?php echo esc_attr( $heading_tag ); ?>>
 	<?php endif; ?>

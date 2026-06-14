@@ -242,7 +242,7 @@ final class SubmissionsPage {
 									<br />
 									<small><code><?php echo esc_html( (string) ( $field['name'] ?? '' ) ); ?></code></small>
 								</th>
-								<td><?php echo $this->format_value( $field ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- format_value escapes its output. ?></td>
+								<td><?php echo wp_kses_post( $this->format_value( $field ) ); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>

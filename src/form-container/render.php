@@ -161,14 +161,13 @@ $is_success = ( 'success' === $status && $status_for === $form_id );
 // is added to every Submit-button render below; the standalone JS
 // listener picks it up and toggles `disabled` reactively. Server-
 // side enforcement happens in Submissions\Handler::handle().
-$submit_condition_attrs   = '';
+$submit_condition_value   = '';
 $submit_condition_hint_id = '';
 if ( ! $is_success ) {
 	$submit_condition = isset( $attributes['submitCondition'] ) && is_array( $attributes['submitCondition'] ) ? $attributes['submitCondition'] : [];
 	if ( ! empty( $submit_condition['enabled'] ) && ! empty( $submit_condition['rules'] ) ) {
-		$submit_condition_attrs   = \Flinkform\Conditions\Wrapper::data_attribute( $submit_condition, 'data-flinkform-submit-condition' );
+		$submit_condition_value   = \Flinkform\Conditions\Wrapper::condition_value( $submit_condition );
 		$submit_condition_hint_id = 'flinkform-submit-hint-' . md5( $form_id );
-		$submit_condition_attrs  .= ' aria-describedby="' . esc_attr( $submit_condition_hint_id ) . '"';
 	}
 }
 
@@ -268,7 +267,7 @@ if ( $is_success ) :
 	// focus here after the redirect so screen readers announce the result
 	// and keyboard users continue from the right place.
 	?>
-	<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attrs is the return value of the WordPress core function get_block_wrapper_attributes(), which returns an already-escaped attribute string. ?>>
 		<div class="flinkform-form__success" role="status" aria-live="polite" tabindex="-1">
 			<span class="flinkform-form__success-icon" aria-hidden="true">
 				<svg viewBox="0 0 52 52" focusable="false">
@@ -363,7 +362,10 @@ if ( 1 === $step_count ) {
 		// view.js reads to decide whether to skip the step during
 		// Next/Back navigation + the progress total. Step 0 never
 		// carries one — it's the form's landing step.
-		$step_attr .= \Flinkform\Conditions\Wrapper::data_attribute( $step_data['conditionalLogic'], 'data-flinkform-step-condition' );
+		$step_condition_value = \Flinkform\Conditions\Wrapper::condition_value( $step_data['conditionalLogic'] );
+		if ( '' !== $step_condition_value ) {
+			$step_attr .= ' data-flinkform-step-condition="' . esc_attr( $step_condition_value ) . '"';
+		}
 		$step_chunks[ $step_index ] = '<div ' . $step_attr . '>' . $step_data['html'] . '</div>';
 	}
 
@@ -399,7 +401,7 @@ if ( 1 === $step_count ) {
 // timestamp to skip the minimum-fill-time gate.
 $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 ?>
-<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attrs is the return value of the WordPress core function get_block_wrapper_attributes(), which returns an already-escaped attribute string. ?>>
 	<form
 		class="flinkform-form__form"
 		method="post"
@@ -523,14 +525,14 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 			<div class="flinkform-sr-only" aria-live="polite" aria-atomic="true" data-flinkform-step-announce></div>
 		<?php endif; ?>
 
-		<?php echo $inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks output, fields escape themselves. ?>
+		<?php echo $inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $inner_html is the already-rendered inner-block markup (each field block escapes its own output in its render.php). It must not be passed through wp_kses_*, which would strip the data-wp-* Interactivity API bindings and the form input elements the block needs. Same pattern as the core post-content $content variable. ?>
 
 		<?php
 		// Built-in spam challenge (Phase B-a). Rendered just above the
 		// submit button so it sits at the bottom of the form, not above
 		// the fields. The Guard façade decides whether to protect.
 		if ( \Flinkform\Spam\Guard::should_protect( $attributes ) ) {
-			echo \Flinkform\Spam\Renderer::render( $form_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Renderer escapes every interpolation internally.
+			echo \Flinkform\Spam\Renderer::render( $form_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Renderer::render() builds a fixed markup string and escapes every dynamic value with esc_attr() at the point of concatenation. It cannot be passed through wp_kses_post(), which strips the input elements the spam challenge relies on.
 		}
 		?>
 
@@ -562,7 +564,12 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 					type="submit"
 					class="flinkform-form__submit"
 					data-wp-bind--hidden="state.isNotLastStep"
-					<?php echo $submit_condition_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute set built with esc_attr. ?>
+					<?php
+					if ( $submit_condition_value ) {
+						echo ' data-flinkform-submit-condition="' . esc_attr( $submit_condition_value ) . '"';
+						echo ' aria-describedby="' . esc_attr( $submit_condition_hint_id ) . '"';
+					}
+					?>
 				>
 					<?php echo esc_html( $submit_label ); ?>
 				</button>
@@ -570,7 +577,12 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 				<button
 					type="submit"
 					class="flinkform-form__submit"
-					<?php echo $submit_condition_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute set built with esc_attr. ?>
+					<?php
+					if ( $submit_condition_value ) {
+						echo ' data-flinkform-submit-condition="' . esc_attr( $submit_condition_value ) . '"';
+						echo ' aria-describedby="' . esc_attr( $submit_condition_hint_id ) . '"';
+					}
+					?>
 				>
 					<?php echo esc_html( $submit_label ); ?>
 				</button>
