@@ -48,6 +48,8 @@ final class Plugin {
 	 * @return void
 	 */
 	public function init(): void {
+		load_plugin_textdomain( 'flinkform', false, dirname( FLINKFORM_PLUGIN_BASENAME ) . '/languages' );
+
 		// Auto-migrate the DB schema when the installed version is
 		// older than the bundled one. Covers the file-update path
 		// (FTP upload) where register_activation_hook never fires.

@@ -1111,10 +1111,12 @@
  * Replaces the easily-missed floating "+" inside the form with a clearly
  * visible, branded button. The selector only matches in the block editor
  * (the markup is rendered by edit.js' renderAppender), so shipping it in
- * the shared style sheet is harmless on the frontend. Doubled class beats
- * the editor's default Button styles without !important.
+ * the shared style sheet is harmless on the frontend.
+ *
+ * Specificity (0,5,1) beats container-plugin overrides like Spectra/UAGB
+ * which set font-size:62px on generic .block-list-appender button (0,4,1).
  * ------------------------------------------------------------------ */
-.flinkform-add-field.flinkform-add-field {
+.flinkform-form-editor.flinkform-form button.flinkform-add-field.flinkform-add-field.flinkform-add-field {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.4em;
@@ -1124,6 +1126,7 @@
 	border: 0;
 	border-radius: 6px;
 	color: #fff;
+	font-size: 14px;
 	font-weight: 600;
 	background: linear-gradient(
 		135deg,
