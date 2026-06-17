@@ -22,7 +22,10 @@ defined( 'ABSPATH' ) || exit;
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
 $form_id     = isset( $block->context['flinkform/formId'] ) ? (string) $block->context['flinkform/formId'] : '';
-$consent_txt = isset( $attributes['consentText'] ) && is_string( $attributes['consentText'] ) ? $attributes['consentText'] : '';
+$consent_txt_raw = isset( $attributes['consentText'] ) && is_string( $attributes['consentText'] ) ? $attributes['consentText'] : '';
+$consent_txt     = ( '' === $consent_txt_raw || 'I consent to the processing of my data as described in the privacy policy.' === $consent_txt_raw )
+	? __( 'I consent to the processing of my data as described in the privacy policy.', 'flinkform' )
+	: $consent_txt_raw;
 $link_pp     = ! empty( $attributes['linkPrivacyPolicy'] );
 $field_name  = isset( $attributes['fieldName'] ) && is_string( $attributes['fieldName'] ) ? $attributes['fieldName'] : '';
 

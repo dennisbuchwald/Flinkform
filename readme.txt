@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.4.1
+Stable tag: 0.4.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,7 +117,8 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 == Changelog ==
 
-= 0.4.1 =
+= 0.4.2 =
+* i18n: block attribute defaults (success message, submit label, consent text) are now translated at render time - existing forms on non-English sites display the correct language without manual editing
 * i18n: complete German (de_DE) translation - all frontend text, editor UI, admin screens and validation messages
 * i18n: load bundled translations via load_plugin_textdomain() so they work without waiting for translate.wordpress.org
 * Fix: the "Add field" editor button no longer inherits a 62 px font-size when the form block is placed inside a Spectra/UAGB container
@@ -157,8 +158,8 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 == Upgrade Notice ==
 
-= 0.4.1 =
-German translation included. Fixes a visual bug with the editor button in Spectra containers.
+= 0.4.2 =
+German translation included. Success message, submit label and consent text now render in the site language automatically. Fixes a visual bug with the editor button in Spectra containers.
 
 = 0.4.0 =
 The plugin was renamed to Flinkform. All settings prefixes changed; this version is intended for fresh installations.

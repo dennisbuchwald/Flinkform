@@ -29,8 +29,17 @@ defined( 'ABSPATH' ) || exit;
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
 $form_id        = isset( $attributes['formId'] ) && is_string( $attributes['formId'] ) ? $attributes['formId'] : '';
-$submit_label   = isset( $attributes['submitLabel'] ) && is_string( $attributes['submitLabel'] ) ? $attributes['submitLabel'] : __( 'Send', 'flinkform' );
-$success_msg    = isset( $attributes['successMessage'] ) && is_string( $attributes['successMessage'] ) ? $attributes['successMessage'] : __( 'Thank you!', 'flinkform' );
+// block.json attribute defaults are stored verbatim (English) in the post
+// content — WordPress does not translate them. When the saved value still
+// matches the English default, swap it for the translated string so forms
+// created on English sites render correctly after a locale switch.
+$submit_label_raw = isset( $attributes['submitLabel'] ) && is_string( $attributes['submitLabel'] ) ? $attributes['submitLabel'] : '';
+$submit_label     = ( '' === $submit_label_raw || 'Send' === $submit_label_raw ) ? __( 'Send', 'flinkform' ) : $submit_label_raw;
+
+$success_msg_raw = isset( $attributes['successMessage'] ) && is_string( $attributes['successMessage'] ) ? $attributes['successMessage'] : '';
+$success_msg     = ( '' === $success_msg_raw || 'Thank you! Your message has been sent.' === $success_msg_raw )
+	? __( 'Thank you! Your message has been sent.', 'flinkform' )
+	: $success_msg_raw;
 $source_post_id = (int) get_the_ID();
 
 // Appearance overrides (Style panel). Unset values leave the SCSS-level

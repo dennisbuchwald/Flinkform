@@ -3,7 +3,7 @@
  * Plugin Name:       Flinkform - Forms for the Block Editor
  * Plugin URI:        https://www.dennisbuchwald.de/apps/flinkform
  * Description:       Block-native form builder for the WordPress Block Editor — theme.json styling, conditional logic, Interactivity API.
- * Version:           0.4.1
+ * Version:           0.4.2
  * Requires at least: 6.5
  * Tested up to:      7.0
  * Requires PHP:      8.1
@@ -28,7 +28,7 @@ defined( 'ABSPATH' ) || exit;
  * every subsystem (block registration, asset enqueueing, activation,
  * uninstall) so a version bump or a relocation only ever happens here.
  */
-define( 'FLINKFORM_VERSION', '0.4.1' );
+define( 'FLINKFORM_VERSION', '0.4.2' );
 define( 'FLINKFORM_PLUGIN_FILE', __FILE__ );
 define( 'FLINKFORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FLINKFORM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
