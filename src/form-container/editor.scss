@@ -1,0 +1,19 @@
+/**
+ * Editor-only styles for the form-container block.
+ *
+ * Loaded via block.json "editorStyle" — never reaches the frontend.
+ */
+
+/* ToggleGroupControl items in the Style panel overflow when labels are
+ * long (especially in German). Force truncation so buttons stay in line. */
+.flinkform-style-panel .components-toggle-group-control-option-base {
+	min-width: 0;
+	overflow: hidden;
+
+	/* The inner label element needs truncation too. */
+	> * {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}

@@ -436,6 +436,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<PanelBody
 					title={ __( 'Style', 'flinkform' ) }
 					initialOpen={ false }
+					className="flinkform-style-panel"
 				>
 					<BaseControl
 						label={ __( 'Primary color', 'flinkform' ) }

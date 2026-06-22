@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.4.2
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,13 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.0.0 =
+* Floating labels now work on all text-input field types (URL, phone, date, select) - previously only text, email, textarea and number were supported
+* Date and select fields start with the label in the lifted/notched position since they always show native browser UI
+* Beside and hidden label positions now also apply to URL, phone, date and select fields
+* Fix: style toggle buttons (field style, label position) no longer overflow in the editor sidebar, especially with longer translated labels
+* First stable release
 
 = 0.4.2 =
 * i18n: block attribute defaults (success message, submit label, consent text) are now translated at render time - existing forms on non-English sites display the correct language without manual editing

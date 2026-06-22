@@ -776,6 +776,9 @@
 	.flinkform-field--email,
 	.flinkform-field--textarea,
 	.flinkform-field--number,
+	.flinkform-field--url,
+	.flinkform-field--phone,
+	.flinkform-field--date,
 	.flinkform-field--select {
 		flex-direction: row;
 		align-items: baseline;
@@ -890,6 +893,9 @@
 	.flinkform-field--email,
 	.flinkform-field--textarea,
 	.flinkform-field--number,
+	.flinkform-field--url,
+	.flinkform-field--phone,
+	.flinkform-field--date,
 	.flinkform-field--select {
 		> .flinkform-field__label {
 			position: absolute;
@@ -928,12 +934,19 @@
  *     the resting-state animation.
  *
  * Textareas pin the resting label to the top of the input instead of
- * vertically centring it, so multi-line content doesn't slide under it. */
+ * vertically centring it, so multi-line content doesn't slide under it.
+ *
+ * Date and select fields always show native browser UI, so their labels
+ * start permanently in the lifted/notched position (no animation). */
 .flinkform-form.flinkform-form--labels-floating {
 	.flinkform-field--text,
 	.flinkform-field--email,
 	.flinkform-field--textarea,
-	.flinkform-field--number {
+	.flinkform-field--number,
+	.flinkform-field--url,
+	.flinkform-field--phone,
+	.flinkform-field--date,
+	.flinkform-field--select {
 		position: relative;
 		gap: 0;
 		margin-top: 0.5em; // breathing room for the lifted label
@@ -986,6 +999,20 @@
 			&:has(.flinkform-field__input:not(:placeholder-shown)) > .flinkform-field__label {
 				top: 0;
 				transform: translateY(-50%) scale(0.85);
+			}
+		}
+
+		// Date and select inputs always show a native UI (picker / dropdown),
+		// so the label should always be in the lifted/notched position -
+		// there is no meaningful "empty resting" state to animate from.
+		&.flinkform-field--date,
+		&.flinkform-field--select {
+			> .flinkform-field__label {
+				top: 0;
+				transform: translateY(-50%) scale(0.85);
+				opacity: 1;
+				font-weight: 600;
+				background: var(--flinkform-page-background);
 			}
 		}
 	}
