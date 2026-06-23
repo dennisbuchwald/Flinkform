@@ -645,6 +645,11 @@
 			}
 		}
 
+		// Consent field label — smaller text for legal/privacy copy.
+		&--consent &__option {
+			font-size: 12px;
+		}
+
 		// Single-checkbox / toggle layout.
 		&--toggle &__toggle-label {
 			display: flex;
@@ -652,7 +657,6 @@
 			gap: 0.5rem;
 			cursor: pointer;
 			font: inherit;
-			font-size: 12px;
 			font-weight: normal;
 
 			input {
