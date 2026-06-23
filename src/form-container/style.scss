@@ -646,7 +646,7 @@
 		}
 
 		// Consent field label — smaller text for legal/privacy copy.
-		&--consent &__option {
+		&--consent .flinkform-field__option {
 			font-size: 12px;
 		}
 

@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,11 +117,8 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 == Changelog ==
 
-= 1.0.2 =
-* Fix: consent checkbox label font size now correctly targets the consent field (1.0.1 applied to the wrong selector)
-
-= 1.0.1 =
-* Style: reduce consent/toggle checkbox label font size for a cleaner visual hierarchy
+= 1.0.3 =
+* Style: reduce consent checkbox label to 12px for a cleaner visual hierarchy
 
 = 1.0.0 =
 * Floating labels now work on all text-input field types (URL, phone, date, select) - previously only text, email, textarea and number were supported
