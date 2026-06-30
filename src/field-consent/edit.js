@@ -7,6 +7,9 @@ import { generateFieldName } from '../shared/field-name';
 import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
+const EN_DEFAULT = 'I agree to the processing of my personal data for the purpose of contact in accordance with the {privacy_policy}.';
+const OLD_EN_DEFAULT = 'I consent to the processing of my data as described in the privacy policy.';
+
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { consentText, fieldName } = attributes;
 	const blockProps = useBlockProps( { className: 'flinkform-field flinkform-field--consent' } );
@@ -18,8 +21,16 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [] );
 
+	// Translate the default for display in the editor. The stored
+	// attribute stays English so render.php's i18n fallback works
+	// across all locales. Only the editor UI shows the translated text.
+	const isDefault = consentText === EN_DEFAULT || consentText === OLD_EN_DEFAULT;
+	const displayText = isDefault
+		? __( 'I agree to the processing of my personal data for the purpose of contact in accordance with the {privacy_policy}.', 'flinkform' )
+		: consentText;
+
 	// Build the preview label: replace {privacy_policy} with a visual hint.
-	const previewParts = consentText.split( '{privacy_policy}' );
+	const previewParts = displayText.split( '{privacy_policy}' );
 	const hasPlaceholder = previewParts.length > 1;
 
 	return (
@@ -29,7 +40,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					<TextareaControl
 						label={ __( 'Consent text', 'flinkform' ) }
 						help={ __( 'Use {privacy_policy} as placeholder — it will be replaced with a link to your privacy policy page (Settings → Privacy).', 'flinkform' ) }
-						value={ consentText }
+						value={ displayText }
 						onChange={ ( v ) => setAttributes( { consentText: v } ) }
 						__nextHasNoMarginBottom
 					/>
@@ -55,7 +66,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								<em style={ { textDecoration: 'underline' } }>{ __( 'privacy policy', 'flinkform' ) }</em>
 								{ previewParts[ 1 ] }
 							</>
-						) : consentText }
+						) : displayText }
 						<span className="flinkform-field__required" aria-hidden="true"> *</span>
 					</span>
 				</label>

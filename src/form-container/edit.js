@@ -87,8 +87,24 @@ function generateUuid() {
 	} );
 }
 
+// English block.json defaults — used to detect untouched attributes
+// so the editor can show the translated version instead.
+const SUBMIT_LABEL_DEFAULT = 'Send';
+const SUCCESS_MSG_DEFAULT = 'Thank you! Your message has been sent successfully.';
+const SUCCESS_MSG_OLD = 'Thank you! Your message has been sent.';
+
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { formId, title, submitLabel, successMessage, notifications, appearance, afterSubmit, retentionDays } = attributes;
+
+	// Translate defaults for display in the editor. The stored attribute
+	// stays English so render.php's i18n fallback works across locales.
+	const isDefaultSubmitLabel = submitLabel === SUBMIT_LABEL_DEFAULT;
+	const displaySubmitLabel = isDefaultSubmitLabel ? __( 'Send', 'flinkform' ) : submitLabel;
+
+	const isDefaultSuccessMsg = successMessage === SUCCESS_MSG_DEFAULT || successMessage === SUCCESS_MSG_OLD;
+	const displaySuccessMsg = isDefaultSuccessMsg
+		? __( 'Thank you! Your message has been sent successfully.', 'flinkform' )
+		: successMessage;
 
 	const afterSubmitConfig = afterSubmit ?? {};
 	const afterSubmitBehaviour = afterSubmitConfig.behaviour === 'redirect' ? 'redirect' : 'message';
@@ -361,7 +377,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 					<TextControl
 						label={ __( 'Submit Button Label', 'flinkform' ) }
-						value={ submitLabel }
+						value={ displaySubmitLabel }
 						onChange={ ( value ) => setAttributes( { submitLabel: value } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
@@ -391,7 +407,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<TextareaControl
 							label={ __( 'Success Message', 'flinkform' ) }
 							help={ __( 'Shown in place of the form after a successful submission.', 'flinkform' ) }
-							value={ successMessage }
+							value={ displaySuccessMsg }
 							onChange={ ( value ) => setAttributes( { successMessage: value } ) }
 							__nextHasNoMarginBottom
 						/>
@@ -836,7 +852,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						aria-disabled="true"
 						style={ { cursor: 'default' } }
 					>
-						{ submitLabel || __( 'Send', 'flinkform' ) }
+						{ displaySubmitLabel || __( 'Send', 'flinkform' ) }
 					</button>
 				</div>
 			</div>

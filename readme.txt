@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.1.1
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,8 +117,13 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 == Changelog ==
 
-= 1.1.1 =
+= 1.2.0 =
+* UX: redesigned error messages with inline icon, subtle background on global errors, and a gentle shake animation on invalid fields
 * UX: consent field shows a clear "Please agree to continue" error instead of the internal field name
+* UX: removed the thick left-border error indicator in favour of a cleaner full-border highlight
+
+= 1.1.1 =
+* UX: consent field error message fix (included in 1.2.0)
 
 = 1.1.0 =
 * Fix: consent checkbox is now correctly enforced as required during server-side validation (previously the required attribute was lost because Gutenberg does not serialise defaults)

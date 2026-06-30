@@ -42,3 +42,4 @@ includes/Bridge/README.md
 *.zip
 .DS_Store
 Thumbs.db
+.gitkeep
