@@ -492,8 +492,12 @@ msgstr ""
 msgid "Sorry, something went wrong saving your message. Please try again."
 msgstr ""
 
+#: includes/Submissions/Handler.php
+msgid "Please agree to continue."
+msgstr ""
+
 #. translators: %s: field label
-#: includes/Submissions/Handler.php:436
+#: includes/Submissions/Handler.php
 #, php-format
 msgid "%s must be checked."
 msgstr ""

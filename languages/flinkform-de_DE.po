@@ -533,8 +533,12 @@ msgstr ""
 "Es tut uns leid, beim Speichern Ihrer Nachricht ist ein Fehler aufgetreten. "
 "Bitte versuchen Sie es erneut."
 
+#: includes/Submissions/Handler.php
+msgid "Please agree to continue."
+msgstr "Bitte stimmen Sie zu, um fortzufahren."
+
 #. translators: %s: field label
-#: includes/Submissions/Handler.php:436
+#: includes/Submissions/Handler.php
 #, php-format
 msgid "%s must be checked."
 msgstr "%s muss angehakt sein."

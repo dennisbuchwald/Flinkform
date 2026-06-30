@@ -429,18 +429,20 @@ final class Handler {
 				$custom_message = isset( $field['requiredMessage'] ) ? (string) $field['requiredMessage'] : '';
 				if ( '' !== $custom_message ) {
 					$errors[ $name ] = $custom_message;
+				} elseif ( 'consent' === $type ) {
+					$errors[ $name ] = __( 'Please agree to continue.', 'flinkform' );
+				} elseif ( 'toggle' === $type ) {
+					$errors[ $name ] = sprintf(
+						/* translators: %s: field label */
+						__( '%s must be checked.', 'flinkform' ),
+						$label
+					);
 				} else {
-					$errors[ $name ] = 'toggle' === $type
-						? sprintf(
-							/* translators: %s: field label */
-							__( '%s must be checked.', 'flinkform' ),
-							$label
-						)
-						: sprintf(
-							/* translators: %s: field label */
-							__( '%s is required.', 'flinkform' ),
-							$label
-						);
+					$errors[ $name ] = sprintf(
+						/* translators: %s: field label */
+						__( '%s is required.', 'flinkform' ),
+						$label
+					);
 				}
 				$clean[ $name ] = $sanitised;
 				continue;
