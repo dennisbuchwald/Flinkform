@@ -37,8 +37,11 @@ $submit_label_raw = isset( $attributes['submitLabel'] ) && is_string( $attribute
 $submit_label     = ( '' === $submit_label_raw || 'Send' === $submit_label_raw ) ? __( 'Send', 'flinkform' ) : $submit_label_raw;
 
 $success_msg_raw = isset( $attributes['successMessage'] ) && is_string( $attributes['successMessage'] ) ? $attributes['successMessage'] : '';
-$success_msg     = ( '' === $success_msg_raw || 'Thank you! Your message has been sent.' === $success_msg_raw )
-	? __( 'Thank you! Your message has been sent.', 'flinkform' )
+// Recognise both the old and new English defaults so i18n keeps working.
+$success_msg_old = 'Thank you! Your message has been sent.';
+$success_msg_new = 'Thank you! Your message has been sent successfully.';
+$success_msg     = ( '' === $success_msg_raw || $success_msg_old === $success_msg_raw || $success_msg_new === $success_msg_raw )
+	? __( 'Thank you! Your message has been sent successfully.', 'flinkform' )
 	: $success_msg_raw;
 $source_post_id = (int) get_the_ID();
 

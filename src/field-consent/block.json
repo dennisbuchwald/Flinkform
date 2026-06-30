@@ -17,13 +17,9 @@
 	"attributes": {
 		"consentText": {
 			"type": "string",
-			"default": "I consent to the processing of my data as described in the privacy policy."
+			"default": "I agree to the processing of my personal data for the purpose of contact in accordance with the {privacy_policy}."
 		},
 		"required": {
-			"type": "boolean",
-			"default": true
-		},
-		"linkPrivacyPolicy": {
 			"type": "boolean",
 			"default": true
 		},

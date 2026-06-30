@@ -208,11 +208,19 @@ final class Locator {
 			}
 
 			$type    = $this->field_blocks()[ $block_name ];
+			// Gutenberg only serialises attributes that differ from
+			// the block.json default — so a field with required:true
+			// as default (e.g. consent) won't have 'required' in
+			// $attrs at all. Fall back to the registered default.
+			$is_required = isset( $attrs['required'] )
+				? ! empty( $attrs['required'] )
+				: ! empty( $this->default_attribute( $block_name, 'required' ) );
+
 			$record  = [
 				'name'             => $name,
 				'type'             => $type,
 				'label'            => $this->resolve_label( $block_name, $attrs, $name ),
-				'required'         => ! empty( $attrs['required'] ),
+				'required'         => $is_required,
 				// Step index this field belongs to (0-based). Phase 7c
 				// uses this to strip values when the containing step's
 				// page-break condition skips the step entirely.

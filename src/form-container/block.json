@@ -30,7 +30,7 @@
 		},
 		"successMessage": {
 			"type": "string",
-			"default": "Thank you! Your message has been sent."
+			"default": "Thank you! Your message has been sent successfully."
 		},
 		"notifications": {
 			"type": "object",

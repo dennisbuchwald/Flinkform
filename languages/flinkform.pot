@@ -44,11 +44,13 @@ msgstr ""
 msgid "Please select at least one option."
 msgstr ""
 
-#: build/field-consent/render.php:63
-msgid "Privacy Policy"
+#: build/field-consent/render.php
+msgid ""
+"I agree to the processing of my personal data for the purpose of contact in "
+"accordance with the {privacy_policy}."
 msgstr ""
 
-#: build/field-consent/render.php:64
+#: build/field-consent/render.php
 msgid "(opens in a new tab)"
 msgstr ""
 
@@ -57,8 +59,8 @@ msgstr ""
 msgid "Send"
 msgstr ""
 
-#: build/form-container/render.php:33
-msgid "Thank you!"
+#: build/form-container/render.php
+msgid "Thank you! Your message has been sent successfully."
 msgstr ""
 
 #. translators: 1: current step number, 2: total step count
@@ -1127,19 +1129,14 @@ msgid "Consent text"
 msgstr ""
 
 #: build/field-consent/index.js:1
-msgid "Shown next to the checkbox. The visitor must tick it to submit."
+msgid ""
+"Use {privacy_policy} as placeholder — it will be replaced with a link to "
+"your privacy policy page (Settings → Privacy)."
 msgstr ""
 
 #: build/field-consent/index.js:1
-msgid "Append a link to the privacy policy"
-msgstr ""
-
-#: build/field-consent/index.js:1
-msgid "Links to the page set under Settings → Privacy."
-msgstr ""
-
-#: build/field-consent/index.js:1
-msgid "(privacy policy link)"
+#: build/field-consent/render.php
+msgid "privacy policy"
 msgstr ""
 
 #: build/field-date/index.js:1

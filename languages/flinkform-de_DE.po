@@ -966,20 +966,12 @@ msgid "Consent text"
 msgstr "Einwilligungstext"
 
 #: build/field-consent/index.js:1
-msgid "Shown next to the checkbox. The visitor must tick it to submit."
+msgid ""
+"Use {privacy_policy} as placeholder — it will be replaced with a link to "
+"your privacy policy page (Settings → Privacy)."
 msgstr ""
-"Wird neben der Checkbox angezeigt. Der Besucher muss sie anhaken, um das "
-"Formular absenden zu können."
-
-#: build/field-consent/index.js:1
-msgid "Append a link to the privacy policy"
-msgstr "Link zur Datenschutzerklärung anhängen"
-
-#: build/field-consent/index.js:1
-msgid "Links to the page set under Settings → Privacy."
-msgstr ""
-"Verlinkt auf die Seite, die unter Einstellungen -> Datenschutz festgelegt "
-"wurde."
+"Verwende {privacy_policy} als Platzhalter - er wird durch einen Link zu "
+"deiner Datenschutzseite ersetzt (Einstellungen → Datenschutz)."
 
 #: build/field-consent/index.js:1
 msgid "(privacy policy link)"
@@ -2021,12 +2013,18 @@ msgid "section"
 msgstr "abschnitt"
 
 #: build/form-container/render.php
-msgid "Thank you! Your message has been sent."
-msgstr "Vielen Dank! Ihre Nachricht wurde gesendet."
+msgid "Thank you! Your message has been sent successfully."
+msgstr "Vielen Dank! Ihre Nachricht wurde erfolgreich gesendet."
 
 #: build/field-consent/render.php
 msgid ""
-"I consent to the processing of my data as described in the privacy policy."
+"I agree to the processing of my personal data for the purpose of contact in "
+"accordance with the {privacy_policy}."
 msgstr ""
-"Ich stimme der Verarbeitung meiner Daten zu, wie in der Datenschutzerklärung"
-" beschrieben."
+"Ich stimme der Verarbeitung meiner personenbezogenen Daten zum Zwecke der "
+"Kontaktaufnahme gemäß der {privacy_policy} zu."
+
+#: build/field-consent/render.php
+#: build/field-consent/index.js
+msgid "privacy policy"
+msgstr "Datenschutzerklärung"

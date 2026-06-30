@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.0.4
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,13 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.1.0 =
+* Fix: consent checkbox is now correctly enforced as required during server-side validation (previously the required attribute was lost because Gutenberg does not serialise defaults)
+* GDPR: new default consent text with inline privacy-policy link (replaces the old appended link)
+* GDPR: consent text supports a `{privacy_policy}` placeholder that renders as an inline link to the site's privacy-policy page
+* UX: updated default success message to "Thank you! Your message has been sent successfully."
+* Backwards-compatible: forms saved with the old consent text or success message automatically use the new defaults
 
 = 1.0.4 =
 * i18n: regenerate German (de_DE) translation files (.mo + .json) to ensure all editor strings are up to date
