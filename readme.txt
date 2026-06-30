@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.2.1 =
+* Fix: pages with a Flinkform are now excluded from full-page caching (DONOTCACHEPAGE) — prevents stale spam-challenge tokens from silently rejecting submissions on cached pages
 
 = 1.2.0 =
 * UX: redesigned error messages with inline icon, subtle background on global errors, and a gentle shake animation on invalid fields
