@@ -285,6 +285,25 @@ final class SubmissionsPage {
 		$value = $field['value'] ?? '';
 		$type  = isset( $field['type'] ) ? (string) $field['type'] : 'text';
 
+		/**
+		 * Extension seam: add-on field types (registered via the
+		 * `flinkform_field_blocks` filter) format their detail-view value
+		 * here — e.g. a file field rendering its stored URLs as download
+		 * links. Return already-escaped HTML, or '' to fall through to the
+		 * default formatting below. Part of the additive bridge contract.
+		 *
+		 * @since 1.3.0
+		 *
+		 * @param string               $html  Pre-escaped HTML ('' = use default).
+		 * @param string               $type  Field type.
+		 * @param mixed                $value Stored value (string or array of strings).
+		 * @param array<string, mixed> $field Persisted field record (name, label, type, value).
+		 */
+		$external = apply_filters( 'flinkform_admin_format_value', '', $type, $value, $field );
+		if ( is_string( $external ) && '' !== $external ) {
+			return $external;
+		}
+
 		// Multi-value: comma-separated list of escaped items.
 		if ( is_array( $value ) ) {
 			if ( empty( $value ) ) {
