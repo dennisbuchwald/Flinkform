@@ -39,6 +39,7 @@ final class Handler {
 	private const MIN_FILL_SECONDS   = 2;
 	private const FLASH_TTL_SECONDS  = 60;
 	private const FLASH_COOKIE_NAME  = 'flinkform_flash';
+	private const IDEM_TTL_SECONDS   = 300;
 
 	/**
 	 * Errors for the form currently being rendered.
@@ -213,6 +214,27 @@ final class Handler {
 			$this->redirect_error( $post_id, $form_id );
 		}
 
+		// Idempotency guard. A double-click, back-button resubmit or a
+		// parallel request replays the same page — and with it the same
+		// HMAC-signed timestamp token minted at render time. Keying off
+		// (form_id + that token) lets us recognise a repeat of THIS exact
+		// render and short-circuit to the success outcome instead of
+		// inserting a second row, sending a second notification and firing
+		// the after-submission side effects (webhooks, payment capture)
+		// twice. A failed first attempt never sets the marker (we only set
+		// it once the row is saved), so a corrected resubmit still goes
+		// through. Only reached after validation passed.
+		$idem_key   = $this->idempotency_key( $form_id, $ts_raw );
+		$idem_prior = get_transient( $idem_key );
+		if ( false !== $idem_prior ) {
+			$this->redirect_success(
+				$post_id,
+				$form_id,
+				$form_attrs,
+				is_numeric( $idem_prior ) ? (int) $idem_prior : null
+			);
+		}
+
 		/**
 		 * Fires after validation passes, before the submission is persisted.
 		 *
@@ -262,6 +284,12 @@ final class Handler {
 		}
 
 		$submission_id = (int) $result;
+
+		// Mark this render as processed so an immediate resubmit replays the
+		// success outcome (see the idempotency guard above) instead of
+		// creating a duplicate. Short TTL: it only needs to outlive the
+		// double-click / back-button window, not the whole session.
+		set_transient( $idem_key, $submission_id, self::IDEM_TTL_SECONDS );
 
 		/**
 		 * Fires after a submission has been persisted successfully.
@@ -724,6 +752,21 @@ final class Handler {
 	 */
 	private function flash_key( string $token, string $form_id ): string {
 		return 'flinkform_flash_' . md5( $token . '|' . $form_id );
+	}
+
+	/**
+	 * Compose the idempotency transient key for one rendered form instance.
+	 *
+	 * The signed timestamp token is stable across resubmits of the same
+	 * rendered page but unique per render, so it distinguishes "the same
+	 * submission sent twice" from "a fresh submission of the same form".
+	 *
+	 * @param string $form_id Form UUID.
+	 * @param string $ts_raw  The signed timestamp token posted with the form.
+	 * @return string
+	 */
+	private function idempotency_key( string $form_id, string $ts_raw ): string {
+		return 'flinkform_idem_' . md5( $form_id . '|' . $ts_raw );
 	}
 
 	/**
