@@ -182,6 +182,29 @@ final class Handler {
 			}
 		}
 
+		// Idempotency guard. A double-click, back-button resubmit or a
+		// parallel request replays the same page — and with it the same
+		// HMAC-signed timestamp token minted at render time. Keying off
+		// (form_id + that token) lets us recognise a repeat of THIS exact
+		// render and short-circuit to the success outcome instead of
+		// inserting a second row, sending a second notification and firing
+		// the after-submission side effects (webhooks, payment capture)
+		// twice. Placed BEFORE the process_submission seam on purpose: the
+		// side-effectful listeners (file moves, payment verification) must
+		// not run a second time for a duplicate. A failed first attempt
+		// never sets the marker (it is only set once the row is saved), so
+		// a corrected resubmit still goes through.
+		$idem_key   = $this->idempotency_key( $form_id, $ts_raw );
+		$idem_prior = get_transient( $idem_key );
+		if ( false !== $idem_prior ) {
+			$this->redirect_success(
+				$post_id,
+				$form_id,
+				isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [],
+				is_numeric( $idem_prior ) ? (int) $idem_prior : null
+			);
+		}
+
 		/**
 		 * Extension seam: process side-channel inputs (file uploads via
 		 * $_FILES, computed values) after field validation. Listeners may
@@ -212,27 +235,6 @@ final class Handler {
 		if ( ! empty( $errors ) ) {
 			$this->flash( $form_id, $errors, $clean );
 			$this->redirect_error( $post_id, $form_id );
-		}
-
-		// Idempotency guard. A double-click, back-button resubmit or a
-		// parallel request replays the same page — and with it the same
-		// HMAC-signed timestamp token minted at render time. Keying off
-		// (form_id + that token) lets us recognise a repeat of THIS exact
-		// render and short-circuit to the success outcome instead of
-		// inserting a second row, sending a second notification and firing
-		// the after-submission side effects (webhooks, payment capture)
-		// twice. A failed first attempt never sets the marker (we only set
-		// it once the row is saved), so a corrected resubmit still goes
-		// through. Only reached after validation passed.
-		$idem_key   = $this->idempotency_key( $form_id, $ts_raw );
-		$idem_prior = get_transient( $idem_key );
-		if ( false !== $idem_prior ) {
-			$this->redirect_success(
-				$post_id,
-				$form_id,
-				$form_attrs,
-				is_numeric( $idem_prior ) ? (int) $idem_prior : null
-			);
 		}
 
 		/**
