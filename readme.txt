@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.3.1 =
+* Update: plugin homepage now points to the dedicated product site at flinkform.de
 
 = 1.3.0 =
 * New: duplicate-submission protection — a double-click, back-button resubmit or parallel request no longer creates a second entry, duplicate notification emails or repeated side effects (webhooks, payment verification in Pro)
