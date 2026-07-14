@@ -111,9 +111,11 @@ final class Guard {
 	 *
 	 * @param string               $form_id         UUID of the form being submitted.
 	 * @param array<string, mixed> $form_attributes Block attributes from the form-container.
+	 * @param bool                 $burn            Whether a successful verify burns the
+	 *                                              token immediately (see Challenge::verify).
 	 * @return bool
 	 */
-	public static function verify_submission( string $form_id, array $form_attributes ): bool {
+	public static function verify_submission( string $form_id, array $form_attributes, bool $burn = true ): bool {
 		if ( 'none' === self::resolve_strategy( $form_attributes ) ) {
 			return true;
 		}
@@ -140,7 +142,31 @@ final class Guard {
 			[
 				'pow_solution' => $pow_sol,
 				'math_answer'  => $math_answer,
-			]
+			],
+			$burn
 		);
+	}
+
+	/**
+	 * Burn the submitted spam token once the submission is accepted.
+	 *
+	 * Counterpart to verify_submission( ..., burn: false ): the Handler
+	 * checks the token early but only consumes it when the submission
+	 * actually goes through, so failed validation rounds can retry with
+	 * the same rendered page (fetch/popup flow has no re-render).
+	 *
+	 * @param array<string, mixed> $form_attributes Block attributes from the form-container.
+	 * @return void
+	 */
+	public static function burn_submission_token( array $form_attributes ): void {
+		if ( 'none' === self::resolve_strategy( $form_attributes ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already validated upstream in Handler::handle().
+		$token = isset( $_POST[ Renderer::FIELD_TOKEN ] ) ? sanitize_text_field( wp_unslash( $_POST[ Renderer::FIELD_TOKEN ] ) ) : '';
+		if ( '' !== $token ) {
+			Challenge::burn( $token );
+		}
 	}
 }

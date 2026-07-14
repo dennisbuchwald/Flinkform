@@ -140,8 +140,13 @@ final class Handler {
 		// form explicitly opted out via 'none' falls through here
 		// instantly. Honeypot + time-check from Phase 1 still apply
 		// even when spam protection is 'none' (defense in depth).
+		// burn: false — the token is only CHECKED here and consumed later,
+		// right before the submission is accepted. A submission that fails
+		// field validation must be retryable with the same rendered page:
+		// the fetch/popup flow never re-renders, so an eager burn would
+		// turn every corrected retry into a replay-reject.
 		$form_attrs = isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [];
-		if ( ! \Flinkform\Spam\Guard::verify_submission( $form_id, $form_attrs ) ) {
+		if ( ! \Flinkform\Spam\Guard::verify_submission( $form_id, $form_attrs, false ) ) {
 			$this->silent_reject();
 		}
 
@@ -268,6 +273,11 @@ final class Handler {
 		 * @param string               $form_id UUID of the form.
 		 * @param array<string, mixed> $clean   Sanitised, validated values keyed by field name.
 		 */
+		// All gates passed — the submission is accepted. Burn the spam token
+		// NOW so it can't be replayed for a second accepted submission
+		// (counterpart to the burn:false check at the top of the pipeline).
+		\Flinkform\Spam\Guard::burn_submission_token( $form_attrs );
+
 		do_action( 'flinkform_before_submission', $form_id, $clean );
 
 		// Compose the self-contained payload. Storing labels and types

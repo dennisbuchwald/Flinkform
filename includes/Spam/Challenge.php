@@ -182,9 +182,15 @@ final class Challenge {
 	 * @param string $token_string
 	 * @param string $form_id
 	 * @param array{pow_solution?: string, math_answer?: string} $submitted
+	 * @param bool   $burn Whether a successful verify burns the token
+	 *                     immediately. Pass false to only CHECK the token
+	 *                     (fetch submissions verify early but burn only
+	 *                     once the submission is actually accepted, so a
+	 *                     visitor can fix validation errors and retry with
+	 *                     the same rendered page — see Challenge::burn()).
 	 * @return bool
 	 */
-	public static function verify( string $token_string, string $form_id, array $submitted ): bool {
+	public static function verify( string $token_string, string $form_id, array $submitted, bool $burn = true ): bool {
 		$parts = explode( '.', $token_string, 2 );
 		if ( 2 !== count( $parts ) ) {
 			return false;
@@ -255,11 +261,52 @@ final class Challenge {
 			return false;
 		}
 
-		// Burn the token for the remainder of its TTL.
-		$remaining = max( 1, (int) ( $payload['e'] ?? 0 ) - time() );
-		set_transient( $used_key, 1, $remaining );
+		// Burn the token for the remainder of its TTL (unless the caller
+		// defers the burn to acceptance time — see the $burn param).
+		if ( $burn ) {
+			$remaining = max( 1, (int) ( $payload['e'] ?? 0 ) - time() );
+			set_transient( $used_key, 1, $remaining );
+		}
 
 		return true;
+	}
+
+	/**
+	 * Burn a token that was previously verified with $burn = false.
+	 *
+	 * Called by the Handler once a submission is ACCEPTED (all field
+	 * validation passed, persistence is about to happen). Splitting the
+	 * check from the burn lets a visitor whose submission failed field
+	 * validation retry with the same rendered page — critical for the
+	 * fetch/popup flow, where no re-render ever mints a fresh token.
+	 * A token that only ever produced rejected submissions is harmless:
+	 * nothing was stored, no mail was sent, no side effect fired.
+	 *
+	 * The HMAC is re-checked before touching the transient — cheap, and
+	 * it keeps this method safe to call with any request-supplied string.
+	 *
+	 * @param string $token_string The submitted token.
+	 * @return void
+	 */
+	public static function burn( string $token_string ): void {
+		$parts = explode( '.', $token_string, 2 );
+		if ( 2 !== count( $parts ) ) {
+			return;
+		}
+		[ $encoded, $hmac ] = $parts;
+
+		if ( ! hash_equals( hash_hmac( 'sha256', $encoded, self::derive_key() ), $hmac ) ) {
+			return;
+		}
+
+		$payload = json_decode( self::base64_url_decode( $encoded ), true );
+		if ( ! is_array( $payload ) ) {
+			return;
+		}
+
+		$used_key  = 'flinkform_spam_used_' . md5( (string) ( $payload['n'] ?? '' ) );
+		$remaining = max( 1, (int) ( $payload['e'] ?? 0 ) - time() );
+		set_transient( $used_key, 1, $remaining );
 	}
 
 	/**
