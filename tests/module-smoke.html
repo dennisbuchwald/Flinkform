@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="utf-8"><title>Flinkform view.js module test</title>
+<script type="importmap">{ "imports": { "@wordpress/interactivity": "./interactivity-stub.js" } }</script>
+</head>
+<body>
+<h1>view.js module evaluation test</h1>
+<div class="flinkform-form wp-block-flinkform-form" data-flinkform-id="test-uuid">
+  <form class="flinkform-form__form" method="post" action="/wp-admin/admin-post.php" novalidate>
+    <input type="hidden" name="action" value="flinkform_submit">
+    <div class="flinkform-field flinkform-field--text" data-flinkform-field-name="name">
+      <input type="text" name="flinkform_field[name]">
+    </div>
+    <div class="flinkform-form__spam" data-flinkform-spam="1" data-flinkform-pow-salt="dGVzdHNhbHQxMjM0NTY" data-flinkform-pow-difficulty="10">
+      <input type="hidden" name="flinkform_spam_token" value="x.y">
+      <input type="hidden" name="flinkform_spam_solution" value="" data-flinkform-spam-solution>
+      <div class="flinkform-form__spam-math" data-flinkform-spam-math hidden>
+        <input type="text" name="flinkform_spam_answer">
+      </div>
+    </div>
+    <button type="submit" class="flinkform-form__submit">Send</button>
+  </form>
+</div>
+<script type="module">
+  window.__result = { loaded: false, error: null };
+  try {
+    await import('../build/form-container/view.js');
+    window.__result.loaded = true;
+  } catch (e) {
+    window.__result.error = e.name + ': ' + e.message;
+  }
+</script>
+</body>
+</html>

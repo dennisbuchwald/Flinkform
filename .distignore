@@ -43,3 +43,4 @@ includes/Bridge/README.md
 .DS_Store
 Thumbs.db
 .gitkeep
+/tests
