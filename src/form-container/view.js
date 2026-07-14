@@ -52,6 +52,12 @@ const NAMESPACE = 'flinkform/form';
 
 const EMPTY_OPERATORS = new Set( [ 'is_empty', 'is_not_empty' ] );
 
+// MUST be declared before the init block below: modules are deferred, so
+// initFetchSubmit() runs synchronously during module evaluation — a const
+// declared further down would still be in its temporal dead zone and the
+// ReferenceError would abort the WHOLE module (spam solver included).
+const POPUP_SELECTOR = '.wp-block-dbw-base-popup, dialog, [role="dialog"]';
+
 if ( typeof document !== 'undefined' ) {
 	if ( document.readyState === 'loading' ) {
 		document.addEventListener( 'DOMContentLoaded', initConditionalLogic );
@@ -79,8 +85,6 @@ if ( typeof document !== 'undefined' ) {
 // time-check, spam challenge, idempotency) run unchanged because the
 // fetch carries the same FormData a native submit would.
 // ---------------------------------------------------------------------
-
-const POPUP_SELECTOR = '.wp-block-dbw-base-popup, dialog, [role="dialog"]';
 
 function initFetchSubmit() {
 	document.querySelectorAll( '.flinkform-form__form' ).forEach( ( form ) => {
