@@ -10,6 +10,11 @@ _wporg-svn/
 
 # Development notes (private)
 .dev/
+FLINKFORM_*.md
+PERFORM_*.md
+AUDIT_PROMPT.md
+INITIAL_PROMPT.md
+CONTINUE_PROMPT.md
 
 # Plugin ZIPs
 *.zip
