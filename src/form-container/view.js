@@ -56,10 +56,196 @@ if ( typeof document !== 'undefined' ) {
 	if ( document.readyState === 'loading' ) {
 		document.addEventListener( 'DOMContentLoaded', initConditionalLogic );
 		document.addEventListener( 'DOMContentLoaded', initSubmitFeedback );
+		document.addEventListener( 'DOMContentLoaded', initFetchSubmit );
 	} else {
 		initConditionalLogic();
 		initSubmitFeedback();
+		initFetchSubmit();
 	}
+}
+
+// ---------------------------------------------------------------------
+// Fetch submission for popup/modal contexts.
+//
+// A form inside a popup can't use the normal POST + redirect flow — the
+// page reload closes the popup and the visitor never sees the outcome.
+// When a form lives inside a modal container we intercept the final
+// submit, send it via fetch() with the X-Flinkform-Fetch header (the
+// Handler answers those with JSON instead of a redirect), and render
+// the success card or the field errors inline.
+//
+// Everything else is untouched: forms outside popups keep the exact
+// page-reload behaviour, and all server-side gates (nonce, honeypot,
+// time-check, spam challenge, idempotency) run unchanged because the
+// fetch carries the same FormData a native submit would.
+// ---------------------------------------------------------------------
+
+const POPUP_SELECTOR = '.wp-block-dbw-base-popup, dialog, [role="dialog"]';
+
+function initFetchSubmit() {
+	document.querySelectorAll( '.flinkform-form__form' ).forEach( ( form ) => {
+		if ( ! form.closest( POPUP_SELECTOR ) ) {
+			return; // Normal flow — page reload, exactly as before.
+		}
+
+		form.addEventListener( 'submit', ( event ) => {
+			// Respect earlier guards: multi-step's non-final-step guard and
+			// the Pro payment interceptor both preventDefault first.
+			if ( event.defaultPrevented ) {
+				return;
+			}
+
+			// A payment field that hasn't been confirmed yet must complete
+			// the Stripe flow first — its own handler re-submits afterwards
+			// (with the intent input filled), and only then do we take over.
+			const paymentIntent = form.querySelector( '[data-flinkform-payment-intent]' );
+			if ( paymentIntent && ! paymentIntent.value ) {
+				return;
+			}
+
+			event.preventDefault();
+			submitViaFetch( form );
+		} );
+	} );
+}
+
+async function submitViaFetch( form ) {
+	setSubmitLoading( form, true );
+
+	let data;
+	try {
+		const response = await fetch( form.action, {
+			method: 'POST',
+			body: new FormData( form ),
+			headers: { 'X-Flinkform-Fetch': '1' },
+		} );
+		data = await response.json();
+	} catch {
+		// Network error or a non-JSON answer (e.g. a security wp_die page):
+		// fall back to the native submission so nothing is ever lost.
+		// form.submit() bypasses this listener, so no loop.
+		form.submit();
+		return;
+	}
+
+	if ( data && data.success && data.data ) {
+		if ( data.data.behaviour === 'redirect' && data.data.redirect_url ) {
+			window.location.assign( data.data.redirect_url );
+			return;
+		}
+		showFetchSuccess( form, data.data.message || '' );
+		return;
+	}
+
+	const errors = data && data.data && data.data.errors ? data.data.errors : {};
+	showFetchErrors( form, errors );
+	setSubmitLoading( form, false );
+}
+
+function setSubmitLoading( form, loading ) {
+	form.querySelectorAll( '.flinkform-form__submit' ).forEach( ( btn ) => {
+		btn.classList.toggle( 'is-loading', loading );
+		if ( loading ) {
+			btn.setAttribute( 'aria-busy', 'true' );
+		} else {
+			btn.removeAttribute( 'aria-busy' );
+		}
+		btn.disabled = loading;
+	} );
+}
+
+/**
+ * Replace the form with the same success card render.php emits after the
+ * redirect flow, and move focus onto it (screen readers announce it via
+ * role="status").
+ */
+function showFetchSuccess( form, message ) {
+	const card = document.createElement( 'div' );
+	card.className = 'flinkform-form__success';
+	card.setAttribute( 'role', 'status' );
+	card.setAttribute( 'aria-live', 'polite' );
+	card.setAttribute( 'tabindex', '-1' );
+
+	const icon = document.createElement( 'span' );
+	icon.className = 'flinkform-form__success-icon';
+	icon.setAttribute( 'aria-hidden', 'true' );
+	icon.innerHTML =
+		'<svg viewBox="0 0 52 52" focusable="false">' +
+		'<circle class="flinkform-form__success-ring" cx="26" cy="26" r="24" fill="none" />' +
+		'<path class="flinkform-form__success-check" fill="none" d="M15 27.2l7.6 7.6L37.4 19.4" />' +
+		'</svg>';
+
+	const text = document.createElement( 'span' );
+	text.className = 'flinkform-form__success-text';
+	text.textContent = message;
+
+	card.appendChild( icon );
+	card.appendChild( text );
+	form.replaceWith( card );
+	card.focus( { preventScroll: true } );
+}
+
+/**
+ * Render server-side validation errors inline, mirroring the markup
+ * render.php emits on the redirect flow (global banner + per-field
+ * role="alert" messages + has-error wrappers).
+ */
+function showFetchErrors( form, errors ) {
+	clearFetchErrors( form );
+
+	let firstInvalid = null;
+
+	Object.entries( errors ).forEach( ( [ fieldName, message ] ) => {
+		if ( fieldName === '_form' ) {
+			const banner = document.createElement( 'div' );
+			banner.className = 'flinkform-form__error flinkform-form__error--global';
+			banner.setAttribute( 'role', 'alert' );
+			banner.textContent = message;
+			form.prepend( banner );
+			return;
+		}
+
+		const wrapper = form.querySelector( `[data-flinkform-field-name="${ fieldName }"]` );
+		if ( ! wrapper ) {
+			return;
+		}
+
+		wrapper.classList.add( 'flinkform-field--has-error' );
+
+		const error = document.createElement( 'p' );
+		error.className = 'flinkform-field__error';
+		error.setAttribute( 'role', 'alert' );
+		error.textContent = message;
+		wrapper.appendChild( error );
+
+		const input = wrapper.querySelector( 'input, select, textarea' );
+		if ( input ) {
+			input.setAttribute( 'aria-invalid', 'true' );
+			if ( ! firstInvalid ) {
+				firstInvalid = input;
+			}
+		}
+	} );
+
+	if ( firstInvalid ) {
+		const reduceMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+		firstInvalid.focus( { preventScroll: true } );
+		firstInvalid.scrollIntoView( {
+			behavior: reduceMotion ? 'auto' : 'smooth',
+			block: 'center',
+		} );
+	}
+}
+
+function clearFetchErrors( form ) {
+	form.querySelectorAll( '.flinkform-form__error--global' ).forEach( ( el ) => el.remove() );
+	form.querySelectorAll( '.flinkform-field__error' ).forEach( ( el ) => el.remove() );
+	form.querySelectorAll( '.flinkform-field--has-error' ).forEach( ( el ) => {
+		el.classList.remove( 'flinkform-field--has-error' );
+	} );
+	form.querySelectorAll( '[aria-invalid="true"]' ).forEach( ( el ) => {
+		el.removeAttribute( 'aria-invalid' );
+	} );
 }
 
 // ---------------------------------------------------------------------

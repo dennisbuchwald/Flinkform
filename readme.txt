@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.3.1
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,11 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.4.0 =
+* New: forms inside popups/modals now submit via fetch() without a page reload — the success card and validation errors render inline, so the popup stays open and the visitor sees the outcome
+* Applies automatically when a form sits inside a modal container (`[role="dialog"]`, a native `<dialog>` element, or the dbw popup block); forms in the normal page flow keep the exact same behaviour as before
+* All server-side protections (nonce, honeypot, time-check, spam challenge, duplicate-submission guard) run unchanged; redirect-after-submit still works from popups and network errors fall back to the classic submission
 
 = 1.3.1 =
 * Update: plugin homepage now points to the dedicated product site at flinkform.de

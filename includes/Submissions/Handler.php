@@ -197,10 +197,18 @@ final class Handler {
 		$idem_key   = $this->idempotency_key( $form_id, $ts_raw );
 		$idem_prior = get_transient( $idem_key );
 		if ( false !== $idem_prior ) {
+			$idem_attrs = isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [];
+			if ( $this->is_fetch_request() ) {
+				$this->send_fetch_success(
+					is_numeric( $idem_prior ) ? (int) $idem_prior : null,
+					$idem_attrs,
+					$form_id
+				);
+			}
 			$this->redirect_success(
 				$post_id,
 				$form_id,
-				isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [],
+				$idem_attrs,
 				is_numeric( $idem_prior ) ? (int) $idem_prior : null
 			);
 		}
@@ -233,6 +241,12 @@ final class Handler {
 		}
 
 		if ( ! empty( $errors ) ) {
+			// Fetch submissions (popup/modal contexts) get the errors as JSON
+			// and render them inline — no flash transient, no redirect, the
+			// visitor's input never leaves the page.
+			if ( $this->is_fetch_request() ) {
+				wp_send_json_error( [ 'errors' => $errors ], 422 );
+			}
 			$this->flash( $form_id, $errors, $clean );
 			$this->redirect_error( $post_id, $form_id );
 		}
@@ -277,11 +291,11 @@ final class Handler {
 		// rather than a silent drop — the user deserves to know.
 		$result = $this->repository->save( $form_id, $payload );
 		if ( false === $result ) {
-			$this->flash(
-				$form_id,
-				[ '_form' => __( 'Sorry, something went wrong saving your message. Please try again.', 'flinkform' ) ],
-				$clean
-			);
+			$storage_error = [ '_form' => __( 'Sorry, something went wrong saving your message. Please try again.', 'flinkform' ) ];
+			if ( $this->is_fetch_request() ) {
+				wp_send_json_error( [ 'errors' => $storage_error ], 500 );
+			}
+			$this->flash( $form_id, $storage_error, $clean );
 			$this->redirect_error( $post_id, $form_id );
 		}
 
@@ -314,7 +328,71 @@ final class Handler {
 		 */
 		do_action( 'flinkform_after_submission', $submission_id, $form_id, $clean, $definition );
 
+		if ( $this->is_fetch_request() ) {
+			$this->send_fetch_success( $submission_id, $form_attrs, $form_id );
+		}
+
 		$this->redirect_success( $post_id, $form_id, $form_attrs, $submission_id );
+	}
+
+	/**
+	 * Whether the submission arrived via the fetch() path (popup/modal
+	 * contexts). The frontend sets a custom request header instead of the
+	 * generic X-Requested-With so themes/plugins that key off
+	 * "XMLHttpRequest" never interfere.
+	 *
+	 * @return bool
+	 */
+	private function is_fetch_request(): bool {
+		return ! empty( $_SERVER['HTTP_X_FLINKFORM_FETCH'] );
+	}
+
+	/**
+	 * Answer a fetch() submission with the success payload and exit.
+	 *
+	 * Mirrors what the redirect flow communicates through the page render:
+	 * the (localised) success message for behaviour "message", or the
+	 * validated redirect target for behaviour "redirect". The redirect URL
+	 * goes through the exact same wp_validate_redirect() gate as the
+	 * server-side flow, so a fetch submission can never be sent to a host
+	 * the normal flow would have refused.
+	 *
+	 * @param int|null             $submission_id Persisted submission id (null on idempotent replays without one).
+	 * @param array<string, mixed> $form_attrs    Form block attributes.
+	 * @param string               $form_id       Form UUID.
+	 * @return never
+	 */
+	private function send_fetch_success( ?int $submission_id, array $form_attrs, string $form_id ): void {
+		// Resolve the success message exactly like render.php does: the two
+		// historical English defaults (and an empty attribute) fall back to
+		// the translated current default; a customised message wins as-is.
+		$msg_raw = isset( $form_attrs['successMessage'] ) && is_string( $form_attrs['successMessage'] ) ? $form_attrs['successMessage'] : '';
+		$msg_old = 'Thank you! Your message has been sent.';
+		$msg_new = 'Thank you! Your message has been sent successfully.';
+		$message = ( '' === $msg_raw || $msg_old === $msg_raw || $msg_new === $msg_raw )
+			? __( 'Thank you! Your message has been sent successfully.', 'flinkform' )
+			: $msg_raw;
+
+		$after_submit = isset( $form_attrs['afterSubmit'] ) && is_array( $form_attrs['afterSubmit'] ) ? $form_attrs['afterSubmit'] : [];
+		$behaviour    = isset( $after_submit['behaviour'] ) ? (string) $after_submit['behaviour'] : 'message';
+		$redirect_to  = isset( $after_submit['redirectUrl'] ) ? trim( (string) $after_submit['redirectUrl'] ) : '';
+
+		$redirect_url = '';
+		if ( 'redirect' === $behaviour && '' !== $redirect_to ) {
+			$target       = $this->build_redirect_url( $redirect_to, $after_submit, $form_id, $submission_id );
+			$redirect_url = (string) wp_validate_redirect( $target, '' );
+		}
+
+		wp_send_json_success(
+			[
+				'submission_id' => $submission_id,
+				'message'       => $message,
+				// Fall back to the inline message when the redirect target was
+				// rejected by wp_validate_redirect — same as the server flow.
+				'behaviour'     => '' !== $redirect_url ? 'redirect' : 'message',
+				'redirect_url'  => $redirect_url,
+			]
+		);
 	}
 
 	/**
