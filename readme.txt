@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.4.4 =
+* Fix: forms embedded outside the current page's own content — in a footer or header template part, a synced pattern, a theme-builder element or a site-wide popup — were silently rejected on submit, because the submission was matched only against the current page's content. Submissions now resolve the form wherever it actually lives, so popup and footer forms save correctly.
 
 = 1.4.3 =
 * Critical fix: a variable-ordering error introduced in 1.4.0 aborted the whole frontend module on load — the proof-of-work spam solver never ran, so EVERY submission (popup or not) was silently rejected as spam and nothing was stored. If you are on 1.4.0-1.4.2, update immediately.

@@ -126,8 +126,13 @@ final class Handler {
 			$this->silent_reject();
 		}
 
-		// Locate the authoritative form definition in the source post.
-		$definition = $this->locator->locate( $post_id, $form_id );
+		// Locate the authoritative form definition. Tries the submitting page
+		// first, then falls back to wherever the form actually lives — a
+		// footer/header template part, a synced pattern, a theme-builder
+		// element or a site-wide popup. Without the fallback, any form not
+		// embedded directly in the current page's content is silently
+		// rejected (the submit carries the page ID, not the form's host).
+		$definition = $this->locator->locate_by_form_id( $form_id, $post_id );
 		if ( null === $definition ) {
 			$this->silent_reject();
 		}

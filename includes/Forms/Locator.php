@@ -105,6 +105,51 @@ final class Locator {
 	 *     steps:  array<int, array<string, mixed>>
 	 * }|null
 	 */
+	/**
+	 * Locate a form by UUID, trying the submitted page first and then every
+	 * other post that actually embeds the form.
+	 *
+	 * The plain locate() only parses ONE post's content. That breaks when a
+	 * form is rendered somewhere other than the current page's own content:
+	 * a footer/header template part, a synced pattern, a theme-builder
+	 * element, or a popup pulled in site-wide. In all those cases the submit
+	 * carries the CURRENT page's ID (get_the_ID()), but the form block lives
+	 * in a different post — so locate() returns null and the submission is
+	 * silently rejected.
+	 *
+	 * The Indexer already scans every post for form blocks, so we ask it
+	 * where this UUID really lives and retry locate() against each source.
+	 * The preferred (submitted) page is tried first so the common case —
+	 * form directly on the page — never pays for the index lookup.
+	 *
+	 * @param string $form_id            UUID stored in the form block.
+	 * @param int    $preferred_post_id  Page the submission came from (tried first).
+	 * @return array{attributes: array<string, mixed>, fields: array<int, array<string, mixed>>, steps: array<int, array<string, mixed>>}|null
+	 */
+	public function locate_by_form_id( string $form_id, int $preferred_post_id = 0 ): ?array {
+		if ( $preferred_post_id > 0 ) {
+			$found = $this->locate( $preferred_post_id, $form_id );
+			if ( null !== $found ) {
+				return $found;
+			}
+		}
+
+		$record = ( new Indexer() )->find( $form_id );
+		$sources = is_array( $record ) && isset( $record['sources'] ) && is_array( $record['sources'] ) ? $record['sources'] : [];
+
+		foreach ( $sources as $source ) {
+			$source_id = isset( $source['post_id'] ) ? (int) $source['post_id'] : 0;
+			if ( $source_id > 0 && $source_id !== $preferred_post_id ) {
+				$found = $this->locate( $source_id, $form_id );
+				if ( null !== $found ) {
+					return $found;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	public function locate( int $post_id, string $form_id ): ?array {
 		$post = get_post( $post_id );
 		if ( ! $post instanceof \WP_Post ) {
