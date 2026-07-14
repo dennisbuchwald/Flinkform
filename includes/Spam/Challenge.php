@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) || exit;
  *     "s":   "<base64 salt>",         // 16 bytes, used by both strategies
  *     "d":   <difficulty bits>,       // PoW only, e.g. 18
  *     "a":   <int> | "<sha256 hash>", // Math only — expected answer hash
- *     "e":   <unix-ts expires>,       // 5-minute TTL
+ *     "e":   <unix-ts expires>,       // 30-minute TTL
  *     "n":   "<request nonce>",       // single-use protection key
  *   }
  *
@@ -56,7 +56,12 @@ defined( 'ABSPATH' ) || exit;
  * lifetime in some environments, auth salt is operator-managed and
  * stable across requests for the same install. Rotating auth salts
  * invalidates outstanding challenges (operator just re-renders the
- * form) which is acceptable for a 5-minute TTL feature.
+ * form) which is acceptable for a 30-minute TTL feature. The window is
+ * deliberately generous: visitors read long pages or open a popup form
+ * minutes after page load, and an expired token silently rejects an
+ * otherwise legitimate submission — 30 minutes covers real dwell times
+ * while the HMAC signature, the form binding and the single-use burn
+ * keep the token useless for replay farming.
  */
 final class Challenge {
 
@@ -75,7 +80,7 @@ final class Challenge {
 	 *
 	 * @var int
 	 */
-	private const TTL_SECONDS = 300;
+	private const TTL_SECONDS = 1800;
 
 	/**
 	 * PoW difficulty (in leading-zero bits the sha256 must satisfy).

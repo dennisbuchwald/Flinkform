@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.4.2 =
+* Fix: popup submissions now actually use the fetch path — the hidden admin-post "action" input shadowed the form's action property in JavaScript, so every fetch went to a broken URL and silently fell back to the classic page-reload submit
+* Change: the spam-challenge token lifetime is now 30 minutes (was 5) — visitors who read a long page or open a popup form some minutes after page load were silently rejected with no feedback and no stored submission
 
 = 1.4.1 =
 * Fix: the spam-challenge token is now consumed when a submission is accepted instead of when it is checked — a popup submission that failed validation can be corrected and resubmitted without hitting the replay guard (the popup flow never re-renders the page, so no fresh token is minted between attempts)

@@ -114,7 +114,11 @@ async function submitViaFetch( form ) {
 
 	let data;
 	try {
-		const response = await fetch( form.action, {
+		// NOT form.action: the form carries a hidden input named "action"
+		// (admin-post.php routing), and named controls shadow the form's
+		// DOM properties — form.action would return that input element
+		// instead of the URL. getAttribute reads the real markup value.
+		const response = await fetch( form.getAttribute( 'action' ), {
 			method: 'POST',
 			body: new FormData( form ),
 			headers: { 'X-Flinkform-Fetch': '1' },
@@ -123,8 +127,9 @@ async function submitViaFetch( form ) {
 	} catch {
 		// Network error or a non-JSON answer (e.g. a security wp_die page):
 		// fall back to the native submission so nothing is ever lost.
-		// form.submit() bypasses this listener, so no loop.
-		form.submit();
+		// Called via the prototype for the same shadowing reason as above;
+		// a native submit bypasses this listener, so no loop.
+		HTMLFormElement.prototype.submit.call( form );
 		return;
 	}
 
