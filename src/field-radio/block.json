@@ -37,6 +37,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"display": {
+			"type": "string",
+			"default": "list",
+			"enum": [ "list", "buttons" ]
+		},
 		"options": {
 			"type": "array",
 			"default": [

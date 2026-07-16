@@ -1,7 +1,7 @@
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 
 import { generateFieldName } from '../shared/field-name';
 import { OptionsEditor } from '../shared/options-editor';
@@ -9,8 +9,11 @@ import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
-	const { label, required, helpText, fieldName, options } = attributes;
-	const blockProps = useBlockProps( { className: 'flinkform-field flinkform-field--radio' } );
+	const { label, required, helpText, fieldName, options, display } = attributes;
+	const asButtons = 'buttons' === display;
+	const blockProps = useBlockProps( {
+		className: `flinkform-field flinkform-field--radio${ asButtons ? ' is-buttons' : '' }`,
+	} );
 
 	useEffect( () => {
 		if ( ! fieldName ) {
@@ -52,6 +55,18 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<SelectControl
+						label={ __( 'Display', 'flinkform' ) }
+						help={ __( 'Show the choices as a plain list or as selectable buttons.', 'flinkform' ) }
+						value={ display || 'list' }
+						options={ [
+							{ label: __( 'List', 'flinkform' ), value: 'list' },
+							{ label: __( 'Buttons', 'flinkform' ), value: 'buttons' },
+						] }
+						onChange={ ( v ) => setAttributes( { display: v } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Options', 'flinkform' ) }>
 					<OptionsEditor
@@ -69,8 +84,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					{ required && <span className="flinkform-field__required" aria-hidden="true"> *</span> }
 				</legend>
 				{ safeOptions.map( ( opt, i ) => (
-					<label key={ i } style={ { display: 'flex', alignItems: 'center', gap: '6px', margin: '4px 0' } }>
-						<input type="radio" disabled aria-disabled="true" />
+					<label key={ i } className="flinkform-field__option">
+						<input type="radio" name={ `preview-${ fieldName }` } defaultChecked={ i === 0 } disabled aria-disabled="true" />
 						<span>{ opt.label || opt.value || '' }</span>
 					</label>
 				) ) }
