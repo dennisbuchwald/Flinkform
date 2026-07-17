@@ -21,7 +21,8 @@ $required   = ! empty( $attributes['required'] );
 $help_text  = isset( $attributes['helpText'] ) && is_string( $attributes['helpText'] ) ? $attributes['helpText'] : '';
 $field_name = isset( $attributes['fieldName'] ) && is_string( $attributes['fieldName'] ) ? $attributes['fieldName'] : '';
 $options    = isset( $attributes['options'] ) && is_array( $attributes['options'] ) ? $attributes['options'] : [];
-$display    = ( isset( $attributes['display'] ) && 'buttons' === $attributes['display'] ) ? 'buttons' : 'list';
+$display      = ( isset( $attributes['display'] ) && 'buttons' === $attributes['display'] ) ? 'buttons' : 'list';
+$button_shape = ( 'buttons' === $display && isset( $attributes['buttonShape'] ) ) ? $attributes['buttonShape'] : 'pill';
 
 if ( '' === $field_name || '' === $form_id ) {
 	return;
@@ -35,7 +36,7 @@ $error_id  = $error ? $group_uid . '-error' : '';
 $described = trim( $help_id . ' ' . $error_id );
 ?>
 <fieldset
-	class="flinkform-field flinkform-field--radio<?php echo 'buttons' === $display ? ' is-buttons' : ''; ?><?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"
+	class="flinkform-field flinkform-field--radio<?php echo 'buttons' === $display ? ' is-buttons is-shape-' . esc_attr( $button_shape ) : ''; ?><?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"
 	<?php echo $described ? 'aria-describedby="' . esc_attr( $described ) . '"' : ''; ?>
 	<?php echo $error ? 'aria-invalid="true"' : ''; ?>
 	<?php echo $required ? 'aria-required="true"' : ''; ?>

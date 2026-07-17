@@ -9,10 +9,11 @@ import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
-	const { label, required, helpText, fieldName, options, display } = attributes;
+	const { label, required, helpText, fieldName, options, display, buttonShape } = attributes;
 	const asButtons = 'buttons' === display;
+	const shape = buttonShape || 'pill';
 	const blockProps = useBlockProps( {
-		className: `flinkform-field flinkform-field--radio${ asButtons ? ' is-buttons' : '' }`,
+		className: `flinkform-field flinkform-field--radio${ asButtons ? ` is-buttons is-shape-${ shape }` : '' }`,
 	} );
 
 	useEffect( () => {
@@ -67,6 +68,20 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ asButtons && (
+						<SelectControl
+							label={ __( 'Button Shape', 'flinkform' ) }
+							value={ shape }
+							options={ [
+								{ label: __( 'Pill', 'flinkform' ), value: 'pill' },
+								{ label: __( 'Rounded', 'flinkform' ), value: 'rounded' },
+								{ label: __( 'Square', 'flinkform' ), value: 'square' },
+							] }
+							onChange={ ( v ) => setAttributes( { buttonShape: v } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 				</PanelBody>
 				<PanelBody title={ __( 'Options', 'flinkform' ) }>
 					<OptionsEditor

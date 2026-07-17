@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.5.1 =
+* Fix: radio buttons in "Buttons" display mode now lay out horizontally (side by side) instead of stacking vertically. The base field layout was overriding the flex direction due to higher CSS specificity.
+* New: configurable button shape — choose "Pill" (fully rounded, default), "Rounded" (matches form field radius) or "Square" (no rounding) in the block inspector when display is set to "Buttons".
 
 = 1.5.0 =
 * New: the Radio field can now display its choices as selectable buttons ("pills") instead of a plain list — set "Display: Buttons" in the block inspector. The active choice fills with your form's primary colour. Keyboard, screen-reader and no-JavaScript support are unchanged (the buttons are real radio inputs, only styled).

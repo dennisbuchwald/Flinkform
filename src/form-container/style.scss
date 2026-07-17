@@ -729,12 +729,15 @@
  * hidden while the adjacent <span> becomes the pill. The checked pill
  * fills with the form's primary colour, so it matches the button style.
  *
+ * Scoped under the doubled form wrapper so flex-direction: row beats
+ * the base .flinkform-field column layout at (0,3,0). Result: (0,4,0).
+ *
  * Literal class names (not `&`) on purpose: nesting `&__option` under a
  * `&--radio` modifier expands both `&` to the full parent and produces a
  * broken selector.
  * ------------------------------------------------------------------- */
-.flinkform-field--radio.is-buttons {
-	display: flex;
+.flinkform-form.flinkform-form .flinkform-field--radio.is-buttons {
+	flex-direction: row;
 	flex-wrap: wrap;
 	gap: 0.5rem;
 
@@ -782,6 +785,15 @@
 			outline: 2px solid var(--flinkform-color-primary);
 			outline-offset: 2px;
 		}
+	}
+
+	// Shape variants — pill is the default (999px above).
+	&.is-shape-rounded .flinkform-field__option span {
+		border-radius: var(--flinkform-border-radius);
+	}
+
+	&.is-shape-square .flinkform-field__option span {
+		border-radius: 0;
 	}
 }
 

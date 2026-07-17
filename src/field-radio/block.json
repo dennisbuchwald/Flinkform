@@ -42,6 +42,11 @@
 			"default": "list",
 			"enum": [ "list", "buttons" ]
 		},
+		"buttonShape": {
+			"type": "string",
+			"default": "pill",
+			"enum": [ "pill", "rounded", "square" ]
+		},
 		"options": {
 			"type": "array",
 			"default": [
