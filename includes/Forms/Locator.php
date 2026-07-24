@@ -59,6 +59,7 @@ final class Locator {
 		'flinkform/field-radio'    => 'radio',
 		'flinkform/field-checkbox' => 'checkbox',
 		'flinkform/field-consent'  => 'consent',
+		'flinkform/field-address'  => 'address',
 	];
 
 	/**
@@ -287,6 +288,14 @@ final class Locator {
 			// touched an attribute still gets the right behaviour.
 			$record += $this->type_extras( $block_name, $type, $attrs );
 
+			// Address blocks expand into multiple sub-fields so the
+			// Handler treats each part as a regular text field — no
+			// custom sanitisation or validation needed.
+			if ( 'address' === $type ) {
+				$fields = array_merge( $fields, $this->expand_address( $record, $attrs ) );
+				continue;
+			}
+
 			$fields[] = $record;
 		}
 
@@ -358,6 +367,44 @@ final class Locator {
 	 * @param array<string, mixed> $attrs
 	 * @return array<string, mixed>
 	 */
+	private function expand_address( array $record, array $attrs ): array {
+		$base       = $record['name'];
+		$required   = $record['required'];
+		$step       = $record['step'];
+		$condition  = $record['conditionalLogic'];
+		$show_line2 = ! empty( $attrs['showAddressLine2'] );
+		$show_country = ! empty( $attrs['showCountry'] );
+
+		$parts = [
+			[ 'suffix' => 'street',  'label' => __( 'Street', 'flinkform' ),      'required' => $required ],
+			[ 'suffix' => 'zip',     'label' => __( 'Postal code', 'flinkform' ), 'required' => $required ],
+			[ 'suffix' => 'city',    'label' => __( 'City', 'flinkform' ),        'required' => $required ],
+		];
+
+		if ( $show_line2 ) {
+			// Line 2 is always optional.
+			array_splice( $parts, 1, 0, [ [ 'suffix' => 'line2', 'label' => __( 'Address line 2', 'flinkform' ), 'required' => false ] ] );
+		}
+
+		if ( $show_country ) {
+			$parts[] = [ 'suffix' => 'country', 'label' => __( 'Country', 'flinkform' ), 'required' => $required ];
+		}
+
+		$fields = [];
+		foreach ( $parts as $part ) {
+			$fields[] = [
+				'name'             => $base . '_' . $part['suffix'],
+				'type'             => 'text',
+				'label'            => $record['label'] . ' – ' . $part['label'],
+				'required'         => $part['required'],
+				'step'             => $step,
+				'conditionalLogic' => $condition,
+				'requiredMessage'  => '',
+			];
+		}
+		return $fields;
+	}
+
 	private function type_extras( string $block_name, string $type, array $attrs ): array {
 		switch ( $type ) {
 			case 'number':

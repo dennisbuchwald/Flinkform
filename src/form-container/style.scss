@@ -715,6 +715,34 @@
 		}
 	}
 
+	// Address field — composite grid: street full-width, zip + city
+	// side by side, optional line 2 and country full-width.
+	.flinkform-field-address__grid {
+		display: grid;
+		grid-template-columns: 1fr 2fr;
+		gap: 0.5rem;
+
+		@media (max-width: 480px) {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.flinkform-field-address__sub {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+
+		&--full {
+			grid-column: 1 / -1;
+		}
+	}
+
+	.flinkform-field-address__sub-label {
+		font-size: 0.8em;
+		font-weight: 500;
+		opacity: 0.7;
+	}
+
 	.flinkform-section-heading {
 		&__title {
 			margin: 1.5rem 0 0.25rem;

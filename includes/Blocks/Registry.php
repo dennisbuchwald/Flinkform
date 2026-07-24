@@ -46,6 +46,7 @@ final class Registry {
 		'field-toggle',
 		'field-hidden',
 		'field-consent',
+		'field-address',
 	];
 
 	/**

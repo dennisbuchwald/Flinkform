@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.5.3
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.6.0 =
+* New: Address Field — a composite field with street, postal code and city in a compact grid layout. Optional address line 2 and country sub-fields. When set to required, all visible sub-fields except line 2 are enforced. Each sub-field stores separately for clean CSV export columns.
 
 = 1.5.3 =
 * Fix: conditional logic now correctly hides fields. The `.flinkform-field { display: flex }` rule (specificity 0,3,0) was overriding the browser's native `[hidden] { display: none }` (0,1,0), so conditionally hidden fields remained visible despite the JS correctly setting the `hidden` attribute. The selector now uses `:not([hidden])` to opt out cleanly.

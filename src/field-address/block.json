@@ -1,0 +1,70 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "flinkform/field-address",
+	"version": "0.1.0",
+	"title": "Address Field",
+	"category": "flinkform",
+	"icon": "location",
+	"description": "A composite address field with street, postal code, city and optional country.",
+	"keywords": [
+		"address",
+		"street",
+		"city",
+		"postal",
+		"zip",
+		"location"
+	],
+	"textdomain": "flinkform",
+	"parent": [
+		"flinkform/form"
+	],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Address"
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"showCountry": {
+			"type": "boolean",
+			"default": false
+		},
+		"showAddressLine2": {
+			"type": "boolean",
+			"default": false
+		},
+		"countryDefault": {
+			"type": "string",
+			"default": ""
+		},
+		"fullWidth": {
+			"type": "boolean",
+			"default": true
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"usesContext": [
+		"flinkform/formId",
+		"flinkform/appearance"
+	],
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}
