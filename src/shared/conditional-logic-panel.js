@@ -247,6 +247,8 @@ function RuleRow( { rule, fieldOptions, onChange, onRemove } ) {
 		{ value: 'is_not_empty', label: __( 'is not empty', 'flinkform' ) },
 		{ value: 'greater_than', label: __( 'greater than', 'flinkform' ) },
 		{ value: 'less_than', label: __( 'less than', 'flinkform' ) },
+		{ value: 'date_before', label: __( 'is before (date)', 'flinkform' ) },
+		{ value: 'date_on_or_after', label: __( 'is on or after (date)', 'flinkform' ) },
 	];
 
 	const usesValue = ! EMPTY_STATE_OPERATORS.has( rule.operator );

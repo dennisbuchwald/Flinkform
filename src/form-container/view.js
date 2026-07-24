@@ -63,10 +63,12 @@ if ( typeof document !== 'undefined' ) {
 		document.addEventListener( 'DOMContentLoaded', initConditionalLogic );
 		document.addEventListener( 'DOMContentLoaded', initSubmitFeedback );
 		document.addEventListener( 'DOMContentLoaded', initFetchSubmit );
+		document.addEventListener( 'DOMContentLoaded', initFloatingLabelBackground );
 	} else {
 		initConditionalLogic();
 		initSubmitFeedback();
 		initFetchSubmit();
+		initFloatingLabelBackground();
 	}
 }
 
@@ -310,6 +312,33 @@ function initSubmitFeedback() {
 			block: 'center',
 		} );
 	}
+}
+
+// ---------------------------------------------------------------------
+// Floating-label background auto-detect.
+//
+// The floating-label "notch" paints a solid background behind the label
+// text to cover the input's top border. By default it uses the theme's
+// page background (--flinkform-page-background), which is wrong when the
+// form sits on a section/container with a different background colour.
+//
+// This init walks up each floating-label form's ancestors until it finds
+// one with a non-transparent background-color and sets the CSS variable
+// on the form wrapper so the notch matches automatically — zero config.
+// ---------------------------------------------------------------------
+
+function initFloatingLabelBackground() {
+	document.querySelectorAll( '.flinkform-form--labels-floating' ).forEach( ( wrapper ) => {
+		let el = wrapper.parentElement;
+		while ( el ) {
+			const bg = getComputedStyle( el ).backgroundColor;
+			if ( bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent' ) {
+				wrapper.style.setProperty( '--flinkform-page-background', bg );
+				break;
+			}
+			el = el.parentElement;
+		}
+	} );
 }
 
 function initConditionalLogic() {
@@ -670,6 +699,16 @@ function evaluateRule( rule, values ) {
 				return false;
 			}
 			return Number( fieldString ) < Number( value );
+		case 'date_before':
+		case 'date_on_or_after': {
+			const dateRe = /^\d{4}-\d{2}-\d{2}$/;
+			if ( ! dateRe.test( fieldString ) || ! dateRe.test( value ) ) {
+				return false;
+			}
+			return operator === 'date_before'
+				? fieldString < value
+				: fieldString >= value;
+		}
 		default:
 			return false;
 	}

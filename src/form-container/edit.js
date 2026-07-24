@@ -5,7 +5,7 @@
  * If a block is duplicated, both copies inherit the same UUID — Phase 1
  * accepts this; later phases may detect and re-key duplicates explicitly.
  */
-import { Fragment, useEffect, useMemo } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useMemo, useRef } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { applyFilters } from '@wordpress/hooks';
 import { __, sprintf } from '@wordpress/i18n';
@@ -160,7 +160,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		`flinkform-form--columns-${ columns }`,
 	].join( ' ' );
 
+	// Floating-label background auto-detect (editor preview).
+	// Mirrors the frontend's initFloatingLabelBackground(): walks up
+	// the DOM from the block wrapper and picks up the nearest ancestor's
+	// non-transparent background-color so the label notch matches.
+	const blockRef = useRef( null );
+	const mergedRef = useCallback( ( node ) => {
+		blockRef.current = node;
+	}, [] );
+
+	useEffect( () => {
+		const node = blockRef.current;
+		if ( ! node || labelPosition !== 'floating' ) {
+			return;
+		}
+		let el = node.parentElement;
+		while ( el ) {
+			const bg = getComputedStyle( el ).backgroundColor;
+			if ( bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent' ) {
+				node.style.setProperty( '--flinkform-page-background', bg );
+				return;
+			}
+			el = el.parentElement;
+		}
+	}, [ labelPosition ] );
+
 	const blockProps = useBlockProps( {
+		ref: mergedRef,
 		className: editorClassName,
 		style: editorStyle,
 		// Mirror the frontend's data-flinkform-id so Custom CSS rules

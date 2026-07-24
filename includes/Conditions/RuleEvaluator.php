@@ -55,7 +55,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class RuleEvaluator {
 
-	private const VALUE_OPERATORS = [ 'is', 'is_not', 'contains', 'not_contains', 'greater_than', 'less_than' ];
+	private const VALUE_OPERATORS = [ 'is', 'is_not', 'contains', 'not_contains', 'greater_than', 'less_than', 'date_before', 'date_on_or_after' ];
 	private const EMPTY_OPERATORS = [ 'is_empty', 'is_not_empty' ];
 
 	/**
@@ -152,6 +152,14 @@ final class RuleEvaluator {
 					return false;
 				}
 				return (float) $field_string < (float) $value;
+			case 'date_before':
+			case 'date_on_or_after':
+				if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $field_string ) || ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ) {
+					return false;
+				}
+				return 'date_before' === $operator
+					? $field_string < $value
+					: $field_string >= $value;
 		}
 
 		return false;
