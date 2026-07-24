@@ -553,6 +553,14 @@
 		flex-direction: column;
 		gap: 0.4rem;
 
+		// Hidden guard: our `display: flex` at (0,3,0) outranks the UA
+		// `[hidden] { display: none }` (0,1,0), so the conditional-logic
+		// `hidden` attribute has no visual effect without this override.
+		// Same pattern as `.flinkform-form__spam-math[hidden]` below.
+		&[hidden] {
+			display: none;
+		}
+
 		&__label {
 			font-weight: 600;
 			font-size: 0.95em;

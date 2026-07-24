@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.5.3 =
+* Fix: conditional logic now correctly hides fields. The `.flinkform-field { display: flex }` rule (specificity 0,3,0) was overriding the browser's native `[hidden] { display: none }` (0,1,0), so conditionally hidden fields remained visible despite the JS correctly setting the `hidden` attribute. The selector now uses `:not([hidden])` to opt out cleanly.
 
 = 1.5.2 =
 * New: conditional logic operators "is before (date)" and "is on or after (date)" for comparing a date field against a fixed YYYY-MM-DD cutoff. Useful for gating form submission based on a deadline (e.g. show a notice and lock the submit button when a due date is too early).
