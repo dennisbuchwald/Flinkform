@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.5.2 =
+* New: conditional logic operators "is before (date)" and "is on or after (date)" for comparing a date field against a fixed YYYY-MM-DD cutoff. Useful for gating form submission based on a deadline (e.g. show a notice and lock the submit button when a due date is too early).
+* Fix: floating labels now automatically detect the nearest ancestor's background colour. The label notch matches the container background on any surface — no manual colour setting needed.
 
 = 1.5.1 =
 * Fix: radio buttons in "Buttons" display mode now lay out horizontally (side by side) instead of stacking vertically. The base field layout was overriding the flex direction due to higher CSS specificity.
