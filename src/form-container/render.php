@@ -555,6 +555,26 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 		// the fields. The Guard façade decides whether to protect.
 		if ( \Flinkform\Spam\Guard::should_protect( $attributes ) ) {
 			echo \Flinkform\Spam\Renderer::render( $form_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Renderer::render() builds a fixed markup string and escapes every dynamic value with esc_attr() at the point of concatenation. It cannot be passed through wp_kses_post(), which strips the input elements the spam challenge relies on.
+
+			// Mark the document as script-capable so the stylesheet can hide
+			// the math fallback from the very first paint instead of leaving
+			// it on screen until the proof-of-work finishes solving.
+			//
+			// This has to be decided in the browser, not here: rendering the
+			// row hidden server-side would let a page cache serve the JS-on
+			// layout to a JS-off visitor, who would then have no way to
+			// submit. A cached page carries this script for everyone and
+			// only runs it where scripting is available, which is precisely
+			// the distinction the fallback depends on.
+			//
+			// Synchronous and inline on purpose — a deferred or external
+			// script runs after first paint, which is the flash we are
+			// removing. Printed once per page, however many forms there are.
+			static $flinkform_js_marker_printed = false;
+			if ( ! $flinkform_js_marker_printed ) {
+				$flinkform_js_marker_printed = true;
+				echo '<script>document.documentElement.classList.add("flinkform-js")</script>';
+			}
 		}
 		?>
 

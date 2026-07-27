@@ -59,6 +59,17 @@ const EMPTY_OPERATORS = new Set( [ 'is_empty', 'is_not_empty' ] );
 // ReferenceError would abort the WHOLE module (spam solver included).
 const POPUP_SELECTOR = '.wp-block-dbw-base-popup, dialog, [role="dialog"]';
 
+// Same reason as POPUP_SELECTOR above: initSpamChallenge() runs during
+// module evaluation, so this must be initialised before the init block or
+// the temporal-dead-zone ReferenceError takes the whole module down with
+// it — spam solver included. (tests/module-smoke.html catches exactly this.)
+//
+// How long the proof-of-work may run before the math fallback comes back on
+// screen. The stylesheet hides that row from first paint wherever scripting
+// is available, so a device too slow to solve the challenge would otherwise
+// be left with nothing to fill in.
+const SPAM_FALLBACK_DELAY = 4000;
+
 if ( typeof document !== 'undefined' ) {
 	if ( document.readyState === 'loading' ) {
 		document.addEventListener( 'DOMContentLoaded', initConditionalLogic );
@@ -1284,43 +1295,75 @@ function initSpamChallenge() {
 		);
 		const solutionInput = block.querySelector( '[data-flinkform-spam-solution]' );
 		const mathRow       = block.querySelector( '[data-flinkform-spam-math]' );
+		const mathInput     = mathRow ? mathRow.querySelector( 'input[type="text"]' ) : null;
+
+		// The row is hidden by CSS from the first paint, and a hidden
+		// `required` control makes the browser refuse to submit with
+		// nothing to focus. Drop it now and put it back only if the row
+		// actually returns.
+		if ( mathInput ) {
+			mathInput.removeAttribute( 'required' );
+		}
+
+		/** Bring the math fallback back — every path the solver cannot finish. */
+		const showFallback = () => {
+			block.classList.add( 'flinkform-form__spam--fallback' );
+			if ( mathRow ) {
+				mathRow.removeAttribute( 'hidden' );
+			}
+			if ( mathInput ) {
+				mathInput.setAttribute( 'required', '' );
+			}
+		};
 
 		if ( ! salt || ! difficulty || ! solutionInput ) {
-			// Mis-rendered block — leave the math fallback visible so
-			// the visitor can still submit by answering the question.
+			// Mis-rendered block — the visitor can still submit by
+			// answering the question.
+			showFallback();
 			return;
 		}
 
 		if ( ! window.crypto || ! window.crypto.subtle ) {
-			// Browser lacks Web Crypto — same fallback path.
+			// Browser lacks Web Crypto (or the page is not a secure
+			// context) — same fallback path.
+			showFallback();
 			return;
 		}
+
+		let settled = false;
+		const slowTimer = setTimeout( () => {
+			if ( ! settled ) {
+				showFallback();
+			}
+		}, SPAM_FALLBACK_DELAY );
 
 		solvePoWInWorker( salt, difficulty )
 			.catch( () => solvePoW( salt, difficulty ) )
 			.then( ( solution ) => {
+				settled = true;
+				clearTimeout( slowTimer );
 				solutionInput.value = String( solution );
-				// PoW solved → math row is redundant; hide it. We
-				// purposely hide AFTER successful solve so a slow
-				// device that's still computing leaves the math row
-				// visible as a fallback the visitor can use.
+
+				// Solved → the math row is redundant. If the slow-device
+				// timer had already revealed it, take it back off screen
+				// and clear the answer so the server never sees two
+				// competing solutions.
+				block.classList.remove( 'flinkform-form__spam--fallback' );
 				if ( mathRow ) {
 					mathRow.setAttribute( 'hidden', '' );
-					// Clear any prefilled math answer so the server
-					// doesn't see two competing solutions on submit.
-					const mathInput = mathRow.querySelector( 'input[type="text"]' );
-					if ( mathInput ) {
-						mathInput.value = '';
-						// Drop `required` too — the row is now hidden, and a
-						// hidden required field would block form submission.
-						mathInput.removeAttribute( 'required' );
-					}
+				}
+				if ( mathInput ) {
+					mathInput.value = '';
+					mathInput.removeAttribute( 'required' );
 				}
 			} )
 			.catch( () => {
-				// Compute aborted (e.g. tab backgrounded long enough
-				// for the browser to throttle the JS loop) — fall
-				// back to the math row that's already visible.
+				// Compute aborted (e.g. tab backgrounded long enough for
+				// the browser to throttle the loop) — hand the visitor
+				// the question instead.
+				settled = true;
+				clearTimeout( slowTimer );
+				showFallback();
 			} );
 	} );
 }

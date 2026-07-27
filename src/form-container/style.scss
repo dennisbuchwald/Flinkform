@@ -96,6 +96,15 @@
 	--flinkform-color-on-primary: var(--wp--preset--color--background, #fff);
 	--flinkform-border-radius: var(--wp--custom--border--radius, 6px);
 	--flinkform-field-gap: var(--wp--preset--spacing--40, 1.25rem);
+	// Extra vertical room every row needs when the label is lifted out of
+	// the field. Zero for every label position except floating, and added
+	// to the ROW gap only — never to the column gap, which is horizontal.
+	//
+	// This lives at form level on purpose. It used to be a margin-top on
+	// the text-flavoured fields, which meant the rhythm alternated: a text
+	// field sat 21px below its neighbour while a notice, the address group
+	// or the consent row sat 12px below theirs. Rows now share one spacing.
+	--flinkform-label-room: 0rem;
 	// Colour the floating-label "notch" strip paints itself with. Set by
 	// view.js once it has positively resolved the surface the form sits
 	// on; it also adds `.flinkform-form--has-notch`, which is what
@@ -112,7 +121,10 @@
 	&__form {
 		display: flex;
 		flex-direction: column;
-		gap: var(--flinkform-field-gap);
+		gap: calc(var(--flinkform-field-gap) + var(--flinkform-label-room));
+		// The first row has no gap above it, so its lifted label would
+		// overflow the form's top edge without this.
+		padding-top: var(--flinkform-label-room);
 	}
 
 	/* Success card — replaces the form after a successful submission.
@@ -753,7 +765,10 @@
 	.flinkform-field-address__grid {
 		display: grid;
 		grid-template-columns: 1fr 2fr;
-		gap: 0.6rem;
+		column-gap: 0.6rem;
+		// Same additive rule as the form's own rows: the sub-fields carry
+		// lifted labels too, so their row gap needs the extra room.
+		row-gap: calc(0.6rem + var(--flinkform-label-room));
 
 		// Sub-fields inside the address grid are nested
 		// .flinkform-field wrappers — reset their gap to tight.
@@ -1003,7 +1018,7 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		column-gap: var(--flinkform-field-gap);
-		row-gap: var(--flinkform-field-gap);
+		row-gap: calc(var(--flinkform-field-gap) + var(--flinkform-label-room));
 	}
 
 	.flinkform-field--full-width,
@@ -1030,7 +1045,7 @@
 	.flinkform-form__form {
 		display: flex;
 		flex-direction: column;
-		gap: var(--flinkform-field-gap);
+		gap: calc(var(--flinkform-field-gap) + var(--flinkform-label-room));
 	}
 
 	/* Per-step layout: this is where the 2-column grid actually lives
@@ -1047,7 +1062,7 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		column-gap: var(--flinkform-field-gap);
-		row-gap: var(--flinkform-field-gap);
+		row-gap: calc(var(--flinkform-field-gap) + var(--flinkform-label-room));
 	}
 
 	@media (max-width: 600px) {
@@ -1134,8 +1149,7 @@
  * Date and select fields always show native browser UI, so their labels
  * start permanently in the lifted/notched position (no animation). */
 .flinkform-form.flinkform-form--labels-floating {
-	// Where the LIFTED label comes to rest, and how much room the field
-	// needs above itself for it.
+	// Where the LIFTED label comes to rest.
 	//
 	// Default: clear of the border line entirely. That needs no colour,
 	// so it is correct on a gradient, a photo, in dark mode and before
@@ -1146,12 +1160,16 @@
 	// view.js adds `--has-notch` once it has resolved the surface colour,
 	// which drops the label onto the line for the Material notch look.
 	--flinkform-notch-shift: -100%;
-	--flinkform-notch-gap: 1.15em;
 
 	&.flinkform-form--has-notch {
 		--flinkform-notch-shift: -50%;
-		--flinkform-notch-gap: 0.5em;
 	}
+
+	// Room for the lifted label, sized for the taller of the two states so
+	// it stays CONSTANT across the has-notch switch. A value that changed
+	// with the state reflowed the entire form the moment the surface
+	// colour resolved, which read as the page jumping on every load.
+	--flinkform-label-room: 1.15em;
 
 	.flinkform-field--text,
 	.flinkform-field--email,
@@ -1163,7 +1181,6 @@
 	.flinkform-field--select {
 		position: relative;
 		gap: 0;
-		margin-top: var(--flinkform-notch-gap); // room for the lifted label
 
 		> .flinkform-field__input {
 			padding-top: 1em;
@@ -1231,14 +1248,6 @@
 			}
 		}
 	}
-}
-
-/* Address sub-fields need the same breathing room for the lifted label.
- * The grid's `.flinkform-field { margin: 0 }` reset lands at (0,4,0) and
- * would otherwise beat the (0,3,0) `margin-top` inside the floating block
- * above; this selector matches that specificity and wins on source order. */
-.flinkform-form.flinkform-form--labels-floating .flinkform-field-address__grid .flinkform-field--text {
-	margin-top: var(--flinkform-notch-gap);
 }
 
 /* ---------------------------------------------------------------------
@@ -1396,6 +1405,29 @@
 	&[hidden] {
 		display: none;
 	}
+}
+
+/* The math row is the no-JavaScript fallback, and it used to stay on
+ * screen until the proof-of-work finished solving — on a hard reload
+ * that is long enough to see "Was ergibt 2 + 2?" appear and vanish.
+ *
+ * It cannot simply be rendered hidden: a page cache would then serve the
+ * JS-on layout to a JS-off visitor and leave them unable to submit. So
+ * the decision is made in the browser instead. A tiny inline script marks
+ * the document as script-capable before first paint, and that marker
+ * hides the row from the start. A cached page carries the same marker
+ * script for everyone; whether it runs is what differs, which is exactly
+ * the distinction we need.
+ *
+ * Every path where the solver cannot deliver — no Web Crypto, a
+ * mis-rendered block, an aborted computation, or simply taking too long —
+ * puts `--fallback` back on the block and the row returns. */
+.flinkform-js .flinkform-form.flinkform-form .flinkform-form__spam-math {
+	display: none;
+}
+
+.flinkform-js .flinkform-form.flinkform-form .flinkform-form__spam--fallback .flinkform-form__spam-math:not([hidden]) {
+	display: block;
 }
 
 .flinkform-form.flinkform-form .flinkform-form__spam-label {
