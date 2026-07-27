@@ -1008,6 +1008,7 @@
 
 	.flinkform-field--full-width,
 	.flinkform-section-heading--full-width,
+	.flinkform-notice--full-width,
 	.flinkform-form__error--global,
 	.flinkform-form__actions,
 	.flinkform-form__hp,
@@ -1238,6 +1239,100 @@
  * above; this selector matches that specificity and wins on source order. */
 .flinkform-form.flinkform-form--labels-floating .flinkform-field-address__grid .flinkform-field--text {
 	margin-top: var(--flinkform-notch-gap);
+}
+
+/* ---------------------------------------------------------------------
+ * Notice — highlighted note between fields
+ *
+ * A non-submitting content block. Four semantic variants; the author
+ * picks the meaning and the colour follows, which keeps notices
+ * consistent across a site instead of turning into a colour free-for-all.
+ *
+ * Colours resolve through theme.json presets where a theme provides them
+ * and fall back to a hand-picked set that clears WCAG AA on the tinted
+ * background. Everything is derived from one `--flinkform-notice-accent`
+ * per variant: the surface is that accent mixed into the page at 8%, the
+ * edge at 35%. That way a theme only has to supply the accent.
+ *
+ * The icons are CSS masks rather than markup so they live in exactly one
+ * place (here) and inherit the accent through currentColor — the editor
+ * and the frontend cannot drift, and adding a variant is a single block.
+ * ------------------------------------------------------------------ */
+.flinkform-form.flinkform-form .flinkform-notice {
+	--flinkform-notice-accent: var(--wp--preset--color--flinkform-info, #2563eb);
+
+	display: flex;
+	align-items: flex-start;
+	gap: 0.7em;
+	padding: 0.85em 1em;
+	border-radius: var(--flinkform-border-radius);
+	border: 1px solid color-mix(in srgb, var(--flinkform-notice-accent) 35%, transparent);
+	background: color-mix(in srgb, var(--flinkform-notice-accent) 8%, transparent);
+	color: inherit;
+
+	&[hidden] {
+		display: none;
+	}
+
+	&--success {
+		--flinkform-notice-accent: var(--wp--preset--color--flinkform-success, #1a7f37);
+	}
+
+	&--warning {
+		--flinkform-notice-accent: var(--wp--preset--color--flinkform-warning, #b45309);
+	}
+
+	&--important {
+		--flinkform-notice-accent: var(--wp--preset--color--flinkform-important, #b80000);
+	}
+
+	&__text {
+		margin: 0;
+		font-size: 0.92em;
+		line-height: 1.5;
+
+		a {
+			color: inherit;
+			text-underline-offset: 0.2em;
+		}
+	}
+
+	&__icon {
+		flex: 0 0 1.15em;
+		width: 1.15em;
+		height: 1.15em;
+		// Nudged down so the icon's optical centre lines up with the
+		// cap height of the first line rather than its bounding box.
+		margin-top: 0.12em;
+		background: var(--flinkform-notice-accent);
+		mask: var(--flinkform-notice-icon) center / contain no-repeat;
+		-webkit-mask: var(--flinkform-notice-icon) center / contain no-repeat;
+	}
+
+	// Info — "i" in a circle.
+	--flinkform-notice-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 2a8 8 0 100 16 8 8 0 000-16zm0 3.5a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1zM9.25 9.5a.75.75 0 011.5 0v4.25a.75.75 0 01-1.5 0V9.5z'/%3E%3C/svg%3E");
+
+	&--success {
+		// Check in a circle.
+		--flinkform-notice-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 2a8 8 0 100 16 8 8 0 000-16zm4.03 5.72a.75.75 0 010 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-2.25-2.25a.75.75 0 111.06-1.06L9 11.69l3.97-3.97a.75.75 0 011.06 0z'/%3E%3C/svg%3E");
+	}
+
+	&--warning {
+		// Exclamation in a triangle.
+		--flinkform-notice-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10.87 2.6a1 1 0 00-1.74 0L1.3 16.5A1 1 0 002.17 18h15.66a1 1 0 00.87-1.5L10.87 2.6zM9.25 7.5a.75.75 0 011.5 0v4a.75.75 0 01-1.5 0v-4zm.75 8.13a.94.94 0 110-1.88.94.94 0 010 1.88z'/%3E%3C/svg%3E");
+	}
+
+	&--important {
+		// Exclamation in a circle.
+		--flinkform-notice-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 2a8 8 0 100 16 8 8 0 000-16zM9.25 6.5a.75.75 0 011.5 0v4.25a.75.75 0 01-1.5 0V6.5zm.75 8.13a.94.94 0 110-1.88.94.94 0 010 1.88z'/%3E%3C/svg%3E");
+	}
+
+	// Themes without color-mix() support get a flat tint instead of a
+	// transparent one. Still legible, just not blended into the surface.
+	@supports not (background: color-mix(in srgb, red 8%, transparent)) {
+		border-color: var(--flinkform-notice-accent);
+		background: transparent;
+	}
 }
 
 /* ---------------------------------------------------------------------

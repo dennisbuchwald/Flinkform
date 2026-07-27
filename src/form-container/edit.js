@@ -45,6 +45,7 @@ const ADD_FIELD_ICON = (
 const CORE_ALLOWED_BLOCKS = [
 	'flinkform/section-heading',
 	'flinkform/page-break',
+	'flinkform/notice',
 	'flinkform/field-text',
 	'flinkform/field-email',
 	'flinkform/field-textarea',

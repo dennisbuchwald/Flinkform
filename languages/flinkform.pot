@@ -13,7 +13,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Flinkform 1.6.3\n"
+"Project-Id-Version: Flinkform 1.7.0\n"
 "Report-Msgid-Bugs-To: https://flinkform.de/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -79,7 +79,7 @@ msgstr ""
 msgid "Form submissions stored by the Flinkform plugin."
 msgstr ""
 
-#: includes/Blocks/Registry.php:77 includes/Admin/Menu.php:56
+#: includes/Blocks/Registry.php:78 includes/Admin/Menu.php:56
 #: includes/Admin/Menu.php:57
 msgid "Flinkform"
 msgstr ""
@@ -217,7 +217,7 @@ msgstr ""
 msgid "To date"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:374 src/form-container/edit.js:659
+#: includes/Admin/SubmissionsListTable.php:374 src/form-container/edit.js:672
 msgid "To"
 msgstr ""
 
@@ -266,7 +266,7 @@ msgstr ""
 msgid "Form:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:216 src/form-container/edit.js:412
+#: includes/Admin/SubmissionsPage.php:216 src/form-container/edit.js:425
 msgid "Form ID:"
 msgstr ""
 
@@ -420,7 +420,7 @@ msgid "Sorry, something went wrong saving your message. Please try again."
 msgstr ""
 
 #: includes/Submissions/Handler.php:388 src/form-container/render.php:44
-#: src/form-container/edit.js:106
+#: src/form-container/edit.js:108
 msgid "Thank you! Your message has been sent successfully."
 msgstr ""
 
@@ -500,11 +500,11 @@ msgstr ""
 msgid "%s contains an invalid choice."
 msgstr ""
 
-#: includes/Notifications/Mailer.php:211 src/form-container/edit.js:671
+#: includes/Notifications/Mailer.php:211 src/form-container/edit.js:684
 msgid "New submission: {form:title}"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:241 src/form-container/edit.js:729
+#: includes/Notifications/Mailer.php:241 src/form-container/edit.js:742
 msgid "We received your submission"
 msgstr ""
 
@@ -557,14 +557,14 @@ msgstr ""
 msgid "Please select at least one option."
 msgstr ""
 
-#: src/form-container/render.php:37 src/form-container/edit.js:102
-#: src/form-container/edit.js:881
+#: src/form-container/render.php:37 src/form-container/edit.js:104
+#: src/form-container/edit.js:894
 msgid "Send"
 msgstr ""
 
 #. translators: 1: current step number, 2: total step count
 #: src/form-container/render.php:255 src/form-container/render.php:494
-#: src/form-container/edit.js:831
+#: src/form-container/edit.js:844
 #, javascript-format, php-format
 msgid "Step %1$s of %2$s"
 msgstr ""
@@ -825,7 +825,7 @@ msgstr ""
 msgid "Make this field span both columns of the form."
 msgstr ""
 
-#: src/shared/conditional-logic-panel.js:161 src/form-container/edit.js:718
+#: src/shared/conditional-logic-panel.js:161 src/form-container/edit.js:731
 msgid "— Select a field —"
 msgstr ""
 
@@ -940,6 +940,52 @@ msgstr ""
 msgid "+ Add option"
 msgstr ""
 
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. title of the block flinkform/notice
+#: src/notice/edit.js:33 src/notice/block.json
+msgid "Notice"
+msgstr ""
+
+#: src/notice/edit.js:35
+msgid "Type"
+msgstr ""
+
+#: src/notice/edit.js:36
+msgid ""
+"Sets the colour and icon. Pick by meaning, not by colour — that keeps "
+"notices consistent across your forms."
+msgstr ""
+
+#: src/notice/edit.js:39
+msgid "Info"
+msgstr ""
+
+#: src/notice/edit.js:40
+msgid "Success"
+msgstr ""
+
+#: src/notice/edit.js:41
+msgid "Warning"
+msgstr ""
+
+#: src/notice/edit.js:42
+msgid "Important"
+msgstr ""
+
+#: src/notice/edit.js:49
+msgid "Show icon"
+msgstr ""
+
+#: src/notice/edit.js:60
+msgid ""
+"Show this notice only when the rules below match — for example a delivery "
+"surcharge that applies from a certain distance."
+msgstr ""
+
+#: src/notice/edit.js:71
+msgid "Write your note…"
+msgstr ""
+
 #: src/section-heading/edit.js:15
 msgid "Section"
 msgstr ""
@@ -1000,64 +1046,64 @@ msgid ""
 "the default."
 msgstr ""
 
-#: src/form-container/edit.js:72
+#: src/form-container/edit.js:74
 msgid "Name"
 msgstr ""
 
-#: src/form-container/edit.js:73
+#: src/form-container/edit.js:75
 msgid "Email"
 msgstr ""
 
-#: src/form-container/edit.js:74
+#: src/form-container/edit.js:76
 msgid "Message"
 msgstr ""
 
-#: src/form-container/edit.js:395
+#: src/form-container/edit.js:408
 msgid "Form Settings"
 msgstr ""
 
-#: src/form-container/edit.js:397
+#: src/form-container/edit.js:410
 msgid "Form Title"
 msgstr ""
 
-#: src/form-container/edit.js:398
+#: src/form-container/edit.js:411
 msgid ""
 "Internal name shown in the Forms admin overview. Not visible to visitors."
 msgstr ""
 
-#: src/form-container/edit.js:405
+#: src/form-container/edit.js:418
 msgid "Submit Button Label"
 msgstr ""
 
-#: src/form-container/edit.js:417
+#: src/form-container/edit.js:430
 msgid "After Submit"
 msgstr ""
 
-#: src/form-container/edit.js:421
+#: src/form-container/edit.js:434
 msgid "On successful submission"
 msgstr ""
 
-#: src/form-container/edit.js:428
+#: src/form-container/edit.js:441
 msgid "Show message"
 msgstr ""
 
-#: src/form-container/edit.js:429
+#: src/form-container/edit.js:442
 msgid "Redirect to URL"
 msgstr ""
 
-#: src/form-container/edit.js:434
+#: src/form-container/edit.js:447
 msgid "Success Message"
 msgstr ""
 
-#: src/form-container/edit.js:435
+#: src/form-container/edit.js:448
 msgid "Shown in place of the form after a successful submission."
 msgstr ""
 
-#: src/form-container/edit.js:445
+#: src/form-container/edit.js:458
 msgid "Redirect URL"
 msgstr ""
 
-#: src/form-container/edit.js:446
+#: src/form-container/edit.js:459
 msgid ""
 "Same-origin only. Enter a path (/danke) or a full URL on this site. External"
 " URLs are silently rejected by the safe-redirect filter — operators who need"
@@ -1065,348 +1111,348 @@ msgid ""
 "release."
 msgstr ""
 
-#: src/form-container/edit.js:454
+#: src/form-container/edit.js:467
 msgid "https://example.com/danke"
 msgstr ""
 
-#: src/form-container/edit.js:460
+#: src/form-container/edit.js:473
 msgid "Append submission ID"
 msgstr ""
 
-#: src/form-container/edit.js:461
+#: src/form-container/edit.js:474
 msgid ""
 "Adds ?flinkform_submission_id=N to the redirect URL — useful for analytics "
 "events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off "
 "because submission IDs are PII-adjacent and end up in browser history."
 msgstr ""
 
-#: src/form-container/edit.js:468
+#: src/form-container/edit.js:481
 msgid "Append form ID"
 msgstr ""
 
-#: src/form-container/edit.js:469
+#: src/form-container/edit.js:482
 msgid ""
 "Adds ?flinkform_form_id=UUID — lets a shared thank-you page differentiate "
 "conversions by source form."
 msgstr ""
 
-#: src/form-container/edit.js:479
+#: src/form-container/edit.js:492
 msgid "Style"
 msgstr ""
 
-#: src/form-container/edit.js:484
+#: src/form-container/edit.js:497
 msgid "Primary color"
 msgstr ""
 
-#: src/form-container/edit.js:485
+#: src/form-container/edit.js:498
 msgid ""
 "Used for submit button, focus rings, and accent details. Leave unset to "
 "inherit from your theme."
 msgstr ""
 
-#: src/form-container/edit.js:497
+#: src/form-container/edit.js:510
 msgid "Field style"
 msgstr ""
 
-#: src/form-container/edit.js:498
+#: src/form-container/edit.js:511
 msgid ""
 "Bordered: full outline. Soft: light gray border. Underline: bottom border "
 "only. Minimal: no border, subtle background."
 msgstr ""
 
-#: src/form-container/edit.js:505
+#: src/form-container/edit.js:518
 msgid "Bordered"
 msgstr ""
 
-#: src/form-container/edit.js:506
+#: src/form-container/edit.js:519
 msgid "Soft"
 msgstr ""
 
-#: src/form-container/edit.js:507
+#: src/form-container/edit.js:520
 msgid "Underline"
 msgstr ""
 
-#: src/form-container/edit.js:508
+#: src/form-container/edit.js:521
 msgid "Minimal"
 msgstr ""
 
-#: src/form-container/edit.js:511
+#: src/form-container/edit.js:524
 msgid "Border radius"
 msgstr ""
 
-#: src/form-container/edit.js:512
+#: src/form-container/edit.js:525
 msgid ""
 "Applies to fields and the submit button. Leave at the default to inherit "
 "from your theme."
 msgstr ""
 
-#: src/form-container/edit.js:526
+#: src/form-container/edit.js:539
 msgid "Field spacing"
 msgstr ""
 
-#: src/form-container/edit.js:533
+#: src/form-container/edit.js:546
 msgid "Compact"
 msgstr ""
 
-#: src/form-container/edit.js:534
+#: src/form-container/edit.js:547
 msgid "Normal"
 msgstr ""
 
-#: src/form-container/edit.js:535
+#: src/form-container/edit.js:548
 msgid "Relaxed"
 msgstr ""
 
-#: src/form-container/edit.js:538
+#: src/form-container/edit.js:551
 msgid "Label position"
 msgstr ""
 
-#: src/form-container/edit.js:541
+#: src/form-container/edit.js:554
 msgid ""
 "Material-style notched label: rests inside the input, then slides onto the "
 "top border on focus, cutting a notch through it. Applies to text-style "
 "fields."
 msgstr ""
 
-#: src/form-container/edit.js:543
+#: src/form-container/edit.js:556
 msgid ""
 "Labels are visually hidden (still accessible to screen readers). The label "
 "text is used as placeholder inside the field. Applies to text-style fields "
 "only."
 msgstr ""
 
-#: src/form-container/edit.js:544
+#: src/form-container/edit.js:557
 msgid "Beside, Floating and Hidden apply to text-style fields only."
 msgstr ""
 
-#: src/form-container/edit.js:552
+#: src/form-container/edit.js:565
 msgid "Above"
 msgstr ""
 
-#: src/form-container/edit.js:553
+#: src/form-container/edit.js:566
 msgid "Beside"
 msgstr ""
 
-#: src/form-container/edit.js:554
+#: src/form-container/edit.js:567
 msgid "Floating"
 msgstr ""
 
-#: src/form-container/edit.js:555
+#: src/form-container/edit.js:568
 msgid "Hidden"
 msgstr ""
 
-#: src/form-container/edit.js:558
+#: src/form-container/edit.js:571
 msgid "Columns"
 msgstr ""
 
-#: src/form-container/edit.js:559
+#: src/form-container/edit.js:572
 msgid ""
 "Two-column layout collapses to a single column on mobile. Individual fields "
 "can be set to span both columns via their own inspector."
 msgstr ""
 
-#: src/form-container/edit.js:566
+#: src/form-container/edit.js:579
 msgid "1 column"
 msgstr ""
 
-#: src/form-container/edit.js:567
+#: src/form-container/edit.js:580
 msgid "2 columns"
 msgstr ""
 
-#: src/form-container/edit.js:570
+#: src/form-container/edit.js:583
 msgid "Submit button style"
 msgstr ""
 
-#: src/form-container/edit.js:577
+#: src/form-container/edit.js:590
 msgid "Fill"
 msgstr ""
 
-#: src/form-container/edit.js:578
+#: src/form-container/edit.js:591
 msgid "Outline"
 msgstr ""
 
-#: src/form-container/edit.js:579
+#: src/form-container/edit.js:592
 msgid "Ghost"
 msgstr ""
 
-#: src/form-container/edit.js:582
+#: src/form-container/edit.js:595
 msgid "Button background"
 msgstr ""
 
-#: src/form-container/edit.js:583
+#: src/form-container/edit.js:596
 msgid "Leave unset to use the primary colour."
 msgstr ""
 
-#: src/form-container/edit.js:595
+#: src/form-container/edit.js:608
 msgid "Button text colour"
 msgstr ""
 
-#: src/form-container/edit.js:596
+#: src/form-container/edit.js:609
 msgid "Leave unset for automatic contrast."
 msgstr ""
 
-#: src/form-container/edit.js:608
+#: src/form-container/edit.js:621
 msgid "Button border colour"
 msgstr ""
 
-#: src/form-container/edit.js:609
+#: src/form-container/edit.js:622
 msgid ""
 "Only visible when button style is \"Outline\". Leave unset to match the "
 "background colour."
 msgstr ""
 
-#: src/form-container/edit.js:621
+#: src/form-container/edit.js:634
 msgid "Progress indicator"
 msgstr ""
 
-#: src/form-container/edit.js:622
+#: src/form-container/edit.js:635
 msgid ""
 "Shown on multi-step forms only. Bar fills as the user advances; Dots marks "
 "each step; Numbers reads \"Step X of Y\"."
 msgstr ""
 
-#: src/form-container/edit.js:629
+#: src/form-container/edit.js:642
 msgid "Bar"
 msgstr ""
 
-#: src/form-container/edit.js:630
+#: src/form-container/edit.js:643
 msgid "Dots"
 msgstr ""
 
-#: src/form-container/edit.js:631
+#: src/form-container/edit.js:644
 msgid "Numbers"
 msgstr ""
 
-#: src/form-container/edit.js:632
+#: src/form-container/edit.js:645
 msgid "None"
 msgstr ""
 
-#: src/form-container/edit.js:636
+#: src/form-container/edit.js:649
 msgid "Show step labels"
 msgstr ""
 
-#: src/form-container/edit.js:637
+#: src/form-container/edit.js:650
 msgid ""
 "Display the current step’s label (from the Page Break block) beneath the "
 "indicator. Only shows when at least one Page Break has a label."
 msgstr ""
 
-#: src/form-container/edit.js:646
+#: src/form-container/edit.js:659
 msgid "Notifications"
 msgstr ""
 
-#: src/form-container/edit.js:650
+#: src/form-container/edit.js:663
 msgid "Send admin notification"
 msgstr ""
 
-#: src/form-container/edit.js:651
+#: src/form-container/edit.js:664
 msgid "Email the site admin when a submission is received."
 msgstr ""
 
-#: src/form-container/edit.js:660
+#: src/form-container/edit.js:673
 msgid ""
 "Comma-separated. Leave empty to use the site admin email. Supports merge "
 "tags like {field:email}."
 msgstr ""
 
-#: src/form-container/edit.js:662
+#: src/form-container/edit.js:675
 msgid "Site admin email"
 msgstr ""
 
-#: src/form-container/edit.js:668 src/form-container/edit.js:726
+#: src/form-container/edit.js:681 src/form-container/edit.js:739
 msgid "Subject"
 msgstr ""
 
-#: src/form-container/edit.js:669 src/form-container/edit.js:727
+#: src/form-container/edit.js:682 src/form-container/edit.js:740
 msgid "Supports merge tags. Leave empty for the default."
 msgstr ""
 
-#: src/form-container/edit.js:677 src/form-container/edit.js:735
+#: src/form-container/edit.js:690 src/form-container/edit.js:748
 msgid "Body"
 msgstr ""
 
-#: src/form-container/edit.js:678
+#: src/form-container/edit.js:691
 msgid ""
 "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, "
 "{submission:date}, {field:<fieldName>}. Leave empty for an auto-generated "
 "list of all fields."
 msgstr ""
 
-#: src/form-container/edit.js:680
+#: src/form-container/edit.js:693
 msgid "Auto-generated field list"
 msgstr ""
 
-#: src/form-container/edit.js:686
+#: src/form-container/edit.js:699
 msgid "Reply-To"
 msgstr ""
 
-#: src/form-container/edit.js:687
+#: src/form-container/edit.js:700
 msgid ""
 "Often set to {field:<emailFieldName>} so replies go to the submitter. Leave "
 "empty to use the site default."
 msgstr ""
 
-#: src/form-container/edit.js:700
+#: src/form-container/edit.js:713
 msgid "Send confirmation to submitter"
 msgstr ""
 
-#: src/form-container/edit.js:701
+#: src/form-container/edit.js:714
 msgid ""
 "Email a copy of the submission back to the person who filled out the form."
 msgstr ""
 
-#: src/form-container/edit.js:708
+#: src/form-container/edit.js:721
 msgid "Add an email field to this form to enable submitter confirmations."
 msgstr ""
 
-#: src/form-container/edit.js:714
+#: src/form-container/edit.js:727
 msgid "Email field"
 msgstr ""
 
-#: src/form-container/edit.js:715
+#: src/form-container/edit.js:728
 msgid "Which field contains the submitter’s email address."
 msgstr ""
 
-#: src/form-container/edit.js:736
+#: src/form-container/edit.js:749
 msgid ""
 "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, "
 "{submission:date}, {field:<fieldName>}. Leave empty for an auto-generated "
 "thank-you with the submitted values."
 msgstr ""
 
-#: src/form-container/edit.js:738
+#: src/form-container/edit.js:751
 msgid "Auto-generated thank-you with submitted values"
 msgstr ""
 
-#: src/form-container/edit.js:753
+#: src/form-container/edit.js:766
 msgid "Submit Condition"
 msgstr ""
 
-#: src/form-container/edit.js:754
+#: src/form-container/edit.js:767
 msgid "Gate the submit button"
 msgstr ""
 
-#: src/form-container/edit.js:755
+#: src/form-container/edit.js:768
 msgid ""
 "Disable the submit button until the rules below match. Useful for \"I agree "
 "to terms\" checkboxes."
 msgstr ""
 
-#: src/form-container/edit.js:777
+#: src/form-container/edit.js:790
 msgid "Data Retention"
 msgstr ""
 
-#: src/form-container/edit.js:781
+#: src/form-container/edit.js:794
 msgid "Auto-delete submissions after (days)"
 msgstr ""
 
-#: src/form-container/edit.js:783
+#: src/form-container/edit.js:796
 msgid ""
 "GDPR storage limitation: automatically delete this form’s submissions older "
 "than the chosen number of days. 0 = keep forever. Purges run daily and also "
 "remove any linked Flinkform Pro webhook delivery records."
 msgstr ""
 
-#: src/form-container/edit.js:864
+#: src/form-container/edit.js:877
 msgid "Add field"
 msgstr ""
 
@@ -1807,6 +1853,43 @@ msgstr ""
 #. keyword of the block flinkform/form
 #: src/form-container/block.json
 msgid "flinkform"
+msgstr ""
+
+#. description of the block flinkform/notice
+#: src/notice/block.json
+msgid ""
+"A highlighted note inside the form. Not a field — nothing is submitted. "
+"Combine it with conditional logic to surface guidance only when it applies."
+msgstr ""
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "notice"
+msgstr ""
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "note"
+msgstr ""
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "hint"
+msgstr ""
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "callout"
+msgstr ""
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "warning"
+msgstr ""
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "hinweis"
 msgstr ""
 
 #. description of the block flinkform/page-break

@@ -6,6 +6,7 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
 
     php tests/rule-evaluator-date-test.php
     php tests/field-address-render-test.php
+    php tests/notice-render-test.php
 
 `rule-evaluator-date-test.php` covers the `date_before` / `date_on_or_after`
 operators, including the guards against empty and malformed values.
@@ -16,6 +17,11 @@ hard-coded placeholders on the sub-inputs, which print straight through a
 floating label because the label rests *inside* the input while it is empty.
 It also pins the "line 2 is never required" rule and the conditional-logic
 forwarding onto the fieldset.
+
+`notice-render-test.php` covers the Notice block. It submits nothing, so the
+risk is output rather than validation: an unknown variant must not reach the
+class attribute, an empty note must not render as a bare coloured strip, and
+the message must be filtered down to inline formatting only.
 
 # Frontend smoke tests
 

@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "flinkform/notice",
+	"version": "0.1.0",
+	"title": "Notice",
+	"category": "flinkform",
+	"icon": "info-outline",
+	"description": "A highlighted note inside the form. Not a field — nothing is submitted. Combine it with conditional logic to surface guidance only when it applies.",
+	"keywords": ["notice", "note", "hint", "callout", "warning", "hinweis"],
+	"textdomain": "flinkform",
+	"parent": ["flinkform/form"],
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"attributes": {
+		"message": {
+			"type": "string",
+			"default": ""
+		},
+		"variant": {
+			"type": "string",
+			"default": "info"
+		},
+		"showIcon": {
+			"type": "boolean",
+			"default": true
+		},
+		"fullWidth": {
+			"type": "boolean",
+			"default": true
+		},
+		"conditionalLogic": {
+			"type": "object",
+			"default": {}
+		}
+	},
+	"usesContext": ["flinkform/formId", "flinkform/appearance"],
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

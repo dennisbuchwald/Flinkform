@@ -13,7 +13,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Flinkform 1.6.3\n"
+"Project-Id-Version: Flinkform 1.7.0\n"
 "Report-Msgid-Bugs-To: https://flinkform.de/\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -101,7 +101,7 @@ msgstr "Formular"
 msgid "Form submissions stored by the Flinkform plugin."
 msgstr "Formulareinsendungen, die vom Flinkform-Plugin gespeichert wurden."
 
-#: includes/Blocks/Registry.php:77 includes/Admin/Menu.php:56
+#: includes/Blocks/Registry.php:78 includes/Admin/Menu.php:56
 #: includes/Admin/Menu.php:57
 msgid "Flinkform"
 msgstr "Flinkform"
@@ -240,7 +240,7 @@ msgstr "Von"
 msgid "To date"
 msgstr "Bis Datum"
 
-#: includes/Admin/SubmissionsListTable.php:374 src/form-container/edit.js:659
+#: includes/Admin/SubmissionsListTable.php:374 src/form-container/edit.js:672
 msgid "To"
 msgstr "Bis"
 
@@ -289,7 +289,7 @@ msgstr "Eingegangen:"
 msgid "Form:"
 msgstr "Formular:"
 
-#: includes/Admin/SubmissionsPage.php:216 src/form-container/edit.js:412
+#: includes/Admin/SubmissionsPage.php:216 src/form-container/edit.js:425
 msgid "Form ID:"
 msgstr "Formular-ID:"
 
@@ -452,7 +452,7 @@ msgstr ""
 "Bitte versuchen Sie es erneut."
 
 #: includes/Submissions/Handler.php:388 src/form-container/render.php:44
-#: src/form-container/edit.js:106
+#: src/form-container/edit.js:108
 msgid "Thank you! Your message has been sent successfully."
 msgstr "Vielen Dank! Ihre Nachricht wurde erfolgreich gesendet."
 
@@ -532,11 +532,11 @@ msgstr "%s liegt über dem Höchstwert."
 msgid "%s contains an invalid choice."
 msgstr "%s enthält eine ungültige Auswahl."
 
-#: includes/Notifications/Mailer.php:211 src/form-container/edit.js:671
+#: includes/Notifications/Mailer.php:211 src/form-container/edit.js:684
 msgid "New submission: {form:title}"
 msgstr "Neue Einsendung: {form:title}"
 
-#: includes/Notifications/Mailer.php:241 src/form-container/edit.js:729
+#: includes/Notifications/Mailer.php:241 src/form-container/edit.js:742
 msgid "We received your submission"
 msgstr "Wir haben Ihre Einsendung erhalten"
 
@@ -593,14 +593,14 @@ msgstr "Wohnung, Stockwerk etc."
 msgid "Please select at least one option."
 msgstr "Bitte wählen Sie mindestens eine Option aus."
 
-#: src/form-container/render.php:37 src/form-container/edit.js:102
-#: src/form-container/edit.js:881
+#: src/form-container/render.php:37 src/form-container/edit.js:104
+#: src/form-container/edit.js:894
 msgid "Send"
 msgstr "Absenden"
 
 #. translators: 1: current step number, 2: total step count
 #: src/form-container/render.php:255 src/form-container/render.php:494
-#: src/form-container/edit.js:831
+#: src/form-container/edit.js:844
 #, javascript-format, php-format
 msgid "Step %1$s of %2$s"
 msgstr "Schritt %1$s von %2$s"
@@ -877,7 +877,7 @@ msgstr "Volle Breite"
 msgid "Make this field span both columns of the form."
 msgstr "Dieses Feld über beide Spalten des Formulars ausdehnen."
 
-#: src/shared/conditional-logic-panel.js:161 src/form-container/edit.js:718
+#: src/shared/conditional-logic-panel.js:161 src/form-container/edit.js:731
 msgid "— Select a field —"
 msgstr "- Feld auswählen -"
 
@@ -997,6 +997,56 @@ msgstr "Option entfernen"
 msgid "+ Add option"
 msgstr "+ Option hinzufügen"
 
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. title of the block flinkform/notice
+#: src/notice/edit.js:33 src/notice/block.json
+msgid "Notice"
+msgstr "Hinweis"
+
+#: src/notice/edit.js:35
+msgid "Type"
+msgstr "Typ"
+
+#: src/notice/edit.js:36
+msgid ""
+"Sets the colour and icon. Pick by meaning, not by colour — that keeps "
+"notices consistent across your forms."
+msgstr ""
+"Bestimmt Farbe und Icon. Nach Bedeutung auswählen, nicht nach Farbe, dann "
+"bleiben Hinweise über alle Formulare hinweg einheitlich."
+
+#: src/notice/edit.js:39
+msgid "Info"
+msgstr "Info"
+
+#: src/notice/edit.js:40
+msgid "Success"
+msgstr "Erfolg"
+
+#: src/notice/edit.js:41
+msgid "Warning"
+msgstr "Warnung"
+
+#: src/notice/edit.js:42
+msgid "Important"
+msgstr "Wichtig"
+
+#: src/notice/edit.js:49
+msgid "Show icon"
+msgstr "Icon anzeigen"
+
+#: src/notice/edit.js:60
+msgid ""
+"Show this notice only when the rules below match — for example a delivery "
+"surcharge that applies from a certain distance."
+msgstr ""
+"Diesen Hinweis nur anzeigen, wenn die Regeln unten zutreffen, zum Beispiel "
+"eine Anfahrtspauschale ab einer bestimmten Entfernung."
+
+#: src/notice/edit.js:71
+msgid "Write your note…"
+msgstr "Deinen Hinweis schreiben…"
+
 #: src/section-heading/edit.js:15
 msgid "Section"
 msgstr "Abschnitt"
@@ -1063,66 +1113,66 @@ msgstr ""
 "Wird angezeigt, wenn der Besucher das Formular absendet, ohne eine Option "
 "ausgewählt zu haben. Leer lassen für die Standardmeldung."
 
-#: src/form-container/edit.js:72
+#: src/form-container/edit.js:74
 msgid "Name"
 msgstr "Name"
 
-#: src/form-container/edit.js:73
+#: src/form-container/edit.js:75
 msgid "Email"
 msgstr "E-Mail"
 
-#: src/form-container/edit.js:74
+#: src/form-container/edit.js:76
 msgid "Message"
 msgstr "Nachricht"
 
-#: src/form-container/edit.js:395
+#: src/form-container/edit.js:408
 msgid "Form Settings"
 msgstr "Formulareinstellungen"
 
-#: src/form-container/edit.js:397
+#: src/form-container/edit.js:410
 msgid "Form Title"
 msgstr "Formulartitel"
 
-#: src/form-container/edit.js:398
+#: src/form-container/edit.js:411
 msgid ""
 "Internal name shown in the Forms admin overview. Not visible to visitors."
 msgstr ""
 "Interner Name, der in der Formular-Adminübersicht angezeigt wird. Für "
 "Besucher nicht sichtbar."
 
-#: src/form-container/edit.js:405
+#: src/form-container/edit.js:418
 msgid "Submit Button Label"
 msgstr "Beschriftung des Absende-Buttons"
 
-#: src/form-container/edit.js:417
+#: src/form-container/edit.js:430
 msgid "After Submit"
 msgstr "Nach dem Absenden"
 
-#: src/form-container/edit.js:421
+#: src/form-container/edit.js:434
 msgid "On successful submission"
 msgstr "Bei erfolgreicher Einsendung"
 
-#: src/form-container/edit.js:428
+#: src/form-container/edit.js:441
 msgid "Show message"
 msgstr "Meldung anzeigen"
 
-#: src/form-container/edit.js:429
+#: src/form-container/edit.js:442
 msgid "Redirect to URL"
 msgstr "Zur URL weiterleiten"
 
-#: src/form-container/edit.js:434
+#: src/form-container/edit.js:447
 msgid "Success Message"
 msgstr "Erfolgsmeldung"
 
-#: src/form-container/edit.js:435
+#: src/form-container/edit.js:448
 msgid "Shown in place of the form after a successful submission."
 msgstr "Wird nach erfolgreicher Einsendung anstelle des Formulars angezeigt."
 
-#: src/form-container/edit.js:445
+#: src/form-container/edit.js:458
 msgid "Redirect URL"
 msgstr "Weiterleitungs-URL"
 
-#: src/form-container/edit.js:446
+#: src/form-container/edit.js:459
 msgid ""
 "Same-origin only. Enter a path (/danke) or a full URL on this site. External"
 " URLs are silently rejected by the safe-redirect filter — operators who need"
@@ -1134,15 +1184,15 @@ msgstr ""
 "verworfen. Betreiber, die domainübergreifende Dankesseiten benötigen, "
 "erhalten in einer späteren Version eine websiteweite Opt-in-Option."
 
-#: src/form-container/edit.js:454
+#: src/form-container/edit.js:467
 msgid "https://example.com/danke"
 msgstr ""
 
-#: src/form-container/edit.js:460
+#: src/form-container/edit.js:473
 msgid "Append submission ID"
 msgstr "Einsendungs-ID anhängen"
 
-#: src/form-container/edit.js:461
+#: src/form-container/edit.js:474
 msgid ""
 "Adds ?flinkform_submission_id=N to the redirect URL — useful for analytics "
 "events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off "
@@ -1153,11 +1203,11 @@ msgstr ""
 "Standardmäßig deaktiviert, da Einsendungs-IDs personenbezogene Daten "
 "enthalten können und im Browser-Verlauf gespeichert werden."
 
-#: src/form-container/edit.js:468
+#: src/form-container/edit.js:481
 msgid "Append form ID"
 msgstr "Formular-ID anhängen"
 
-#: src/form-container/edit.js:469
+#: src/form-container/edit.js:482
 msgid ""
 "Adds ?flinkform_form_id=UUID — lets a shared thank-you page differentiate "
 "conversions by source form."
@@ -1165,15 +1215,15 @@ msgstr ""
 "Fügt ?flinkform_form_id=UUID an - ermöglicht einer gemeinsamen Dankesseite, "
 "Conversions nach Quellformular zu unterscheiden."
 
-#: src/form-container/edit.js:479
+#: src/form-container/edit.js:492
 msgid "Style"
 msgstr "Stil"
 
-#: src/form-container/edit.js:484
+#: src/form-container/edit.js:497
 msgid "Primary color"
 msgstr "Primärfarbe"
 
-#: src/form-container/edit.js:485
+#: src/form-container/edit.js:498
 msgid ""
 "Used for submit button, focus rings, and accent details. Leave unset to "
 "inherit from your theme."
@@ -1181,11 +1231,11 @@ msgstr ""
 "Wird für den Absende-Button, Fokusringe und Akzentdetails verwendet. Nicht "
 "setzen, um den Wert vom Theme zu übernehmen."
 
-#: src/form-container/edit.js:497
+#: src/form-container/edit.js:510
 msgid "Field style"
 msgstr "Feldstil"
 
-#: src/form-container/edit.js:498
+#: src/form-container/edit.js:511
 msgid ""
 "Bordered: full outline. Soft: light gray border. Underline: bottom border "
 "only. Minimal: no border, subtle background."
@@ -1193,27 +1243,27 @@ msgstr ""
 "Umrandet: vollständiger Rahmen. Weich: hellgrauer Rahmen. Unterstrichen: nur"
 " untere Linie. Minimal: kein Rahmen, dezenter Hintergrund."
 
-#: src/form-container/edit.js:505
+#: src/form-container/edit.js:518
 msgid "Bordered"
 msgstr "Umrandet"
 
-#: src/form-container/edit.js:506
+#: src/form-container/edit.js:519
 msgid "Soft"
 msgstr "Weich"
 
-#: src/form-container/edit.js:507
+#: src/form-container/edit.js:520
 msgid "Underline"
 msgstr "Unterstrichen"
 
-#: src/form-container/edit.js:508
+#: src/form-container/edit.js:521
 msgid "Minimal"
 msgstr "Minimal"
 
-#: src/form-container/edit.js:511
+#: src/form-container/edit.js:524
 msgid "Border radius"
 msgstr "Eckenradius"
 
-#: src/form-container/edit.js:512
+#: src/form-container/edit.js:525
 msgid ""
 "Applies to fields and the submit button. Leave at the default to inherit "
 "from your theme."
@@ -1221,27 +1271,27 @@ msgstr ""
 "Gilt für Felder und den Absende-Button. Standard belassen, um den Wert vom "
 "Theme zu übernehmen."
 
-#: src/form-container/edit.js:526
+#: src/form-container/edit.js:539
 msgid "Field spacing"
 msgstr "Feldabstand"
 
-#: src/form-container/edit.js:533
+#: src/form-container/edit.js:546
 msgid "Compact"
 msgstr "Kompakt"
 
-#: src/form-container/edit.js:534
+#: src/form-container/edit.js:547
 msgid "Normal"
 msgstr "Normal"
 
-#: src/form-container/edit.js:535
+#: src/form-container/edit.js:548
 msgid "Relaxed"
 msgstr "Großzügig"
 
-#: src/form-container/edit.js:538
+#: src/form-container/edit.js:551
 msgid "Label position"
 msgstr "Beschriftungsposition"
 
-#: src/form-container/edit.js:541
+#: src/form-container/edit.js:554
 msgid ""
 "Material-style notched label: rests inside the input, then slides onto the "
 "top border on focus, cutting a notch through it. Applies to text-style "
@@ -1251,7 +1301,7 @@ msgstr ""
 "gleitet beim Fokus auf den oberen Rahmen, wobei sie eine Kerbe in diesen "
 "schneidet. Gilt für Textfelder."
 
-#: src/form-container/edit.js:543
+#: src/form-container/edit.js:556
 msgid ""
 "Labels are visually hidden (still accessible to screen readers). The label "
 "text is used as placeholder inside the field. Applies to text-style fields "
@@ -1261,31 +1311,31 @@ msgstr ""
 "zugänglich). Der Beschriftungstext wird als Platzhalter im Feld verwendet. "
 "Gilt nur für Textfelder."
 
-#: src/form-container/edit.js:544
+#: src/form-container/edit.js:557
 msgid "Beside, Floating and Hidden apply to text-style fields only."
 msgstr "Daneben, Schwebend und Versteckt gelten nur für Textfelder."
 
-#: src/form-container/edit.js:552
+#: src/form-container/edit.js:565
 msgid "Above"
 msgstr "Oberhalb"
 
-#: src/form-container/edit.js:553
+#: src/form-container/edit.js:566
 msgid "Beside"
 msgstr "Daneben"
 
-#: src/form-container/edit.js:554
+#: src/form-container/edit.js:567
 msgid "Floating"
 msgstr "Schwebend"
 
-#: src/form-container/edit.js:555
+#: src/form-container/edit.js:568
 msgid "Hidden"
 msgstr "Versteckt"
 
-#: src/form-container/edit.js:558
+#: src/form-container/edit.js:571
 msgid "Columns"
 msgstr "Spalten"
 
-#: src/form-container/edit.js:559
+#: src/form-container/edit.js:572
 msgid ""
 "Two-column layout collapses to a single column on mobile. Individual fields "
 "can be set to span both columns via their own inspector."
@@ -1294,51 +1344,51 @@ msgstr ""
 "Einzelne Felder können über ihre eigenen Einstellungen auf beide Spalten "
 "ausgedehnt werden."
 
-#: src/form-container/edit.js:566
+#: src/form-container/edit.js:579
 msgid "1 column"
 msgstr "1 Spalte"
 
-#: src/form-container/edit.js:567
+#: src/form-container/edit.js:580
 msgid "2 columns"
 msgstr "2 Spalten"
 
-#: src/form-container/edit.js:570
+#: src/form-container/edit.js:583
 msgid "Submit button style"
 msgstr "Stil des Absende-Buttons"
 
-#: src/form-container/edit.js:577
+#: src/form-container/edit.js:590
 msgid "Fill"
 msgstr "Gefüllt"
 
-#: src/form-container/edit.js:578
+#: src/form-container/edit.js:591
 msgid "Outline"
 msgstr "Umrissen"
 
-#: src/form-container/edit.js:579
+#: src/form-container/edit.js:592
 msgid "Ghost"
 msgstr "Ghost"
 
-#: src/form-container/edit.js:582
+#: src/form-container/edit.js:595
 msgid "Button background"
 msgstr "Button-Hintergrund"
 
-#: src/form-container/edit.js:583
+#: src/form-container/edit.js:596
 msgid "Leave unset to use the primary colour."
 msgstr "Nicht setzen, um die Primärfarbe zu verwenden."
 
-#: src/form-container/edit.js:595
+#: src/form-container/edit.js:608
 msgid "Button text colour"
 msgstr "Button-Textfarbe"
 
-#: src/form-container/edit.js:596
+#: src/form-container/edit.js:609
 msgid "Leave unset for automatic contrast."
 msgstr "Nicht setzen für automatischen Kontrast."
 
-#: src/form-container/edit.js:608
+#: src/form-container/edit.js:621
 msgid "Button border colour"
 msgstr "Button-Rahmenfarbe"
 
-#: src/form-container/edit.js:609
+#: src/form-container/edit.js:622
 msgid ""
 "Only visible when button style is \"Outline\". Leave unset to match the "
 "background colour."
@@ -1346,11 +1396,11 @@ msgstr ""
 "Nur sichtbar, wenn der Button-Stil \"Umrissen\" ist. Nicht setzen, um die "
 "Hintergrundfarbe zu verwenden."
 
-#: src/form-container/edit.js:621
+#: src/form-container/edit.js:634
 msgid "Progress indicator"
 msgstr "Fortschrittsanzeige"
 
-#: src/form-container/edit.js:622
+#: src/form-container/edit.js:635
 msgid ""
 "Shown on multi-step forms only. Bar fills as the user advances; Dots marks "
 "each step; Numbers reads \"Step X of Y\"."
@@ -1359,27 +1409,27 @@ msgstr ""
 "Fortschritt; Punkte markieren jeden Schritt; Zahlen zeigt \"Schritt X von "
 "Y\"."
 
-#: src/form-container/edit.js:629
+#: src/form-container/edit.js:642
 msgid "Bar"
 msgstr "Balken"
 
-#: src/form-container/edit.js:630
+#: src/form-container/edit.js:643
 msgid "Dots"
 msgstr "Punkte"
 
-#: src/form-container/edit.js:631
+#: src/form-container/edit.js:644
 msgid "Numbers"
 msgstr "Zahlen"
 
-#: src/form-container/edit.js:632
+#: src/form-container/edit.js:645
 msgid "None"
 msgstr "Keine"
 
-#: src/form-container/edit.js:636
+#: src/form-container/edit.js:649
 msgid "Show step labels"
 msgstr "Schritt-Beschriftungen anzeigen"
 
-#: src/form-container/edit.js:637
+#: src/form-container/edit.js:650
 msgid ""
 "Display the current step’s label (from the Page Break block) beneath the "
 "indicator. Only shows when at least one Page Break has a label."
@@ -1388,21 +1438,21 @@ msgstr ""
 "der Anzeige einblenden. Erscheint nur, wenn mindestens ein Seitenumbruch "
 "eine Beschriftung hat."
 
-#: src/form-container/edit.js:646
+#: src/form-container/edit.js:659
 msgid "Notifications"
 msgstr "Benachrichtigungen"
 
-#: src/form-container/edit.js:650
+#: src/form-container/edit.js:663
 msgid "Send admin notification"
 msgstr "Admin-Benachrichtigung senden"
 
-#: src/form-container/edit.js:651
+#: src/form-container/edit.js:664
 msgid "Email the site admin when a submission is received."
 msgstr ""
 "Den Website-Administrator per E-Mail benachrichtigen, wenn eine Einsendung "
 "eingegangen ist."
 
-#: src/form-container/edit.js:660
+#: src/form-container/edit.js:673
 msgid ""
 "Comma-separated. Leave empty to use the site admin email. Supports merge "
 "tags like {field:email}."
@@ -1410,23 +1460,23 @@ msgstr ""
 "Kommagetrennt. Leer lassen, um die Administrator-E-Mail-Adresse zu "
 "verwenden. Unterstützt Merge Tags wie {field:email}."
 
-#: src/form-container/edit.js:662
+#: src/form-container/edit.js:675
 msgid "Site admin email"
 msgstr "Administrator-E-Mail"
 
-#: src/form-container/edit.js:668 src/form-container/edit.js:726
+#: src/form-container/edit.js:681 src/form-container/edit.js:739
 msgid "Subject"
 msgstr "Betreff"
 
-#: src/form-container/edit.js:669 src/form-container/edit.js:727
+#: src/form-container/edit.js:682 src/form-container/edit.js:740
 msgid "Supports merge tags. Leave empty for the default."
 msgstr "Unterstützt Merge Tags. Leer lassen für die Standardeinstellung."
 
-#: src/form-container/edit.js:677 src/form-container/edit.js:735
+#: src/form-container/edit.js:690 src/form-container/edit.js:748
 msgid "Body"
 msgstr "Nachrichtentext"
 
-#: src/form-container/edit.js:678
+#: src/form-container/edit.js:691
 msgid ""
 "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, "
 "{submission:date}, {field:<fieldName>}. Leave empty for an auto-generated "
@@ -1436,15 +1486,15 @@ msgstr ""
 "{submission:date}, {field:<fieldName>}. Leer lassen für eine automatisch "
 "generierte Liste aller Felder."
 
-#: src/form-container/edit.js:680
+#: src/form-container/edit.js:693
 msgid "Auto-generated field list"
 msgstr "Automatisch generierte Feldliste"
 
-#: src/form-container/edit.js:686
+#: src/form-container/edit.js:699
 msgid "Reply-To"
 msgstr "Reply-To"
 
-#: src/form-container/edit.js:687
+#: src/form-container/edit.js:700
 msgid ""
 "Often set to {field:<emailFieldName>} so replies go to the submitter. Leave "
 "empty to use the site default."
@@ -1452,32 +1502,32 @@ msgstr ""
 "Häufig auf {field:<emailFieldName>} gesetzt, damit Antworten an den "
 "Einsender gehen. Leer lassen für die Website-Standardeinstellung."
 
-#: src/form-container/edit.js:700
+#: src/form-container/edit.js:713
 msgid "Send confirmation to submitter"
 msgstr "Bestätigung an den Einsender senden"
 
-#: src/form-container/edit.js:701
+#: src/form-container/edit.js:714
 msgid ""
 "Email a copy of the submission back to the person who filled out the form."
 msgstr ""
 "Eine Kopie der Einsendung per E-Mail an die Person zurückschicken, die das "
 "Formular ausgefüllt hat."
 
-#: src/form-container/edit.js:708
+#: src/form-container/edit.js:721
 msgid "Add an email field to this form to enable submitter confirmations."
 msgstr ""
 "Fügen Sie diesem Formular ein E-Mail-Feld hinzu, um Einsender-Bestätigungen "
 "zu aktivieren."
 
-#: src/form-container/edit.js:714
+#: src/form-container/edit.js:727
 msgid "Email field"
 msgstr "E-Mail-Feld"
 
-#: src/form-container/edit.js:715
+#: src/form-container/edit.js:728
 msgid "Which field contains the submitter’s email address."
 msgstr "Welches Feld die E-Mail-Adresse des Absenders enthält."
 
-#: src/form-container/edit.js:736
+#: src/form-container/edit.js:749
 msgid ""
 "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, "
 "{submission:date}, {field:<fieldName>}. Leave empty for an auto-generated "
@@ -1487,19 +1537,19 @@ msgstr ""
 "{submission:date}, {field:<fieldName>}. Leer lassen für eine automatisch "
 "generierte Danksagung mit den eingereichten Werten."
 
-#: src/form-container/edit.js:738
+#: src/form-container/edit.js:751
 msgid "Auto-generated thank-you with submitted values"
 msgstr "Automatisch generierte Danksagung mit den eingesendeten Werten"
 
-#: src/form-container/edit.js:753
+#: src/form-container/edit.js:766
 msgid "Submit Condition"
 msgstr "Absende-Bedingung"
 
-#: src/form-container/edit.js:754
+#: src/form-container/edit.js:767
 msgid "Gate the submit button"
 msgstr "Absende-Button sperren"
 
-#: src/form-container/edit.js:755
+#: src/form-container/edit.js:768
 msgid ""
 "Disable the submit button until the rules below match. Useful for \"I agree "
 "to terms\" checkboxes."
@@ -1507,15 +1557,15 @@ msgstr ""
 "Den Absende-Button deaktivieren, bis die unten stehenden Regeln zutreffen. "
 "Nützlich für \"Ich stimme den Bedingungen zu\"-Checkboxen."
 
-#: src/form-container/edit.js:777
+#: src/form-container/edit.js:790
 msgid "Data Retention"
 msgstr "Datenspeicherung"
 
-#: src/form-container/edit.js:781
+#: src/form-container/edit.js:794
 msgid "Auto-delete submissions after (days)"
 msgstr "Einsendungen automatisch löschen nach (Tagen)"
 
-#: src/form-container/edit.js:783
+#: src/form-container/edit.js:796
 msgid ""
 "GDPR storage limitation: automatically delete this form’s submissions older "
 "than the chosen number of days. 0 = keep forever. Purges run daily and also "
@@ -1526,7 +1576,7 @@ msgstr ""
 "läuft täglich und entfernt auch verknüpfte Webhook-Protokolle von Flinkform "
 "Pro."
 
-#: src/form-container/edit.js:864
+#: src/form-container/edit.js:877
 msgid "Add field"
 msgstr "Feld hinzufügen"
 
@@ -1938,6 +1988,46 @@ msgstr "formular"
 #: src/form-container/block.json
 msgid "flinkform"
 msgstr "flinkform"
+
+#. description of the block flinkform/notice
+#: src/notice/block.json
+msgid ""
+"A highlighted note inside the form. Not a field — nothing is submitted. "
+"Combine it with conditional logic to surface guidance only when it applies."
+msgstr ""
+"Ein hervorgehobener Hinweis im Formular. Kein Feld, es wird nichts "
+"übermittelt. Zusammen mit bedingter Logik erscheint er nur dann, wenn er "
+"zutrifft."
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "notice"
+msgstr "hinweis"
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "note"
+msgstr "notiz"
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "hint"
+msgstr "tipp"
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "callout"
+msgstr "hinweisbox"
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "warning"
+msgstr "warnung"
+
+#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgid "hinweis"
+msgstr "hinweis"
 
 #. description of the block flinkform/page-break
 #: src/page-break/block.json

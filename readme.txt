@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.6.4
+Stable tag: 1.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,7 @@ Flinkform is a form builder that lives entirely inside the WordPress Block Edito
 * 14 field types: Text, Email, Textarea, Number, Date, URL, Phone, Select, Radio, Checkbox, Toggle, Hidden, Consent, Address
 * Composite Address field: street, postal code and city in a compact grid, with optional address line 2 and country
 * Dedicated Consent field for privacy-policy agreement
+* Notice block: a highlighted note between fields (info, success, warning, important) — pair it with conditional logic to surface guidance only when it applies
 * Section Heading and Page Break blocks for structuring longer forms
 * Multi-step forms with Page Break block, per-step validation and progress indicator (bar, dots or numbers)
 * Conditional logic — show/hide fields, skip steps, gate the submit button
@@ -118,6 +119,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.7.0 =
+* New: Notice block — a highlighted note placed between fields, in four types (info, success, warning, important) with a matching icon. It submits nothing, so it never appears in your submissions or CSV export. Its real strength is conditional logic: show a note only when it applies, for example a delivery surcharge that kicks in from a certain distance, or an explanation attached to one particular answer. Text supports bold, italic and links; the colours follow your theme where it provides them.
 
 = 1.6.4 =
 * Fix: the floating-label notch no longer paints a mismatched box behind the label. It used to fall back to white whenever the surface colour was unknown, which on a tinted page produced a white rectangle around every lifted label. The notch is now opt-in: it only appears once the surface colour has been positively resolved, and otherwise the label simply rests clear of the border line, which needs no colour at all.
@@ -254,6 +258,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.7.0 =
+Adds the Notice block: highlighted notes between your fields, and with conditional logic they appear only when they apply.
 
 = 1.6.4 =
 Fixes the white box that appeared behind floating labels on any page whose background is not plain white.

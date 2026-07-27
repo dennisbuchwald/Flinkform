@@ -33,6 +33,7 @@ final class Registry {
 		'form-container',
 		'section-heading',
 		'page-break',
+		'notice',
 		'field-text',
 		'field-email',
 		'field-textarea',
