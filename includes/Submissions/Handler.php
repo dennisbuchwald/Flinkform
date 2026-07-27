@@ -1088,6 +1088,21 @@ final class Handler {
 	}
 
 	/**
+	 * The whole value map the current form render is working from.
+	 *
+	 * Empty on a fresh page load, populated with the submitted values when
+	 * a failed submission is being re-rendered. Conditions\Wrapper feeds it
+	 * to the rule evaluator so a conditional block can be rendered in its
+	 * correct initial state instead of appearing and then being hidden once
+	 * the frontend JS catches up.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function current_values(): array {
+		return self::$current_values;
+	}
+
+	/**
 	 * Read the flashed value for a single field, if any.
 	 *
 	 * Returns either a string (scalar fields) or an array of strings

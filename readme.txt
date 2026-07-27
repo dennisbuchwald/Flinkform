@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.7.0
+Stable tag: 1.7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -119,6 +119,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.7.1 =
+* Fix: conditional blocks no longer flash into view on page load. Everything with conditional logic was rendered visible and only hidden once the frontend module ran, which for a text field was a blip but for a Notice block meant a coloured box that appeared and then vanished. The server now works out the initial state itself — it knows the values the browser will evaluate against, either none on a fresh page or the submitted ones when a failed submission is re-rendered — and renders the block hidden straight away when it does not apply.
 
 = 1.7.0 =
 * New: Notice block — a highlighted note placed between fields, in four types (info, success, warning, important) with a matching icon. It submits nothing, so it never appears in your submissions or CSV export. Its real strength is conditional logic: show a note only when it applies, for example a delivery surcharge that kicks in from a certain distance, or an explanation attached to one particular answer. Text supports bold, italic and links; the colours follow your theme where it provides them.
@@ -258,6 +261,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.7.1 =
+Conditional fields and notices no longer flash into view while the page loads.
 
 = 1.7.0 =
 Adds the Notice block: highlighted notes between your fields, and with conditional logic they appear only when they apply.

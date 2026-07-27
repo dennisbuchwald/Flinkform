@@ -77,4 +77,55 @@ final class Wrapper {
 
 		return (string) wp_json_encode( $payload );
 	}
+
+	/**
+	 * Build the complete wrapper attributes for a conditional block: the
+	 * `data-flinkform-condition` payload plus `hidden` when the block
+	 * should not be visible in the form's INITIAL state.
+	 *
+	 * Why the server decides the initial state at all: the frontend module
+	 * is deferred, so between first paint and DOMContentLoaded every
+	 * conditional block is visible. For a text input that is a blip; for a
+	 * Notice block it is a coloured box that visibly appears and then
+	 * vanishes. Rendering the correct state up front removes the flash.
+	 *
+	 * The server can do this because it knows exactly the values the client
+	 * will evaluate against on load: nothing on a fresh page, or the
+	 * submitted values when a failed submission is being re-rendered. The
+	 * PHP and JS evaluators agree on those inputs (both treat a missing
+	 * field as empty), so the initial verdict matches and the JS pass at
+	 * DOMContentLoaded is a no-op.
+	 *
+	 * Where they can disagree is a block whose rule targets a field that
+	 * renders with a non-empty default the server's value map does not
+	 * carry — a hidden field with a static value, say. Then the JS corrects
+	 * it on load, which is exactly the behaviour before this method existed:
+	 * no worse, just not improved.
+	 *
+	 * Note for no-JS visitors: conditional blocks now start in their
+	 * evaluated state rather than all-visible. Conditional logic is
+	 * inherently interactive and never worked without JS, so a correct
+	 * initial state beats showing every branch at once.
+	 *
+	 * Returns a string that is safe to echo directly into an opening tag,
+	 * with a leading space, or `''` when no condition applies.
+	 *
+	 * @param mixed $rule_set The block's `conditionalLogic` attribute.
+	 * @return string Pre-escaped attribute string.
+	 */
+	public static function condition_attributes( $rule_set ): string {
+		$json = self::condition_value( $rule_set );
+		if ( '' === $json ) {
+			return '';
+		}
+
+		$attributes = ' data-flinkform-condition="' . esc_attr( $json ) . '"';
+
+		$evaluator = new RuleEvaluator();
+		if ( ! $evaluator->should_show( $rule_set, \Flinkform\Submissions\Handler::current_values() ) ) {
+			$attributes .= ' hidden';
+		}
+
+		return $attributes;
+	}
 }

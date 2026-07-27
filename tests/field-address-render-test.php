@@ -32,8 +32,8 @@ namespace Flinkform\Submissions {
 namespace Flinkform\Conditions {
 	/** Stub: returns a recognisable marker so forwarding can be asserted. */
 	class Wrapper {
-		public static function condition_value( $conditional_logic ) {
-			return empty( $conditional_logic ) ? '' : 'COND';
+		public static function condition_attributes( $conditional_logic ) {
+			return empty( $conditional_logic ) ? '' : ' data-flinkform-condition="COND"';
 		}
 	}
 }
