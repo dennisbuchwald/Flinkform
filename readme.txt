@@ -247,6 +247,12 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 == Upgrade Notice ==
 
+= 1.6.3 =
+Recommended for every site, essential for German ones: 1.6.1 accidentally removed 243 translated strings, and this release restores them. Also fixes the address field under floating labels and the red outline on invalid inputs, which never rendered.
+
+= 1.4.3 =
+Critical. Versions 1.4.0 to 1.4.2 silently rejected every submission as spam and stored nothing. Update immediately.
+
 = 0.4.2 =
 German translation included. Success message, submit label and consent text now render in the site language automatically. Fixes a visual bug with the editor button in Spectra containers.
 
