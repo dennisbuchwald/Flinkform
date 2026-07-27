@@ -114,13 +114,7 @@ final class Mailer {
 			return;
 		}
 
-		wp_mail(
-			$recipients,
-			(string) $email['subject'],
-			(string) ( $email['body'] ?? '' ),
-			isset( $email['headers'] ) && is_array( $email['headers'] ) ? $email['headers'] : [],
-			isset( $email['attachments'] ) && is_array( $email['attachments'] ) ? $email['attachments'] : []
-		);
+		$this->send( $email, $recipients, $this->resolve_sender( $form_def, $context ) );
 	}
 
 	/**
@@ -163,6 +157,17 @@ final class Mailer {
 		$subject = str_replace( [ "\r", "\n" ], '', MergeTags::render( $config['subject'], $context ) );
 		$body    = MergeTags::render( $config['body'], $context );
 
+		// Same sanitising as the admin notification's Reply-To: strip CR/LF
+		// first so a merge-tagged value can never smuggle in a second header,
+		// then require a well-formed address.
+		$reply_to = str_replace( [ "\r", "\n" ], '', trim( MergeTags::render( $config['reply_to'], $context ) ) );
+		$reply_to = sanitize_email( $reply_to );
+
+		$headers = [];
+		if ( '' !== $reply_to && is_email( $reply_to ) ) {
+			$headers[] = 'Reply-To: ' . $reply_to;
+		}
+
 		/** This filter is documented in this file. */
 		$email = (array) apply_filters(
 			'flinkform_email_notification',
@@ -170,7 +175,7 @@ final class Mailer {
 				'to'          => [ $recipient ],
 				'subject'     => $subject,
 				'body'        => $body,
-				'headers'     => [],
+				'headers'     => $headers,
 				'attachments' => [],
 			],
 			$context,
@@ -183,13 +188,91 @@ final class Mailer {
 			return;
 		}
 
-		wp_mail(
-			$recipients,
-			(string) $email['subject'],
-			(string) ( $email['body'] ?? '' ),
-			isset( $email['headers'] ) && is_array( $email['headers'] ) ? $email['headers'] : [],
-			isset( $email['attachments'] ) && is_array( $email['attachments'] ) ? $email['attachments'] : []
-		);
+		$this->send( $email, $recipients, $this->resolve_sender( $form_def, $context ) );
+	}
+
+	/**
+	 * Hand a composed email to wp_mail(), applying the form's own sender
+	 * for the duration of that one call.
+	 *
+	 * Why filters and not a `From:` header: wp_mail() reads a From header
+	 * into `$from_email`, but then runs it through the `wp_mail_from`
+	 * filter before handing it to PHPMailer. Any SMTP plugin hooked there
+	 * would therefore silently overrule a per-form sender. Registering our
+	 * own filter at PHP_INT_MAX for the length of the send is the only way
+	 * a form-level setting reliably wins — and removing it immediately
+	 * afterwards keeps every other plugin's mail untouched.
+	 *
+	 * @param array<string, mixed>                  $email      Composed email.
+	 * @param array<int, string>                    $recipients Resolved To list.
+	 * @param array{email: string, name: string}    $sender     Empty strings mean "leave WordPress alone".
+	 * @return void
+	 */
+	private function send( array $email, array $recipients, array $sender ): void {
+		$from_email = static fn () => $sender['email'];
+		$from_name  = static fn () => $sender['name'];
+
+		if ( '' !== $sender['email'] ) {
+			add_filter( 'wp_mail_from', $from_email, PHP_INT_MAX );
+		}
+		if ( '' !== $sender['name'] ) {
+			add_filter( 'wp_mail_from_name', $from_name, PHP_INT_MAX );
+		}
+
+		try {
+			wp_mail(
+				$recipients,
+				(string) $email['subject'],
+				(string) ( $email['body'] ?? '' ),
+				isset( $email['headers'] ) && is_array( $email['headers'] ) ? $email['headers'] : [],
+				isset( $email['attachments'] ) && is_array( $email['attachments'] ) ? $email['attachments'] : []
+			);
+		} finally {
+			// `finally` because a mail plugin throwing mid-send must not
+			// leave our sender bolted onto every later wp_mail() call.
+			if ( '' !== $sender['email'] ) {
+				remove_filter( 'wp_mail_from', $from_email, PHP_INT_MAX );
+			}
+			if ( '' !== $sender['name'] ) {
+				remove_filter( 'wp_mail_from_name', $from_name, PHP_INT_MAX );
+			}
+		}
+	}
+
+	/**
+	 * Resolve the form's sender override.
+	 *
+	 * Both halves are independent: a form may set only the name and keep
+	 * the address WordPress or an SMTP plugin would have used.
+	 *
+	 * The address is deliberately NOT checked against the site's domain
+	 * here. That belongs in the editor, where the author can be warned
+	 * while there is still something to fix; refusing it at send time would
+	 * turn a deliverability question into silently missing mail.
+	 *
+	 * @param array{attributes?: array<string, mixed>} $form_def
+	 * @param array<string, mixed>                     $context
+	 * @return array{email: string, name: string}
+	 */
+	private function resolve_sender( array $form_def, array $context ): array {
+		$notif = $form_def['attributes']['notifications'] ?? [];
+		$notif = is_array( $notif ) ? $notif : [];
+
+		$email = isset( $notif['fromEmail'] ) ? (string) $notif['fromEmail'] : '';
+		$email = str_replace( [ "\r", "\n" ], '', trim( MergeTags::render( $email, $context ) ) );
+		$email = sanitize_email( $email );
+		if ( '' !== $email && ! is_email( $email ) ) {
+			$email = '';
+		}
+
+		$name = isset( $notif['fromName'] ) ? (string) $notif['fromName'] : '';
+		$name = str_replace( [ "\r", "\n" ], '', trim( MergeTags::render( $name, $context ) ) );
+		$name = sanitize_text_field( $name );
+
+		return [
+			'email' => $email,
+			'name'  => $name,
+		];
 	}
 
 	/**
@@ -248,6 +331,10 @@ final class Mailer {
 			'email_field' => isset( $conf['emailField'] ) ? (string) $conf['emailField'] : '',
 			'subject'     => isset( $conf['subject'] ) && '' !== trim( (string) $conf['subject'] ) ? (string) $conf['subject'] : $default_subject,
 			'body'        => isset( $conf['body'] ) && '' !== trim( (string) $conf['body'] ) ? (string) $conf['body'] : $default_body,
+			// Where a reply from the visitor should land. Without it the
+			// confirmation answers back to whatever address the site sends
+			// from, which is usually a mailbox nobody reads.
+			'reply_to'    => isset( $conf['replyTo'] ) ? (string) $conf['replyTo'] : '',
 		];
 	}
 

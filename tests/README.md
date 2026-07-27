@@ -8,6 +8,7 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
     php tests/field-address-render-test.php
     php tests/notice-render-test.php
     php tests/condition-initial-state-test.php
+    php tests/mailer-sender-test.php
 
 `rule-evaluator-date-test.php` covers the `date_before` / `date_on_or_after`
 operators, including the guards against empty and malformed values.
@@ -26,6 +27,14 @@ the two drift, the load-time flash comes back, just in the other direction.
 It pins the awkward inputs in particular: a missing key and an empty string
 must behave identically, because the browser reports an untouched input as
 an empty string while the server simply has no entry for it.
+
+`mailer-sender-test.php` covers the per-form sender and the Reply-To
+headers. The sender goes through the `wp_mail_from` filters rather than a
+`From:` header, because wp_mail() runs a header-derived address through
+that filter afterwards and an SMTP plugin hooked there would silently
+overrule the form. The test pins both halves of that: the form-level value
+wins, and the filters are gone again once the mail is out, so no other
+plugin's mail inherits them.
 
 `notice-render-test.php` covers the Notice block. It submits nothing, so the
 risk is output rather than validation: an unknown variant must not reach the

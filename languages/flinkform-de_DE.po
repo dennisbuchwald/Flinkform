@@ -1,19 +1,19 @@
-# #-#-#-#-#  php.pot (Flinkform)  #-#-#-#-#
+# #-#-#-#-#  php.pot (PACKAGE VERSION)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Flinkform package.
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-# #-#-#-#-#  js.pot (Flinkform)  #-#-#-#-#
+# #-#-#-#-#  js.pot (PACKAGE VERSION)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Flinkform package.
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Flinkform 1.7.0\n"
+"Project-Id-Version: Flinkform 1.8.0\n"
 "Report-Msgid-Bugs-To: https://flinkform.de/\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -240,7 +240,7 @@ msgstr "Von"
 msgid "To date"
 msgstr "Bis Datum"
 
-#: includes/Admin/SubmissionsListTable.php:374 src/form-container/edit.js:672
+#: includes/Admin/SubmissionsListTable.php:374 src/form-container/edit.js:728
 msgid "To"
 msgstr "Bis"
 
@@ -289,7 +289,7 @@ msgstr "Eingegangen:"
 msgid "Form:"
 msgstr "Formular:"
 
-#: includes/Admin/SubmissionsPage.php:216 src/form-container/edit.js:425
+#: includes/Admin/SubmissionsPage.php:216 src/form-container/edit.js:450
 msgid "Form ID:"
 msgstr "Formular-ID:"
 
@@ -532,23 +532,23 @@ msgstr "%s liegt über dem Höchstwert."
 msgid "%s contains an invalid choice."
 msgstr "%s enthält eine ungültige Auswahl."
 
-#: includes/Notifications/Mailer.php:211 src/form-container/edit.js:684
+#: includes/Notifications/Mailer.php:294 src/form-container/edit.js:740
 msgid "New submission: {form:title}"
 msgstr "Neue Einsendung: {form:title}"
 
-#: includes/Notifications/Mailer.php:241 src/form-container/edit.js:742
+#: includes/Notifications/Mailer.php:324 src/form-container/edit.js:798
 msgid "We received your submission"
 msgstr "Wir haben Ihre Einsendung erhalten"
 
-#: includes/Notifications/Mailer.php:266
+#: includes/Notifications/Mailer.php:353
 msgid "A new submission was received:"
 msgstr "Eine neue Einsendung ist eingegangen:"
 
-#: includes/Notifications/Mailer.php:298
+#: includes/Notifications/Mailer.php:385
 msgid "Hi,"
 msgstr "Hallo,"
 
-#: includes/Notifications/Mailer.php:300
+#: includes/Notifications/Mailer.php:387
 msgid ""
 "Thanks for your submission. We received the following and will be in touch "
 "shortly:"
@@ -594,13 +594,13 @@ msgid "Please select at least one option."
 msgstr "Bitte wählen Sie mindestens eine Option aus."
 
 #: src/form-container/render.php:37 src/form-container/edit.js:104
-#: src/form-container/edit.js:894
+#: src/form-container/edit.js:959
 msgid "Send"
 msgstr "Absenden"
 
 #. translators: 1: current step number, 2: total step count
 #: src/form-container/render.php:255 src/form-container/render.php:494
-#: src/form-container/edit.js:844
+#: src/form-container/edit.js:909
 #, javascript-format, php-format
 msgid "Step %1$s of %2$s"
 msgstr "Schritt %1$s von %2$s"
@@ -621,15 +621,15 @@ msgstr "Schritt %d"
 msgid "Leave this field empty"
 msgstr "Dieses Feld leer lassen"
 
-#: src/form-container/render.php:575
+#: src/form-container/render.php:595
 msgid "Back"
 msgstr "Zurück"
 
-#: src/form-container/render.php:583
+#: src/form-container/render.php:603
 msgid "Next"
 msgstr "Weiter"
 
-#: src/form-container/render.php:618
+#: src/form-container/render.php:638
 msgid "Please complete the required selection above to enable submission."
 msgstr ""
 "Bitte treffen Sie die erforderliche Auswahl oben, um das Formular absenden "
@@ -877,7 +877,7 @@ msgstr "Volle Breite"
 msgid "Make this field span both columns of the form."
 msgstr "Dieses Feld über beide Spalten des Formulars ausdehnen."
 
-#: src/shared/conditional-logic-panel.js:161 src/form-container/edit.js:731
+#: src/shared/conditional-logic-panel.js:161 src/form-container/edit.js:787
 msgid "— Select a field —"
 msgstr "- Feld auswählen -"
 
@@ -1125,54 +1125,54 @@ msgstr "E-Mail"
 msgid "Message"
 msgstr "Nachricht"
 
-#: src/form-container/edit.js:408
+#: src/form-container/edit.js:433
 msgid "Form Settings"
 msgstr "Formulareinstellungen"
 
-#: src/form-container/edit.js:410
+#: src/form-container/edit.js:435
 msgid "Form Title"
 msgstr "Formulartitel"
 
-#: src/form-container/edit.js:411
+#: src/form-container/edit.js:436
 msgid ""
 "Internal name shown in the Forms admin overview. Not visible to visitors."
 msgstr ""
 "Interner Name, der in der Formular-Adminübersicht angezeigt wird. Für "
 "Besucher nicht sichtbar."
 
-#: src/form-container/edit.js:418
+#: src/form-container/edit.js:443
 msgid "Submit Button Label"
 msgstr "Beschriftung des Absende-Buttons"
 
-#: src/form-container/edit.js:430
+#: src/form-container/edit.js:455
 msgid "After Submit"
 msgstr "Nach dem Absenden"
 
-#: src/form-container/edit.js:434
+#: src/form-container/edit.js:459
 msgid "On successful submission"
 msgstr "Bei erfolgreicher Einsendung"
 
-#: src/form-container/edit.js:441
+#: src/form-container/edit.js:466
 msgid "Show message"
 msgstr "Meldung anzeigen"
 
-#: src/form-container/edit.js:442
+#: src/form-container/edit.js:467
 msgid "Redirect to URL"
 msgstr "Zur URL weiterleiten"
 
-#: src/form-container/edit.js:447
+#: src/form-container/edit.js:472
 msgid "Success Message"
 msgstr "Erfolgsmeldung"
 
-#: src/form-container/edit.js:448
+#: src/form-container/edit.js:473
 msgid "Shown in place of the form after a successful submission."
 msgstr "Wird nach erfolgreicher Einsendung anstelle des Formulars angezeigt."
 
-#: src/form-container/edit.js:458
+#: src/form-container/edit.js:483
 msgid "Redirect URL"
 msgstr "Weiterleitungs-URL"
 
-#: src/form-container/edit.js:459
+#: src/form-container/edit.js:484
 msgid ""
 "Same-origin only. Enter a path (/danke) or a full URL on this site. External"
 " URLs are silently rejected by the safe-redirect filter — operators who need"
@@ -1184,15 +1184,15 @@ msgstr ""
 "verworfen. Betreiber, die domainübergreifende Dankesseiten benötigen, "
 "erhalten in einer späteren Version eine websiteweite Opt-in-Option."
 
-#: src/form-container/edit.js:467
+#: src/form-container/edit.js:492
 msgid "https://example.com/danke"
 msgstr ""
 
-#: src/form-container/edit.js:473
+#: src/form-container/edit.js:498
 msgid "Append submission ID"
 msgstr "Einsendungs-ID anhängen"
 
-#: src/form-container/edit.js:474
+#: src/form-container/edit.js:499
 msgid ""
 "Adds ?flinkform_submission_id=N to the redirect URL — useful for analytics "
 "events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off "
@@ -1203,11 +1203,11 @@ msgstr ""
 "Standardmäßig deaktiviert, da Einsendungs-IDs personenbezogene Daten "
 "enthalten können und im Browser-Verlauf gespeichert werden."
 
-#: src/form-container/edit.js:481
+#: src/form-container/edit.js:506
 msgid "Append form ID"
 msgstr "Formular-ID anhängen"
 
-#: src/form-container/edit.js:482
+#: src/form-container/edit.js:507
 msgid ""
 "Adds ?flinkform_form_id=UUID — lets a shared thank-you page differentiate "
 "conversions by source form."
@@ -1215,15 +1215,15 @@ msgstr ""
 "Fügt ?flinkform_form_id=UUID an - ermöglicht einer gemeinsamen Dankesseite, "
 "Conversions nach Quellformular zu unterscheiden."
 
-#: src/form-container/edit.js:492
+#: src/form-container/edit.js:517
 msgid "Style"
 msgstr "Stil"
 
-#: src/form-container/edit.js:497
+#: src/form-container/edit.js:522
 msgid "Primary color"
 msgstr "Primärfarbe"
 
-#: src/form-container/edit.js:498
+#: src/form-container/edit.js:523
 msgid ""
 "Used for submit button, focus rings, and accent details. Leave unset to "
 "inherit from your theme."
@@ -1231,11 +1231,11 @@ msgstr ""
 "Wird für den Absende-Button, Fokusringe und Akzentdetails verwendet. Nicht "
 "setzen, um den Wert vom Theme zu übernehmen."
 
-#: src/form-container/edit.js:510
+#: src/form-container/edit.js:535
 msgid "Field style"
 msgstr "Feldstil"
 
-#: src/form-container/edit.js:511
+#: src/form-container/edit.js:536
 msgid ""
 "Bordered: full outline. Soft: light gray border. Underline: bottom border "
 "only. Minimal: no border, subtle background."
@@ -1243,27 +1243,27 @@ msgstr ""
 "Umrandet: vollständiger Rahmen. Weich: hellgrauer Rahmen. Unterstrichen: nur"
 " untere Linie. Minimal: kein Rahmen, dezenter Hintergrund."
 
-#: src/form-container/edit.js:518
+#: src/form-container/edit.js:543
 msgid "Bordered"
 msgstr "Umrandet"
 
-#: src/form-container/edit.js:519
+#: src/form-container/edit.js:544
 msgid "Soft"
 msgstr "Weich"
 
-#: src/form-container/edit.js:520
+#: src/form-container/edit.js:545
 msgid "Underline"
 msgstr "Unterstrichen"
 
-#: src/form-container/edit.js:521
+#: src/form-container/edit.js:546
 msgid "Minimal"
 msgstr "Minimal"
 
-#: src/form-container/edit.js:524
+#: src/form-container/edit.js:549
 msgid "Border radius"
 msgstr "Eckenradius"
 
-#: src/form-container/edit.js:525
+#: src/form-container/edit.js:550
 msgid ""
 "Applies to fields and the submit button. Leave at the default to inherit "
 "from your theme."
@@ -1271,27 +1271,27 @@ msgstr ""
 "Gilt für Felder und den Absende-Button. Standard belassen, um den Wert vom "
 "Theme zu übernehmen."
 
-#: src/form-container/edit.js:539
+#: src/form-container/edit.js:564
 msgid "Field spacing"
 msgstr "Feldabstand"
 
-#: src/form-container/edit.js:546
+#: src/form-container/edit.js:571
 msgid "Compact"
 msgstr "Kompakt"
 
-#: src/form-container/edit.js:547
+#: src/form-container/edit.js:572
 msgid "Normal"
 msgstr "Normal"
 
-#: src/form-container/edit.js:548
+#: src/form-container/edit.js:573
 msgid "Relaxed"
 msgstr "Großzügig"
 
-#: src/form-container/edit.js:551
+#: src/form-container/edit.js:576
 msgid "Label position"
 msgstr "Beschriftungsposition"
 
-#: src/form-container/edit.js:554
+#: src/form-container/edit.js:579
 msgid ""
 "Material-style notched label: rests inside the input, then slides onto the "
 "top border on focus, cutting a notch through it. Applies to text-style "
@@ -1301,7 +1301,7 @@ msgstr ""
 "gleitet beim Fokus auf den oberen Rahmen, wobei sie eine Kerbe in diesen "
 "schneidet. Gilt für Textfelder."
 
-#: src/form-container/edit.js:556
+#: src/form-container/edit.js:581
 msgid ""
 "Labels are visually hidden (still accessible to screen readers). The label "
 "text is used as placeholder inside the field. Applies to text-style fields "
@@ -1311,31 +1311,31 @@ msgstr ""
 "zugänglich). Der Beschriftungstext wird als Platzhalter im Feld verwendet. "
 "Gilt nur für Textfelder."
 
-#: src/form-container/edit.js:557
+#: src/form-container/edit.js:582
 msgid "Beside, Floating and Hidden apply to text-style fields only."
 msgstr "Daneben, Schwebend und Versteckt gelten nur für Textfelder."
 
-#: src/form-container/edit.js:565
+#: src/form-container/edit.js:590
 msgid "Above"
 msgstr "Oberhalb"
 
-#: src/form-container/edit.js:566
+#: src/form-container/edit.js:591
 msgid "Beside"
 msgstr "Daneben"
 
-#: src/form-container/edit.js:567
+#: src/form-container/edit.js:592
 msgid "Floating"
 msgstr "Schwebend"
 
-#: src/form-container/edit.js:568
+#: src/form-container/edit.js:593
 msgid "Hidden"
 msgstr "Versteckt"
 
-#: src/form-container/edit.js:571
+#: src/form-container/edit.js:596
 msgid "Columns"
 msgstr "Spalten"
 
-#: src/form-container/edit.js:572
+#: src/form-container/edit.js:597
 msgid ""
 "Two-column layout collapses to a single column on mobile. Individual fields "
 "can be set to span both columns via their own inspector."
@@ -1344,51 +1344,51 @@ msgstr ""
 "Einzelne Felder können über ihre eigenen Einstellungen auf beide Spalten "
 "ausgedehnt werden."
 
-#: src/form-container/edit.js:579
+#: src/form-container/edit.js:604
 msgid "1 column"
 msgstr "1 Spalte"
 
-#: src/form-container/edit.js:580
+#: src/form-container/edit.js:605
 msgid "2 columns"
 msgstr "2 Spalten"
 
-#: src/form-container/edit.js:583
+#: src/form-container/edit.js:608
 msgid "Submit button style"
 msgstr "Stil des Absende-Buttons"
 
-#: src/form-container/edit.js:590
+#: src/form-container/edit.js:615
 msgid "Fill"
 msgstr "Gefüllt"
 
-#: src/form-container/edit.js:591
+#: src/form-container/edit.js:616
 msgid "Outline"
 msgstr "Umrissen"
 
-#: src/form-container/edit.js:592
+#: src/form-container/edit.js:617
 msgid "Ghost"
 msgstr "Ghost"
 
-#: src/form-container/edit.js:595
+#: src/form-container/edit.js:620
 msgid "Button background"
 msgstr "Button-Hintergrund"
 
-#: src/form-container/edit.js:596
+#: src/form-container/edit.js:621
 msgid "Leave unset to use the primary colour."
 msgstr "Nicht setzen, um die Primärfarbe zu verwenden."
 
-#: src/form-container/edit.js:608
+#: src/form-container/edit.js:633
 msgid "Button text colour"
 msgstr "Button-Textfarbe"
 
-#: src/form-container/edit.js:609
+#: src/form-container/edit.js:634
 msgid "Leave unset for automatic contrast."
 msgstr "Nicht setzen für automatischen Kontrast."
 
-#: src/form-container/edit.js:621
+#: src/form-container/edit.js:646
 msgid "Button border colour"
 msgstr "Button-Rahmenfarbe"
 
-#: src/form-container/edit.js:622
+#: src/form-container/edit.js:647
 msgid ""
 "Only visible when button style is \"Outline\". Leave unset to match the "
 "background colour."
@@ -1396,11 +1396,11 @@ msgstr ""
 "Nur sichtbar, wenn der Button-Stil \"Umrissen\" ist. Nicht setzen, um die "
 "Hintergrundfarbe zu verwenden."
 
-#: src/form-container/edit.js:634
+#: src/form-container/edit.js:659
 msgid "Progress indicator"
 msgstr "Fortschrittsanzeige"
 
-#: src/form-container/edit.js:635
+#: src/form-container/edit.js:660
 msgid ""
 "Shown on multi-step forms only. Bar fills as the user advances; Dots marks "
 "each step; Numbers reads \"Step X of Y\"."
@@ -1409,27 +1409,27 @@ msgstr ""
 "Fortschritt; Punkte markieren jeden Schritt; Zahlen zeigt \"Schritt X von "
 "Y\"."
 
-#: src/form-container/edit.js:642
+#: src/form-container/edit.js:667
 msgid "Bar"
 msgstr "Balken"
 
-#: src/form-container/edit.js:643
+#: src/form-container/edit.js:668
 msgid "Dots"
 msgstr "Punkte"
 
-#: src/form-container/edit.js:644
+#: src/form-container/edit.js:669
 msgid "Numbers"
 msgstr "Zahlen"
 
-#: src/form-container/edit.js:645
+#: src/form-container/edit.js:670
 msgid "None"
 msgstr "Keine"
 
-#: src/form-container/edit.js:649
+#: src/form-container/edit.js:674
 msgid "Show step labels"
 msgstr "Schritt-Beschriftungen anzeigen"
 
-#: src/form-container/edit.js:650
+#: src/form-container/edit.js:675
 msgid ""
 "Display the current step’s label (from the Page Break block) beneath the "
 "indicator. Only shows when at least one Page Break has a label."
@@ -1438,21 +1438,60 @@ msgstr ""
 "der Anzeige einblenden. Erscheint nur, wenn mindestens ein Seitenumbruch "
 "eine Beschriftung hat."
 
-#: src/form-container/edit.js:659
+#: src/form-container/edit.js:684
 msgid "Notifications"
 msgstr "Benachrichtigungen"
 
-#: src/form-container/edit.js:663
+#: src/form-container/edit.js:688
+msgid "Send from (name)"
+msgstr "Absender (Name)"
+
+#: src/form-container/edit.js:689
+msgid ""
+"Shown as the sender of both emails below. Leave empty to keep what WordPress"
+" or your SMTP plugin uses."
+msgstr ""
+"Erscheint als Absender beider unten stehenden E-Mails. Leer lassen, um es "
+"bei WordPress oder deinem SMTP-Plugin zu belassen."
+
+#: src/form-container/edit.js:696
+msgid "Send from (address)"
+msgstr "Absender (Adresse)"
+
+#: src/form-container/edit.js:697
+msgid ""
+"Use an address on this website’s own domain. Leave empty to keep the site "
+"default."
+msgstr ""
+"Eine Adresse auf der eigenen Domain dieser Website verwenden. Leer lassen "
+"für den Standard der Website."
+
+#. translators: 1: domain of the sender address, 2: the website's own domain.
+#: src/form-container/edit.js:709
+#, javascript-format
+msgid ""
+"The sender address is on %1$s, but this website is %2$s. Your server is not "
+"authorised to send as %1$s, so these emails will likely fail SPF and land in"
+" spam. Send from your own domain and put the other address in a Reply-To "
+"field instead."
+msgstr ""
+"Die Absenderadresse liegt auf %1$s, diese Website ist aber %2$s. Dein Server"
+" ist nicht berechtigt, als %1$s zu senden. Diese E-Mails werden deshalb "
+"voraussichtlich an SPF scheitern und im Spam landen. Sende von deiner "
+"eigenen Domain und trage die andere Adresse stattdessen unter Antwort an "
+"ein."
+
+#: src/form-container/edit.js:719
 msgid "Send admin notification"
 msgstr "Admin-Benachrichtigung senden"
 
-#: src/form-container/edit.js:664
+#: src/form-container/edit.js:720
 msgid "Email the site admin when a submission is received."
 msgstr ""
 "Den Website-Administrator per E-Mail benachrichtigen, wenn eine Einsendung "
 "eingegangen ist."
 
-#: src/form-container/edit.js:673
+#: src/form-container/edit.js:729
 msgid ""
 "Comma-separated. Leave empty to use the site admin email. Supports merge "
 "tags like {field:email}."
@@ -1460,23 +1499,23 @@ msgstr ""
 "Kommagetrennt. Leer lassen, um die Administrator-E-Mail-Adresse zu "
 "verwenden. Unterstützt Merge Tags wie {field:email}."
 
-#: src/form-container/edit.js:675
+#: src/form-container/edit.js:731
 msgid "Site admin email"
 msgstr "Administrator-E-Mail"
 
-#: src/form-container/edit.js:681 src/form-container/edit.js:739
+#: src/form-container/edit.js:737 src/form-container/edit.js:795
 msgid "Subject"
 msgstr "Betreff"
 
-#: src/form-container/edit.js:682 src/form-container/edit.js:740
+#: src/form-container/edit.js:738 src/form-container/edit.js:796
 msgid "Supports merge tags. Leave empty for the default."
 msgstr "Unterstützt Merge Tags. Leer lassen für die Standardeinstellung."
 
-#: src/form-container/edit.js:690 src/form-container/edit.js:748
+#: src/form-container/edit.js:746 src/form-container/edit.js:804
 msgid "Body"
 msgstr "Nachrichtentext"
 
-#: src/form-container/edit.js:691
+#: src/form-container/edit.js:747
 msgid ""
 "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, "
 "{submission:date}, {field:<fieldName>}. Leave empty for an auto-generated "
@@ -1486,15 +1525,15 @@ msgstr ""
 "{submission:date}, {field:<fieldName>}. Leer lassen für eine automatisch "
 "generierte Liste aller Felder."
 
-#: src/form-container/edit.js:693
+#: src/form-container/edit.js:749
 msgid "Auto-generated field list"
 msgstr "Automatisch generierte Feldliste"
 
-#: src/form-container/edit.js:699
+#: src/form-container/edit.js:755 src/form-container/edit.js:813
 msgid "Reply-To"
 msgstr "Reply-To"
 
-#: src/form-container/edit.js:700
+#: src/form-container/edit.js:756
 msgid ""
 "Often set to {field:<emailFieldName>} so replies go to the submitter. Leave "
 "empty to use the site default."
@@ -1502,32 +1541,32 @@ msgstr ""
 "Häufig auf {field:<emailFieldName>} gesetzt, damit Antworten an den "
 "Einsender gehen. Leer lassen für die Website-Standardeinstellung."
 
-#: src/form-container/edit.js:713
+#: src/form-container/edit.js:769
 msgid "Send confirmation to submitter"
 msgstr "Bestätigung an den Einsender senden"
 
-#: src/form-container/edit.js:714
+#: src/form-container/edit.js:770
 msgid ""
 "Email a copy of the submission back to the person who filled out the form."
 msgstr ""
 "Eine Kopie der Einsendung per E-Mail an die Person zurückschicken, die das "
 "Formular ausgefüllt hat."
 
-#: src/form-container/edit.js:721
+#: src/form-container/edit.js:777
 msgid "Add an email field to this form to enable submitter confirmations."
 msgstr ""
 "Fügen Sie diesem Formular ein E-Mail-Feld hinzu, um Einsender-Bestätigungen "
 "zu aktivieren."
 
-#: src/form-container/edit.js:727
+#: src/form-container/edit.js:783
 msgid "Email field"
 msgstr "E-Mail-Feld"
 
-#: src/form-container/edit.js:728
+#: src/form-container/edit.js:784
 msgid "Which field contains the submitter’s email address."
 msgstr "Welches Feld die E-Mail-Adresse des Absenders enthält."
 
-#: src/form-container/edit.js:749
+#: src/form-container/edit.js:805
 msgid ""
 "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, "
 "{submission:date}, {field:<fieldName>}. Leave empty for an auto-generated "
@@ -1537,19 +1576,29 @@ msgstr ""
 "{submission:date}, {field:<fieldName>}. Leer lassen für eine automatisch "
 "generierte Danksagung mit den eingereichten Werten."
 
-#: src/form-container/edit.js:751
+#: src/form-container/edit.js:807
 msgid "Auto-generated thank-you with submitted values"
 msgstr "Automatisch generierte Danksagung mit den eingesendeten Werten"
 
-#: src/form-container/edit.js:766
+#: src/form-container/edit.js:814
+msgid ""
+"Where a reply from the submitter should go. Useful when the form sends from "
+"the website address but you read your mail somewhere else. Leave empty to "
+"reply to the sender address."
+msgstr ""
+"Wohin eine Antwort des Absenders gehen soll. Praktisch, wenn das Formular "
+"von der Website-Adresse sendet, du deine Mails aber woanders liest. Leer "
+"lassen, um Antworten an die Absenderadresse gehen zu lassen."
+
+#: src/form-container/edit.js:831
 msgid "Submit Condition"
 msgstr "Absende-Bedingung"
 
-#: src/form-container/edit.js:767
+#: src/form-container/edit.js:832
 msgid "Gate the submit button"
 msgstr "Absende-Button sperren"
 
-#: src/form-container/edit.js:768
+#: src/form-container/edit.js:833
 msgid ""
 "Disable the submit button until the rules below match. Useful for \"I agree "
 "to terms\" checkboxes."
@@ -1557,15 +1606,15 @@ msgstr ""
 "Den Absende-Button deaktivieren, bis die unten stehenden Regeln zutreffen. "
 "Nützlich für \"Ich stimme den Bedingungen zu\"-Checkboxen."
 
-#: src/form-container/edit.js:790
+#: src/form-container/edit.js:855
 msgid "Data Retention"
 msgstr "Datenspeicherung"
 
-#: src/form-container/edit.js:794
+#: src/form-container/edit.js:859
 msgid "Auto-delete submissions after (days)"
 msgstr "Einsendungen automatisch löschen nach (Tagen)"
 
-#: src/form-container/edit.js:796
+#: src/form-container/edit.js:861
 msgid ""
 "GDPR storage limitation: automatically delete this form’s submissions older "
 "than the chosen number of days. 0 = keep forever. Purges run daily and also "
@@ -1576,7 +1625,7 @@ msgstr ""
 "läuft täglich und entfernt auch verknüpfte Webhook-Protokolle von Flinkform "
 "Pro."
 
-#: src/form-container/edit.js:877
+#: src/form-container/edit.js:942
 msgid "Add field"
 msgstr "Feld hinzufügen"
 

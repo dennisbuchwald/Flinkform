@@ -115,6 +115,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const adminConfig = notifications?.admin ?? {};
 	const submitterConfig = notifications?.submitter ?? {};
+	const notificationsConfig = notifications ?? {};
+
+	// Sender-domain check. A server may only send as its own domain — put a
+	// Gmail address in here and SPF fails, DMARC rejects it and the mail is
+	// gone. Warning, not a block: some setups legitimately send as a
+	// subdomain or a second domain hosted on the same server, and we cannot
+	// tell those apart from here.
+	const siteDomain = useMemo( () => {
+		try {
+			return new URL( window.location.origin ).hostname.replace( /^www\./, '' );
+		} catch {
+			return '';
+		}
+	}, [] );
+	const senderDomain = ( notificationsConfig.fromEmail ?? '' ).split( '@' )[ 1 ]?.toLowerCase().replace( /^www\./, '' ) ?? '';
+	const senderDomainMismatch =
+		siteDomain !== '' &&
+		senderDomain !== '' &&
+		senderDomain !== siteDomain &&
+		! senderDomain.endsWith( `.${ siteDomain }` );
 	const appearanceConfig = appearance ?? {};
 	const primaryColor = appearanceConfig.primaryColor;
 	const buttonColor = appearanceConfig.buttonColor;
@@ -350,6 +370,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				},
 			},
 		} );
+	};
+
+	// Sender lives one level up from admin/submitter — it applies to both.
+	const updateNotifications = ( patch ) => {
+		setAttributes( { notifications: { ...notifications, ...patch } } );
 	};
 
 	const updateAppearance = ( patch ) => {
@@ -659,6 +684,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Notifications', 'flinkform' ) }
 					initialOpen={ false }
 				>
+					<TextControl
+						label={ __( 'Send from (name)', 'flinkform' ) }
+						help={ __( 'Shown as the sender of both emails below. Leave empty to keep what WordPress or your SMTP plugin uses.', 'flinkform' ) }
+						value={ notificationsConfig.fromName ?? '' }
+						onChange={ ( value ) => updateNotifications( { fromName: value } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Send from (address)', 'flinkform' ) }
+						help={ __( 'Use an address on this website’s own domain. Leave empty to keep the site default.', 'flinkform' ) }
+						type="email"
+						value={ notificationsConfig.fromEmail ?? '' }
+						placeholder={ siteDomain ? `info@${ siteDomain }` : '' }
+						onChange={ ( value ) => updateNotifications( { fromEmail: value } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ senderDomainMismatch && (
+						<Notice status="warning" isDismissible={ false }>
+							{ sprintf(
+								/* translators: 1: domain of the sender address, 2: the website's own domain. */
+								__( 'The sender address is on %1$s, but this website is %2$s. Your server is not authorised to send as %1$s, so these emails will likely fail SPF and land in spam. Send from your own domain and put the other address in a Reply-To field instead.', 'flinkform' ),
+								senderDomain,
+								siteDomain
+							) }
+						</Notice>
+					) }
+
+					<hr style={ { margin: '16px 0', opacity: 0.25 } } />
+
 					<ToggleControl
 						label={ __( 'Send admin notification', 'flinkform' ) }
 						help={ __( 'Email the site admin when a submission is received.', 'flinkform' ) }
@@ -752,6 +808,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange={ ( value ) => updateSubmitterConfig( { body: value } ) }
 								rows={ 8 }
 								__nextHasNoMarginBottom
+							/>
+							<TextControl
+								label={ __( 'Reply-To', 'flinkform' ) }
+								help={ __( 'Where a reply from the submitter should go. Useful when the form sends from the website address but you read your mail somewhere else. Leave empty to reply to the sender address.', 'flinkform' ) }
+								type="email"
+								value={ submitterConfig.replyTo ?? '' }
+								onChange={ ( value ) => updateSubmitterConfig( { replyTo: value } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</>
 					) }

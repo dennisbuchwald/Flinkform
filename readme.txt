@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.7.2
+Stable tag: 1.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,6 +43,7 @@ Flinkform is a form builder that lives entirely inside the WordPress Block Edito
 **Notifications**
 * Admin notification email on every submission (configurable recipient, merge tags)
 * Optional confirmation email to the submitter
+* Sender name and address per form, with a Reply-To for each email — send from your own address without an SMTP plugin
 * Sends through your site's standard WordPress mail (`wp_mail`)
 
 **Spam protection**
@@ -119,6 +120,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.8.0 =
+* New: sender name and address per form, under Notifications. Both emails then come from your own address instead of "wordpress@yourdomain". No SMTP plugin needed — the sender is a wp_mail setting and applies however your site delivers mail. The editor warns when the address is on a different domain than the website, because your server is not authorised to send for someone else's domain and those emails fail SPF.
+* New: Reply-To for the confirmation email to the submitter. Previously only the admin notification had one, so a visitor replying to their confirmation wrote to whatever address the site sends from — usually a mailbox nobody reads. Now the form can send from the website address and collect replies wherever you actually read them.
 
 = 1.7.2 =
 * Fix: the spam question ("What is 2 + 2?") no longer appears and disappears on a hard reload. It is the no-JavaScript fallback and used to stay on screen until the proof-of-work finished solving. It is now hidden from the first paint wherever scripting is available, and comes back on every path the solver cannot finish: no Web Crypto, an aborted computation, or a device slow enough to still be working after four seconds. Visitors without JavaScript are unaffected — the decision is made in the browser, so a cached page still serves them the question.
@@ -266,6 +271,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.8.0 =
+Your forms can now send from your own address, and the confirmation email can carry a Reply-To.
 
 = 1.7.2 =
 Removes the spam question flashing up on load, and evens out the spacing of forms using floating labels.
