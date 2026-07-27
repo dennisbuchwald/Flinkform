@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.8.0
+Stable tag: 1.8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.8.1 =
+* Fix: the block editor is finally translated. Flinkform ships German language files for the editor, but WordPress never read them: register_block_type() wires up script translations without a path, which makes WordPress look only in wp-content/languages/plugins — a folder filled by translate.wordpress.org, where Flinkform has no translations. So every inspector panel stayed English even on sites where the frontend and the admin screens were translated correctly. The block registry now points at the plugin's own languages folder.
 
 = 1.8.0 =
 * New: sender name and address per form, under Notifications. Both emails then come from your own address instead of "wordpress@yourdomain". No SMTP plugin needed — the sender is a wp_mail setting and applies however your site delivers mail. The editor warns when the address is on a different domain than the website, because your server is not authorised to send for someone else's domain and those emails fail SPF.
@@ -271,6 +274,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.8.1 =
+The block editor now uses the bundled translations. On a German site the whole form inspector switches from English to German.
 
 = 1.8.0 =
 Your forms can now send from your own address, and the confirmation email can carry a Reply-To.

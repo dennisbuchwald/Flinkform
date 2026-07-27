@@ -116,8 +116,31 @@ final class Registry {
 		$dirs = (array) apply_filters( 'flinkform_block_dirs', $dirs );
 
 		foreach ( $dirs as $path ) {
-			if ( is_string( $path ) && is_dir( $path ) ) {
-				register_block_type( $path );
+			if ( ! is_string( $path ) || ! is_dir( $path ) ) {
+				continue;
+			}
+
+			$block_type = register_block_type( $path );
+
+			// Point the editor scripts at OUR languages folder.
+			//
+			// register_block_type() already calls wp_set_script_translations()
+			// for us when block.json carries a textdomain — but it calls it
+			// without a path, and WordPress then looks for the JED files in
+			// WP_LANG_DIR/plugins only. That folder is filled by
+			// translate.wordpress.org, which has no Flinkform translations,
+			// so every bundled .json sat unused and the whole block inspector
+			// stayed English on sites whose PHP strings were translated fine.
+			// (PHP works because just-in-time loading honours Domain Path;
+			// script translations have no such fallback.)
+			//
+			// Re-registering with the third argument is enough — the file
+			// names already follow core's convention, md5() of the script's
+			// path relative to the plugin folder.
+			if ( $block_type instanceof \WP_Block_Type ) {
+				foreach ( (array) $block_type->editor_script_handles as $handle ) {
+					wp_set_script_translations( $handle, 'flinkform', FLINKFORM_PLUGIN_DIR . 'languages' );
+				}
 			}
 		}
 	}

@@ -9,6 +9,7 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
     php tests/notice-render-test.php
     php tests/condition-initial-state-test.php
     php tests/mailer-sender-test.php
+    php tests/script-translations-test.php
 
 `rule-evaluator-date-test.php` covers the `date_before` / `date_on_or_after`
 operators, including the guards against empty and malformed values.
@@ -35,6 +36,14 @@ that filter afterwards and an SMTP plugin hooked there would silently
 overrule the form. The test pins both halves of that: the form-level value
 wins, and the filters are gone again once the mail is out, so no other
 plugin's mail inherits them.
+
+`script-translations-test.php` guards the editor's translations. WordPress
+locates a JED file by hashing the script path relative to the plugin folder,
+so a name that is off by one character fails silently — the editor simply
+stays English, which is how it went unnoticed until 1.8.1. The test
+recomputes the name the way core does, asserts a non-empty file exists for
+every editor bundle, and checks that the Registry passes a languages path at
+all (without one, core only searches WP_LANG_DIR/plugins).
 
 `notice-render-test.php` covers the Notice block. It submits nothing, so the
 risk is output rather than validation: an unknown variant must not reach the
