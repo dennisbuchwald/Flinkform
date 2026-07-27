@@ -641,7 +641,12 @@
 			}
 		}
 
-		&--has-error &__input {
+		// Literal child class on purpose: `&--has-error &__input` expands
+		// BOTH ampersands to the full parent selector and compiles to
+		// `… .flinkform-field--has-error .flinkform-form.flinkform-form
+		// .flinkform-field__input`, which matches nothing — the red error
+		// border silently never rendered.
+		&--has-error .flinkform-field__input {
 			border-color: #b80000;
 		}
 
@@ -690,8 +695,9 @@
 			font-size: 12px;
 		}
 
-		// Single-checkbox / toggle layout.
-		&--toggle &__toggle-label {
+		// Single-checkbox / toggle layout. Literal child class for the same
+		// double-`&` expansion reason as `--has-error` above.
+		&--toggle .flinkform-field__toggle-label {
 			display: flex;
 			align-items: flex-start;
 			gap: 0.5rem;
@@ -1083,6 +1089,21 @@
 			border-width: 0;
 		}
 	}
+
+	// The address group heading is a visible label too, so it follows the
+	// same rule: out of sight, still announced. The sub-field placeholders
+	// carry the meaning in this mode.
+	.flinkform-field-address__legend {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
 }
 
 /* Floating labels — Material-Design "Outlined TextField" look.
@@ -1190,6 +1211,14 @@
 			}
 		}
 	}
+}
+
+/* Address sub-fields need the same breathing room for the lifted label.
+ * The grid's `.flinkform-field { margin: 0 }` reset lands at (0,4,0) and
+ * would otherwise beat the (0,3,0) `margin-top` inside the floating block
+ * above; this selector matches that specificity and wins on source order. */
+.flinkform-form.flinkform-form--labels-floating .flinkform-field-address__grid .flinkform-field--text {
+	margin-top: 0.5em;
 }
 
 /* ---------------------------------------------------------------------

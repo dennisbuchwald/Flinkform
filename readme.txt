@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.6.2
+Stable tag: 1.6.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,17 +117,27 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 == Changelog ==
 
+= 1.6.3 =
+* Fix: restored the German (de_DE) translation. Version 1.6.1 rebuilt the language files from an incomplete template and silently dropped 243 already-translated strings, so German sites fell back to English for most of the admin UI, the block inspector and the default success message. All strings are translated again, including the address field and the date comparison operators.
+* Fix: address field no longer prints its label and its placeholder on top of each other when the form uses floating labels. The sub-fields now follow the form's label position setting the same way every other text field does (no placeholder in floating mode, required marker moved into the placeholder in placeholder mode).
+* Fix: the red error outline on invalid inputs never actually rendered. A nested SCSS selector expanded into an unmatchable compound (`.flinkform-field--has-error .flinkform-form.flinkform-form .flinkform-field__input`); same bug disabled the toggle field's label layout.
+* Fix: conditional logic can now target address fields. The rule builder offered the composite field under its base name, which no input ever submits under, so such rules could never match. It now lists the individual sub-fields (street, postal code, city and any enabled optional lines).
+* Fix: the address group heading showed the untranslated default "Address" on non-English sites. Block attribute defaults do not pass through the translation layer, so the untouched default is now translated explicitly.
+* Fix: the address block editor preview matches the frontend again - correct label/placeholder split, required markers on the sub-fields and the "Full width" setting honoured.
+* Fix: floating labels on address sub-fields keep their top spacing; the grid layout reset was overriding it.
+* Fix: `date_before` / `date_on_or_after` used a PHP pattern that also accepted a trailing newline, where the identical client-side check did not. Server and browser now agree on every input.
+
 = 1.6.2 =
 * Enhancement: address field sub-inputs now render as full `.flinkform-field--text` wrappers, so they automatically inherit ALL form styles — floating labels, bordered/soft/underline/minimal field styles, beside/placeholder label modes, compact/relaxed spacing. The group heading is a subtle uppercase legend instead of a bold label.
 
 = 1.6.1 =
-* i18n: complete German (de_DE) translation for the address field, date comparison operators and all remaining untranslated strings. Frontend labels and placeholders now display correctly on German WordPress installations.
+* i18n: German (de_DE) translation for the address field and the date comparison operators. Note: this release also removed a large number of existing translations by mistake - see 1.6.3, which restores them.
 
 = 1.6.0 =
 * New: Address Field — a composite field with street, postal code and city in a compact grid layout. Optional address line 2 and country sub-fields. When set to required, all visible sub-fields except line 2 are enforced. Each sub-field stores separately for clean CSV export columns.
 
 = 1.5.3 =
-* Fix: conditional logic now correctly hides fields. The `.flinkform-field { display: flex }` rule (specificity 0,3,0) was overriding the browser's native `[hidden] { display: none }` (0,1,0), so conditionally hidden fields remained visible despite the JS correctly setting the `hidden` attribute. The selector now uses `:not([hidden])` to opt out cleanly.
+* Fix: conditional logic now correctly hides fields. The `.flinkform-field { display: flex }` rule (specificity 0,3,0) was overriding the browser's native `[hidden] { display: none }` (0,1,0), so conditionally hidden fields remained visible despite the JS correctly setting the `hidden` attribute. The rule now carries an explicit `[hidden] { display: none }` override at matching specificity.
 
 = 1.5.2 =
 * New: conditional logic operators "is before (date)" and "is on or after (date)" for comparing a date field against a fixed YYYY-MM-DD cutoff. Useful for gating form submission based on a deadline (e.g. show a notice and lock the submit button when a due date is too early).

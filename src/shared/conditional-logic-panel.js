@@ -61,6 +61,39 @@ const BLANK_RULE = {
 const EMPTY_STATE_OPERATORS = new Set( [ 'is_empty', 'is_not_empty' ] );
 
 /**
+ * Expand a composite address block into the sub-field names its inputs
+ * actually submit under. Mirrors the sub-field order and the
+ * showAddressLine2 / showCountry visibility flags of
+ * field-address/render.php and Locator::expand_address().
+ *
+ * @param {string} base       Address block's fieldName (the shared prefix).
+ * @param {string} label      Address block's label, used to prefix each entry.
+ * @param {object} attributes Address block attributes.
+ * @returns {Array<{name: string, label: string}>}
+ */
+function addressSubFields( base, label, attributes ) {
+	const parts = [ [ 'street', __( 'Street', 'flinkform' ) ] ];
+
+	if ( attributes?.showAddressLine2 ) {
+		parts.push( [ 'line2', __( 'Address line 2', 'flinkform' ) ] );
+	}
+
+	parts.push( [ 'zip', __( 'Postal code', 'flinkform' ) ] );
+	parts.push( [ 'city', __( 'City', 'flinkform' ) ] );
+
+	if ( attributes?.showCountry ) {
+		parts.push( [ 'country', __( 'Country', 'flinkform' ) ] );
+	}
+
+	const prefix = label === 'Address' ? __( 'Address', 'flinkform' ) : label;
+
+	return parts.map( ( [ suffix, partLabel ] ) => ( {
+		name: `${ base }_${ suffix }`,
+		label: prefix ? `${ prefix } - ${ partLabel }` : partLabel,
+	} ) );
+}
+
+/**
  * @param {object}   props
  * @param {object}   props.attributes
  * @param {Function} props.setAttributes
@@ -103,10 +136,21 @@ export default function ConditionalLogicPanel( {
 			return blocks
 				.filter( ( b ) => b.clientId !== clientId )
 				.filter( ( b ) => typeof b.attributes?.fieldName === 'string' && b.attributes.fieldName !== '' )
-				.map( ( b ) => ( {
-					name: String( b.attributes.fieldName ),
-					label: typeof b.attributes?.label === 'string' ? b.attributes.label : '',
-				} ) );
+				.flatMap( ( b ) => {
+					const name = String( b.attributes.fieldName );
+					const label = typeof b.attributes?.label === 'string' ? b.attributes.label : '';
+
+					// The address block is composite: it never submits a value
+					// under its own field name, only under `<name>_street`,
+					// `<name>_zip` and friends. Offering the bare parent name
+					// here would build a rule that can never match, so expand
+					// it into the sub-fields that actually exist.
+					if ( b.name === 'flinkform/field-address' ) {
+						return addressSubFields( name, label, b.attributes );
+					}
+
+					return [ { name, label } ];
+				} );
 		},
 		[ clientId, fieldSource ]
 	);

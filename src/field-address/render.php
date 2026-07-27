@@ -34,6 +34,17 @@ $show_country       = ! empty( $attributes['showCountry'] );
 $show_line2         = ! empty( $attributes['showAddressLine2'] );
 $country_default    = isset( $attributes['countryDefault'] ) && is_string( $attributes['countryDefault'] ) ? $attributes['countryDefault'] : '';
 
+$flinkform_appearance = isset( $block->context['flinkform/appearance'] ) && is_array( $block->context['flinkform/appearance'] ) ? $block->context['flinkform/appearance'] : [];
+$label_position       = isset( $flinkform_appearance['labelPosition'] ) && is_string( $flinkform_appearance['labelPosition'] ) ? $flinkform_appearance['labelPosition'] : 'above';
+
+// The block.json default is the untranslated English string, and block
+// attribute defaults never run through the i18n layer. Translate it when
+// the author has left it untouched so a German site shows "Adresse"
+// instead of "Address"; a deliberately typed label is left alone.
+if ( 'Address' === $label ) {
+	$label = __( 'Address', 'flinkform' );
+}
+
 if ( '' === $field_name || '' === $form_id ) {
 	return;
 }
@@ -74,6 +85,24 @@ $help_id = $help_text ? 'flinkform-field-' . md5( $form_id . '-' . $field_name )
 
 			// Line 2 is never required even when the address is required.
 			$sub_required = $required && 'line2' !== $sf['key'];
+
+			// Placeholder handling mirrors field-text/render.php, because the
+			// sub-inputs render as full `.flinkform-field--text` wrappers and
+			// therefore pick up the form's label-position styling:
+			//   - floating: the label sits INSIDE the input while empty, so a
+			//     visible placeholder would print straight through it. Empty
+			//     placeholder also keeps `:placeholder-shown` from matching,
+			//     which parks the label in its lifted/notched position exactly
+			//     like every other text field.
+			//   - placeholder: the label is visually hidden, so the descriptive
+			//     placeholder carries the required marker instead.
+			$sub_placeholder = $sf['placeholder'];
+			if ( 'floating' === $label_position ) {
+				$sub_placeholder = '';
+			} elseif ( 'placeholder' === $label_position && $sub_required ) {
+				$sub_placeholder .= '*';
+			}
+
 			$grid_class   = 'flinkform-field flinkform-field--text';
 			$grid_class  .= $sf['full'] ? ' flinkform-field-address__sub--full' : '';
 			$grid_class  .= $sub_error ? ' flinkform-field--has-error' : '';
@@ -94,7 +123,7 @@ $help_id = $help_text ? 'flinkform-field-' . md5( $form_id . '-' . $field_name )
 					name="flinkform_field[<?php echo esc_attr( $sub_name ); ?>]"
 					class="flinkform-field__input"
 					value="<?php echo esc_attr( (string) $sub_value ); ?>"
-					placeholder="<?php echo esc_attr( $sf['placeholder'] ); ?>"
+					placeholder="<?php echo esc_attr( $sub_placeholder ); ?>"
 					<?php echo $sub_required ? 'required aria-required="true"' : ''; ?>
 					<?php echo $described ? 'aria-describedby="' . esc_attr( $described ) . '"' : ''; ?>
 					<?php echo $sub_error ? 'aria-invalid="true"' : ''; ?>

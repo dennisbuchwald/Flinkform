@@ -1,3 +1,22 @@
+# Tests
+
+## PHP unit tests
+
+Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
+
+    php tests/rule-evaluator-date-test.php
+    php tests/field-address-render-test.php
+
+`rule-evaluator-date-test.php` covers the `date_before` / `date_on_or_after`
+operators, including the guards against empty and malformed values.
+
+`field-address-render-test.php` renders the address block against every label
+position and asserts the label/placeholder contract. Background: 1.6.0 shipped
+hard-coded placeholders on the sub-inputs, which print straight through a
+floating label because the label rests *inside* the input while it is empty.
+It also pins the "line 2 is never required" rule and the conditional-logic
+forwarding onto the fieldset.
+
 # Frontend smoke tests
 
 ## module-smoke.html

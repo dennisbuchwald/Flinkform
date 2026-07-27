@@ -395,7 +395,7 @@ final class Locator {
 			$fields[] = [
 				'name'             => $base . '_' . $part['suffix'],
 				'type'             => 'text',
-				'label'            => $record['label'] . ' – ' . $part['label'],
+				'label'            => $record['label'] . ' - ' . $part['label'],
 				'required'         => $part['required'],
 				'step'             => $step,
 				'conditionalLogic' => $condition,

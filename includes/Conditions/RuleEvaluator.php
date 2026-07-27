@@ -154,7 +154,11 @@ final class RuleEvaluator {
 				return (float) $field_string < (float) $value;
 			case 'date_before':
 			case 'date_on_or_after':
-				if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $field_string ) || ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ) {
+				// `/D` so `$` cannot also match before a trailing newline —
+				// without it "2026-07-27\n" would pass here but fail the
+				// identical client-side regex in view.js, splitting the
+				// client/server verdict on the same input.
+				if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/D', $field_string ) || ! preg_match( '/^\d{4}-\d{2}-\d{2}$/D', $value ) ) {
 					return false;
 				}
 				return 'date_before' === $operator
