@@ -2,9 +2,8 @@
  * Field — Address — editor component.
  *
  * Composite field: street (+ optional line 2), postal code + city side by
- * side, optional country dropdown. All sub-inputs are disabled in the
- * editor (pure preview). The inspector exposes the standard settings plus
- * toggles for the optional sub-fields.
+ * side, optional country. Each sub-field renders as a full
+ * .flinkform-field--text wrapper so it inherits all form styles.
  */
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -25,6 +24,14 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [] );
+
+	const subFields = [
+		{ key: 'street', label: __( 'Street + house number', 'flinkform' ), full: true, show: true },
+		{ key: 'line2', label: __( 'Address line 2', 'flinkform' ), full: true, show: showAddressLine2 },
+		{ key: 'zip', label: __( 'Postal code', 'flinkform' ), full: false, show: true },
+		{ key: 'city', label: __( 'City', 'flinkform' ), full: false, show: true },
+		{ key: 'country', label: __( 'Country', 'flinkform' ), full: true, show: showCountry },
+	];
 
 	return (
 		<>
@@ -87,55 +94,30 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 				<ConditionalLogicPanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
 			</InspectorControls>
 
-			<div { ...blockProps }>
-				<label className="flinkform-field__label">
+			<fieldset { ...blockProps }>
+				<legend className="flinkform-field-address__legend">
 					{ label }
 					{ required && <span className="flinkform-field__required" aria-hidden="true"> *</span> }
-				</label>
+				</legend>
 				<div className="flinkform-field-address__grid">
-					<input
-						type="text"
-						className="flinkform-field__input flinkform-field-address__street"
-						placeholder={ __( 'Street + house number', 'flinkform' ) }
-						disabled
-						aria-disabled="true"
-					/>
-					{ showAddressLine2 && (
-						<input
-							type="text"
-							className="flinkform-field__input flinkform-field-address__line2"
-							placeholder={ __( 'Address line 2', 'flinkform' ) }
-							disabled
-							aria-disabled="true"
-						/>
-					) }
-					<input
-						type="text"
-						className="flinkform-field__input flinkform-field-address__zip"
-						placeholder={ __( 'Postal code', 'flinkform' ) }
-						disabled
-						aria-disabled="true"
-					/>
-					<input
-						type="text"
-						className="flinkform-field__input flinkform-field-address__city"
-						placeholder={ __( 'City', 'flinkform' ) }
-						disabled
-						aria-disabled="true"
-					/>
-					{ showCountry && (
-						<input
-							type="text"
-							className="flinkform-field__input flinkform-field-address__country"
-							placeholder={ __( 'Country', 'flinkform' ) }
-							value={ countryDefault }
-							disabled
-							aria-disabled="true"
-						/>
-					) }
+					{ subFields.filter( ( sf ) => sf.show ).map( ( sf ) => (
+						<div
+							key={ sf.key }
+							className={ `flinkform-field flinkform-field--text${ sf.full ? ' flinkform-field-address__sub--full' : '' }` }
+						>
+							<label className="flinkform-field__label">{ sf.label }</label>
+							<input
+								type="text"
+								className="flinkform-field__input"
+								placeholder={ sf.label }
+								disabled
+								aria-disabled="true"
+							/>
+						</div>
+					) ) }
 				</div>
 				{ helpText && <p className="flinkform-field__help">{ helpText }</p> }
-			</div>
+			</fieldset>
 		</>
 	);
 }

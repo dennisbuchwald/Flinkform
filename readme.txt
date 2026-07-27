@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.6.2 =
+* Enhancement: address field sub-inputs now render as full `.flinkform-field--text` wrappers, so they automatically inherit ALL form styles — floating labels, bordered/soft/underline/minimal field styles, beside/placeholder label modes, compact/relaxed spacing. The group heading is a subtle uppercase legend instead of a bold label.
 
 = 1.6.1 =
 * i18n: complete German (de_DE) translation for the address field, date comparison operators and all remaining untranslated strings. Frontend labels and placeholders now display correctly on German WordPress installations.
