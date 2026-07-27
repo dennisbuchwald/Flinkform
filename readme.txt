@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.6.1 =
+* i18n: complete German (de_DE) translation for the address field, date comparison operators and all remaining untranslated strings. Frontend labels and placeholders now display correctly on German WordPress installations.
 
 = 1.6.0 =
 * New: Address Field — a composite field with street, postal code and city in a compact grid layout. Optional address line 2 and country sub-fields. When set to required, all visible sub-fields except line 2 are enforced. Each sub-field stores separately for clean CSV export columns.
