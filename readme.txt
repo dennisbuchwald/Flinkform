@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.8.1
+Stable tag: 1.8.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.8.2 =
+* Fix: a submit button held back by a Submit Condition now looks unavailable. It already carried the disabled attribute, so clicking did nothing — but it kept its full colour, its hover effect and the normal pointer, so the only clue was a line of grey text below it. It is now faded, desaturated and shows a not-allowed cursor, in all three button styles. The submitting state keeps its own look: a spinner on a greyed-out button reads as broken rather than busy.
+* Fix: the hint under a gated submit button lines up with the button instead of being centred across the form.
 
 = 1.8.1 =
 * Fix: the block editor is finally translated. Flinkform ships German language files for the editor, but WordPress never read them: register_block_type() wires up script translations without a path, which makes WordPress look only in wp-content/languages/plugins — a folder filled by translate.wordpress.org, where Flinkform has no translations. So every inspector panel stayed English even on sites where the frontend and the admin screens were translated correctly. The block registry now points at the plugin's own languages folder.
@@ -274,6 +278,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.8.2 =
+A submit button blocked by a Submit Condition now visibly looks disabled instead of fully clickable.
 
 = 1.8.1 =
 The block editor now uses the bundled translations. On a German site the whole form inspector switches from English to German.

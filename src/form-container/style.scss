@@ -394,12 +394,20 @@
 	// unmet (Phase 7d). Visible state is driven by the `hidden`
 	// attribute the JS layer toggles; the styling here only paints
 	// the message when it's actually rendered.
+	// Aligned with the actions row rather than hard-centred: the row is
+	// left-aligned until the multi-step bindings push it right, and a
+	// centred hint under a left-aligned button reads as unrelated to it.
+	// `text-align: end` follows the same flex-end the enhanced row uses,
+	// so the hint stays under the button in both layouts.
 	&__submit-hint:not([hidden]) {
 		display: block;
 		margin-top: 0.5rem;
 		font-size: 0.85em;
 		opacity: 0.8;
-		text-align: center;
+	}
+
+	&[data-flinkform-enhanced] &__submit-hint:not([hidden]) {
+		text-align: end;
 	}
 
 	// Back button — secondary, ghost-like, always neutral. The submit
@@ -487,6 +495,36 @@
 		&:focus-visible {
 			outline: 2px solid var(--flinkform-color-primary);
 			outline-offset: 2px;
+		}
+
+		/* Gated state — a Submit Condition that is not met yet.
+		 *
+		 * The button already carried the `disabled` attribute, so clicking
+		 * it did nothing, but it still looked entirely clickable: same
+		 * fill, same hover, same pointer. The visitor got no reason for
+		 * why nothing happened beyond a line of grey text below.
+		 *
+		 * Desaturating on top of the fade is what makes it read as
+		 * unavailable rather than merely faint. A brand-coloured fill at
+		 * 50% opacity still looks like a button you are meant to press;
+		 * stripped of its colour it plainly does not.
+		 *
+		 * `:not(.is-loading)` because submitting also disables the button,
+		 * and that state has its own treatment right below — a spinner on
+		 * a greyed-out button would read as "broken", not "working".
+		 *
+		 * Contrast is not a concern here: WCAG 1.4.3 exempts inactive
+		 * controls, and the reason for the state is spelled out in the
+		 * hint, which stays at full strength. */
+		&:disabled:not(.is-loading) {
+			cursor: not-allowed;
+			opacity: 0.5;
+			filter: grayscale(1);
+
+			&:hover,
+			&:focus-visible {
+				opacity: 0.5;
+			}
 		}
 
 		/* Submitting state — view.js sets .is-loading (+ disabled +
