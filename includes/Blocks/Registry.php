@@ -141,6 +141,58 @@ final class Registry {
 				foreach ( (array) $block_type->editor_script_handles as $handle ) {
 					wp_set_script_translations( $handle, 'flinkform', FLINKFORM_PLUGIN_DIR . 'languages' );
 				}
+
+				$this->version_assets( $block_type );
+			}
+		}
+	}
+
+	/**
+	 * Stamp the plugin version onto every asset a block registers.
+	 *
+	 * `register_block_type()` takes the cache-busting version straight from
+	 * block.json's `version` field. Ours said "0.1.0" in all seventeen
+	 * blocks, unchanged since the first commit, so every stylesheet and
+	 * script has been served from the identical URL across every release
+	 * the plugin ever shipped. Browsers, CDNs and page caches all treat
+	 * that as the same file forever: a visitor who loaded a form once got
+	 * the CSS from that day and never saw another fix. Which is exactly how
+	 * a Safari layout fix could be live on the server and still absent in
+	 * the browser.
+	 *
+	 * Overwriting the registered `ver` is the smallest reliable repair. The
+	 * alternative — bumping `version` in seventeen block.json files on every
+	 * release — is the same information kept in eighteen places, and it only
+	 * takes forgetting once to be back here.
+	 *
+	 * The view script MODULE is left alone: module registration already
+	 * derives its own content hash, so those URLs change on their own.
+	 *
+	 * @param \WP_Block_Type $block_type A freshly registered block type.
+	 * @return void
+	 */
+	private function version_assets( \WP_Block_Type $block_type ): void {
+		$styles  = wp_styles();
+		$scripts = wp_scripts();
+
+		$style_handles = array_merge(
+			(array) $block_type->style_handles,
+			(array) $block_type->editor_style_handles
+		);
+		foreach ( $style_handles as $handle ) {
+			if ( isset( $styles->registered[ $handle ] ) ) {
+				$styles->registered[ $handle ]->ver = FLINKFORM_VERSION;
+			}
+		}
+
+		$script_handles = array_merge(
+			(array) $block_type->script_handles,
+			(array) $block_type->editor_script_handles,
+			(array) $block_type->view_script_handles
+		);
+		foreach ( $script_handles as $handle ) {
+			if ( isset( $scripts->registered[ $handle ] ) ) {
+				$scripts->registered[ $handle ]->ver = FLINKFORM_VERSION;
 			}
 		}
 	}

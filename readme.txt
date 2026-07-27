@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.8.3
+Stable tag: 1.8.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.8.4 =
+* Fix: style and script updates actually reach the browser. Every asset URL carried `?ver=0.1.0`, taken from a field in the block manifest that had not changed since the very first commit — so across more than thirty releases the stylesheet was served from an identical URL and browsers, CDNs and page caches all kept the copy they first downloaded. A fix could be deployed, be correct on the server, and remain invisible to anyone who had loaded a form before. Asset URLs now carry the plugin version, so every future release busts the cache on its own. This one still needs a single hard reload, because the old URL is what is cached.
 
 = 1.8.3 =
 * Fix: dropdowns rendered wrong in Safari. WebKit ignores vertical padding on a select with its native appearance and sizes the control from the font alone, which left the box shorter than its own text — Safari clipped the selected option along the top edge and the floating label landed on top of it, while Chrome looked fine. Flinkform now draws the control itself, so a dropdown is exactly as tall as every other field in every browser.
@@ -282,6 +285,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.8.4 =
+Important: asset URLs never changed between releases, so browsers kept serving old CSS. Reload once with a hard refresh after updating; from here on it takes care of itself.
 
 = 1.8.3 =
 Fixes dropdown fields rendering too short in Safari, and translates the default labels of newly inserted fields.

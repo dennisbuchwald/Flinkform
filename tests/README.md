@@ -11,6 +11,7 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
     php tests/mailer-sender-test.php
     php tests/script-translations-test.php
     php tests/default-strings-test.php
+    php tests/asset-version-test.php
 
 `rule-evaluator-date-test.php` covers the `date_before` / `date_on_or_after`
 operators, including the guards against empty and malformed values.
@@ -51,6 +52,14 @@ sync: the English block.json defaults, the PHP map that translates them at
 render time, and the editor helper that does the same for the preview. A
 drift between them is silent — the label just stays English — so the test
 compares all three and checks each default is a real msgid.
+
+`asset-version-test.php` guards cache-busting. The `?ver=` on every block
+asset comes from block.json, which sat at 0.1.0 from the first commit, so
+for thirty-odd releases every stylesheet had the same URL and browsers kept
+their first copy. The failure is invisible server-side — the file on disk is
+correct, only the URL never moves — so the test pins that the Registry
+stamps the plugin version over it, and that the version itself is in sync
+across the plugin header, the constant and the readme.
 
 `notice-render-test.php` covers the Notice block. It submits nothing, so the
 risk is output rather than validation: an unknown variant must not reach the
