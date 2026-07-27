@@ -96,19 +96,18 @@
 	--flinkform-color-on-primary: var(--wp--preset--color--background, #fff);
 	--flinkform-border-radius: var(--wp--custom--border--radius, 6px);
 	--flinkform-field-gap: var(--wp--preset--spacing--40, 1.25rem);
-	// Page background colour the floating-label "notch" overlay paints
-	// itself with. Pulls from theme.json so the value tracks the active
-	// theme's actual page colour (light/dark mode included). This is the
-	// ONE variable we deliberately do NOT override under
-	// `prefers-color-scheme: dark`: that media query reflects the OS
-	// preference, not the theme's actual rendered background, and many
-	// themes (GeneratePress, classic themes) keep their page light even
-	// when the OS is dark. Forcing a dark fallback there would paint a
-	// dark notch onto a light page — a much worse visual bug than the
-	// rare reverse case (theme manually goes dark without exposing
-	// --wp--preset--color--background, leaving us with the #fff fallback
-	// against a dark page).
-	--flinkform-page-background: var(--wp--preset--color--background, #fff);
+	// Colour the floating-label "notch" strip paints itself with. Set by
+	// view.js once it has positively resolved the surface the form sits
+	// on; it also adds `.flinkform-form--has-notch`, which is what
+	// actually switches the label onto the border line.
+	//
+	// The default is deliberately `transparent` and NOT a guess such as
+	// theme.json's background preset: an almost-right colour paints a
+	// visibly mismatched box behind the label (the classic white
+	// rectangle on a tinted page), which is far worse than no notch at
+	// all. Without the class the label simply sits above the line, so
+	// this value is unused until we are sure of it.
+	--flinkform-page-background: transparent;
 
 	&__form {
 		display: flex;
@@ -1134,6 +1133,25 @@
  * Date and select fields always show native browser UI, so their labels
  * start permanently in the lifted/notched position (no animation). */
 .flinkform-form.flinkform-form--labels-floating {
+	// Where the LIFTED label comes to rest, and how much room the field
+	// needs above itself for it.
+	//
+	// Default: clear of the border line entirely. That needs no colour,
+	// so it is correct on a gradient, a photo, in dark mode and before
+	// any JavaScript has run. Note it must not sit ON the line while the
+	// notch colour is unknown — a transparent strip lets the 1px border
+	// run straight through the text and reads as strikethrough.
+	//
+	// view.js adds `--has-notch` once it has resolved the surface colour,
+	// which drops the label onto the line for the Material notch look.
+	--flinkform-notch-shift: -100%;
+	--flinkform-notch-gap: 1.15em;
+
+	&.flinkform-form--has-notch {
+		--flinkform-notch-shift: -50%;
+		--flinkform-notch-gap: 0.5em;
+	}
+
 	.flinkform-field--text,
 	.flinkform-field--email,
 	.flinkform-field--textarea,
@@ -1144,7 +1162,7 @@
 	.flinkform-field--select {
 		position: relative;
 		gap: 0;
-		margin-top: 0.5em; // breathing room for the lifted label
+		margin-top: var(--flinkform-notch-gap); // room for the lifted label
 
 		> .flinkform-field__input {
 			padding-top: 1em;
@@ -1169,11 +1187,12 @@
 		&:focus-within > .flinkform-field__label,
 		&:has(.flinkform-field__input:not(:placeholder-shown)) > .flinkform-field__label {
 			top: 0;
-			transform: translateY(-50%) scale(0.85);
+			transform: translateY(var(--flinkform-notch-shift)) scale(0.85);
 			opacity: 1;
 			font-weight: 600;
-			// The notch: this background paints over the input's top
-			// border at exactly the spot the label is sitting on.
+			// The notch: with a resolved colour this strip paints over the
+			// input's top border exactly where the label sits. Transparent
+			// (and the label lifted clear of the line) until then.
 			background: var(--flinkform-page-background);
 		}
 
@@ -1193,7 +1212,7 @@
 			&:focus-within > .flinkform-field__label,
 			&:has(.flinkform-field__input:not(:placeholder-shown)) > .flinkform-field__label {
 				top: 0;
-				transform: translateY(-50%) scale(0.85);
+				transform: translateY(var(--flinkform-notch-shift)) scale(0.85);
 			}
 		}
 
@@ -1204,7 +1223,7 @@
 		&.flinkform-field--select {
 			> .flinkform-field__label {
 				top: 0;
-				transform: translateY(-50%) scale(0.85);
+				transform: translateY(var(--flinkform-notch-shift)) scale(0.85);
 				opacity: 1;
 				font-weight: 600;
 				background: var(--flinkform-page-background);
@@ -1218,7 +1237,7 @@
  * would otherwise beat the (0,3,0) `margin-top` inside the floating block
  * above; this selector matches that specificity and wins on source order. */
 .flinkform-form.flinkform-form--labels-floating .flinkform-field-address__grid .flinkform-field--text {
-	margin-top: 0.5em;
+	margin-top: var(--flinkform-notch-gap);
 }
 
 /* ---------------------------------------------------------------------

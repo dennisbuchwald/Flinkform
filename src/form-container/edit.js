@@ -31,6 +31,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
+import resolveSurfaceColour from '../shared/surface-colour';
 
 // Inline plus glyph for the "Add field" appender button. Inline (not
 // @wordpress/icons) to avoid pulling in an extra dependency; the white
@@ -161,9 +162,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	].join( ' ' );
 
 	// Floating-label background auto-detect (editor preview).
-	// Mirrors the frontend's initFloatingLabelBackground(): walks up
-	// the DOM from the block wrapper and picks up the nearest ancestor's
-	// non-transparent background-color so the label notch matches.
+	// Mirrors the frontend's initFloatingLabelBackground(), sharing the same
+	// resolver so the editor preview cannot drift from the live render. The
+	// `--has-notch` class is what drops the label onto the border line; we
+	// only add it once the surface colour is actually known, otherwise the
+	// label stays clear of the line where it needs no colour at all.
 	const blockRef = useRef( null );
 	const mergedRef = useCallback( ( node ) => {
 		blockRef.current = node;
@@ -171,19 +174,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	useEffect( () => {
 		const node = blockRef.current;
-		if ( ! node || labelPosition !== 'floating' ) {
+		if ( ! node ) {
 			return;
 		}
-		let el = node.parentElement;
-		while ( el ) {
-			const bg = getComputedStyle( el ).backgroundColor;
-			if ( bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent' ) {
-				node.style.setProperty( '--flinkform-page-background', bg );
-				return;
-			}
-			el = el.parentElement;
+
+		if ( labelPosition !== 'floating' ) {
+			node.style.removeProperty( '--flinkform-page-background' );
+			node.classList.remove( 'flinkform-form--has-notch' );
+			return;
 		}
-	}, [ labelPosition ] );
+
+		const colour = resolveSurfaceColour( node );
+		if ( colour ) {
+			node.style.setProperty( '--flinkform-page-background', colour );
+			node.classList.add( 'flinkform-form--has-notch' );
+		} else {
+			node.style.removeProperty( '--flinkform-page-background' );
+			node.classList.remove( 'flinkform-form--has-notch' );
+		}
+		// The canvas background can change while editing (Style panel, a
+		// parent group's colour), so re-resolve whenever the block re-renders
+		// for a reason that could have moved it.
+	} );
 
 	const blockProps = useBlockProps( {
 		ref: mergedRef,

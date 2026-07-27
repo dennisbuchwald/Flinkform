@@ -29,6 +29,7 @@
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
+import resolveSurfaceColour from '../shared/surface-colour';
 
 const NAMESPACE = 'flinkform/form';
 
@@ -317,28 +318,59 @@ function initSubmitFeedback() {
 // ---------------------------------------------------------------------
 // Floating-label background auto-detect.
 //
-// The floating-label "notch" paints a solid background behind the label
-// text to cover the input's top border. By default it uses the theme's
-// page background (--flinkform-page-background), which is wrong when the
-// form sits on a section/container with a different background colour.
+// The floating-label "notch" paints a strip behind the lifted label to
+// cover the input's top border. That only works if we know the exact
+// colour of the surface the form sits on — guess wrong and the label
+// wears a mismatched box (the classic symptom: a white rectangle on a
+// tinted page).
 //
-// This init walks up each floating-label form's ancestors until it finds
-// one with a non-transparent background-color and sets the CSS variable
-// on the form wrapper so the notch matches automatically — zero config.
+// So the notch is opt-in: the stylesheet parks the lifted label just
+// ABOVE the border line, which needs no colour and can never look wrong.
+// Only once we have positively resolved the surface colour do we add
+// `--has-notch`, which drops the label onto the line and paints the
+// strip. Anything we cannot resolve with certainty simply keeps the
+// safe geometry.
+//
+// Resolution rules, walking from the form outwards:
+//   - a fully opaque background-color wins immediately
+//   - semi-transparent layers are collected and composited onto whatever
+//     opaque colour turns up further out
+//   - a background-image (gradient, photo) means the surface is not a
+//     flat colour at all: give up rather than paint something wrong
+//   - if nothing paints anything, the page canvas is the browser default,
+//     which follows the document's colour-scheme
 // ---------------------------------------------------------------------
 
 function initFloatingLabelBackground() {
 	document.querySelectorAll( '.flinkform-form--labels-floating' ).forEach( ( wrapper ) => {
-		let el = wrapper.parentElement;
-		while ( el ) {
-			const bg = getComputedStyle( el ).backgroundColor;
-			if ( bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent' ) {
-				wrapper.style.setProperty( '--flinkform-page-background', bg );
-				break;
-			}
-			el = el.parentElement;
+		const colour = resolveSurfaceColour( wrapper );
+		if ( colour ) {
+			wrapper.style.setProperty( '--flinkform-page-background', colour );
+			wrapper.classList.add( 'flinkform-form--has-notch' );
+		} else {
+			wrapper.style.removeProperty( '--flinkform-page-background' );
+			wrapper.classList.remove( 'flinkform-form--has-notch' );
 		}
 	} );
+}
+
+// The surface can change after the first pass: late stylesheets, a theme's
+// dark-mode toggle, a responsive layout that swaps the section background.
+// Re-resolving is cheap, so do it whenever the page gives us a reason to.
+let notchFrame = 0;
+function refreshFloatingLabelBackground() {
+	cancelAnimationFrame( notchFrame );
+	notchFrame = requestAnimationFrame( initFloatingLabelBackground );
+}
+
+if ( typeof window !== 'undefined' ) {
+	window.addEventListener( 'load', refreshFloatingLabelBackground );
+	window.addEventListener( 'resize', refreshFloatingLabelBackground );
+
+	const darkScheme = window.matchMedia && window.matchMedia( '(prefers-color-scheme: dark)' );
+	if ( darkScheme && darkScheme.addEventListener ) {
+		darkScheme.addEventListener( 'change', refreshFloatingLabelBackground );
+	}
 }
 
 function initConditionalLogic() {

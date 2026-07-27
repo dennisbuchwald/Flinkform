@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.6.3
+Stable tag: 1.6.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,8 +27,10 @@ Flinkform is a form builder that lives entirely inside the WordPress Block Edito
 = Features (free core) =
 
 **Form building**
-* 13 field types: Text, Email, Textarea, Number, Date, URL, Phone, Select, Radio, Checkbox, Toggle, Hidden, Section Heading
+* 14 field types: Text, Email, Textarea, Number, Date, URL, Phone, Select, Radio, Checkbox, Toggle, Hidden, Consent, Address
+* Composite Address field: street, postal code and city in a compact grid, with optional address line 2 and country
 * Dedicated Consent field for privacy-policy agreement
+* Section Heading and Page Break blocks for structuring longer forms
 * Multi-step forms with Page Break block, per-step validation and progress indicator (bar, dots or numbers)
 * Conditional logic — show/hide fields, skip steps, gate the submit button
 * Two-column layout with per-field full-width override
@@ -116,6 +118,12 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.6.4 =
+* Fix: the floating-label notch no longer paints a mismatched box behind the label. It used to fall back to white whenever the surface colour was unknown, which on a tinted page produced a white rectangle around every lifted label. The notch is now opt-in: it only appears once the surface colour has been positively resolved, and otherwise the label simply rests clear of the border line, which needs no colour at all.
+* Improvement: surface detection is far more capable. It starts at the form itself, composites semi-transparent layers onto whatever opaque colour lies beneath them, falls back to the browser canvas when nothing paints a colour, and deliberately declines gradients and background images instead of guessing. It also re-runs on load, on resize and when the colour-scheme changes, so a dark-mode toggle no longer leaves a light notch behind.
+* Fix: the editor preview shares the same detection code as the frontend, so the notch can no longer differ between editing and the published page.
+* Docs: the feature list said 13 field types and counted Section Heading as one of them, while omitting Address and Consent. It now lists the actual 14.
 
 = 1.6.3 =
 * Fix: restored the German (de_DE) translation. Version 1.6.1 rebuilt the language files from an incomplete template and silently dropped 243 already-translated strings, so German sites fell back to English for most of the admin UI, the block inspector and the default success message. All strings are translated again, including the address field and the date comparison operators.
@@ -246,6 +254,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.6.4 =
+Fixes the white box that appeared behind floating labels on any page whose background is not plain white.
 
 = 1.6.3 =
 Recommended for every site, essential for German ones: 1.6.1 accidentally removed 243 translated strings, and this release restores them. Also fixes the address field under floating labels and the red outline on invalid inputs, which never rendered.
