@@ -117,6 +117,12 @@
 	// all. Without the class the label simply sits above the line, so
 	// this value is unused until we are sure of it.
 	--flinkform-page-background: transparent;
+	// Dropdown arrow, drawn by us because the native one goes away with
+	// `appearance: none` (see the select rule for why that is necessary).
+	// A data URI cannot resolve currentColor, hence a neutral grey that
+	// holds up on light and mid surfaces — override this property for a
+	// form on a dark background.
+	--flinkform-select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23555' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
 
 	&__form {
 		display: flex;
@@ -767,6 +773,36 @@
 		// Multi-select gets a sane height so it doesn't look like a one-line dropdown.
 		&--select select[multiple] {
 			min-height: 6rem;
+		}
+
+		// Single selects: take the rendering off the browser.
+		//
+		// WebKit ignores vertical padding on a select with the native
+		// menulist appearance and sizes the control from the font metrics
+		// alone. Together with our line-height that leaves the box shorter
+		// than its own text, so Safari clipped the selected option along
+		// the top edge and the floating label landed on top of it — while
+		// Chrome, which does honour the padding, looked correct. Switching
+		// the native appearance off makes the box obey exactly the same
+		// padding as every other field, which fixes Safari and gets the
+		// two browsers to agree.
+		//
+		// The cost is the arrow, which we now have to draw. A data URI
+		// cannot resolve currentColor, so the glyph ships as its own
+		// custom property: a form on a dark surface can override
+		// `--flinkform-select-arrow` rather than being stuck with ours.
+		//
+		// `:not([multiple])` because a multi-select is a list box, not a
+		// dropdown — it has no arrow to replace.
+		&--select select.flinkform-field__input:not([multiple]) {
+			-webkit-appearance: none;
+			appearance: none;
+			background-image: var(--flinkform-select-arrow);
+			background-repeat: no-repeat;
+			background-position: right 0.85em center;
+			background-size: 0.7em auto;
+			// Room for the arrow, so a long option label cannot run under it.
+			padding-inline-end: 2.4em;
 		}
 	}
 

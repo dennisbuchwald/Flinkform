@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.8.2
+Stable tag: 1.8.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.8.3 =
+* Fix: dropdowns rendered wrong in Safari. WebKit ignores vertical padding on a select with its native appearance and sizes the control from the font alone, which left the box shorter than its own text — Safari clipped the selected option along the top edge and the floating label landed on top of it, while Chrome looked fine. Flinkform now draws the control itself, so a dropdown is exactly as tall as every other field in every browser.
+* Fix: a freshly inserted field is labelled in your site language. Block defaults live in a JSON file and never passed through the translation layer, so a new Date Field read "Date" and a dropdown read "Choose one" even on a fully German site. Labels the author has typed are untouched, including one that deliberately uses the English wording.
 
 = 1.8.2 =
 * Fix: a submit button held back by a Submit Condition now looks unavailable. It already carried the disabled attribute, so clicking did nothing — but it kept its full colour, its hover effect and the normal pointer, so the only clue was a line of grey text below it. It is now faded, desaturated and shows a not-allowed cursor, in all three button styles. The submitting state keeps its own look: a spinner on a greyed-out button reads as broken rather than busy.
@@ -278,6 +282,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.8.3 =
+Fixes dropdown fields rendering too short in Safari, and translates the default labels of newly inserted fields.
 
 = 1.8.2 =
 A submit button blocked by a Submit Condition now visibly looks disabled instead of fully clickable.

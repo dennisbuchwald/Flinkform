@@ -3,6 +3,7 @@ import { InspectorControls, RichText, useBlockProps } from '@wordpress/block-edi
 import { PanelBody, SelectControl, TextareaControl } from '@wordpress/components';
 import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
+import displayDefaultLabel from '../shared/default-label';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { title, description, headingLevel } = attributes;
@@ -42,7 +43,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 				<RichText
 					tagName={ `h${ level }` }
 					className="flinkform-section-heading__title"
-					value={ title }
+					value={ displayDefaultLabel( title, 'Section' ) }
 					onChange={ ( v ) => setAttributes( { title: v } ) }
 					placeholder={ __( 'Section title…', 'flinkform' ) }
 				/>

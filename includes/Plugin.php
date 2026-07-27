@@ -61,6 +61,9 @@ final class Plugin {
 		}
 
 		( new Blocks\Registry() )->register();
+		// Fills in translated labels for attributes the author never
+		// touched — see the class for why block.json defaults need this.
+		( new Blocks\DefaultStrings() )->register();
 
 		// Forms indexer registers its cache-invalidation hooks on both
 		// front and back ends — a save_post during a REST request needs

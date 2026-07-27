@@ -15,6 +15,7 @@ const SOURCE_OPTIONS = [
 ];
 import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
+import displayDefaultLabel from '../shared/default-label';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, fieldName, valueSource, staticValue } = attributes;
@@ -75,7 +76,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			</InspectorControls>
 
 			<div { ...blockProps } style={ { padding: '8px 12px', background: '#f0f0f1', borderRadius: '4px', fontSize: '12px' } }>
-				<strong>{ __( 'Hidden:', 'flinkform' ) }</strong> { label } <code>({ valueSource || 'static' })</code>
+				<strong>{ __( 'Hidden:', 'flinkform' ) }</strong> { displayDefaultLabel( label, 'Hidden Field' ) } <code>({ valueSource || 'static' })</code>
 			</div>
 		</>
 	);

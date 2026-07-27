@@ -10,6 +10,7 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
     php tests/condition-initial-state-test.php
     php tests/mailer-sender-test.php
     php tests/script-translations-test.php
+    php tests/default-strings-test.php
 
 `rule-evaluator-date-test.php` covers the `date_before` / `date_on_or_after`
 operators, including the guards against empty and malformed values.
@@ -44,6 +45,12 @@ stays English, which is how it went unnoticed until 1.8.1. The test
 recomputes the name the way core does, asserts a non-empty file exists for
 every editor bundle, and checks that the Registry passes a languages path at
 all (without one, core only searches WP_LANG_DIR/plugins).
+
+`default-strings-test.php` keeps three copies of the same literals in
+sync: the English block.json defaults, the PHP map that translates them at
+render time, and the editor helper that does the same for the preview. A
+drift between them is silent — the label just stays English — so the test
+compares all three and checks each default is a real msgid.
 
 `notice-render-test.php` covers the Notice block. It submits nothing, so the
 risk is output rather than validation: an unknown variant must not reach the

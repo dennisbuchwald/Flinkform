@@ -13,7 +13,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Flinkform 1.8.0\n"
+"Project-Id-Version: Flinkform 1.8.3\n"
 "Report-Msgid-Bugs-To: https://flinkform.de/\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -152,7 +152,10 @@ msgstr "Formular auf \"%s\""
 msgid "(Untitled form)"
 msgstr "(Unbenanntes Formular)"
 
-#: includes/Admin/SubmissionsListTable.php:73
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-date
+#: includes/Admin/SubmissionsListTable.php:73 src/shared/default-label.js:42
+#: src/field-date/block.json
 msgid "Date"
 msgstr "Datum"
 
@@ -576,8 +579,11 @@ msgstr "Datenschutzerklärung"
 msgid "(opens in a new tab)"
 msgstr "(öffnet in einem neuen Tab)"
 
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-address
 #: src/field-address/render.php:45 src/field-address/edit.js:55
-#: src/shared/conditional-logic-panel.js:88
+#: src/shared/default-label.js:39 src/shared/conditional-logic-panel.js:88
+#: src/field-address/block.json
 msgid "Address"
 msgstr "Adresse"
 
@@ -589,7 +595,7 @@ msgstr "Straße + Hausnummer"
 msgid "Apartment, suite, floor etc."
 msgstr "Wohnung, Stockwerk etc."
 
-#: src/field-checkbox/render.php:41 src/field-checkbox/edit.js:45
+#: src/field-checkbox/render.php:41 src/field-checkbox/edit.js:46
 msgid "Please select at least one option."
 msgstr "Bitte wählen Sie mindestens eine Option aus."
 
@@ -635,7 +641,7 @@ msgstr ""
 "Bitte treffen Sie die erforderliche Auswahl oben, um das Formular absenden "
 "zu können."
 
-#: src/field-hidden/edit.js:9 src/field-hidden/edit.js:52
+#: src/field-hidden/edit.js:9 src/field-hidden/edit.js:53
 msgid "Static value"
 msgstr "Statischer Wert"
 
@@ -661,25 +667,26 @@ msgstr "Aktuelles Datum + Uhrzeit (ISO)"
 
 #. #-#-#-#-#  extra.pot  #-#-#-#-#
 #. title of the block flinkform/field-hidden
-#: src/field-hidden/edit.js:33 src/field-hidden/block.json
+#: src/field-hidden/edit.js:34 src/shared/default-label.js:44
+#: src/field-hidden/block.json
 msgid "Hidden Field"
 msgstr "Verstecktes Feld"
 
-#: src/field-hidden/edit.js:35
+#: src/field-hidden/edit.js:36
 msgid "Editor label"
 msgstr "Editor-Beschriftung"
 
-#: src/field-hidden/edit.js:36
+#: src/field-hidden/edit.js:37
 msgid "Only shown in the editor for orientation. Not sent to visitors."
 msgstr ""
 "Wird nur im Editor zur Orientierung angezeigt. Wird nicht an Besucher "
 "gesendet."
 
-#: src/field-hidden/edit.js:43
+#: src/field-hidden/edit.js:44
 msgid "Value source"
 msgstr "Wertquelle"
 
-#: src/field-hidden/edit.js:61
+#: src/field-hidden/edit.js:62
 msgid ""
 "The value is computed on the server when the form is rendered — POST values "
 "from visitors are ignored."
@@ -687,111 +694,111 @@ msgstr ""
 "Der Wert wird beim Rendern des Formulars serverseitig berechnet - POST-Werte"
 " von Besuchern werden ignoriert."
 
-#: src/field-hidden/edit.js:65 src/field-radio/edit.js:53
-#: src/field-textarea/edit.js:70 src/field-consent/edit.js:48
-#: src/field-address/edit.js:106 src/field-text/edit.js:56
-#: src/field-url/edit.js:56 src/field-phone/edit.js:56
-#: src/field-toggle/edit.js:46 src/field-number/edit.js:75
-#: src/field-checkbox/edit.js:60 src/field-email/edit.js:56
-#: src/field-date/edit.js:65 src/field-select/edit.js:62
+#: src/field-hidden/edit.js:66 src/field-radio/edit.js:54
+#: src/field-textarea/edit.js:71 src/field-consent/edit.js:48
+#: src/field-address/edit.js:106 src/field-text/edit.js:57
+#: src/field-url/edit.js:57 src/field-phone/edit.js:57
+#: src/field-toggle/edit.js:47 src/field-number/edit.js:76
+#: src/field-checkbox/edit.js:61 src/field-email/edit.js:57
+#: src/field-date/edit.js:66 src/field-select/edit.js:63
 msgid "Field Name"
 msgstr "Feldname"
 
-#: src/field-hidden/edit.js:66
+#: src/field-hidden/edit.js:67
 msgid "Key used in submission data."
 msgstr "Schlüssel in den Einsendungsdaten."
 
-#: src/field-hidden/edit.js:78
+#: src/field-hidden/edit.js:79
 msgid "Hidden:"
 msgstr "Versteckt:"
 
-#: src/field-radio/edit.js:31 src/field-textarea/edit.js:32
-#: src/field-address/edit.js:60 src/field-text/edit.js:27
-#: src/field-url/edit.js:27 src/field-phone/edit.js:27
-#: src/field-toggle/edit.js:24 src/field-number/edit.js:24
-#: src/field-checkbox/edit.js:27 src/field-email/edit.js:27
-#: src/field-date/edit.js:27 src/field-select/edit.js:27
+#: src/field-radio/edit.js:32 src/field-textarea/edit.js:33
+#: src/field-address/edit.js:60 src/field-text/edit.js:28
+#: src/field-url/edit.js:28 src/field-phone/edit.js:28
+#: src/field-toggle/edit.js:25 src/field-number/edit.js:25
+#: src/field-checkbox/edit.js:28 src/field-email/edit.js:28
+#: src/field-date/edit.js:28 src/field-select/edit.js:28
 msgid "Field Settings"
 msgstr "Feldeinstellungen"
 
-#: src/field-radio/edit.js:33 src/field-textarea/edit.js:34
+#: src/field-radio/edit.js:34 src/field-textarea/edit.js:35
 #: src/field-address/edit.js:62 src/shared/options-editor.js:79
-#: src/field-text/edit.js:29 src/field-url/edit.js:29
-#: src/field-phone/edit.js:29 src/field-toggle/edit.js:26
-#: src/field-number/edit.js:26 src/field-checkbox/edit.js:29
-#: src/field-email/edit.js:29 src/field-date/edit.js:29
-#: src/field-select/edit.js:29
+#: src/field-text/edit.js:30 src/field-url/edit.js:30
+#: src/field-phone/edit.js:30 src/field-toggle/edit.js:27
+#: src/field-number/edit.js:27 src/field-checkbox/edit.js:30
+#: src/field-email/edit.js:30 src/field-date/edit.js:30
+#: src/field-select/edit.js:30
 msgid "Label"
 msgstr "Beschriftung"
 
-#: src/field-radio/edit.js:40 src/field-textarea/edit.js:48
-#: src/field-address/edit.js:69 src/field-text/edit.js:43
-#: src/field-url/edit.js:43 src/field-phone/edit.js:43
-#: src/field-number/edit.js:40 src/field-email/edit.js:43
-#: src/field-date/edit.js:36 src/field-select/edit.js:43
+#: src/field-radio/edit.js:41 src/field-textarea/edit.js:49
+#: src/field-address/edit.js:69 src/field-text/edit.js:44
+#: src/field-url/edit.js:44 src/field-phone/edit.js:44
+#: src/field-number/edit.js:41 src/field-email/edit.js:44
+#: src/field-date/edit.js:37 src/field-select/edit.js:44
 msgid "Required"
 msgstr "Pflichtfeld"
 
-#: src/field-radio/edit.js:46 src/field-textarea/edit.js:63
-#: src/field-address/edit.js:99 src/field-text/edit.js:49
-#: src/field-url/edit.js:49 src/field-phone/edit.js:49
-#: src/field-toggle/edit.js:39 src/field-number/edit.js:68
-#: src/field-checkbox/edit.js:53 src/field-email/edit.js:49
-#: src/field-date/edit.js:58 src/field-select/edit.js:55
+#: src/field-radio/edit.js:47 src/field-textarea/edit.js:64
+#: src/field-address/edit.js:99 src/field-text/edit.js:50
+#: src/field-url/edit.js:50 src/field-phone/edit.js:50
+#: src/field-toggle/edit.js:40 src/field-number/edit.js:69
+#: src/field-checkbox/edit.js:54 src/field-email/edit.js:50
+#: src/field-date/edit.js:59 src/field-select/edit.js:56
 msgid "Help Text"
 msgstr "Hilfetext"
 
-#: src/field-radio/edit.js:60
+#: src/field-radio/edit.js:61
 msgid "Display"
 msgstr "Darstellung"
 
-#: src/field-radio/edit.js:61
+#: src/field-radio/edit.js:62
 msgid "Show the choices as a plain list or as selectable buttons."
 msgstr "Die Auswahl als einfache Liste oder als anklickbare Buttons anzeigen."
 
-#: src/field-radio/edit.js:64
+#: src/field-radio/edit.js:65
 msgid "List"
 msgstr "Liste"
 
-#: src/field-radio/edit.js:65
+#: src/field-radio/edit.js:66
 msgid "Buttons"
 msgstr "Buttons"
 
-#: src/field-radio/edit.js:73
+#: src/field-radio/edit.js:74
 msgid "Button Shape"
 msgstr "Button-Form"
 
-#: src/field-radio/edit.js:76
+#: src/field-radio/edit.js:77
 msgid "Pill"
 msgstr "Pille"
 
-#: src/field-radio/edit.js:77
+#: src/field-radio/edit.js:78
 msgid "Rounded"
 msgstr "Abgerundet"
 
-#: src/field-radio/edit.js:78
+#: src/field-radio/edit.js:79
 msgid "Square"
 msgstr "Eckig"
 
-#: src/field-radio/edit.js:86 src/field-checkbox/edit.js:67
-#: src/field-select/edit.js:69
+#: src/field-radio/edit.js:87 src/field-checkbox/edit.js:68
+#: src/field-select/edit.js:70
 msgid "Options"
 msgstr "Optionen"
 
-#: src/field-textarea/edit.js:41 src/field-text/edit.js:36
-#: src/field-url/edit.js:36 src/field-phone/edit.js:36
-#: src/field-number/edit.js:33 src/field-email/edit.js:36
+#: src/field-textarea/edit.js:42 src/field-text/edit.js:37
+#: src/field-url/edit.js:37 src/field-phone/edit.js:37
+#: src/field-number/edit.js:34 src/field-email/edit.js:37
 msgid "Placeholder"
 msgstr "Platzhalter"
 
-#: src/field-textarea/edit.js:54
+#: src/field-textarea/edit.js:55
 msgid "Rows"
 msgstr "Zeilen"
 
-#: src/field-textarea/edit.js:71 src/field-text/edit.js:57
-#: src/field-url/edit.js:57 src/field-phone/edit.js:57
-#: src/field-toggle/edit.js:47 src/field-number/edit.js:76
-#: src/field-email/edit.js:57 src/field-date/edit.js:66
+#: src/field-textarea/edit.js:72 src/field-text/edit.js:58
+#: src/field-url/edit.js:58 src/field-phone/edit.js:58
+#: src/field-toggle/edit.js:48 src/field-number/edit.js:77
+#: src/field-email/edit.js:58 src/field-date/edit.js:67
 msgid "Key used in submission data. Auto-generated; change with care."
 msgstr ""
 "Schlüssel in den Einsendungsdaten. Wird automatisch generiert - nur mit "
@@ -876,6 +883,69 @@ msgstr "Volle Breite"
 #: src/shared/full-width-panel.js:24
 msgid "Make this field span both columns of the form."
 msgstr "Dieses Feld über beide Spalten des Formulars ausdehnen."
+
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-checkbox
+#: src/shared/default-label.js:40 src/field-checkbox/block.json
+msgid "Choose any"
+msgstr "Mehrfachauswahl"
+
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-radio
+#: src/shared/default-label.js:41 src/field-radio/block.json
+msgid "Choose one"
+msgstr "Bitte auswählen"
+
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-email
+#: src/shared/default-label.js:43 src/form-container/edit.js:75
+#: src/field-email/block.json
+msgid "Email"
+msgstr "E-Mail"
+
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-toggle
+#: src/shared/default-label.js:45 src/field-toggle/block.json
+msgid "I agree"
+msgstr "Ich stimme zu"
+
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-textarea
+#: src/shared/default-label.js:46 src/form-container/edit.js:76
+#: src/field-textarea/block.json
+msgid "Message"
+msgstr "Nachricht"
+
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-number
+#: src/shared/default-label.js:47 src/field-number/block.json
+msgid "Number"
+msgstr "Zahl"
+
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-phone
+#: src/shared/default-label.js:48 src/field-phone/block.json
+msgid "Phone"
+msgstr "Telefon"
+
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default title of the block flinkform/section-heading
+#: src/shared/default-label.js:49 src/section-heading/edit.js:16
+#: src/section-heading/block.json
+msgid "Section"
+msgstr "Abschnitt"
+
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-text
+#: src/shared/default-label.js:50 src/field-text/block.json
+msgid "Text"
+msgstr "Text"
+
+#. #-#-#-#-#  extra.pot  #-#-#-#-#
+#. default label of the block flinkform/field-url
+#: src/shared/default-label.js:51 src/field-url/block.json
+msgid "Website"
+msgstr "Webseite"
 
 #: src/shared/conditional-logic-panel.js:161 src/form-container/edit.js:787
 msgid "— Select a field —"
@@ -1047,15 +1117,11 @@ msgstr ""
 msgid "Write your note…"
 msgstr "Deinen Hinweis schreiben…"
 
-#: src/section-heading/edit.js:15
-msgid "Section"
-msgstr "Abschnitt"
-
-#: src/section-heading/edit.js:17
+#: src/section-heading/edit.js:18
 msgid "Heading level"
 msgstr "Überschriftenebene"
 
-#: src/section-heading/edit.js:18
+#: src/section-heading/edit.js:19
 msgid ""
 "Pick the level that keeps your page’s heading order correct (H1 belongs to "
 "the page)."
@@ -1063,49 +1129,49 @@ msgstr ""
 "Wählen Sie die Ebene, die die Überschriften-Reihenfolge Ihrer Seite korrekt "
 "hält (H1 gehört zur Seite)."
 
-#: src/section-heading/edit.js:32
+#: src/section-heading/edit.js:33
 msgid "Description"
 msgstr "Beschreibung"
 
-#: src/section-heading/edit.js:47
+#: src/section-heading/edit.js:48
 msgid "Section title…"
 msgstr "Abschnittstitel..."
 
-#: src/field-toggle/edit.js:27
+#: src/field-toggle/edit.js:28
 msgid "Shown next to the checkbox. Plain HTML allowed."
 msgstr "Wird neben der Checkbox angezeigt. Einfaches HTML ist erlaubt."
 
-#: src/field-toggle/edit.js:33
+#: src/field-toggle/edit.js:34
 msgid "Required (must be checked)"
 msgstr "Pflichtfeld (muss angehakt sein)"
 
-#: src/field-number/edit.js:46
+#: src/field-number/edit.js:47
 msgid "Min"
 msgstr "Min"
 
-#: src/field-number/edit.js:53
+#: src/field-number/edit.js:54
 msgid "Max"
 msgstr "Max"
 
-#: src/field-number/edit.js:60
+#: src/field-number/edit.js:61
 msgid "Step"
 msgstr "Schrittweite"
 
-#: src/field-number/edit.js:61
+#: src/field-number/edit.js:62
 msgid "Decimal step, e.g. 0.01 for currency. Leave empty for whole numbers."
 msgstr ""
 "Dezimale Schrittweite, z. B. 0,01 für Währungsbeträge. Leer lassen für ganze"
 " Zahlen."
 
-#: src/field-checkbox/edit.js:36
+#: src/field-checkbox/edit.js:37
 msgid "Required (at least one)"
 msgstr "Pflichtfeld (mindestens eine Auswahl)"
 
-#: src/field-checkbox/edit.js:43
+#: src/field-checkbox/edit.js:44
 msgid "Required Message"
 msgstr "Pflichtfeld-Meldung"
 
-#: src/field-checkbox/edit.js:44
+#: src/field-checkbox/edit.js:45
 msgid ""
 "Shown when the visitor submits without selecting an option. Leave empty for "
 "the default."
@@ -1116,14 +1182,6 @@ msgstr ""
 #: src/form-container/edit.js:74
 msgid "Name"
 msgstr "Name"
-
-#: src/form-container/edit.js:75
-msgid "Email"
-msgstr "E-Mail"
-
-#: src/form-container/edit.js:76
-msgid "Message"
-msgstr "Nachricht"
 
 #: src/form-container/edit.js:433
 msgid "Form Settings"
@@ -1629,19 +1687,19 @@ msgstr ""
 msgid "Add field"
 msgstr "Feld hinzufügen"
 
-#: src/field-date/edit.js:42
+#: src/field-date/edit.js:43
 msgid "Earliest Date"
 msgstr "Frühestes Datum"
 
-#: src/field-date/edit.js:50
+#: src/field-date/edit.js:51
 msgid "Latest Date"
 msgstr "Spätestes Datum"
 
-#: src/field-select/edit.js:36
+#: src/field-select/edit.js:37
 msgid "Placeholder (single select only)"
 msgstr "Platzhalter (nur Einzelauswahl)"
 
-#: src/field-select/edit.js:49
+#: src/field-select/edit.js:50
 msgid "Allow multiple selections"
 msgstr "Mehrfachauswahl erlauben"
 
