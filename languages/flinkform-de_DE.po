@@ -13,7 +13,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Flinkform 1.8.3\n"
+"Project-Id-Version: Flinkform 1.9.0\n"
 "Report-Msgid-Bugs-To: https://flinkform.de/\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -951,15 +951,15 @@ msgstr "Webseite"
 msgid "— Select a field —"
 msgstr "- Feld auswählen -"
 
-#: src/shared/conditional-logic-panel.js:223
+#: src/shared/conditional-logic-panel.js:239
 msgid "Conditional Logic"
 msgstr "Bedingte Logik"
 
-#: src/shared/conditional-logic-panel.js:227
+#: src/shared/conditional-logic-panel.js:243
 msgid "Enable conditional logic"
 msgstr "Bedingte Logik aktivieren"
 
-#: src/shared/conditional-logic-panel.js:228
+#: src/shared/conditional-logic-panel.js:244
 msgid ""
 "Show this only when the rules below match. Hidden fields are excluded from "
 "the submission, both client- and server-side."
@@ -968,82 +968,113 @@ msgstr ""
 "Felder werden aus der Einsendung ausgeschlossen, sowohl client- als auch "
 "serverseitig."
 
-#: src/shared/conditional-logic-panel.js:238
+#: src/shared/conditional-logic-panel.js:254
 msgid ""
 "Add at least one other field block to the form to use conditional logic."
 msgstr ""
 "Fügen Sie dem Formular mindestens einen weiteren Feldblock hinzu, um die "
 "bedingte Logik zu nutzen."
 
-#: src/shared/conditional-logic-panel.js:243
+#: src/shared/conditional-logic-panel.js:259
 msgid "Match"
 msgstr "Treffer"
 
-#: src/shared/conditional-logic-panel.js:250
+#: src/shared/conditional-logic-panel.js:266
+#: src/shared/conditional-logic-panel.js:375
 msgid "ALL"
 msgstr "ALLE"
 
-#: src/shared/conditional-logic-panel.js:251
+#: src/shared/conditional-logic-panel.js:267
+#: src/shared/conditional-logic-panel.js:376
 msgid "ANY"
 msgstr "BELIEBIGE"
 
-#: src/shared/conditional-logic-panel.js:271
+#: src/shared/conditional-logic-panel.js:298
 msgid "+ Add rule"
 msgstr "+ Regel hinzufügen"
 
-#: src/shared/conditional-logic-panel.js:286
+#: src/shared/conditional-logic-panel.js:306
+msgid "+ Add group"
+msgstr "+ Gruppe hinzufügen"
+
+#: src/shared/conditional-logic-panel.js:311
+msgid ""
+"A group is evaluated on its own ALL/ANY and then counts as a single rule "
+"here — that is how you express “(A or B) and C”."
+msgstr ""
+"Eine Gruppe wird nach ihrer eigenen Verknüpfung ausgewertet und zählt hier "
+"dann wie eine einzelne Regel. So drückst du „(A oder B) und C\" aus."
+
+#: src/shared/conditional-logic-panel.js:368
+msgid "Match within group"
+msgstr "Verknüpfung innerhalb der Gruppe"
+
+#: src/shared/conditional-logic-panel.js:391
+msgid "An empty group is ignored — it has no effect on the condition."
+msgstr ""
+"Eine leere Gruppe wird ignoriert und wirkt sich nicht auf die Bedingung aus."
+
+#: src/shared/conditional-logic-panel.js:397
+msgid "+ Add rule to group"
+msgstr "+ Regel zur Gruppe"
+
+#: src/shared/conditional-logic-panel.js:400
+msgid "Remove group"
+msgstr "Gruppe entfernen"
+
+#: src/shared/conditional-logic-panel.js:414
 msgid "is"
 msgstr "ist"
 
-#: src/shared/conditional-logic-panel.js:287
+#: src/shared/conditional-logic-panel.js:415
 msgid "is not"
 msgstr "ist nicht"
 
-#: src/shared/conditional-logic-panel.js:288
+#: src/shared/conditional-logic-panel.js:416
 msgid "contains"
 msgstr "enthält"
 
-#: src/shared/conditional-logic-panel.js:289
+#: src/shared/conditional-logic-panel.js:417
 msgid "does not contain"
 msgstr "enthält nicht"
 
-#: src/shared/conditional-logic-panel.js:290
+#: src/shared/conditional-logic-panel.js:418
 msgid "is empty"
 msgstr "ist leer"
 
-#: src/shared/conditional-logic-panel.js:291
+#: src/shared/conditional-logic-panel.js:419
 msgid "is not empty"
 msgstr "ist nicht leer"
 
-#: src/shared/conditional-logic-panel.js:292
+#: src/shared/conditional-logic-panel.js:420
 msgid "greater than"
 msgstr "größer als"
 
-#: src/shared/conditional-logic-panel.js:293
+#: src/shared/conditional-logic-panel.js:421
 msgid "less than"
 msgstr "kleiner als"
 
-#: src/shared/conditional-logic-panel.js:294
+#: src/shared/conditional-logic-panel.js:422
 msgid "is before (date)"
 msgstr "ist vor (Datum)"
 
-#: src/shared/conditional-logic-panel.js:295
+#: src/shared/conditional-logic-panel.js:423
 msgid "is on or after (date)"
 msgstr "ist am oder nach (Datum)"
 
-#: src/shared/conditional-logic-panel.js:310
+#: src/shared/conditional-logic-panel.js:438
 msgid "Field"
 msgstr "Feld"
 
-#: src/shared/conditional-logic-panel.js:319
+#: src/shared/conditional-logic-panel.js:447
 msgid "Operator"
 msgstr "Operator"
 
-#: src/shared/conditional-logic-panel.js:338 src/shared/options-editor.js:86
+#: src/shared/conditional-logic-panel.js:466 src/shared/options-editor.js:86
 msgid "Value"
 msgstr "Wert"
 
-#: src/shared/conditional-logic-panel.js:353
+#: src/shared/conditional-logic-panel.js:481
 msgid "Remove rule"
 msgstr "Regel entfernen"
 

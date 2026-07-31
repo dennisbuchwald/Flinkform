@@ -55,6 +55,16 @@ defined( 'ABSPATH' ) || exit;
  */
 final class RuleEvaluator {
 
+	/**
+	 * How deep a nested rule set may go before we stop descending.
+	 *
+	 * The editor offers one level of nesting; this only exists so a
+	 * hand-edited or corrupted payload cannot recurse without bound.
+	 *
+	 * @var int
+	 */
+	private const MAX_DEPTH = 10;
+
 	private const VALUE_OPERATORS = [ 'is', 'is_not', 'contains', 'not_contains', 'greater_than', 'less_than', 'date_before', 'date_on_or_after' ];
 	private const EMPTY_OPERATORS = [ 'is_empty', 'is_not_empty' ];
 
@@ -70,18 +80,60 @@ final class RuleEvaluator {
 			return true;
 		}
 
-		$rules = isset( $rule_set['rules'] ) && is_array( $rule_set['rules'] ) ? $rule_set['rules'] : [];
+		return $this->evaluate_group( $rule_set, $values, 0 );
+	}
+
+	/**
+	 * Evaluate one level of a rule set.
+	 *
+	 * An entry is either a leaf (`{field, operator, value}`) or a nested
+	 * group (`{logic, rules}`) carrying its own ALL/ANY. A group's verdict
+	 * folds into the parent exactly like a leaf's, which is what makes
+	 * "(A or B or C) and D" expressible at all — a single flat list with one
+	 * match mode cannot say that.
+	 *
+	 * Empty nested groups are skipped rather than counted. An author who
+	 * has added a group but not yet filled it should not thereby flip the
+	 * whole condition, which is what a hard true or false would do in ANY
+	 * and ALL mode respectively.
+	 *
+	 * @param array<string, mixed> $group  A rule set or nested group.
+	 * @param array<string, mixed> $values Sanitised values keyed by field name.
+	 * @param int                  $depth  Current nesting depth.
+	 * @return bool
+	 */
+	private function evaluate_group( array $group, array $values, int $depth ): bool {
+		// Cheap insurance against a hand-crafted payload nesting far enough
+		// to blow the stack. Two levels is the documented feature; ten
+		// leaves room without ever being reachable by the editor UI.
+		if ( $depth > self::MAX_DEPTH ) {
+			return true;
+		}
+
+		$rules = isset( $group['rules'] ) && is_array( $group['rules'] ) ? $group['rules'] : [];
 		if ( empty( $rules ) ) {
 			return true;
 		}
 
-		$logic = ( isset( $rule_set['logic'] ) && 'any' === $rule_set['logic'] ) ? 'any' : 'all';
+		$logic     = ( isset( $group['logic'] ) && 'any' === $group['logic'] ) ? 'any' : 'all';
+		$evaluated = 0;
 
-		foreach ( $rules as $rule ) {
-			if ( ! is_array( $rule ) ) {
+		foreach ( $rules as $entry ) {
+			if ( ! is_array( $entry ) ) {
 				continue;
 			}
-			$match = $this->evaluate_rule( $rule, $values );
+
+			if ( self::is_group( $entry ) ) {
+				// An empty group says nothing; leave the verdict to its siblings.
+				if ( empty( $entry['rules'] ) ) {
+					continue;
+				}
+				$match = $this->evaluate_group( $entry, $values, $depth + 1 );
+			} else {
+				$match = $this->evaluate_rule( $entry, $values );
+			}
+
+			++$evaluated;
 
 			if ( 'any' === $logic && $match ) {
 				return true;
@@ -91,10 +143,29 @@ final class RuleEvaluator {
 			}
 		}
 
-		// All rules processed without a short-circuit:
-		//   - all-mode: every rule matched → true
-		//   - any-mode: no rule matched → false
+		// Nothing usable in here at all — same stance as an empty rule set:
+		// a condition that says nothing must not hide anything.
+		if ( 0 === $evaluated ) {
+			return true;
+		}
+
+		// Every entry processed without a short-circuit:
+		//   - all-mode: everything matched → true
+		//   - any-mode: nothing matched → false
 		return 'all' === $logic;
+	}
+
+	/**
+	 * Is this entry a nested group rather than a leaf rule?
+	 *
+	 * The presence of a `rules` array is the discriminator. A leaf never
+	 * carries one, so old flat rule sets can never be mistaken for groups.
+	 *
+	 * @param array<string, mixed> $entry
+	 * @return bool
+	 */
+	public static function is_group( array $entry ): bool {
+		return isset( $entry['rules'] ) && is_array( $entry['rules'] );
 	}
 
 	/**

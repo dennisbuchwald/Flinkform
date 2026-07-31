@@ -30,6 +30,7 @@
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
 import resolveSurfaceColour from '../shared/surface-colour';
+import evaluateRuleSet from '../shared/rule-evaluator';
 
 const NAMESPACE = 'flinkform/form';
 
@@ -50,8 +51,6 @@ const NAMESPACE = 'flinkform/form';
 // `Submissions\Handler` so a DOM-manipulated visible field can't
 // smuggle data through — client-side is UX, server-side is truth.
 // ---------------------------------------------------------------------
-
-const EMPTY_OPERATORS = new Set( [ 'is_empty', 'is_not_empty' ] );
 
 // MUST be declared before the init block below: modules are deferred, so
 // initFetchSubmit() runs synchronously during module evaluation — a const
@@ -675,116 +674,6 @@ function gatherFormValues( form ) {
  * @param {Object<string, any>} values
  * @returns {boolean}
  */
-function evaluateRuleSet( ruleSet, values ) {
-	if ( ! ruleSet || ! ruleSet.enabled ) {
-		return true;
-	}
-	const rules = Array.isArray( ruleSet.rules ) ? ruleSet.rules : [];
-	if ( rules.length === 0 ) {
-		return true;
-	}
-	const mode = ruleSet.logic === 'any' ? 'any' : 'all';
-
-	for ( const rule of rules ) {
-		const match = evaluateRule( rule, values );
-		if ( mode === 'any' && match ) {
-			return true;
-		}
-		if ( mode === 'all' && ! match ) {
-			return false;
-		}
-	}
-	return mode === 'all';
-}
-
-function evaluateRule( rule, values ) {
-	if ( ! rule || typeof rule !== 'object' ) {
-		return false;
-	}
-	const field = String( rule.field ?? '' );
-	const operator = String( rule.operator ?? '' );
-	const value = String( rule.value ?? '' );
-
-	if ( field === '' || operator === '' ) {
-		return false;
-	}
-
-	const fieldValue = values[ field ] ?? null;
-
-	if ( EMPTY_OPERATORS.has( operator ) ) {
-		const empty = isEmptyValue( fieldValue );
-		return operator === 'is_empty' ? empty : ! empty;
-	}
-
-	const fieldString = toComparableString( fieldValue );
-
-	switch ( operator ) {
-		case 'is':
-			// Case-insensitive on purpose — matches the PHP-side
-			// RuleEvaluator::evaluate_rule(). See the long comment
-			// there for the slugify rationale; in short: "Skip" in
-			// the rule UI must match "skip" in the serialised option
-			// value the editor's slugify helper produced.
-			return fieldString.toLowerCase() === value.toLowerCase();
-		case 'is_not':
-			return fieldString.toLowerCase() !== value.toLowerCase();
-		case 'contains':
-			return value !== '' && fieldString.toLowerCase().includes( value.toLowerCase() );
-		case 'not_contains':
-			return value === '' || ! fieldString.toLowerCase().includes( value.toLowerCase() );
-		case 'greater_than':
-			if ( fieldString === '' || isNaN( Number( fieldString ) ) || isNaN( Number( value ) ) ) {
-				return false;
-			}
-			return Number( fieldString ) > Number( value );
-		case 'less_than':
-			if ( fieldString === '' || isNaN( Number( fieldString ) ) || isNaN( Number( value ) ) ) {
-				return false;
-			}
-			return Number( fieldString ) < Number( value );
-		case 'date_before':
-		case 'date_on_or_after': {
-			const dateRe = /^\d{4}-\d{2}-\d{2}$/;
-			if ( ! dateRe.test( fieldString ) || ! dateRe.test( value ) ) {
-				return false;
-			}
-			return operator === 'date_before'
-				? fieldString < value
-				: fieldString >= value;
-		}
-		default:
-			return false;
-	}
-}
-
-function toComparableString( v ) {
-	if ( v === null || v === undefined ) {
-		return '';
-	}
-	if ( Array.isArray( v ) ) {
-		return v.map( ( x ) => String( x ) ).join( ', ' );
-	}
-	if ( typeof v === 'boolean' ) {
-		return v ? '1' : '';
-	}
-	return String( v );
-}
-
-function isEmptyValue( v ) {
-	if ( v === null || v === undefined ) {
-		return true;
-	}
-	if ( Array.isArray( v ) ) {
-		return v.length === 0;
-	}
-	if ( typeof v === 'string' ) {
-		return v.trim() === '';
-	}
-	if ( typeof v === 'boolean' ) {
-		return ! v;
-	}
-	return false;
-}
 
 const { state } = store( NAMESPACE, {
 	state: {

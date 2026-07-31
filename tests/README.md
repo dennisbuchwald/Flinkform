@@ -5,6 +5,8 @@
 Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
 
     php tests/rule-evaluator-date-test.php
+    php tests/rule-groups-test.php
+    node tests/rule-groups-parity.mjs
     php tests/field-address-render-test.php
     php tests/notice-render-test.php
     php tests/condition-initial-state-test.php
@@ -15,6 +17,20 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
 
 `rule-evaluator-date-test.php` covers the `date_before` / `date_on_or_after`
 operators, including the guards against empty and malformed values.
+
+`rule-groups-test.php` covers nested condition groups on the server: the
+motivating "(A or B or C) and D" case, mixed nesting both ways, empty and
+malformed groups, the depth ceiling, and that a flat rule set saved before
+groups existed still behaves and still serialises identically.
+
+`rule-groups-parity.mjs` is the one that matters most. The browser decides
+what a visitor sees, the server decides what is stored — if the two
+evaluators disagree, a field hides in the browser and submits anyway, or the
+reverse, and neither failure announces itself. So it runs one shared table
+(`rule-groups-cases.json`) through both implementations and compares the
+verdicts, rather than testing each half against its own expectations. That
+shared table is why the browser evaluator lives in `src/shared/rule-evaluator.js`
+rather than inside view.js: Node can import it directly.
 
 `field-address-render-test.php` renders the address block against every label
 position and asserts the label/placeholder contract. Background: 1.6.0 shipped

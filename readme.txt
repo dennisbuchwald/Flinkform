@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.8.4
+Stable tag: 1.9.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,7 +33,7 @@ Flinkform is a form builder that lives entirely inside the WordPress Block Edito
 * Notice block: a highlighted note between fields (info, success, warning, important) — pair it with conditional logic to surface guidance only when it applies
 * Section Heading and Page Break blocks for structuring longer forms
 * Multi-step forms with Page Break block, per-step validation and progress indicator (bar, dots or numbers)
-* Conditional logic — show/hide fields, skip steps, gate the submit button
+* Conditional logic — show/hide fields, skip steps, gate the submit button, with nestable groups for "(A or B) and C"
 * Two-column layout with per-field full-width override
 
 **Styling**
@@ -120,6 +120,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.9.0 =
+* New: condition groups. A condition could only ever be one flat list of rules under a single ALL/ANY, which cannot express "(A or B or C) and D". You can now add a group inside a condition, give it its own ALL/ANY, and it counts as a single rule in the level above. The case it was built for: allow submitting only when the due date is empty, before a holiday, or after it — and the postcode is not an excluded one.
+* Existing conditions are untouched. A rule set without groups behaves exactly as before, and a saved condition never needs migrating.
 
 = 1.8.4 =
 * Fix: style and script updates actually reach the browser. Every asset URL carried `?ver=0.1.0`, taken from a field in the block manifest that had not changed since the very first commit — so across more than thirty releases the stylesheet was served from an identical URL and browsers, CDNs and page caches all kept the copy they first downloaded. A fix could be deployed, be correct on the server, and remain invisible to anyone who had loaded a form before. Asset URLs now carry the plugin version, so every future release busts the cache on its own. This one still needs a single hard reload, because the old URL is what is cached.
@@ -285,6 +289,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.9.0 =
+Conditional logic can now nest: a group with its own ALL/ANY counts as one rule in the level above, so "(A or B) and C" is expressible.
 
 = 1.8.4 =
 Important: asset URLs never changed between releases, so browsers kept serving old CSS. Reload once with a hard refresh after updating; from here on it takes care of itself.

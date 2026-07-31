@@ -30,6 +30,15 @@ defined( 'ABSPATH' ) || exit;
 final class Wrapper {
 
 	/**
+	 * Nesting ceiling for the serialised payload, matching
+	 * RuleEvaluator::MAX_DEPTH — there is no point emitting depth the
+	 * evaluator will refuse to descend into.
+	 *
+	 * @var int
+	 */
+	private const MAX_DEPTH = 10;
+
+	/**
 	 * Build the raw JSON payload a conditional-logic block exposes to the
 	 * frontend evaluator. Returns an empty string when the rule set is
 	 * missing, disabled, or carries no rules.
@@ -58,24 +67,60 @@ final class Wrapper {
 		$payload = [
 			'enabled' => true,
 			'logic'   => ( isset( $rule_set['logic'] ) && 'any' === $rule_set['logic'] ) ? 'any' : 'all',
-			'rules'   => array_values( array_filter(
-				array_map(
-					static function ( $rule ) {
-						if ( ! is_array( $rule ) ) {
-							return null;
-						}
-						return [
-							'field'    => isset( $rule['field'] ) ? (string) $rule['field'] : '',
-							'operator' => isset( $rule['operator'] ) ? (string) $rule['operator'] : '',
-							'value'    => isset( $rule['value'] ) ? (string) $rule['value'] : '',
-						];
-					},
-					$rules
-				)
-			) ),
+			'rules'   => self::normalise_rules( $rules, 0 ),
 		];
 
 		return (string) wp_json_encode( $payload );
+	}
+
+	/**
+	 * Re-serialise a rule list, keeping nested groups intact.
+	 *
+	 * Trimming each entry to the keys the evaluator consumes keeps the data
+	 * attribute small and its content deterministic for caching layers.
+	 * Groups have to recurse rather than be flattened: dropping the nesting
+	 * would silently turn "(A or B) and C" into a flat list under one match
+	 * mode, which is a different condition — and the browser would then
+	 * disagree with the server, which reads the unflattened attribute.
+	 *
+	 * @param array<int, mixed> $rules Raw rule entries from the attribute.
+	 * @param int               $depth Current nesting depth.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function normalise_rules( array $rules, int $depth ): array {
+		if ( $depth > self::MAX_DEPTH ) {
+			return [];
+		}
+
+		$out = [];
+
+		foreach ( $rules as $entry ) {
+			if ( ! is_array( $entry ) ) {
+				continue;
+			}
+
+			if ( RuleEvaluator::is_group( $entry ) ) {
+				$nested = self::normalise_rules( $entry['rules'], $depth + 1 );
+				if ( empty( $nested ) ) {
+					// An empty group carries no meaning; leaving it out
+					// keeps the payload honest about what will be evaluated.
+					continue;
+				}
+				$out[] = [
+					'logic' => ( isset( $entry['logic'] ) && 'any' === $entry['logic'] ) ? 'any' : 'all',
+					'rules' => $nested,
+				];
+				continue;
+			}
+
+			$out[] = [
+				'field'    => isset( $entry['field'] ) ? (string) $entry['field'] : '',
+				'operator' => isset( $entry['operator'] ) ? (string) $entry['operator'] : '',
+				'value'    => isset( $entry['value'] ) ? (string) $entry['value'] : '',
+			];
+		}
+
+		return $out;
 	}
 
 	/**

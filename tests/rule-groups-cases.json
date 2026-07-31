@@ -1,0 +1,1074 @@
+[
+ {
+  "name": "flach ALL, beide treffen",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "1"
+    },
+    {
+     "field": "b",
+     "operator": "is",
+     "value": "2"
+    }
+   ]
+  },
+  "values": {
+   "a": "1",
+   "b": "2"
+  },
+  "expected": true
+ },
+ {
+  "name": "flach ALL, eine scheitert",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "1"
+    },
+    {
+     "field": "b",
+     "operator": "is",
+     "value": "2"
+    }
+   ]
+  },
+  "values": {
+   "a": "1"
+  },
+  "expected": false
+ },
+ {
+  "name": "flach ANY, eine trifft",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "any",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "1"
+    },
+    {
+     "field": "b",
+     "operator": "is",
+     "value": "2"
+    }
+   ]
+  },
+  "values": {
+   "b": "2"
+  },
+  "expected": true
+ },
+ {
+  "name": "flach ANY, keine trifft",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "any",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "1"
+    }
+   ]
+  },
+  "values": {
+   "a": "x"
+  },
+  "expected": false
+ },
+ {
+  "name": "leere Regelliste zeigt",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": []
+  },
+  "values": {},
+  "expected": true
+ },
+ {
+  "name": "deaktiviert zeigt",
+  "ruleSet": {
+   "enabled": false,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "1"
+    }
+   ]
+  },
+  "values": {},
+  "expected": true
+ },
+ {
+  "name": "is_empty bei fehlendem Schluessel",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is_empty",
+     "value": ""
+    }
+   ]
+  },
+  "values": {},
+  "expected": true
+ },
+ {
+  "name": "is_empty bei leerem String",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is_empty",
+     "value": ""
+    }
+   ]
+  },
+  "values": {
+   "a": ""
+  },
+  "expected": true
+ },
+ {
+  "name": "is_not_empty bei unberuehrt",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is_not_empty",
+     "value": ""
+    }
+   ]
+  },
+  "values": {},
+  "expected": false
+ },
+ {
+  "name": "contains case-insensitiv",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "contains",
+     "value": "ABC"
+    }
+   ]
+  },
+  "values": {
+   "a": "xxabcxx"
+  },
+  "expected": true
+ },
+ {
+  "name": "unbekannter Operator",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "wat",
+     "value": "1"
+    }
+   ]
+  },
+  "values": {
+   "a": "1"
+  },
+  "expected": false
+ },
+ {
+  "name": "greater_than numerisch",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "greater_than",
+     "value": "5"
+    }
+   ]
+  },
+  "values": {
+   "a": "7"
+  },
+  "expected": true
+ },
+ {
+  "name": "greater_than nicht numerisch",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "greater_than",
+     "value": "5"
+    }
+   ]
+  },
+  "values": {
+   "a": "sieben"
+  },
+  "expected": false
+ },
+ {
+  "name": "Array via contains",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "contains",
+     "value": "b"
+    }
+   ]
+  },
+  "values": {
+   "a": [
+    "a",
+    "b"
+   ]
+  },
+  "expected": true
+ },
+ {
+  "name": "leeres Array ist leer",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is_empty",
+     "value": ""
+    }
+   ]
+  },
+  "values": {
+   "a": []
+  },
+  "expected": true
+ },
+ {
+  "name": "Urlaub: kein Datum, PLZ ok",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "due",
+       "operator": "is_empty",
+       "value": ""
+      },
+      {
+       "field": "due",
+       "operator": "date_before",
+       "value": "2027-03-19"
+      },
+      {
+       "field": "due",
+       "operator": "date_on_or_after",
+       "value": "2027-04-29"
+      }
+     ]
+    },
+    {
+     "field": "plz",
+     "operator": "is_not",
+     "value": "andere-plz"
+    }
+   ]
+  },
+  "values": {
+   "plz": "74172"
+  },
+  "expected": true
+ },
+ {
+  "name": "Urlaub: Datum davor",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "due",
+       "operator": "is_empty",
+       "value": ""
+      },
+      {
+       "field": "due",
+       "operator": "date_before",
+       "value": "2027-03-19"
+      },
+      {
+       "field": "due",
+       "operator": "date_on_or_after",
+       "value": "2027-04-29"
+      }
+     ]
+    },
+    {
+     "field": "plz",
+     "operator": "is_not",
+     "value": "andere-plz"
+    }
+   ]
+  },
+  "values": {
+   "due": "2027-02-01",
+   "plz": "74172"
+  },
+  "expected": true
+ },
+ {
+  "name": "Urlaub: Datum danach",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "due",
+       "operator": "is_empty",
+       "value": ""
+      },
+      {
+       "field": "due",
+       "operator": "date_before",
+       "value": "2027-03-19"
+      },
+      {
+       "field": "due",
+       "operator": "date_on_or_after",
+       "value": "2027-04-29"
+      }
+     ]
+    },
+    {
+     "field": "plz",
+     "operator": "is_not",
+     "value": "andere-plz"
+    }
+   ]
+  },
+  "values": {
+   "due": "2027-06-01",
+   "plz": "74172"
+  },
+  "expected": true
+ },
+ {
+  "name": "Urlaub: Datum mittendrin",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "due",
+       "operator": "is_empty",
+       "value": ""
+      },
+      {
+       "field": "due",
+       "operator": "date_before",
+       "value": "2027-03-19"
+      },
+      {
+       "field": "due",
+       "operator": "date_on_or_after",
+       "value": "2027-04-29"
+      }
+     ]
+    },
+    {
+     "field": "plz",
+     "operator": "is_not",
+     "value": "andere-plz"
+    }
+   ]
+  },
+  "values": {
+   "due": "2027-04-01",
+   "plz": "74172"
+  },
+  "expected": false
+ },
+ {
+  "name": "Urlaub: erster gesperrter Tag",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "due",
+       "operator": "is_empty",
+       "value": ""
+      },
+      {
+       "field": "due",
+       "operator": "date_before",
+       "value": "2027-03-19"
+      },
+      {
+       "field": "due",
+       "operator": "date_on_or_after",
+       "value": "2027-04-29"
+      }
+     ]
+    },
+    {
+     "field": "plz",
+     "operator": "is_not",
+     "value": "andere-plz"
+    }
+   ]
+  },
+  "values": {
+   "due": "2027-03-19",
+   "plz": "74172"
+  },
+  "expected": false
+ },
+ {
+  "name": "Urlaub: erster freier Tag",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "due",
+       "operator": "is_empty",
+       "value": ""
+      },
+      {
+       "field": "due",
+       "operator": "date_before",
+       "value": "2027-03-19"
+      },
+      {
+       "field": "due",
+       "operator": "date_on_or_after",
+       "value": "2027-04-29"
+      }
+     ]
+    },
+    {
+     "field": "plz",
+     "operator": "is_not",
+     "value": "andere-plz"
+    }
+   ]
+  },
+  "values": {
+   "due": "2027-04-29",
+   "plz": "74172"
+  },
+  "expected": true
+ },
+ {
+  "name": "Urlaub: ausgeschlossene PLZ",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "due",
+       "operator": "is_empty",
+       "value": ""
+      },
+      {
+       "field": "due",
+       "operator": "date_before",
+       "value": "2027-03-19"
+      },
+      {
+       "field": "due",
+       "operator": "date_on_or_after",
+       "value": "2027-04-29"
+      }
+     ]
+    },
+    {
+     "field": "plz",
+     "operator": "is_not",
+     "value": "andere-plz"
+    }
+   ]
+  },
+  "values": {
+   "due": "2027-06-01",
+   "plz": "andere-plz"
+  },
+  "expected": false
+ },
+ {
+  "name": "Urlaub: beides schlecht",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "due",
+       "operator": "is_empty",
+       "value": ""
+      },
+      {
+       "field": "due",
+       "operator": "date_before",
+       "value": "2027-03-19"
+      },
+      {
+       "field": "due",
+       "operator": "date_on_or_after",
+       "value": "2027-04-29"
+      }
+     ]
+    },
+    {
+     "field": "plz",
+     "operator": "is_not",
+     "value": "andere-plz"
+    }
+   ]
+  },
+  "values": {
+   "due": "2027-04-01",
+   "plz": "andere-plz"
+  },
+  "expected": false
+ },
+ {
+  "name": "Urlaub: unformatiertes Datum",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "due",
+       "operator": "is_empty",
+       "value": ""
+      },
+      {
+       "field": "due",
+       "operator": "date_before",
+       "value": "2027-03-19"
+      },
+      {
+       "field": "due",
+       "operator": "date_on_or_after",
+       "value": "2027-04-29"
+      }
+     ]
+    },
+    {
+     "field": "plz",
+     "operator": "is_not",
+     "value": "andere-plz"
+    }
+   ]
+  },
+  "values": {
+   "due": "01.04.2027",
+   "plz": "74172"
+  },
+  "expected": false
+ },
+ {
+  "name": "ALL in ALL, alles trifft",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "all",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "1"
+      },
+      {
+       "field": "b",
+       "operator": "is",
+       "value": "2"
+      }
+     ]
+    },
+    {
+     "field": "c",
+     "operator": "is",
+     "value": "3"
+    }
+   ]
+  },
+  "values": {
+   "a": "1",
+   "b": "2",
+   "c": "3"
+  },
+  "expected": true
+ },
+ {
+  "name": "ALL in ALL, Gruppe halb",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "all",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "1"
+      },
+      {
+       "field": "b",
+       "operator": "is",
+       "value": "2"
+      }
+     ]
+    },
+    {
+     "field": "c",
+     "operator": "is",
+     "value": "3"
+    }
+   ]
+  },
+  "values": {
+   "a": "1",
+   "c": "3"
+  },
+  "expected": false
+ },
+ {
+  "name": "ANY-Eltern, Gruppe genuegt",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "any",
+   "rules": [
+    {
+     "logic": "all",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "1"
+      },
+      {
+       "field": "b",
+       "operator": "is",
+       "value": "2"
+      }
+     ]
+    },
+    {
+     "field": "c",
+     "operator": "is",
+     "value": "3"
+    }
+   ]
+  },
+  "values": {
+   "a": "1",
+   "b": "2"
+  },
+  "expected": true
+ },
+ {
+  "name": "ANY-Eltern, Leaf genuegt",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "any",
+   "rules": [
+    {
+     "logic": "all",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "1"
+      },
+      {
+       "field": "b",
+       "operator": "is",
+       "value": "2"
+      }
+     ]
+    },
+    {
+     "field": "c",
+     "operator": "is",
+     "value": "3"
+    }
+   ]
+  },
+  "values": {
+   "c": "3"
+  },
+  "expected": true
+ },
+ {
+  "name": "ANY-Eltern, nichts erfuellt",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "any",
+   "rules": [
+    {
+     "logic": "all",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "1"
+      },
+      {
+       "field": "b",
+       "operator": "is",
+       "value": "2"
+      }
+     ]
+    },
+    {
+     "field": "c",
+     "operator": "is",
+     "value": "3"
+    }
+   ]
+  },
+  "values": {
+   "a": "1"
+  },
+  "expected": false
+ },
+ {
+  "name": "zwei ANY-Gruppen, beide ok",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "1"
+      },
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "2"
+      }
+     ]
+    },
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "b",
+       "operator": "is",
+       "value": "x"
+      },
+      {
+       "field": "b",
+       "operator": "is",
+       "value": "y"
+      }
+     ]
+    }
+   ]
+  },
+  "values": {
+   "a": "2",
+   "b": "y"
+  },
+  "expected": true
+ },
+ {
+  "name": "zwei ANY-Gruppen, eine faellt",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "1"
+      },
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "2"
+      }
+     ]
+    },
+    {
+     "logic": "any",
+     "rules": [
+      {
+       "field": "b",
+       "operator": "is",
+       "value": "x"
+      },
+      {
+       "field": "b",
+       "operator": "is",
+       "value": "y"
+      }
+     ]
+    }
+   ]
+  },
+  "values": {
+   "a": "2",
+   "b": "z"
+  },
+  "expected": false
+ },
+ {
+  "name": "leere Gruppe wird ignoriert",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": []
+    },
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "1"
+    }
+   ]
+  },
+  "values": {
+   "a": "1"
+  },
+  "expected": true
+ },
+ {
+  "name": "leere Gruppe erfuellt kein ANY",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "any",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": []
+    },
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "1"
+    }
+   ]
+  },
+  "values": {
+   "a": "nope"
+  },
+  "expected": false
+ },
+ {
+  "name": "Gruppe nur mit kaputtem Leaf",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "all",
+     "rules": [
+      {
+       "field": "",
+       "operator": "is",
+       "value": "1"
+      }
+     ]
+    },
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "1"
+    }
+   ]
+  },
+  "values": {
+   "a": "1"
+  },
+  "expected": false
+ },
+ {
+  "name": "nur eine leere Gruppe",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "any",
+     "rules": []
+    }
+   ]
+  },
+  "values": {},
+  "expected": true
+ },
+ {
+  "name": "Gruppe ohne logic ist ALL",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "1"
+      },
+      {
+       "field": "b",
+       "operator": "is",
+       "value": "2"
+      }
+     ]
+    }
+   ]
+  },
+  "values": {
+   "a": "1"
+  },
+  "expected": false
+ },
+ {
+  "name": "vier Ebenen tief, trifft",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "all",
+     "rules": [
+      {
+       "logic": "all",
+       "rules": [
+        {
+         "logic": "all",
+         "rules": [
+          {
+           "logic": "all",
+           "rules": [
+            {
+             "field": "a",
+             "operator": "is",
+             "value": "1"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "values": {
+   "a": "1"
+  },
+  "expected": true
+ },
+ {
+  "name": "vier Ebenen tief, trifft nicht",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "logic": "all",
+     "rules": [
+      {
+       "logic": "all",
+       "rules": [
+        {
+         "logic": "all",
+         "rules": [
+          {
+           "logic": "all",
+           "rules": [
+            {
+             "field": "a",
+             "operator": "is",
+             "value": "1"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "values": {
+   "a": "2"
+  },
+  "expected": false
+ }
+]

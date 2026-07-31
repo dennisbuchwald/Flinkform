@@ -200,6 +200,22 @@ export default function ConditionalLogicPanel( {
 		update( { rules: next } );
 	};
 
+	// A group defaults to ANY: the reason to reach for one is almost always
+	// bundling alternatives inside an otherwise ALL condition — "(A or B or
+	// C) and D". Starting it on ALL would make it indistinguishable from the
+	// flat list it was just lifted out of.
+	const addGroup = () => {
+		update( {
+			rules: [
+				...ruleSet.rules,
+				{
+					logic: 'any',
+					rules: [ { ...BLANK_RULE, field: siblingFields[ 0 ]?.name ?? '' } ],
+				},
+			],
+		} );
+	};
+
 	const toggleEnabled = ( on ) => {
 		if ( ! on ) {
 			setAttributes( { [ attributeName ]: { ...DEFAULT_RULE_SET } } );
@@ -251,28 +267,140 @@ export default function ConditionalLogicPanel( {
 						<ToggleGroupControlOption value="any" label={ __( 'ANY', 'flinkform' ) } />
 					</ToggleGroupControl>
 
-					{ ruleSet.rules.map( ( rule, index ) => (
-						<RuleRow
-							key={ index }
-							rule={ rule }
-							fieldOptions={ fieldOptions }
-							onChange={ ( patch ) => updateRule( index, patch ) }
-							onRemove={ () => removeRule( index ) }
-						/>
-					) ) }
+					{ ruleSet.rules.map( ( entry, index ) =>
+						isRuleGroup( entry ) ? (
+							<RuleGroup
+								key={ index }
+								group={ entry }
+								fieldOptions={ fieldOptions }
+								defaultField={ siblingFields[ 0 ]?.name ?? '' }
+								onChange={ ( patch ) => updateRule( index, patch ) }
+								onRemove={ () => removeRule( index ) }
+							/>
+						) : (
+							<RuleRow
+								key={ index }
+								rule={ entry }
+								fieldOptions={ fieldOptions }
+								onChange={ ( patch ) => updateRule( index, patch ) }
+								onRemove={ () => removeRule( index ) }
+							/>
+						)
+					) }
 
-					<Button
-						variant="secondary"
-						onClick={ addRule }
-						__next40pxDefaultSize
-						style={ { marginTop: '8px' } }
-						disabled={ siblingFields.length === 0 }
-					>
-						{ __( '+ Add rule', 'flinkform' ) }
-					</Button>
+					<div style={ { display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' } }>
+						<Button
+							variant="secondary"
+							onClick={ addRule }
+							__next40pxDefaultSize
+							disabled={ siblingFields.length === 0 }
+						>
+							{ __( '+ Add rule', 'flinkform' ) }
+						</Button>
+						<Button
+							variant="tertiary"
+							onClick={ addGroup }
+							__next40pxDefaultSize
+							disabled={ siblingFields.length === 0 }
+						>
+							{ __( '+ Add group', 'flinkform' ) }
+						</Button>
+					</div>
+
+					<p style={ { marginTop: '8px', fontSize: '12px', color: '#757575' } }>
+						{ __( 'A group is evaluated on its own ALL/ANY and then counts as a single rule here — that is how you express “(A or B) and C”.', 'flinkform' ) }
+					</p>
 				</>
 			) }
 		</PanelBody>
+	);
+}
+
+/**
+ * A `rules` array is what separates a group from a leaf rule. Leaves never
+ * carry one, so a rule set saved before groups existed can never be
+ * mistaken for one. Mirrors RuleEvaluator::is_group() and the frontend's
+ * isRuleGroup().
+ *
+ * @param {object} entry
+ * @returns {boolean}
+ */
+function isRuleGroup( entry ) {
+	return !! entry && Array.isArray( entry.rules );
+}
+
+/**
+ * A nested group: its own ALL/ANY plus its own list of rules. Deliberately
+ * offers no "add group" of its own — one level covers "(A or B) and C",
+ * which is the case this exists for, and every level past the first costs
+ * more in comprehensibility than it returns. The evaluators recurse
+ * regardless, so a deeper set hand-written into the attribute still works.
+ */
+function RuleGroup( { group, fieldOptions, defaultField, onChange, onRemove } ) {
+	const rules = Array.isArray( group.rules ) ? group.rules : [];
+
+	const updateInner = ( index, patch ) => {
+		onChange( {
+			rules: rules.map( ( rule, i ) => ( i === index ? { ...rule, ...patch } : rule ) ),
+		} );
+	};
+
+	const addInner = () => {
+		onChange( { rules: [ ...rules, { ...BLANK_RULE, field: defaultField } ] } );
+	};
+
+	const removeInner = ( index ) => {
+		onChange( { rules: rules.filter( ( _, i ) => i !== index ) } );
+	};
+
+	return (
+		<div
+			style={ {
+				border: '1px solid #ddd',
+				borderInlineStart: '3px solid #3858e9',
+				borderRadius: '4px',
+				padding: '8px',
+				marginTop: '8px',
+				background: '#f6f7f7',
+			} }
+		>
+			<ToggleGroupControl
+				label={ __( 'Match within group', 'flinkform' ) }
+				value={ group.logic === 'any' ? 'any' : 'all' }
+				onChange={ ( value ) => onChange( { logic: value === 'any' ? 'any' : 'all' } ) }
+				isBlock
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			>
+				<ToggleGroupControlOption value="all" label={ __( 'ALL', 'flinkform' ) } />
+				<ToggleGroupControlOption value="any" label={ __( 'ANY', 'flinkform' ) } />
+			</ToggleGroupControl>
+
+			{ rules.map( ( rule, index ) => (
+				<RuleRow
+					key={ index }
+					rule={ rule }
+					fieldOptions={ fieldOptions }
+					onChange={ ( patch ) => updateInner( index, patch ) }
+					onRemove={ () => removeInner( index ) }
+				/>
+			) ) }
+
+			{ rules.length === 0 && (
+				<p style={ { margin: '8px 0 0', fontSize: '12px', color: '#757575' } }>
+					{ __( 'An empty group is ignored — it has no effect on the condition.', 'flinkform' ) }
+				</p>
+			) }
+
+			<div style={ { display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' } }>
+				<Button variant="secondary" onClick={ addInner } __next40pxDefaultSize>
+					{ __( '+ Add rule to group', 'flinkform' ) }
+				</Button>
+				<Button variant="tertiary" isDestructive onClick={ onRemove } __next40pxDefaultSize>
+					{ __( 'Remove group', 'flinkform' ) }
+				</Button>
+			</div>
+		</div>
 	);
 }
 
