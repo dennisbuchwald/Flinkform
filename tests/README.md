@@ -7,6 +7,8 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
     php tests/rule-evaluator-date-test.php
     php tests/rule-groups-test.php
     node tests/rule-groups-parity.mjs
+    node tests/visibility-parity.mjs
+    php tests/mail-body-test.php
     php tests/field-address-render-test.php
     php tests/notice-render-test.php
     php tests/condition-initial-state-test.php
@@ -31,6 +33,19 @@ reverse, and neither failure announces itself. So it runs one shared table
 verdicts, rather than testing each half against its own expectations. That
 shared table is why the browser evaluator lives in `src/shared/rule-evaluator.js`
 rather than inside view.js: Node can import it directly.
+
+`visibility-parity.mjs` is the second parity harness, for the resolution of
+which fields are hidden. Visibility depends on values and values depend on
+visibility, so both halves iterate to a fixed point — and if they iterate
+differently (a different pass cap, a different entry order, an accumulating
+set on one side) they reach different answers for cascades. Cases with
+`expected: null` are contradictory on purpose: there is no single right
+answer, only the requirement that both sides pick the same one.
+
+`mail-body-test.php` covers the notification body. Mostly about what the
+mail leaves out — a hidden or empty field must not surface as a blank row —
+plus that it never prints an internal field name, formats dates and links
+the way a person expects, and escapes everything.
 
 `field-address-render-test.php` renders the address block against every label
 position and asserts the label/placeholder contract. Background: 1.6.0 shipped

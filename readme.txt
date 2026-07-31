@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.9.0
+Stable tag: 1.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.10.0 =
+* Fix: a conditionally hidden field no longer influences conditions. Its value was still being read, so switching a choice could leave a notice on screen or the submit button locked over an answer nobody could see or change — while the server had already dropped the field, meaning browser and server disagreed about the same form. A hidden field now counts as empty on both sides. Visibility is resolved to a fixed point first, so a cascade (hiding one field makes the next one's rule true) settles correctly, and a contradictory setup stops deterministically instead of looping.
+* New: the notification email to the form owner is properly laid out. It now goes out as multipart — readable HTML with a plain-text alternative for clients that will not render it. Field labels instead of internal names, room between entries, dates as DD.MM.YYYY, multi-line messages with their line breaks, email and phone as tappable links, and only fields that were actually filled in. A custom body you have written is kept word for word and only gains the same shell.
 
 = 1.9.0 =
 * New: condition groups. A condition could only ever be one flat list of rules under a single ALL/ANY, which cannot express "(A or B or C) and D". You can now add a group inside a condition, give it its own ALL/ANY, and it counts as a single rule in the level above. The case it was built for: allow submitting only when the due date is empty, before a holiday, or after it — and the postcode is not an excluded one.
@@ -289,6 +293,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.10.0 =
+Hidden fields no longer count towards conditions, and the notification email is far easier to read.
 
 = 1.9.0 =
 Conditional logic can now nest: a group with its own ALL/ANY counts as one rule in the level above, so "(A or B) and C" is expressible.

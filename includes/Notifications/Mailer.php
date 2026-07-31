@@ -92,17 +92,31 @@ final class Mailer {
 		 * @param array<string, mixed>                                                                       $form_def
 		 * @param string                                                                                     $type One of 'admin' | 'submitter'.
 		 */
+		// Laid out BEFORE the filter, not after: an integration that rewrites
+		// `body` has to see what will actually be sent, and be able to change
+		// it. `text_alternative` rides along so a listener can adjust both
+		// halves of the multipart rather than only the one it can see.
+		[ $html, $text ] = $this->dress_admin_body(
+			$body,
+			$config['is_default_body'],
+			$form_def,
+			$clean,
+			'' !== $reply_to
+		);
+		$headers[] = 'Content-Type: text/html; charset=UTF-8';
+
 		$email = (array) apply_filters(
 			'flinkform_email_notification',
 			[
-				'to'          => $to,
-				'subject'     => $subject,
-				'body'        => $body,
-				'headers'     => $headers,
+				'to'               => $to,
+				'subject'          => $subject,
+				'body'             => $html,
+				'text_alternative' => $text,
+				'headers'          => $headers,
 				// File paths for wp_mail()'s attachments parameter. Empty in
 				// the free core; add-ons append here (e.g. Pro attaches a
 				// File Upload field's stored file to the admin notification).
-				'attachments' => [],
+				'attachments'      => [],
 			],
 			$context,
 			$form_def,
@@ -114,7 +128,90 @@ final class Mailer {
 			return;
 		}
 
-		$this->send( $email, $recipients, $this->resolve_sender( $form_def, $context ) );
+		$this->send(
+			$email,
+			$recipients,
+			$this->resolve_sender( $form_def, $context ),
+			(string) ( $email['text_alternative'] ?? '' )
+		);
+	}
+
+	/**
+	 * Turn the admin body into an HTML/plain-text pair.
+	 *
+	 * Two paths on purpose. Our own generated body is rebuilt from the
+	 * field records so it can use labels, drop empty fields and format
+	 * dates — none of which survives a round trip through a merge-tagged
+	 * text template. An author's own body is not rewritten; it keeps every
+	 * word and only gains the same shell around it, so a form that has been
+	 * customised does not silently change what it says.
+	 *
+	 * @param string                                                                            $body        Merge-tag-resolved body.
+	 * @param bool                                                                              $is_default  Whether that body is ours.
+	 * @param array{fields: array<int, array<string, mixed>>}                                   $form_def
+	 * @param array<string, mixed>                                                              $clean
+	 * @param bool                                                                              $has_reply_to
+	 * @return array{0: string, 1: string} HTML body, plain-text alternative.
+	 */
+	private function dress_admin_body( string $body, bool $is_default, array $form_def, array $clean, bool $has_reply_to ): array {
+		$footer = sprintf(
+			/* translators: %1$s: site name, %2$s: site URL. */
+			__( 'Sent by %1$s (%2$s)', 'flinkform' ),
+			get_bloginfo( 'name' ),
+			home_url()
+		);
+
+		if ( ! $is_default ) {
+			return [ BodyBuilder::html_from_text( $body, [ 'footer' => $footer ] ), $body ];
+		}
+
+		$fields = isset( $form_def['fields'] ) && is_array( $form_def['fields'] ) ? $form_def['fields'] : [];
+		$rows   = BodyBuilder::rows( $fields, $clean );
+
+		// The submitter's name, if the form collected one, makes the opening
+		// line read like a message about a person rather than a database row.
+		$name  = $this->find_name( $fields, $clean );
+		$intro = '' !== $name
+			/* translators: %s: the name the visitor entered. */
+			? sprintf( __( 'New enquiry from %s via your website', 'flinkform' ), $name )
+			: __( 'New enquiry via your website', 'flinkform' );
+
+		$parts = [
+			'intro'  => $intro,
+			'outro'  => $has_reply_to
+				? __( 'You can reply to this email directly — your answer goes straight to the sender.', 'flinkform' )
+				: '',
+			'footer' => $footer,
+		];
+
+		return [ BodyBuilder::html( $rows, $parts ), BodyBuilder::text( $rows, $parts ) ];
+	}
+
+	/**
+	 * Best guess at the submitter's name for the greeting line.
+	 *
+	 * Matches on the field's own name rather than its label, since the label
+	 * is whatever the author typed and the field name is the stable key. No
+	 * match simply means a neutral opening line — this is a nicety, not
+	 * something worth guessing wrongly over.
+	 *
+	 * @param array<int, array<string, mixed>> $fields
+	 * @param array<string, mixed>             $clean
+	 * @return string
+	 */
+	private function find_name( array $fields, array $clean ): string {
+		foreach ( $fields as $field ) {
+			$name = (string) ( $field['name'] ?? '' );
+			if ( ! preg_match( '/^(name|vorname|first[_-]?name|full[_-]?name)(_[a-z0-9]+)?$/i', $name ) ) {
+				continue;
+			}
+			$value = $clean[ $name ] ?? '';
+			if ( is_array( $value ) || '' === trim( (string) $value ) ) {
+				continue;
+			}
+			return trim( (string) $value );
+		}
+		return '';
 	}
 
 	/**
@@ -168,15 +265,32 @@ final class Mailer {
 			$headers[] = 'Reply-To: ' . $reply_to;
 		}
 
+		// Same shell, same words. The confirmation is often a personal note
+		// the author wrote themselves, so it keeps its text exactly and only
+		// gains the layout.
+		$html = BodyBuilder::html_from_text(
+			$body,
+			[
+				'footer' => sprintf(
+					/* translators: %1$s: site name, %2$s: site URL. */
+					__( 'Sent by %1$s (%2$s)', 'flinkform' ),
+					get_bloginfo( 'name' ),
+					home_url()
+				),
+			]
+		);
+		$headers[] = 'Content-Type: text/html; charset=UTF-8';
+
 		/** This filter is documented in this file. */
 		$email = (array) apply_filters(
 			'flinkform_email_notification',
 			[
-				'to'          => [ $recipient ],
-				'subject'     => $subject,
-				'body'        => $body,
-				'headers'     => $headers,
-				'attachments' => [],
+				'to'               => [ $recipient ],
+				'subject'          => $subject,
+				'body'             => $html,
+				'text_alternative' => $body,
+				'headers'          => $headers,
+				'attachments'      => [],
 			],
 			$context,
 			$form_def,
@@ -188,7 +302,12 @@ final class Mailer {
 			return;
 		}
 
-		$this->send( $email, $recipients, $this->resolve_sender( $form_def, $context ) );
+		$this->send(
+			$email,
+			$recipients,
+			$this->resolve_sender( $form_def, $context ),
+			(string) ( $email['text_alternative'] ?? '' )
+		);
 	}
 
 	/**
@@ -208,15 +327,31 @@ final class Mailer {
 	 * @param array{email: string, name: string}    $sender     Empty strings mean "leave WordPress alone".
 	 * @return void
 	 */
-	private function send( array $email, array $recipients, array $sender ): void {
+	private function send( array $email, array $recipients, array $sender, string $text_alternative = '' ): void {
 		$from_email = static fn () => $sender['email'];
 		$from_name  = static fn () => $sender['name'];
+
+		// True multipart, not an HTML-only mail.
+		//
+		// wp_mail() alone can only do one or the other: a `Content-Type:
+		// text/html` header swaps the body wholesale, leaving a plain-text
+		// client with raw markup. Setting AltBody on the PHPMailer instance
+		// is what produces multipart/alternative, so a client that will not
+		// render HTML still gets a readable mail rather than a soup of
+		// tags. Registered for this one send and removed straight after, so
+		// no other plugin's mail is affected.
+		$alt_body = static function ( $phpmailer ) use ( $text_alternative ) {
+			$phpmailer->AltBody = $text_alternative; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar -- PHPMailer's own property name.
+		};
 
 		if ( '' !== $sender['email'] ) {
 			add_filter( 'wp_mail_from', $from_email, PHP_INT_MAX );
 		}
 		if ( '' !== $sender['name'] ) {
 			add_filter( 'wp_mail_from_name', $from_name, PHP_INT_MAX );
+		}
+		if ( '' !== $text_alternative ) {
+			add_action( 'phpmailer_init', $alt_body, PHP_INT_MAX );
 		}
 
 		try {
@@ -229,12 +364,16 @@ final class Mailer {
 			);
 		} finally {
 			// `finally` because a mail plugin throwing mid-send must not
-			// leave our sender bolted onto every later wp_mail() call.
+			// leave our sender or our AltBody bolted onto every later
+			// wp_mail() call.
 			if ( '' !== $sender['email'] ) {
 				remove_filter( 'wp_mail_from', $from_email, PHP_INT_MAX );
 			}
 			if ( '' !== $sender['name'] ) {
 				remove_filter( 'wp_mail_from_name', $from_name, PHP_INT_MAX );
+			}
+			if ( '' !== $text_alternative ) {
+				remove_action( 'phpmailer_init', $alt_body, PHP_INT_MAX );
 			}
 		}
 	}
@@ -302,6 +441,10 @@ final class Mailer {
 			'subject'  => isset( $notif['subject'] ) && '' !== trim( (string) $notif['subject'] ) ? (string) $notif['subject'] : $default_subject,
 			'body'     => isset( $notif['body'] ) && '' !== trim( (string) $notif['body'] ) ? (string) $notif['body'] : $default_body,
 			'reply_to' => isset( $notif['replyTo'] ) ? (string) $notif['replyTo'] : '',
+			// Whether the body above is ours. Only our own gets rebuilt from
+			// the field records into the laid-out HTML; an author's text is
+			// wrapped but never rewritten.
+			'is_default_body' => ! ( isset( $notif['body'] ) && '' !== trim( (string) $notif['body'] ) ),
 		];
 	}
 

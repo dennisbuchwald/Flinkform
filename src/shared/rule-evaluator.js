@@ -210,5 +210,102 @@ function isEmptyValue( v ) {
 	return false;
 }
 
+/**
+ * How many passes the visibility resolution may take before it stops.
+ *
+ * Mirrors VisibilityResolver::MAX_PASSES. Visibility depends on values and
+ * values depend on visibility, so it has to be iterated to a fixed point —
+ * and a configuration can be genuinely contradictory ("show A when B is
+ * empty" against "show B when A is empty"), which oscillates forever. The
+ * cap turns that into a defined outcome instead of a hang.
+ */
+const MAX_VISIBILITY_PASSES = 10;
+
+/**
+ * A copy of the values map with every hidden field blanked.
+ *
+ * Blanked rather than deleted: both evaluators treat a missing key and an
+ * empty string identically, and an explicit '' is easier to reason about
+ * when reading a debug dump.
+ *
+ * @param {object}      values Raw values keyed by field name.
+ * @param {Set<string>} hidden Field names currently resolved as hidden.
+ * @returns {object}
+ */
+function applyHidden( values, hidden ) {
+	if ( hidden.size === 0 ) {
+		return values;
+	}
+	const out = { ...values };
+	hidden.forEach( ( name ) => {
+		out[ name ] = '';
+	} );
+	return out;
+}
+
+/**
+ * Work out which fields are currently hidden, accounting for cascades.
+ *
+ * A hidden field is excluded from the submission, so its value must not
+ * influence any condition either — otherwise the browser and the server
+ * disagree about what the form says. The reported case: a postcode select
+ * only shown for "Wochenbett" keeps its "andere-plz" value after switching
+ * to "Hausgeburt", so a notice stays visible and the submit gate keeps
+ * biting, while the server has long since dropped the field.
+ *
+ * Visibility cannot be resolved in one pass because it depends on values
+ * which depend on visibility: hiding A can be what makes B's rule true.
+ * So this recomputes the whole set from the raw values each pass, with the
+ * previous pass's hidden fields blanked, until the set stops changing.
+ *
+ * Recomputed from scratch rather than accumulated: a set that only ever
+ * grows would terminate faster, but it would also be wrong. If A is hidden
+ * in pass one and that makes B's rule true, B has to come back — an
+ * accumulating set could never release it.
+ *
+ * Contradictory configurations oscillate between two states and never
+ * settle. Hitting the cap keeps the last computed set: deterministic for a
+ * given input and pass order, which is what makes client and server agree
+ * even on a form whose rules do not make sense.
+ *
+ * @param {Array<{names: string[], ruleSet: object}>} entries In document order — the
+ *        order matters for the tie-break above, so both sides must use the same.
+ * @param {object} values Raw values keyed by field name.
+ * @returns {Set<string>} Field names to treat as empty.
+ */
+function resolveHiddenFields( entries, values ) {
+	let hidden = new Set();
+
+	for ( let pass = 0; pass < MAX_VISIBILITY_PASSES; pass++ ) {
+		const effective = applyHidden( values, hidden );
+		const next = new Set();
+
+		for ( const entry of entries ) {
+			if ( ! entry.ruleSet ) {
+				continue;
+			}
+			if ( ! evaluateRuleSet( entry.ruleSet, effective ) ) {
+				entry.names.forEach( ( name ) => next.add( name ) );
+			}
+		}
+
+		if ( next.size === hidden.size && [ ...next ].every( ( n ) => hidden.has( n ) ) ) {
+			return hidden;
+		}
+		hidden = next;
+	}
+
+	return hidden;
+}
+
 export default evaluateRuleSet;
-export { evaluateGroup, evaluateRule, isRuleGroup, isEmptyValue, toComparableString };
+export {
+	evaluateGroup,
+	evaluateRule,
+	isRuleGroup,
+	isEmptyValue,
+	toComparableString,
+	resolveHiddenFields,
+	applyHidden,
+	MAX_VISIBILITY_PASSES,
+};

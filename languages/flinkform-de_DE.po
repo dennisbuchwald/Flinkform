@@ -13,7 +13,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Flinkform 1.9.0\n"
+"Project-Id-Version: Flinkform 1.10.0\n"
 "Report-Msgid-Bugs-To: https://flinkform.de/\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -442,19 +442,19 @@ msgstr ""
 msgid "Submission rejected"
 msgstr "Einsendung abgelehnt"
 
-#: includes/Submissions/Handler.php:191
+#: includes/Submissions/Handler.php:199
 msgid "Please complete the required selection before submitting."
 msgstr ""
 "Bitte treffen Sie die erforderliche Auswahl, bevor Sie das Formular "
 "absenden."
 
-#: includes/Submissions/Handler.php:309
+#: includes/Submissions/Handler.php:317
 msgid "Sorry, something went wrong saving your message. Please try again."
 msgstr ""
 "Es tut uns leid, beim Speichern Ihrer Nachricht ist ein Fehler aufgetreten. "
 "Bitte versuchen Sie es erneut."
 
-#: includes/Submissions/Handler.php:388 src/form-container/render.php:44
+#: includes/Submissions/Handler.php:396 src/form-container/render.php:44
 #: src/form-container/edit.js:108
 msgid "Thank you! Your message has been sent successfully."
 msgstr "Vielen Dank! Ihre Nachricht wurde erfolgreich gesendet."
@@ -535,23 +535,47 @@ msgstr "%s liegt über dem Höchstwert."
 msgid "%s contains an invalid choice."
 msgstr "%s enthält eine ungültige Auswahl."
 
-#: includes/Notifications/Mailer.php:294 src/form-container/edit.js:740
+#. translators: %1$s: site name, %2$s: site URL.
+#: includes/Notifications/Mailer.php:159 includes/Notifications/Mailer.php:276
+#, php-format
+msgid "Sent by %1$s (%2$s)"
+msgstr "Gesendet von %1$s (%2$s)"
+
+#. translators: %s: the name the visitor entered.
+#: includes/Notifications/Mailer.php:176
+#, php-format
+msgid "New enquiry from %s via your website"
+msgstr "Neue Anfrage von %s über deine Website"
+
+#: includes/Notifications/Mailer.php:177
+msgid "New enquiry via your website"
+msgstr "Neue Anfrage über deine Website"
+
+#: includes/Notifications/Mailer.php:182
+msgid ""
+"You can reply to this email directly — your answer goes straight to the "
+"sender."
+msgstr ""
+"Du kannst direkt auf diese E-Mail antworten, deine Antwort geht an die "
+"Absenderin."
+
+#: includes/Notifications/Mailer.php:433 src/form-container/edit.js:740
 msgid "New submission: {form:title}"
 msgstr "Neue Einsendung: {form:title}"
 
-#: includes/Notifications/Mailer.php:324 src/form-container/edit.js:798
+#: includes/Notifications/Mailer.php:467 src/form-container/edit.js:798
 msgid "We received your submission"
 msgstr "Wir haben Ihre Einsendung erhalten"
 
-#: includes/Notifications/Mailer.php:353
+#: includes/Notifications/Mailer.php:496
 msgid "A new submission was received:"
 msgstr "Eine neue Einsendung ist eingegangen:"
 
-#: includes/Notifications/Mailer.php:385
+#: includes/Notifications/Mailer.php:528
 msgid "Hi,"
 msgstr "Hallo,"
 
-#: includes/Notifications/Mailer.php:387
+#: includes/Notifications/Mailer.php:530
 msgid ""
 "Thanks for your submission. We received the following and will be in touch "
 "shortly:"

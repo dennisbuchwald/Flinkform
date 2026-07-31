@@ -167,8 +167,16 @@ final class Handler {
 		// every input change for the live UX — this server pass is the
 		// authoritative one, so DOM-manipulated visible fields can't
 		// smuggle data through.
-		$skipped_steps = $this->resolve_skipped_steps( $definition['steps'] ?? [], $clean );
-		$hidden_fields = $this->resolve_hidden_fields( $definition['fields'], $clean, $skipped_steps );
+		//
+		// Steps and fields resolve together in one fixed point. They used
+		// to be two separate single passes over the raw values, which
+		// could not see a cascade: hiding one field is often exactly what
+		// makes the next field's rule true, and a single pass evaluates
+		// that next rule against the value it was about to discard.
+		$hidden_fields = \Flinkform\Conditions\VisibilityResolver::resolve(
+			$this->visibility_entries( $definition['fields'], $definition['steps'] ?? [] ),
+			$clean
+		);
 		if ( ! empty( $hidden_fields ) ) {
 			foreach ( $hidden_fields as $hidden_name ) {
 				unset( $clean[ $hidden_name ], $errors[ $hidden_name ] );
@@ -443,58 +451,25 @@ final class Handler {
 	}
 
 	/**
-	 * Walk the form's field list and return the names of fields whose
-	 * conditional-logic rules say "don't show". Hidden fields will be
-	 * stripped from $clean before persistence + validation-error
-	 * surfacing, so a hidden required field doesn't block submission
-	 * and a hidden data field doesn't leak into the saved row.
+	 * Flatten the form definition into the entry list VisibilityResolver
+	 * consumes: one rule set plus the value names it governs.
+	 *
+	 * Steps come first so a page-break condition is seen before the fields
+	 * inside it, though the resolver iterates to a fixed point and does not
+	 * depend on that. Order does decide the outcome for a contradictory
+	 * configuration, and it has to match the browser's — which walks the
+	 * DOM, so document order it is.
+	 *
+	 * A step contributes the names of every field inside it: skipping a step
+	 * has to blank its fields, or a value the visitor can no longer see or
+	 * reach keeps satisfying conditions elsewhere.
 	 *
 	 * @param array<int, array<string, mixed>> $fields Field records from the Locator.
-	 * @param array<string, mixed>             $clean  Sanitised values keyed by field name.
-	 * @return array<int, string> Field names that should be treated as hidden.
+	 * @param array<int, array<string, mixed>> $steps  Step records from the Locator.
+	 * @return array<int, array<string, mixed>>
 	 */
-	private function resolve_hidden_fields( array $fields, array $clean, array $skipped_steps = [] ): array {
-		$evaluator    = new \Flinkform\Conditions\RuleEvaluator();
-		$hidden       = [];
-		$skipped_set  = array_flip( array_map( 'intval', $skipped_steps ) );
-
-		foreach ( $fields as $field ) {
-			$field_step = isset( $field['step'] ) ? (int) $field['step'] : 0;
-
-			// Field lives inside a step the page-break condition skipped —
-			// drop it irrespective of the field's own rule set.
-			if ( isset( $skipped_set[ $field_step ] ) ) {
-				$hidden[] = (string) $field['name'];
-				continue;
-			}
-
-			$rule_set = isset( $field['conditionalLogic'] ) && is_array( $field['conditionalLogic'] )
-				? $field['conditionalLogic']
-				: [];
-			if ( empty( $rule_set ) ) {
-				continue;
-			}
-			if ( ! $evaluator->should_show( $rule_set, $clean ) ) {
-				$hidden[] = (string) $field['name'];
-			}
-		}
-
-		return $hidden;
-	}
-
-	/**
-	 * Walk the form's step list and return the indices of steps whose
-	 * page-break conditional-logic rules say "skip". Step 0 has no
-	 * opening page-break and therefore no rules of its own — it never
-	 * appears in the skipped set.
-	 *
-	 * @param array<int, array<string, mixed>> $steps Step records from Locator::collect_steps.
-	 * @param array<string, mixed>             $clean Sanitised values keyed by field name.
-	 * @return array<int, int> Step indices that should be treated as skipped.
-	 */
-	private function resolve_skipped_steps( array $steps, array $clean ): array {
-		$evaluator = new \Flinkform\Conditions\RuleEvaluator();
-		$skipped   = [];
+	private function visibility_entries( array $fields, array $steps ): array {
+		$entries = [];
 
 		foreach ( $steps as $step ) {
 			$rule_set = isset( $step['conditionalLogic'] ) && is_array( $step['conditionalLogic'] )
@@ -503,13 +478,38 @@ final class Handler {
 			if ( empty( $rule_set ) ) {
 				continue;
 			}
-			if ( ! $evaluator->should_show( $rule_set, $clean ) ) {
-				$skipped[] = (int) ( $step['index'] ?? 0 );
+
+			$index = (int) ( $step['index'] ?? 0 );
+			$names = [];
+			foreach ( $fields as $field ) {
+				if ( (int) ( $field['step'] ?? 0 ) === $index ) {
+					$names[] = (string) $field['name'];
+				}
 			}
+
+			$entries[] = [
+				'names'   => $names,
+				'ruleSet' => $rule_set,
+			];
 		}
 
-		return $skipped;
+		foreach ( $fields as $field ) {
+			$rule_set = isset( $field['conditionalLogic'] ) && is_array( $field['conditionalLogic'] )
+				? $field['conditionalLogic']
+				: [];
+			if ( empty( $rule_set ) ) {
+				continue;
+			}
+
+			$entries[] = [
+				'names'   => [ (string) $field['name'] ],
+				'ruleSet' => $rule_set,
+			];
+		}
+
+		return $entries;
 	}
+
 
 	/**
 	 * Sanitize and validate POSTed field values against the form definition.

@@ -30,7 +30,7 @@
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
 import resolveSurfaceColour from '../shared/surface-colour';
-import evaluateRuleSet from '../shared/rule-evaluator';
+import evaluateRuleSet, { resolveHiddenFields, applyHidden } from '../shared/rule-evaluator';
 
 const NAMESPACE = 'flinkform/form';
 
@@ -448,8 +448,80 @@ function initConditionalLogic() {
  * @param {HTMLFormElement} form
  * @param {NodeListOf<Element>} wrappers
  */
+/**
+ * Read a wrapper's rule set, or null when it has none or the JSON is
+ * malformed. Malformed leaves the wrapper alone rather than throwing.
+ *
+ * @param {Element} wrapper
+ * @param {string}  attribute
+ * @returns {object|null}
+ */
+function readRuleSet( wrapper, attribute ) {
+	const raw = wrapper.getAttribute( attribute );
+	if ( ! raw ) {
+		return null;
+	}
+	try {
+		return JSON.parse( raw );
+	} catch ( _ ) {
+		return null;
+	}
+}
+
+/**
+ * Every field-value name governed by a wrapper's rule set.
+ *
+ * Read off the inputs rather than the wrapper's own
+ * `data-flinkform-field-name`, because the two are not always the same:
+ * an address field's wrapper is named `addr` while its inputs submit as
+ * `addr_street`, `addr_zip`, `addr_city`. Hiding the wrapper has to blank
+ * all three, and the server — which sees the expanded sub-fields — does
+ * exactly that.
+ *
+ * @param {Element} wrapper
+ * @returns {string[]}
+ */
+function governedNames( wrapper ) {
+	const names = new Set();
+	wrapper.querySelectorAll( 'input[name], textarea[name], select[name]' ).forEach( ( el ) => {
+		const match = ( el.getAttribute( 'name' ) || '' ).match( /^flinkform_field\[([^\]]+)\](\[\])?$/ );
+		if ( match ) {
+			names.add( match[ 1 ] );
+		}
+	} );
+	return [ ...names ];
+}
+
 function evaluateAll( form, fieldWrappers, stepWrappers, submitButtons = [] ) {
-	const values = gatherFormValues( form );
+	const raw = gatherFormValues( form );
+
+	// Resolve visibility BEFORE anything reads a value.
+	//
+	// A hidden field is excluded from the submission, so its value must not
+	// count towards any condition either — otherwise the browser disagrees
+	// with the server, which dropped the field long ago. The reported case:
+	// a postcode select shown only for "Wochenbett" keeps its "andere-plz"
+	// value after switching to "Hausgeburt", leaving a notice on screen and
+	// the submit button locked over a value nobody can see or change.
+	//
+	// Steps come first, then fields, matching the order the server builds
+	// its entry list in — the order decides the outcome for a contradictory
+	// configuration, so the two have to agree.
+	const entries = [];
+	stepWrappers.forEach( ( wrapper ) => {
+		const ruleSet = readRuleSet( wrapper, 'data-flinkform-step-condition' );
+		if ( ruleSet ) {
+			entries.push( { names: governedNames( wrapper ), ruleSet } );
+		}
+	} );
+	fieldWrappers.forEach( ( wrapper ) => {
+		const ruleSet = readRuleSet( wrapper, 'data-flinkform-condition' );
+		if ( ruleSet ) {
+			entries.push( { names: governedNames( wrapper ), ruleSet } );
+		}
+	} );
+
+	const values = applyHidden( raw, resolveHiddenFields( entries, raw ) );
 
 	// Field-level conditions: toggle wrapper hidden + disable inputs.
 	fieldWrappers.forEach( ( wrapper ) => {

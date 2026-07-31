@@ -1,0 +1,519 @@
+[
+ {
+  "name": "Repro: Wochenbett + andere-plz -> Hinweis sichtbar",
+  "entries": [
+   {
+    "names": [
+     "plz-wochenbett"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "art-der-betreeung",
+       "operator": "is",
+       "value": "wochenbett"
+      }
+     ]
+    }
+   },
+   {
+    "names": [
+     "hinweis"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "plz-wochenbett",
+       "operator": "is",
+       "value": "andere-plz"
+      }
+     ]
+    }
+   }
+  ],
+  "values": {
+   "art-der-betreeung": "wochenbett",
+   "plz-wochenbett": "andere-plz"
+  },
+  "expected": []
+ },
+ {
+  "name": "Repro: auf Hausgeburt umgeschaltet -> PLZ versteckt UND Hinweis weg",
+  "entries": [
+   {
+    "names": [
+     "plz-wochenbett"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "art-der-betreeung",
+       "operator": "is",
+       "value": "wochenbett"
+      }
+     ]
+    }
+   },
+   {
+    "names": [
+     "hinweis"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "plz-wochenbett",
+       "operator": "is",
+       "value": "andere-plz"
+      }
+     ]
+    }
+   }
+  ],
+  "values": {
+   "art-der-betreeung": "hausgeburt",
+   "plz-wochenbett": "andere-plz"
+  },
+  "expected": [
+   "hinweis",
+   "plz-wochenbett"
+  ]
+ },
+ {
+  "name": "Repro: Wochenbett, andere PLZ -> nur Hinweis weg",
+  "entries": [
+   {
+    "names": [
+     "plz-wochenbett"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "art-der-betreeung",
+       "operator": "is",
+       "value": "wochenbett"
+      }
+     ]
+    }
+   },
+   {
+    "names": [
+     "hinweis"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "plz-wochenbett",
+       "operator": "is",
+       "value": "andere-plz"
+      }
+     ]
+    }
+   }
+  ],
+  "values": {
+   "art-der-betreeung": "wochenbett",
+   "plz-wochenbett": "74172"
+  },
+  "expected": [
+   "hinweis"
+  ]
+ },
+ {
+  "name": "Kaskade: A versteckt -> B versteckt -> C versteckt",
+  "entries": [
+   {
+    "names": [
+     "b"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "ja"
+      }
+     ]
+    }
+   },
+   {
+    "names": [
+     "c"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "b",
+       "operator": "is_not_empty",
+       "value": ""
+      }
+     ]
+    }
+   }
+  ],
+  "values": {
+   "a": "nein",
+   "b": "wert",
+   "c": "x"
+  },
+  "expected": [
+   "b",
+   "c"
+  ]
+ },
+ {
+  "name": "Kaskade: A sichtbar -> B sichtbar -> C sichtbar",
+  "entries": [
+   {
+    "names": [
+     "b"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is",
+       "value": "ja"
+      }
+     ]
+    }
+   },
+   {
+    "names": [
+     "c"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "b",
+       "operator": "is_not_empty",
+       "value": ""
+      }
+     ]
+    }
+   }
+  ],
+  "values": {
+   "a": "ja",
+   "b": "wert",
+   "c": "x"
+  },
+  "expected": []
+ },
+ {
+  "name": "Verstecken macht B sichtbar",
+  "entries": [
+   {
+    "names": [
+     "a"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "gate",
+       "operator": "is",
+       "value": "offen"
+      }
+     ]
+    }
+   },
+   {
+    "names": [
+     "b"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is_empty",
+       "value": ""
+      }
+     ]
+    }
+   }
+  ],
+  "values": {
+   "gate": "zu",
+   "a": "wert"
+  },
+  "expected": [
+   "a"
+  ]
+ },
+ {
+  "name": "Gruppe: verstecktes Feld zaehlt als leer",
+  "entries": [
+   {
+    "names": [
+     "plz"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "art",
+       "operator": "is",
+       "value": "wochenbett"
+      }
+     ]
+    }
+   },
+   {
+    "names": [
+     "box"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "logic": "any",
+       "rules": [
+        {
+         "field": "plz",
+         "operator": "is_empty",
+         "value": ""
+        },
+        {
+         "field": "plz",
+         "operator": "is",
+         "value": "74172"
+        }
+       ]
+      },
+      {
+       "field": "art",
+       "operator": "is_not_empty",
+       "value": ""
+      }
+     ]
+    }
+   }
+  ],
+  "values": {
+   "art": "hausgeburt",
+   "plz": "andere-plz"
+  },
+  "expected": [
+   "plz"
+  ]
+ },
+ {
+  "name": "Schritt uebersprungen -> Felder darin leer",
+  "entries": [
+   {
+    "names": [
+     "s2a",
+     "s2b"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "typ",
+       "operator": "is",
+       "value": "lang"
+      }
+     ]
+    }
+   },
+   {
+    "names": [
+     "abh"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "s2a",
+       "operator": "is",
+       "value": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "values": {
+   "typ": "kurz",
+   "s2a": "x",
+   "s2b": "y"
+  },
+  "expected": [
+   "abh",
+   "s2a",
+   "s2b"
+  ]
+ },
+ {
+  "name": "Zyklus A<->B bricht deterministisch ab",
+  "entries": [
+   {
+    "names": [
+     "a"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "b",
+       "operator": "is_empty",
+       "value": ""
+      }
+     ]
+    }
+   },
+   {
+    "names": [
+     "b"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "a",
+       "operator": "is_empty",
+       "value": ""
+      }
+     ]
+    }
+   }
+  ],
+  "values": {
+   "a": "x",
+   "b": "y"
+  },
+  "expected": null
+ },
+ {
+  "name": "ohne Bedingungen ist nichts versteckt",
+  "entries": [],
+  "values": {
+   "a": "1"
+  },
+  "expected": []
+ },
+ {
+  "name": "Bedingung auf fehlendes Feld verhaelt sich wie leer",
+  "entries": [
+   {
+    "names": [
+     "x"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "gibtsnicht",
+       "operator": "is_empty",
+       "value": ""
+      }
+     ]
+    }
+   }
+  ],
+  "values": {},
+  "expected": []
+ },
+ {
+  "name": "is auf fehlendes Feld ist falsch -> versteckt",
+  "entries": [
+   {
+    "names": [
+     "x"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "gibtsnicht",
+       "operator": "is",
+       "value": "wert"
+      }
+     ]
+    }
+   }
+  ],
+  "values": {},
+  "expected": [
+   "x"
+  ]
+ },
+ {
+  "name": "is_not auf fehlendes Feld ist wahr -> sichtbar",
+  "entries": [
+   {
+    "names": [
+     "x"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "gibtsnicht",
+       "operator": "is_not",
+       "value": "wert"
+      }
+     ]
+    }
+   }
+  ],
+  "values": {},
+  "expected": []
+ },
+ {
+  "name": "contains auf fehlendes Feld ist falsch -> versteckt",
+  "entries": [
+   {
+    "names": [
+     "x"
+    ],
+    "ruleSet": {
+     "enabled": true,
+     "logic": "all",
+     "rules": [
+      {
+       "field": "gibtsnicht",
+       "operator": "contains",
+       "value": "a"
+      }
+     ]
+    }
+   }
+  ],
+  "values": {},
+  "expected": [
+   "x"
+  ]
+ }
+]

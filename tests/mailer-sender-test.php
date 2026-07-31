@@ -57,13 +57,32 @@ namespace {
 		}
 		return $value;
 	}
+	// Actions share the filter store so the AltBody hook can be asserted
+	// as removed after a send, the same way the From filters are.
 	function add_action( $hook, $cb, $priority = 10, $args = 1 ) {
-		return true;
+		return add_filter( $hook, $cb, $priority, $args );
+	}
+	function remove_action( $hook, $cb, $priority = 10 ) {
+		return remove_filter( $hook, $cb, $priority );
+	}
+	function do_action( $hook, ...$args ) {
+		foreach ( $GLOBALS['wp_filters'][ $hook ] ?? [] as $callbacks ) {
+			foreach ( $callbacks as $cb ) {
+				$cb( ...$args );
+			}
+		}
 	}
 
 	/** Stand-in for wp_mail: records the call and resolves the From filters. */
 	function wp_mail( $to, $subject, $body, $headers = [], $attachments = [] ) {
+		// Stand-in for the PHPMailer instance so the multipart alternative
+		// can be captured exactly where the real one sets it.
+		$phpmailer = new stdClass();
+		$phpmailer->AltBody = '';
+		do_action( 'phpmailer_init', $phpmailer );
+
 		$GLOBALS['sent_mail'][] = [
+			'alt_body'   => $phpmailer->AltBody,
 			'to'         => (array) $to,
 			'subject'    => $subject,
 			'body'       => $body,
@@ -95,6 +114,15 @@ namespace {
 	function get_bloginfo( $what = '' ) {
 		return 'Test Site';
 	}
+	function home_url( $path = '' ) {
+		return 'https://example.test' . $path;
+	}
+	function esc_attr( $text ) {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+	function esc_url( $text ) {
+		return filter_var( (string) $text, FILTER_SANITIZE_URL );
+	}
 }
 
 namespace Flinkform\Notifications {
@@ -110,6 +138,7 @@ namespace Flinkform\Notifications {
 }
 
 namespace {
+	require_once __DIR__ . '/../includes/Notifications/BodyBuilder.php';
 	require_once __DIR__ . '/../includes/Notifications/Mailer.php';
 
 	$passed = 0;
@@ -225,11 +254,48 @@ namespace {
 		json_encode( mail_to( $mails, 'besucherin@example.org' )['headers'] )
 	);
 
+	/** Does this mail carry a Reply-To at all? */
+	function has_reply_to( array $mail ): bool {
+		foreach ( $mail['headers'] as $header ) {
+			if ( str_starts_with( (string) $header, 'Reply-To:' ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	$mails = dispatch( [ 'submitter' => $base_submitter ] );
-	check( 'no Reply-To configured means no header', [] === mail_to( $mails, 'besucherin@example.org' )['headers'], json_encode( mail_to( $mails, 'besucherin@example.org' )['headers'] ) );
+	check( 'no Reply-To configured means no such header', ! has_reply_to( mail_to( $mails, 'besucherin@example.org' ) ), json_encode( mail_to( $mails, 'besucherin@example.org' )['headers'] ) );
 
 	$mails = dispatch( [ 'submitter' => $base_submitter + [ 'replyTo' => 'kaputt' ] ] );
-	check( 'malformed Reply-To is dropped', [] === mail_to( $mails, 'besucherin@example.org' )['headers'] );
+	check( 'malformed Reply-To is dropped', ! has_reply_to( mail_to( $mails, 'besucherin@example.org' ) ) );
+
+	// --- Multipart --------------------------------------------------------
+
+	$mails = dispatch( [
+		'admin'     => [ 'enabled' => true, 'to' => 'lea@gmail.com', 'replyTo' => 'besucherin@example.org' ],
+		'submitter' => $base_submitter,
+	] );
+	$admin = mail_to( $mails, 'lea@gmail.com' );
+
+	check( 'the mail declares an HTML content type', in_array( 'Content-Type: text/html; charset=UTF-8', $admin['headers'], true ), json_encode( $admin['headers'] ) );
+	check( 'the body is HTML', str_contains( $admin['body'], '<html>' ), substr( $admin['body'], 0, 80 ) );
+	check( 'a plain-text alternative is set on PHPMailer', '' !== $admin['alt_body'] );
+	check( 'the alternative carries no markup', ! str_contains( $admin['alt_body'], '<' ), $admin['alt_body'] );
+	check( 'the alternative names the field label', str_contains( $admin['alt_body'], 'Email' ), $admin['alt_body'] );
+
+	// The AltBody hook must not outlive the send, or every later wp_mail()
+	// on the request inherits this mail's plain-text half.
+	$leaked = new stdClass();
+	$leaked->AltBody = '';
+	do_action( 'phpmailer_init', $leaked );
+	check( 'the AltBody hook is removed again', '' === $leaked->AltBody, $leaked->AltBody );
+
+	// An author's own body keeps its wording and still travels as multipart.
+	$mails  = dispatch( [ 'admin' => [ 'enabled' => true, 'to' => 'lea@gmail.com', 'body' => 'Mein eigener Text.' ] ] );
+	$custom = mail_to( $mails, 'lea@gmail.com' );
+	check( 'a custom body is preserved verbatim in the text half', 'Mein eigener Text.' === $custom['alt_body'], $custom['alt_body'] );
+	check( 'a custom body appears in the HTML half', str_contains( $custom['body'], 'Mein eigener Text.' ) );
 
 	$mails = dispatch( [ 'submitter' => $base_submitter + [ 'replyTo' => "ok@seite.de\r\nBcc: angreifer@evil.tld" ] ] );
 	$headers = mail_to( $mails, 'besucherin@example.org' )['headers'];
