@@ -26,6 +26,13 @@ $required    = ! empty( $attributes['required'] );
 $help_text   = isset( $attributes['helpText'] ) && is_string( $attributes['helpText'] ) ? $attributes['helpText'] : '';
 $field_name  = isset( $attributes['fieldName'] ) && is_string( $attributes['fieldName'] ) ? $attributes['fieldName'] : '';
 $multiple    = ! empty( $attributes['multiple'] );
+// A single select with no placeholder would silently preselect its first
+// option: required could never fail (the field is never empty), and any
+// condition watching this field fires without the visitor ever choosing.
+// Always lead with an empty choice unless the author supplied their own.
+if ( '' === $placeholder && ! $multiple ) {
+	$placeholder = __( 'Please choose …', 'flinkform' );
+}
 $options     = isset( $attributes['options'] ) && is_array( $attributes['options'] ) ? $attributes['options'] : [];
 
 if ( '' === $field_name || '' === $form_id ) {

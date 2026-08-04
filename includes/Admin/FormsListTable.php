@@ -303,6 +303,12 @@ final class FormsListTable extends \WP_List_Table {
 		if ( '' === $gmt ) {
 			return '<em>' . esc_html__( 'never', 'flinkform' ) . '</em>';
 		}
-		return esc_html( get_date_from_gmt( $gmt, 'Y-m-d H:i' ) );
+		// Site timezone + site date/time format, matching the submissions list.
+		return esc_html(
+			wp_date(
+				get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
+				(int) strtotime( $gmt . ' UTC' )
+			)
+		);
 	}
 }

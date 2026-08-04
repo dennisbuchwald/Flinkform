@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.10.0
+Stable tag: 1.11.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,16 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.11.0 =
+* This release exists because of a wonderfully detailed user report — thank you, Daniel!
+* Fix: pressing Enter on a middle step could permanently grey out every button. The loading-state listener armed its timer before the step guard cancelled the submission, so the page stayed put while the timer disabled Next and Submit on a form that was never going anywhere. The timer now re-checks whether the submission was cancelled — and Enter on a middle step behaves like clicking Next, validation included.
+* Fix: the last step was never validated in the browser. Every step got checked when you clicked Next, but clicking Submit sent the form straight to the server — a required consent on the final step looked like it was ignored until the answer came back. The final step (and single-step forms) now get the same inline check, with the same persistent messages.
+* Improvement: phone fields now reject letters in the browser, matching what the server has always stripped. Address sub-fields carry proper autocomplete attributes (street, postal code, city, country), so browsers fill them in one tap.
+* New: radio, checkbox group and select can be switched into each other from the block toolbar. Options, field name and any conditional logic pointing at the field all survive the switch — no more rebuilding the field to change how it answers.
+* Fix: a single select without a placeholder silently preselected its first option — a required select could never fail validation, and conditions watching the field fired without the visitor ever choosing. Single selects now lead with an empty "Please choose …" option unless the author configured their own placeholder.
+* Improvement: the consent field now reads "Consent: Yes" in the admin detail view and the notification email instead of its internal name and a bare "1"; dates in the detail view show as DD.MM.YYYY like the email already did.
+* Improvement: submission timestamps in the admin now follow the site's own date and time format and timezone setting instead of a fixed technical format. If times look shifted, check Settings → General → Timezone — the plugin stores UTC and displays whatever WordPress is configured for.
 
 = 1.10.0 =
 * Fix: a conditionally hidden field no longer influences conditions. Its value was still being read, so switching a choice could leave a notice on screen or the submit button locked over an answer nobody could see or change — while the server had already dropped the field, meaning browser and server disagreed about the same form. A hidden field now counts as empty on both sides. Visibility is resolved to a fixed point first, so a cascade (hiding one field makes the next one's rule true) settles correctly, and a contradictory setup stops deterministically instead of looping.
@@ -293,6 +303,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.11.0 =
+Fixes a dead-button state after pressing Enter mid-form and adds client-side validation to the last step; choice fields can now be converted into each other.
 
 = 1.10.0 =
 Hidden fields no longer count towards conditions, and the notification email is far easier to read.

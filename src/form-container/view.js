@@ -70,12 +70,19 @@ const POPUP_SELECTOR = '.wp-block-dbw-base-popup, dialog, [role="dialog"]';
 const SPAM_FALLBACK_DELAY = 4000;
 
 if ( typeof document !== 'undefined' ) {
+	// initFinalValidation BEFORE initConditionalLogic: both attach capture
+	// submit listeners, and registration order is execution order. Field
+	// validation gets the first word — "Name is required" beats a silent
+	// preventDefault from the submit-condition guard, whose focus target
+	// (the Submit button) isn't even visible on a middle step.
 	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', initFinalValidation );
 		document.addEventListener( 'DOMContentLoaded', initConditionalLogic );
 		document.addEventListener( 'DOMContentLoaded', initSubmitFeedback );
 		document.addEventListener( 'DOMContentLoaded', initFetchSubmit );
 		document.addEventListener( 'DOMContentLoaded', initFloatingLabelBackground );
 	} else {
+		initFinalValidation();
 		initConditionalLogic();
 		initSubmitFeedback();
 		initFetchSubmit();
@@ -291,6 +298,17 @@ function initSubmitFeedback() {
 				return;
 			}
 			window.setTimeout( () => {
+				// Re-check: this listener can run BEFORE the multi-step
+				// submitGuard (listener registration order is hydration
+				// timing, not source order). When the guard cancels the
+				// submit afterwards, no navigation happens — and without
+				// this check the timeout would disable every button on a
+				// page that stays exactly where it is, leaving the form
+				// permanently greyed out. Reported by a user whose Enter
+				// key on a middle step killed the whole form.
+				if ( event.defaultPrevented ) {
+					return;
+				}
 				form.querySelectorAll( '.flinkform-form__submit' ).forEach( ( btn ) => {
 					btn.classList.add( 'is-loading' );
 					btn.setAttribute( 'aria-busy', 'true' );
@@ -415,6 +433,12 @@ function initConditionalLogic() {
 		// before the multi-step guard sees the event.
 		if ( submitButtons.length > 0 ) {
 			form.addEventListener( 'submit', ( event ) => {
+				// Field validation (initFinalValidation, registered first)
+				// may already have cancelled and focused the offending
+				// field — don't drag focus away from its message.
+				if ( event.defaultPrevented ) {
+					return;
+				}
 				const values = gatherFormValues( form );
 				for ( const btn of submitButtons ) {
 					const raw = btn.getAttribute( 'data-flinkform-submit-condition' );
@@ -747,7 +771,7 @@ function gatherFormValues( form ) {
  * @returns {boolean}
  */
 
-const { state } = store( NAMESPACE, {
+const { state, actions } = store( NAMESPACE, {
 	state: {
 		get isFirstStep() {
 			return getContext().currentStep === 0;
@@ -814,33 +838,7 @@ const { state } = store( NAMESPACE, {
 				return;
 			}
 
-			// Reset client-side error state from any previous attempt so the
-			// new check starts clean.
-			clearStepErrors( currentStepEl );
-
-			// Native constraint-invalid controls, plus required checkbox
-			// groups that the :invalid selector can't see (group semantics).
-			const invalid = Array.from( currentStepEl.querySelectorAll( ':invalid' ) );
-			const missingGroups = requiredCheckboxGroupsMissing( currentStepEl );
-
-			if ( invalid.length > 0 || missingGroups.length > 0 ) {
-				// Persistent, screen-reader-announced messages on every field —
-				// not just the browser's transient native tooltip. validationMessage
-				// is already localised by the browser; group messages come from a
-				// server-translated data attribute.
-				invalid.forEach( ( field ) => {
-					showFieldError( field, field.validationMessage );
-				} );
-				missingGroups.forEach( ( group ) => markGroupError( group ) );
-
-				// Native tooltip + focus on the first offending control.
-				if ( invalid[ 0 ] ) {
-					invalid[ 0 ].reportValidity();
-				}
-				const first = invalid[ 0 ] || missingGroups[ 0 ];
-				if ( first && typeof first.focus === 'function' ) {
-					first.focus();
-				}
+			if ( ! validateScope( currentStepEl ) ) {
 				return;
 			}
 
@@ -911,13 +909,116 @@ const { state } = store( NAMESPACE, {
 		// `hidden` attribute hides it visually but it still acts as
 		// the form's default submitter for keyboard input.
 		submitGuard( event ) {
+			// The final-validation capture listener may already have
+			// cancelled (and rendered field errors); don't navigate away
+			// from what it is showing.
+			if ( event.defaultPrevented ) {
+				return;
+			}
 			if ( state.isNotLastStep ) {
 				event.preventDefault();
+				// Enter on a middle step behaves like clicking Next —
+				// advance instead of silently swallowing the keypress.
+				// This runs inside the store, which is the only place
+				// that knows the CURRENT step synchronously (the DOM
+				// attributes lag one microtask behind the signals).
+				actions.nextStep();
 			}
 		},
 	},
 
 } );
+
+/**
+ * Client-side validation of one visible scope — a single step during
+ * Next-navigation, or the final/only step on submit. Shows persistent,
+ * screen-reader-announced messages on every offending field and moves
+ * focus to the first one.
+ *
+ * @param {HTMLElement} scopeEl Step element, or the form for single-step forms.
+ * @returns {boolean} True when the scope is clean and navigation/submit may proceed.
+ */
+function validateScope( scopeEl ) {
+	// Reset client-side error state from any previous attempt so the
+	// new check starts clean.
+	clearStepErrors( scopeEl );
+
+	// Native constraint-invalid controls, plus required checkbox
+	// groups that the :invalid selector can't see (group semantics).
+	const invalid = Array.from( scopeEl.querySelectorAll( ':invalid' ) );
+	const missingGroups = requiredCheckboxGroupsMissing( scopeEl );
+
+	if ( invalid.length === 0 && missingGroups.length === 0 ) {
+		return true;
+	}
+
+	// Persistent messages on every field — not just the browser's
+	// transient native tooltip. validationMessage is already localised
+	// by the browser; group messages come from a server-translated
+	// data attribute.
+	invalid.forEach( ( field ) => {
+		showFieldError( field, field.validationMessage );
+	} );
+	missingGroups.forEach( ( group ) => markGroupError( group ) );
+
+	// Native tooltip + focus on the first offending control.
+	if ( invalid[ 0 ] ) {
+		invalid[ 0 ].reportValidity();
+	}
+	const first = invalid[ 0 ] || missingGroups[ 0 ];
+	if ( first && typeof first.focus === 'function' ) {
+		first.focus();
+	}
+	return false;
+}
+
+/**
+ * Final-step validation + Enter-key handling.
+ *
+ * The form carries `novalidate` (so field errors render as our own
+ * persistent messages instead of the browser's transient tooltip), and
+ * `nextStep` validates each step when Next is clicked — but nothing ever
+ * validated the LAST step client-side. Clicking Submit with a required
+ * consent unchecked sailed straight to the server, which rejected it a
+ * full round-trip later. Reported against a form whose consent sat on
+ * the final step: it looked like the form submitted without consent.
+ *
+ * Capture phase, so it runs before the loading-state listener and the
+ * fetch-submit interceptor (both bail on defaultPrevented). Runs after
+ * the submit-condition guard, which is registered first — when that one
+ * already cancelled, this stays out of the way.
+ *
+ * Enter on a middle step used to fire the form's implicit submission and
+ * go nowhere (the multi-step guard swallowed it). Now it behaves like
+ * clicking Next: validate the current step, then advance.
+ */
+function initFinalValidation() {
+	document.querySelectorAll( '.flinkform-form__form' ).forEach( ( form ) => {
+		form.addEventListener( 'submit', ( event ) => {
+			if ( event.defaultPrevented ) {
+				return;
+			}
+
+			// Validate whatever the visitor can currently see: the visible
+			// step of a multi-step form, or the whole form otherwise. On a
+			// middle step this matches what clicking Next would check; on
+			// the last step it is the check that never existed before.
+			// Which-step-is-this decisions stay OUT of this listener on
+			// purpose — the step attributes are updated asynchronously by
+			// the Interactivity bindings, so only the store (submitGuard)
+			// can reliably tell a middle step from the last one.
+			//
+			// Fields hidden by conditional logic are disabled and thus
+			// never match :invalid. Anything this can't see — earlier
+			// steps mutated behind our back, DOM tampering — is caught
+			// by the server-side validation as before.
+			const scope = form.querySelector( '.flinkform-form__step:not([hidden])' ) || form;
+			if ( ! validateScope( scope ) ) {
+				event.preventDefault();
+			}
+		}, true );
+	} );
+}
 
 /**
  * Clear all client-side validation error state from a step before re-checking.
@@ -959,10 +1060,20 @@ function requiredCheckboxGroupsMissing( stepEl ) {
  */
 function showFieldError( field, message ) {
 	const wrapper = field.closest( '.flinkform-field' );
-	if ( wrapper ) {
-		field.setAttribute( 'aria-invalid', 'true' );
-		renderFieldError( wrapper, field, message );
+	if ( ! wrapper ) {
+		return;
 	}
+	// validationMessage is usually localised by the browser, but some
+	// embedded/webview engines return an empty string even though the
+	// control is invalid — and an empty message renders nothing at all.
+	// Fall back to the server-translated text the form ships for exactly
+	// this purpose.
+	if ( ! message ) {
+		const form = field.closest( 'form' );
+		message = ( form && form.getAttribute( 'data-flinkform-invalid-message' ) ) || '';
+	}
+	field.setAttribute( 'aria-invalid', 'true' );
+	renderFieldError( wrapper, field, message );
 }
 
 /**

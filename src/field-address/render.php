@@ -49,13 +49,17 @@ if ( '' === $field_name || '' === $form_id ) {
 	return;
 }
 
-// Sub-field definitions: key suffix, label, placeholder, full-row flag, visibility.
+// Sub-field definitions: key suffix, label, placeholder, full-row flag,
+// visibility, autocomplete token (browser autofill + the right mobile
+// keyboard). No hard digits-only rule on the postal code — Dutch, British
+// and Canadian codes contain letters — but autocomplete="postal-code"
+// lets the browser fill the right value in one tap.
 $sub_fields = [
-	[ 'key' => 'street',  'label' => __( 'Street', 'flinkform' ),         'placeholder' => __( 'Street + house number', 'flinkform' ), 'full' => true,  'show' => true ],
-	[ 'key' => 'line2',   'label' => __( 'Address line 2', 'flinkform' ), 'placeholder' => __( 'Apartment, suite, floor etc.', 'flinkform' ), 'full' => true, 'show' => $show_line2 ],
-	[ 'key' => 'zip',     'label' => __( 'Postal code', 'flinkform' ),    'placeholder' => __( 'Postal code', 'flinkform' ),           'full' => false, 'show' => true ],
-	[ 'key' => 'city',    'label' => __( 'City', 'flinkform' ),           'placeholder' => __( 'City', 'flinkform' ),                  'full' => false, 'show' => true ],
-	[ 'key' => 'country', 'label' => __( 'Country', 'flinkform' ),        'placeholder' => __( 'Country', 'flinkform' ),               'full' => true,  'show' => $show_country ],
+	[ 'key' => 'street',  'label' => __( 'Street', 'flinkform' ),         'placeholder' => __( 'Street + house number', 'flinkform' ), 'full' => true,  'show' => true,          'autocomplete' => 'address-line1' ],
+	[ 'key' => 'line2',   'label' => __( 'Address line 2', 'flinkform' ), 'placeholder' => __( 'Apartment, suite, floor etc.', 'flinkform' ), 'full' => true, 'show' => $show_line2, 'autocomplete' => 'address-line2' ],
+	[ 'key' => 'zip',     'label' => __( 'Postal code', 'flinkform' ),    'placeholder' => __( 'Postal code', 'flinkform' ),           'full' => false, 'show' => true,          'autocomplete' => 'postal-code' ],
+	[ 'key' => 'city',    'label' => __( 'City', 'flinkform' ),           'placeholder' => __( 'City', 'flinkform' ),                  'full' => false, 'show' => true,          'autocomplete' => 'address-level2' ],
+	[ 'key' => 'country', 'label' => __( 'Country', 'flinkform' ),        'placeholder' => __( 'Country', 'flinkform' ),               'full' => true,  'show' => $show_country, 'autocomplete' => 'country-name' ],
 ];
 
 $help_id = $help_text ? 'flinkform-field-' . md5( $form_id . '-' . $field_name ) . '-help' : '';
@@ -124,6 +128,7 @@ $help_id = $help_text ? 'flinkform-field-' . md5( $form_id . '-' . $field_name )
 					class="flinkform-field__input"
 					value="<?php echo esc_attr( (string) $sub_value ); ?>"
 					placeholder="<?php echo esc_attr( $sub_placeholder ); ?>"
+					autocomplete="<?php echo esc_attr( $sf['autocomplete'] ); ?>"
 					<?php echo $sub_required ? 'required aria-required="true"' : ''; ?>
 					<?php echo $described ? 'aria-describedby="' . esc_attr( $described ) . '"' : ''; ?>
 					<?php echo $sub_error ? 'aria-invalid="true"' : ''; ?>

@@ -9,6 +9,8 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
     node tests/rule-groups-parity.mjs
     node tests/visibility-parity.mjs
     php tests/mail-body-test.php
+    php tests/consent-empty-step-test.php
+    php tests/field-select-render-test.php
     php tests/field-address-render-test.php
     php tests/notice-render-test.php
     php tests/condition-initial-state-test.php
@@ -41,6 +43,19 @@ differently (a different pass cap, a different entry order, an accumulating
 set on one side) they reach different answers for cascades. Cases with
 `expected: null` are contradictory on purpose: there is no single right
 answer, only the requirement that both sides pick the same one.
+
+`consent-empty-step-test.php` pins the server half of the "empty first
+section" report: a multi-step form whose first section holds no fields
+(or only a heading) must still map every field to the right step, keep
+the consent's required-by-default flag (Gutenberg drops attributes that
+equal the block.json default), and resolve nothing as hidden when no
+conditions exist — so the required error reaches the visitor no matter
+what the browser let through.
+
+`field-select-render-test.php` pins the select's leading empty option: a
+single select with no placeholder used to preselect its first real option,
+which made required unenforceable and tripped conditions on page load
+(surfaced by a radio→select block transform).
 
 `mail-body-test.php` covers the notification body. Mostly about what the
 mail leaves out — a hidden or empty field must not surface as a blank row —

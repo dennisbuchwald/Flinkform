@@ -164,6 +164,7 @@ if ( '' === $form_id ) {
 // by WP Super Cache, W3 Total Cache, LiteSpeed Cache, AccelerateWP,
 // WP Rocket and virtually every other WordPress caching plugin.
 if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Community-standard constant that caching plugins (WP Super Cache, W3TC, LiteSpeed, WP Rocket) look for by exactly this name; a prefixed variant would be ignored by all of them.
 	define( 'DONOTCACHEPAGE', true );
 }
 
@@ -430,6 +431,7 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 		action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"
 		enctype="multipart/form-data"
 		novalidate
+		data-flinkform-invalid-message="<?php echo esc_attr__( 'Please check this field.', 'flinkform' ); ?>"
 		<?php if ( $is_multi_step ) : ?>
 			data-wp-on--submit="actions.submitGuard"
 		<?php endif; ?>

@@ -13,7 +13,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Flinkform 1.10.0\n"
+"Project-Id-Version: Flinkform 1.11.0\n"
 "Report-Msgid-Bugs-To: https://flinkform.de/\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -117,27 +117,27 @@ msgstr ""
 msgid "What is %1$d + %2$d?"
 msgstr "Was ergibt %1$d + %2$d?"
 
-#: includes/Forms/Locator.php:379 src/field-address/render.php:54
+#: includes/Forms/Locator.php:379 src/field-address/render.php:58
 #: src/field-address/edit.js:36 src/shared/conditional-logic-panel.js:75
 msgid "Street"
 msgstr "Straße"
 
-#: includes/Forms/Locator.php:380 src/field-address/render.php:56
+#: includes/Forms/Locator.php:380 src/field-address/render.php:60
 #: src/field-address/edit.js:38 src/shared/conditional-logic-panel.js:81
 msgid "Postal code"
 msgstr "PLZ"
 
-#: includes/Forms/Locator.php:381 src/field-address/render.php:57
+#: includes/Forms/Locator.php:381 src/field-address/render.php:61
 #: src/field-address/edit.js:39 src/shared/conditional-logic-panel.js:82
 msgid "City"
 msgstr "Ort"
 
-#: includes/Forms/Locator.php:386 src/field-address/render.php:55
+#: includes/Forms/Locator.php:386 src/field-address/render.php:59
 #: src/field-address/edit.js:37 src/shared/conditional-logic-panel.js:78
 msgid "Address line 2"
 msgstr "Adresszusatz"
 
-#: includes/Forms/Locator.php:390 src/field-address/render.php:58
+#: includes/Forms/Locator.php:390 src/field-address/render.php:62
 #: src/field-address/edit.js:40 src/shared/conditional-logic-panel.js:85
 msgid "Country"
 msgstr "Land"
@@ -172,12 +172,12 @@ msgid "Mark as read"
 msgstr "Als gelesen markieren"
 
 #: includes/Admin/SubmissionsListTable.php:101
-#: includes/Admin/SubmissionsPage.php:268
+#: includes/Admin/SubmissionsPage.php:273
 msgid "Mark as unread"
 msgstr "Als ungelesen markieren"
 
 #: includes/Admin/SubmissionsListTable.php:102
-#: includes/Admin/SubmissionsListTable.php:214
+#: includes/Admin/SubmissionsListTable.php:221
 msgid "Delete"
 msgstr "Löschen"
 
@@ -185,73 +185,73 @@ msgstr "Löschen"
 msgid "No submissions yet."
 msgstr "Noch keine Einsendungen vorhanden."
 
-#: includes/Admin/SubmissionsListTable.php:209
+#: includes/Admin/SubmissionsListTable.php:216
 msgid "View"
 msgstr "Ansehen"
 
-#: includes/Admin/SubmissionsListTable.php:213
-#: includes/Admin/SubmissionsPage.php:270
+#: includes/Admin/SubmissionsListTable.php:220
+#: includes/Admin/SubmissionsPage.php:275
 msgid "Delete this submission permanently?"
 msgstr "Diese Einsendung dauerhaft löschen?"
 
-#: includes/Admin/SubmissionsListTable.php:234
+#: includes/Admin/SubmissionsListTable.php:241
 #: includes/Admin/FormsListTable.php:230
 msgid "unknown"
 msgstr "unbekannt"
 
-#: includes/Admin/SubmissionsListTable.php:311
-#: includes/Admin/SubmissionsPage.php:310
-#: includes/Admin/SubmissionsPage.php:324
+#: includes/Admin/SubmissionsListTable.php:318
+#: includes/Admin/SubmissionsPage.php:315
+#: includes/Admin/SubmissionsPage.php:329
 msgid "empty"
 msgstr "leer"
 
-#: includes/Admin/SubmissionsListTable.php:322
-#: includes/Admin/SubmissionsListTable.php:359
+#: includes/Admin/SubmissionsListTable.php:329
+#: includes/Admin/SubmissionsListTable.php:366
 msgid "Read"
 msgstr "Gelesen"
 
-#: includes/Admin/SubmissionsListTable.php:322
-#: includes/Admin/SubmissionsListTable.php:358
+#: includes/Admin/SubmissionsListTable.php:329
+#: includes/Admin/SubmissionsListTable.php:365
 msgid "Unread"
 msgstr "Ungelesen"
 
-#: includes/Admin/SubmissionsListTable.php:345
+#: includes/Admin/SubmissionsListTable.php:352
 msgid "Filter by form"
 msgstr "Nach Formular filtern"
 
-#: includes/Admin/SubmissionsListTable.php:347
+#: includes/Admin/SubmissionsListTable.php:354
 msgid "All forms"
 msgstr "Alle Formulare"
 
-#: includes/Admin/SubmissionsListTable.php:355
+#: includes/Admin/SubmissionsListTable.php:362
 msgid "Filter by status"
 msgstr "Nach Status filtern"
 
-#: includes/Admin/SubmissionsListTable.php:357
+#: includes/Admin/SubmissionsListTable.php:364
 msgid "All statuses"
 msgstr "Alle Status"
 
-#: includes/Admin/SubmissionsListTable.php:366
+#: includes/Admin/SubmissionsListTable.php:373
 msgid "From date"
 msgstr "Von Datum"
 
-#: includes/Admin/SubmissionsListTable.php:367
+#: includes/Admin/SubmissionsListTable.php:374
 msgid "From"
 msgstr "Von"
 
-#: includes/Admin/SubmissionsListTable.php:373
+#: includes/Admin/SubmissionsListTable.php:380
 msgid "To date"
 msgstr "Bis Datum"
 
-#: includes/Admin/SubmissionsListTable.php:374 src/form-container/edit.js:728
+#: includes/Admin/SubmissionsListTable.php:381 src/form-container/edit.js:728
 msgid "To"
 msgstr "Bis"
 
-#: includes/Admin/SubmissionsListTable.php:377
+#: includes/Admin/SubmissionsListTable.php:384
 msgid "Filter"
 msgstr "Filtern"
 
-#: includes/Admin/SubmissionsListTable.php:420
+#: includes/Admin/SubmissionsListTable.php:427
 msgid "(deleted)"
 msgstr "(gelöscht)"
 
@@ -276,52 +276,52 @@ msgstr "Einsendung nicht gefunden"
 msgid "← Back to submissions"
 msgstr "← Zurück zu den Einsendungen"
 
-#: includes/Admin/SubmissionsPage.php:197
+#: includes/Admin/SubmissionsPage.php:202
 msgid "Submission"
 msgstr "Einsendung"
 
-#: includes/Admin/SubmissionsPage.php:200
+#: includes/Admin/SubmissionsPage.php:205
 msgid "← Back"
 msgstr "← Zurück"
 
-#: includes/Admin/SubmissionsPage.php:206
+#: includes/Admin/SubmissionsPage.php:211
 msgid "Received:"
 msgstr "Eingegangen:"
 
-#: includes/Admin/SubmissionsPage.php:211
+#: includes/Admin/SubmissionsPage.php:216
 msgid "Form:"
 msgstr "Formular:"
 
-#: includes/Admin/SubmissionsPage.php:216 src/form-container/edit.js:450
+#: includes/Admin/SubmissionsPage.php:221 src/form-container/edit.js:450
 msgid "Form ID:"
 msgstr "Formular-ID:"
 
-#: includes/Admin/SubmissionsPage.php:221
+#: includes/Admin/SubmissionsPage.php:226
 msgid "Source page:"
 msgstr "Quellseite:"
 
-#: includes/Admin/SubmissionsPage.php:229
+#: includes/Admin/SubmissionsPage.php:234
 msgid "Fields"
 msgstr "Felder"
 
-#: includes/Admin/SubmissionsPage.php:231
+#: includes/Admin/SubmissionsPage.php:236
 msgid "This submission has no fields."
 msgstr "Diese Einsendung enthält keine Felder."
 
-#: includes/Admin/SubmissionsPage.php:271
+#: includes/Admin/SubmissionsPage.php:276
 msgid "Delete submission"
 msgstr "Einsendung löschen"
 
-#: includes/Admin/SubmissionsPage.php:319
+#: includes/Admin/SubmissionsPage.php:324
 msgid "Yes"
 msgstr "Ja"
 
-#: includes/Admin/SubmissionsPage.php:320
+#: includes/Admin/SubmissionsPage.php:325
 msgid "No"
 msgstr "Nein"
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:364
+#: includes/Admin/SubmissionsPage.php:369
 #, php-format
 msgid "%d submission marked as read."
 msgid_plural "%d submissions marked as read."
@@ -329,7 +329,7 @@ msgstr[0] "%d Einsendung als gelesen markiert."
 msgstr[1] "%d Einsendungen als gelesen markiert."
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:372
+#: includes/Admin/SubmissionsPage.php:377
 #, php-format
 msgid "%d submission marked as unread."
 msgid_plural "%d submissions marked as unread."
@@ -337,18 +337,18 @@ msgstr[0] "%d Einsendung als ungelesen markiert."
 msgstr[1] "%d Einsendungen als ungelesen markiert."
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:380
+#: includes/Admin/SubmissionsPage.php:385
 #, php-format
 msgid "%d submission deleted."
 msgid_plural "%d submissions deleted."
 msgstr[0] "%d Einsendung gelöscht."
 msgstr[1] "%d Einsendungen gelöscht."
 
-#: includes/Admin/SubmissionsPage.php:410
+#: includes/Admin/SubmissionsPage.php:415
 msgid "Submission deleted."
 msgstr "Einsendung gelöscht."
 
-#: includes/Admin/SubmissionsPage.php:418
+#: includes/Admin/SubmissionsPage.php:423
 msgid "Submission marked as unread."
 msgstr "Einsendung als ungelesen markiert."
 
@@ -611,13 +611,17 @@ msgstr "(öffnet in einem neuen Tab)"
 msgid "Address"
 msgstr "Adresse"
 
-#: src/field-address/render.php:54 src/field-address/edit.js:36
+#: src/field-address/render.php:58 src/field-address/edit.js:36
 msgid "Street + house number"
 msgstr "Straße + Hausnummer"
 
-#: src/field-address/render.php:55 src/field-address/edit.js:37
+#: src/field-address/render.php:59 src/field-address/edit.js:37
 msgid "Apartment, suite, floor etc."
 msgstr "Wohnung, Stockwerk etc."
+
+#: src/field-phone/render.php:67
+msgid "Digits and + - / ( ) . only"
+msgstr "Nur Ziffern und + - / ( ) ."
 
 #: src/field-checkbox/render.php:41 src/field-checkbox/edit.js:46
 msgid "Please select at least one option."
@@ -629,7 +633,7 @@ msgid "Send"
 msgstr "Absenden"
 
 #. translators: 1: current step number, 2: total step count
-#: src/form-container/render.php:255 src/form-container/render.php:494
+#: src/form-container/render.php:255 src/form-container/render.php:495
 #: src/form-container/edit.js:909
 #, javascript-format, php-format
 msgid "Step %1$s of %2$s"
@@ -647,19 +651,23 @@ msgstr "Schritt %1$d - %2$s"
 msgid "Step %d"
 msgstr "Schritt %d"
 
-#: src/form-container/render.php:446
+#: src/form-container/render.php:433
+msgid "Please check this field."
+msgstr "Bitte prüfe dieses Feld."
+
+#: src/form-container/render.php:447
 msgid "Leave this field empty"
 msgstr "Dieses Feld leer lassen"
 
-#: src/form-container/render.php:595
+#: src/form-container/render.php:596
 msgid "Back"
 msgstr "Zurück"
 
-#: src/form-container/render.php:603
+#: src/form-container/render.php:604
 msgid "Next"
 msgstr "Weiter"
 
-#: src/form-container/render.php:638
+#: src/form-container/render.php:639
 msgid "Please complete the required selection above to enable submission."
 msgstr ""
 "Bitte treffen Sie die erforderliche Auswahl oben, um das Formular absenden "
@@ -2253,3 +2261,7 @@ msgstr "trenner"
 #: src/section-heading/block.json
 msgid "section"
 msgstr "abschnitt"
+
+#: src/field-select/render.php:35
+msgid "Please choose …"
+msgstr "Bitte wählen …"

@@ -356,6 +356,13 @@ final class Locator {
 			return $default;
 		}
 
+		// The consent block has no label attribute at all (its visible text
+		// is the full consent sentence) — without this, admin views and the
+		// notification email print the internal name (consent_xyz123).
+		if ( 'flinkform/field-consent' === $block_name ) {
+			return __( 'Consent', 'flinkform' );
+		}
+
 		return $field_name;
 	}
 

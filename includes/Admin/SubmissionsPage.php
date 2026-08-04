@@ -159,7 +159,12 @@ final class SubmissionsPage {
 
 		$fields    = isset( $submission['data']['fields'] ) && is_array( $submission['data']['fields'] ) ? $submission['data']['fields'] : [];
 		$meta      = isset( $submission['data']['_meta'] ) && is_array( $submission['data']['_meta'] ) ? $submission['data']['_meta'] : [];
-		$local_ts  = get_date_from_gmt( $submission['created_at'], 'Y-m-d H:i:s' );
+		// Site timezone + site date/time format — same treatment as the list
+	// table, so "Received" matches every other date the admin shows.
+	$local_ts  = wp_date(
+		get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
+		(int) strtotime( $submission['created_at'] . ' UTC' )
+	);
 		$source_url = isset( $meta['post_url'] ) ? (string) $meta['post_url'] : '';
 
 		// Live title preferred over the snapshot — operator just renamed
@@ -314,7 +319,9 @@ final class SubmissionsPage {
 
 		$value = (string) $value;
 
-		if ( 'toggle' === $type ) {
+		// Consent is a single checkbox exactly like a toggle — its stored
+		// '1' means "agreed", which nobody should have to decode.
+		if ( 'toggle' === $type || 'consent' === $type ) {
 			return '1' === $value
 				? esc_html__( 'Yes', 'flinkform' )
 				: esc_html__( 'No', 'flinkform' );
@@ -322,6 +329,12 @@ final class SubmissionsPage {
 
 		if ( '' === $value ) {
 			return '<em>' . esc_html__( 'empty', 'flinkform' ) . '</em>';
+		}
+
+		// A date input submits ISO (2026-10-01); show it the way the
+		// notification email already does.
+		if ( 'date' === $type && preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/D', $value, $m ) ) {
+			return esc_html( $m[3] . '.' . $m[2] . '.' . $m[1] );
 		}
 
 		if ( 'email' === $type && is_email( $value ) ) {

@@ -56,6 +56,15 @@ $described = trim( $help_id . ' ' . $error_id );
 		value="<?php echo esc_attr( (string) $value ); ?>"
 		placeholder="<?php echo esc_attr( $placeholder ); ?>"
 		autocomplete="tel" inputmode="tel"
+		<?php
+		// Digits plus the punctuation real phone numbers use — the same
+		// set the server-side sanitiser keeps. Letters now fail the
+		// client-side check instead of being silently stripped after
+		// submit. Every special character is escaped because browsers
+		// compile `pattern` with the strict `v` regex flag.
+		?>
+		pattern="[0-9+\-\/\(\)\. ]*"
+		title="<?php echo esc_attr__( 'Digits and + - / ( ) . only', 'flinkform' ); ?>"
 		<?php echo $required ? 'required aria-required="true"' : ''; ?>
 		<?php echo $described ? 'aria-describedby="' . esc_attr( $described ) . '"' : ''; ?>
 		<?php echo $error ? 'aria-invalid="true"' : ''; ?>

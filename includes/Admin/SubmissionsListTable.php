@@ -176,7 +176,14 @@ final class SubmissionsListTable extends \WP_List_Table {
 		$id           = (int) ( $item['id'] ?? 0 );
 		$is_unread    = 'unread' === ( $item['status'] ?? '' );
 		$created_gmt  = isset( $item['created_at'] ) ? (string) $item['created_at'] : '';
-		$local_ts     = get_date_from_gmt( $created_gmt, 'Y-m-d H:i' );
+		// Site timezone + the site's own date/time format — a hard-coded
+		// ISO string reads as "wrong" to anyone whose WordPress shows
+		// d.m.Y everywhere else. wp_date() converts the stored GMT value
+		// through the timezone configured under Settings → General.
+		$local_ts     = wp_date(
+			get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
+			(int) strtotime( $created_gmt . ' UTC' )
+		);
 		$view_url     = add_query_arg(
 			[
 				'page'   => Menu::PARENT_SLUG,

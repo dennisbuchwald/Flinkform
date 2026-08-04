@@ -254,6 +254,10 @@ final class BodyBuilder {
 				return esc_html( self::format_date( $text ) );
 			case 'textarea':
 				return nl2br( esc_html( $text ) );
+			case 'toggle':
+			case 'consent':
+				// The stored value is '1'; a person reads "Yes".
+				return esc_html( self::format_checked( $text ) );
 		}
 
 		return esc_html( $text );
@@ -277,7 +281,21 @@ final class BodyBuilder {
 			return self::format_date( $text );
 		}
 
+		if ( 'toggle' === $type || 'consent' === $type ) {
+			return self::format_checked( $text );
+		}
+
 		return $text;
+	}
+
+	/**
+	 * A toggle/consent stores '1' for checked; render the word instead.
+	 *
+	 * @param string $value
+	 * @return string
+	 */
+	private static function format_checked( string $value ): string {
+		return '1' === $value ? __( 'Yes', 'flinkform' ) : __( 'No', 'flinkform' );
 	}
 
 	/**
