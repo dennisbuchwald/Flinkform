@@ -83,6 +83,15 @@ $button_text_color  = isset( $appearance['buttonTextColor'] ) && is_string( $app
 $button_border_color = isset( $appearance['buttonBorderColor'] ) && is_string( $appearance['buttonBorderColor'] )
 	? $flinkform_sanitize_color( $appearance['buttonBorderColor'] )
 	: '';
+// Label + help/consent text colours (1.12.0). Unset means inherit from the
+// theme, exactly as before — the variables only exist when the author picked
+// something, so existing forms render byte-identical.
+$label_color = isset( $appearance['labelColor'] ) && is_string( $appearance['labelColor'] )
+	? $flinkform_sanitize_color( $appearance['labelColor'] )
+	: '';
+$help_color  = isset( $appearance['helpTextColor'] ) && is_string( $appearance['helpTextColor'] )
+	? $flinkform_sanitize_color( $appearance['helpTextColor'] )
+	: '';
 $submit_btn_style = isset( $appearance['submitButtonStyle'] ) && is_string( $appearance['submitButtonStyle'] ) ? $appearance['submitButtonStyle'] : 'fill';
 if ( ! in_array( $submit_btn_style, [ 'fill', 'outline', 'ghost' ], true ) ) {
 	$submit_btn_style = 'fill';
@@ -226,6 +235,12 @@ if ( '' !== $button_text_color ) {
 }
 if ( '' !== $button_border_color ) {
 	$inline_style_parts[] = '--flinkform-button-border-color:' . $button_border_color;
+}
+if ( '' !== $label_color ) {
+	$inline_style_parts[] = '--flinkform-label-color:' . $label_color;
+}
+if ( '' !== $help_color ) {
+	$inline_style_parts[] = '--flinkform-help-color:' . $help_color;
 }
 
 $wrapper_args = [

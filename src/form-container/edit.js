@@ -140,6 +140,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const buttonColor = appearanceConfig.buttonColor;
 	const buttonTextColor = appearanceConfig.buttonTextColor;
 	const buttonBorderColor = appearanceConfig.buttonBorderColor;
+	const labelColor = appearanceConfig.labelColor;
+	const helpTextColor = appearanceConfig.helpTextColor;
 	const submitButtonStyle = appearanceConfig.submitButtonStyle ?? 'fill';
 	const fieldStyle = appearanceConfig.fieldStyle ?? 'bordered';
 	const fieldSpacing = appearanceConfig.fieldSpacing ?? 'normal';
@@ -170,6 +172,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}
 	if ( typeof buttonBorderColor === 'string' && buttonBorderColor !== '' ) {
 		editorStyle[ '--flinkform-button-border-color' ] = buttonBorderColor;
+	}
+	if ( typeof labelColor === 'string' && labelColor !== '' ) {
+		editorStyle[ '--flinkform-label-color' ] = labelColor;
+	}
+	if ( typeof helpTextColor === 'string' && helpTextColor !== '' ) {
+		editorStyle[ '--flinkform-help-color' ] = helpTextColor;
 	}
 
 	const editorClassName = [
@@ -527,6 +535,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ColorPalette
 							value={ primaryColor }
 							onChange={ ( value ) => updateAppearance( { primaryColor: value || undefined } ) }
+							clearable
+							enableAlpha={ false }
+						/>
+					</BaseControl>
+					<BaseControl
+						label={ __( 'Label colour', 'flinkform' ) }
+						help={ __( 'Field labels and group headings. Leave unset to inherit from your theme.', 'flinkform' ) }
+						id="flinkform-style-label-color"
+						__nextHasNoMarginBottom
+					>
+						<ColorPalette
+							value={ labelColor }
+							onChange={ ( value ) => updateAppearance( { labelColor: value || undefined } ) }
+							clearable
+							enableAlpha={ false }
+						/>
+					</BaseControl>
+					<BaseControl
+						label={ __( 'Help & consent text colour', 'flinkform' ) }
+						help={ __( 'Help texts and the consent sentence — the quiet gray layer. Handy on dark backgrounds.', 'flinkform' ) }
+						id="flinkform-style-help-color"
+						__nextHasNoMarginBottom
+					>
+						<ColorPalette
+							value={ helpTextColor }
+							onChange={ ( value ) => updateAppearance( { helpTextColor: value || undefined } ) }
 							clearable
 							enableAlpha={ false }
 						/>

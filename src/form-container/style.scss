@@ -619,6 +619,9 @@
 		&__label {
 			font-weight: 600;
 			font-size: 0.95em;
+			// Author-picked label colour (Style panel, 1.12.0); unset
+			// inherits from the theme exactly as before.
+			color: var(--flinkform-label-color, inherit);
 		}
 
 		&__required {
@@ -675,6 +678,8 @@
 			// on typical theme foregrounds.
 			opacity: 0.85;
 			margin: 0;
+			// Author-picked help/consent text colour (Style panel, 1.12.0).
+			color: var(--flinkform-help-color, inherit);
 		}
 
 		&__error {
@@ -758,9 +763,12 @@
 		// Consent field label — smaller text for legal/privacy copy. The
 		// text wraps over several lines, so the box aligns with the first
 		// line instead of floating centred beside the whole paragraph.
+		// Shares the help-text colour: both are the quiet explanatory
+		// layer an author wants readable on tinted/dark surfaces.
 		&--consent .flinkform-field__option {
 			font-size: 12px;
 			align-items: flex-start;
+			color: var(--flinkform-help-color, inherit);
 
 			input {
 				margin-top: 0.1em;
@@ -906,6 +914,19 @@
 		&__description {
 			margin: 0 0 0.5rem;
 			opacity: 0.8;
+		}
+
+		// The block-sidebar text colour lands on the wrapper (WordPress adds
+		// has-text-color for presets and custom picks alike), but themes set
+		// h2–h6 colours as direct element rules — and a direct rule beats
+		// inheritance every time, so the picked colour never reached the
+		// title. An explicit inherit at (0,3,0) wins over `.entry-content h2`
+		// and only kicks in when the author actually chose a colour.
+		&.has-text-color {
+			.flinkform-section-heading__title,
+			.flinkform-section-heading__description {
+				color: inherit;
+			}
 		}
 	}
 }

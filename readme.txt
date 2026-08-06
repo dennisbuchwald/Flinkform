@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.11.1
+Stable tag: 1.12.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.12.0 =
+* Verified against WordPress 7.0.2.
+* New: colours without CSS. The Section Heading block gets WordPress's native text-colour option (block sidebar, theme palette included) — headings in your highlight colour, two clicks. The form's Style panel gains two colour fields: one for field labels and group headings, one for help texts and the consent sentence. Unset means inherit from the theme, exactly as before — existing forms render unchanged.
 
 = 1.11.1 =
 * Fix: the consent (and any checkbox/radio) box could shrink to a tiny dot on phones — a long label in the same flex row squeezed the native box down (13px and below). Boxes now hold a fixed 20px, never shrink, align with the first line of a wrapping label, and pick up the form's primary colour when checked.
@@ -307,6 +311,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.12.0 =
+Pick heading, label and help-text colours right in the editor — no CSS needed.
 
 = 1.11.1 =
 Checkboxes no longer shrink to a dot on phones, and select dropdowns stay readable in Edge on dark sites.

@@ -32,8 +32,15 @@ $heading_class = 'flinkform-section-heading';
 if ( $full_width ) {
 	$heading_class .= ' flinkform-section-heading--full-width';
 }
+
+// get_block_wrapper_attributes() folds in the Gutenberg colour support
+// (has-text-color class + inline style) the block declares in block.json —
+// the author picks the heading colour in the block sidebar, WordPress
+// serialises it, and this call emits it. Title and description both
+// inherit it; the description keeps its opacity for hierarchy.
+$wrapper_attributes = get_block_wrapper_attributes( [ 'class' => $heading_class ] );
 ?>
-<div class="<?php echo esc_attr( $heading_class ); ?>"<?php echo \Flinkform\Conditions\Wrapper::condition_attributes( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- returns a pre-escaped attribute string (esc_attr applied inside). ?>>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns a pre-escaped attribute string. ?><?php echo \Flinkform\Conditions\Wrapper::condition_attributes( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- returns a pre-escaped attribute string (esc_attr applied inside). ?>>
 	<?php if ( '' !== $title ) : ?>
 		<<?php echo esc_attr( $heading_tag ); ?> class="flinkform-section-heading__title"><?php echo wp_kses_post( $title ); ?></<?php echo esc_attr( $heading_tag ); ?>>
 	<?php endif; ?>

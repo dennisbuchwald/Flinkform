@@ -7,12 +7,23 @@
 	"category": "flinkform",
 	"icon": "heading",
 	"description": "A visual divider with an optional title and description. Not a field — nothing is submitted.",
-	"keywords": ["heading", "divider", "section"],
+	"keywords": [
+		"heading",
+		"divider",
+		"section"
+	],
 	"textdomain": "flinkform",
-	"parent": ["flinkform/form"],
+	"parent": [
+		"flinkform/form"
+	],
 	"supports": {
 		"html": false,
-		"reusable": false
+		"reusable": false,
+		"color": {
+			"text": true,
+			"background": false,
+			"link": false
+		}
 	},
 	"attributes": {
 		"title": {
@@ -36,7 +47,10 @@
 			"default": {}
 		}
 	},
-	"usesContext": ["flinkform/formId", "flinkform/appearance"],
+	"usesContext": [
+		"flinkform/formId",
+		"flinkform/appearance"
+	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }
