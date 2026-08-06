@@ -122,7 +122,7 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 == Changelog ==
 
 = 1.11.1 =
-* Fix: the consent (and any checkbox/radio) box could shrink to a tiny dot on phones — a long label in the same flex row squeezed the native box down (13px and below). Boxes now hold a fixed 20px, never shrink, align with the first line of a wrapping label, and pick up the form's primary colour when checked. Thanks again, Daniel!
+* Fix: the consent (and any checkbox/radio) box could shrink to a tiny dot on phones — a long label in the same flex row squeezed the native box down (13px and below). Boxes now hold a fixed 20px, never shrink, align with the first line of a wrapping label, and pick up the form's primary colour when checked.
 * Fix: the open dropdown list of a select could be unreadable in Edge on Windows — the popup surface follows the page's (light) color scheme while the option text inherits the site's colour, so a light-on-dark site produced white text on a white list. Options now carry explicit colours; browsers that paint the popup natively ignore them, everything else becomes readable on light and dark sites alike.
 
 = 1.11.0 =
