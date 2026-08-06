@@ -734,7 +734,17 @@
 
 			input {
 				margin: 0;
-				width: auto;
+
+				// A fixed size the flex row cannot negotiate away. The box
+				// used to be width:auto with the default flex-shrink:1, so a
+				// long option/consent text on a narrow phone squeezed the
+				// native checkbox down to a dot (reported from a live site:
+				// visually a few pixels). rem, not em — the consent copy runs
+				// at 12px and would scale an em-sized box right back down.
+				flex-shrink: 0;
+				width: 1.25rem;
+				height: 1.25rem;
+				accent-color: var(--flinkform-color-primary);
 
 				// Explicit focus ring — don't rely on the browser default,
 				// which some themes strip from checkboxes/radios.
@@ -745,9 +755,16 @@
 			}
 		}
 
-		// Consent field label — smaller text for legal/privacy copy.
+		// Consent field label — smaller text for legal/privacy copy. The
+		// text wraps over several lines, so the box aligns with the first
+		// line instead of floating centred beside the whole paragraph.
 		&--consent .flinkform-field__option {
 			font-size: 12px;
+			align-items: flex-start;
+
+			input {
+				margin-top: 0.1em;
+			}
 		}
 
 		// Single-checkbox / toggle layout. Literal child class for the same
@@ -762,6 +779,12 @@
 
 			input {
 				margin-top: 0.2em;
+
+				// Same flex-squeeze protection as the option rows above.
+				flex-shrink: 0;
+				width: 1.25rem;
+				height: 1.25rem;
+				accent-color: var(--flinkform-color-primary);
 
 				&:focus-visible {
 					outline: 2px solid var(--flinkform-color-primary);
@@ -803,6 +826,21 @@
 			background-size: 0.7em auto;
 			// Room for the arrow, so a long option label cannot run under it.
 			padding-inline-end: 2.4em;
+
+			// The dropdown LIST is painted by the OS, not by this stylesheet.
+			// Windows Chromium (Edge included) gives that popup the page's
+			// color-scheme surface — light unless a site declares otherwise —
+			// while the option text inherits the site's text colour. On a
+			// light-on-dark site that comes out as white text on a white
+			// list: reported unreadable in Edge, invisible on macOS where
+			// the popup is rendered natively and ignores inherited colours.
+			// Explicit colours on the options are honoured by Windows
+			// Chromium and read correctly on light and dark sites alike;
+			// engines that paint the popup natively simply ignore them.
+			option {
+				color: #1f2430;
+				background-color: #fff;
+			}
 		}
 	}
 

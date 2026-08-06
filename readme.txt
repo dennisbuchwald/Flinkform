@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.11.0
+Stable tag: 1.11.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.11.1 =
+* Fix: the consent (and any checkbox/radio) box could shrink to a tiny dot on phones — a long label in the same flex row squeezed the native box down (13px and below). Boxes now hold a fixed 20px, never shrink, align with the first line of a wrapping label, and pick up the form's primary colour when checked. Thanks again, Daniel!
+* Fix: the open dropdown list of a select could be unreadable in Edge on Windows — the popup surface follows the page's (light) color scheme while the option text inherits the site's colour, so a light-on-dark site produced white text on a white list. Options now carry explicit colours; browsers that paint the popup natively ignore them, everything else becomes readable on light and dark sites alike.
 
 = 1.11.0 =
 * This release exists because of a wonderfully detailed user report — thank you, Daniel!
@@ -303,6 +307,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.11.1 =
+Checkboxes no longer shrink to a dot on phones, and select dropdowns stay readable in Edge on dark sites.
 
 = 1.11.0 =
 Fixes a dead-button state after pressing Enter mid-form and adds client-side validation to the last step; choice fields can now be converted into each other.
