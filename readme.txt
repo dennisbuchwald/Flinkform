@@ -38,7 +38,13 @@ Flinkform is a form builder that lives entirely inside the WordPress Block Edito
 
 **Styling**
 * Automatic theme.json inheritance (colours, typography, spacing, border radius)
-* Style panel: primary colour, field style (bordered/soft/underline/minimal), label position (above/beside/floating/placeholder), submit button style (fill/outline/ghost)
+* Style panel: primary colour, field style (bordered/soft/underline/minimal), label position (above/beside/floating/placeholder), submit button style (fill/outline/ghost), plus colour pickers for labels and help/consent text — and the Section Heading block carries WordPress's native text-colour option
+
+**Accessibility**
+* Built accessible: real label/for pairs, fieldset/legend for choice groups, errors announced via role="alert" and linked with aria-describedby, focus moves to the first invalid field
+* Multi-step navigation announces the new step via aria-live and manages focus; the progress indicator is a real progressbar with current values
+* Visible focus rings even when the theme removes them, prefers-reduced-motion respected, and the spam protection needs no CAPTCHA — nothing to squint at, nothing to solve
+* Works fully without JavaScript, and the form markup passes axe-core (WCAG 2.1 A/AA) with zero violations — including the error state
 
 **Notifications**
 * Admin notification email on every submission (configurable recipient, merge tags)
@@ -96,6 +102,10 @@ Flinkform uses a layered approach that requires no setup:
 3. **Proof-of-work challenge** — the visitor's browser solves a small computational puzzle in the background; visitors without JavaScript get a simple math question instead
 
 No external service is contacted. No tracking cookies are set. No personal data is shared.
+
+= Is Flinkform accessible? =
+
+Accessibility is built in, not bolted on: real label/for pairs, fieldset/legend for groups, errors announced via role="alert" and linked to their fields, focus management and aria-live announcements across multi-step navigation, visible focus rings, prefers-reduced-motion support, and spam protection without a CAPTCHA. The rendered form markup passes automated axe-core checks against WCAG 2.1 A/AA with zero violations, including the validation error state. A formal audit with screen-reader protocols has not been commissioned yet — if you run one, we would love to hear the results. Note that colour choices you make in the editor (and your theme's palette) affect contrast and remain your responsibility.
 
 = Is Flinkform GDPR-compliant? =
 
