@@ -1563,6 +1563,17 @@
 	display: block;
 }
 
+/* Hiding the math row is not enough: the wrapper itself is a grid/flex
+ * item, so a zero-height block still claims a row and the gap around it.
+ * That reads as an unexplained hole between the last field and the submit
+ * button. Take the wrapper out of the layout as long as the solver is on
+ * track — the token and solution inputs inside it are `type="hidden"` and
+ * are submitted no matter how their ancestor is displayed. The wrapper
+ * returns together with the fallback row. */
+.flinkform-js .flinkform-form.flinkform-form .flinkform-form__spam:not(.flinkform-form__spam--fallback) {
+	display: none;
+}
+
 .flinkform-form.flinkform-form .flinkform-form__spam-label {
 	display: block;
 	font-weight: 500;

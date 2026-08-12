@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.12.0
+Stable tag: 1.12.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -130,6 +130,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.12.1 =
+* Fix: an unexplained gap could sit between the last field and the submit button. Once the browser has solved the built-in spam challenge, its wrapper holds nothing but hidden inputs — but the empty wrapper still claimed a row in the form layout, and with it the spacing above and below that row. Most visible on two-column forms with floating labels, where row spacing is largest. The wrapper now leaves the layout entirely while the challenge is on track, and returns together with the visible fallback question if the browser cannot solve it. Spam protection itself is unchanged.
 
 = 1.12.0 =
 * Verified against WordPress 7.0.2.
@@ -321,6 +324,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.12.1 =
+Removes an empty gap above the submit button left behind by the built-in spam protection.
 
 = 1.12.0 =
 Pick heading, label and help-text colours right in the editor — no CSS needed.
