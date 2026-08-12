@@ -56,6 +56,16 @@ if [ "$README_VERSION" != "$VERSION" ]; then
     error "Version mismatch! readme.txt Stable tag says $README_VERSION but you passed $VERSION"
 fi
 
+# Version in package.json must match. It never reaches WordPress.org
+# (.distignore keeps it out of the package), but it is the number the repo
+# and every npm-side tool reports — left to drift it silently misstates
+# which release the working tree is. Checked here so a release cannot
+# forget it.
+PKG_VERSION=$(grep -m1 '"version"' package.json | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+if [ "$PKG_VERSION" != "$VERSION" ]; then
+    error "Version mismatch! package.json says $PKG_VERSION but you passed $VERSION"
+fi
+
 success "Pre-deployment checks passed (v$VERSION)"
 
 # --- SVN checkout (first run) ----------------------------------------------
