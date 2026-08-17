@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.12.1
+Stable tag: 1.12.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -130,6 +130,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.12.2 =
+* Fix: a form could refuse to submit because of a required checkbox group the visitor could not see. In an either/or form — pick A and one branch appears, pick B and the other does — a required group belonging to the branch you did not choose stayed hidden, was still counted as unanswered, and blocked the submit. Its error message rendered inside the hidden wrapper, so the button appeared to do nothing at all. Every other field type was already exempt (hidden fields are disabled, and the browser never validates a disabled control); the group check is ours rather than the browser's and did not apply that rule. It does now. The server had always accepted these submissions, so the two sides finally agree again.
+* Note: this could only surface on the last step, which is why it appeared with 1.11.0 — that release introduced client-side validation of the final step. Verified against WordPress 7.0.3.
 
 = 1.12.1 =
 * Fix: an unexplained gap could sit between the last field and the submit button. Once the browser has solved the built-in spam challenge, its wrapper holds nothing but hidden inputs — but the empty wrapper still claimed a row in the form layout, and with it the spacing above and below that row. Most visible on two-column forms with floating labels, where row spacing is largest. The wrapper now leaves the layout entirely while the challenge is on track, and returns together with the visible fallback question if the browser cannot solve it. Spam protection itself is unchanged.
@@ -324,6 +328,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.12.2 =
+Important fix: forms with a conditionally hidden required checkbox group could not be submitted. Update if you use either/or branching.
 
 = 1.12.1 =
 Removes an empty gap above the submit button left behind by the built-in spam protection.

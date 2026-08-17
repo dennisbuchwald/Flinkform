@@ -8,6 +8,7 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
     php tests/rule-groups-test.php
     node tests/rule-groups-parity.mjs
     node tests/visibility-parity.mjs
+    node tests/group-validation.mjs
     php tests/mail-body-test.php
     php tests/consent-empty-step-test.php
     php tests/field-select-render-test.php
@@ -56,6 +57,15 @@ what the browser let through.
 single select with no placeholder used to preselect its first real option,
 which made required unenforceable and tripped conditions on page load
 (surfaced by a radio→select block transform).
+
+`group-validation.mjs` pins the one validation rule we write ourselves.
+"Tick at least one of these" cannot be expressed in HTML, so the group
+check is hand-written — and therefore has to reproduce what the browser
+applies everywhere else for free: a disabled control is barred from
+validation and can never block a submit. It did not, so a hidden group
+belonging to the other branch of an either/or form silently blocked the
+whole form. The tests cover both directions: hidden groups must never
+block, visible empty ones always must.
 
 `mail-body-test.php` covers the notification body. Mostly about what the
 mail leaves out — a hidden or empty field must not surface as a blank row —

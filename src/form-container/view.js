@@ -31,6 +31,7 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
 import resolveSurfaceColour from '../shared/surface-colour';
 import evaluateRuleSet, { resolveHiddenFields, applyHidden } from '../shared/rule-evaluator';
+import { requiredCheckboxGroupsMissing } from '../shared/group-validation';
 
 const NAMESPACE = 'flinkform/form';
 
@@ -1037,19 +1038,6 @@ function clearStepErrors( stepEl ) {
 		.forEach( ( el ) => el.classList.remove( 'flinkform-field--has-error' ) );
 }
 
-/**
- * Required checkbox GROUPS with nothing checked — the `:invalid` selector
- * can't catch these because group requiredness isn't an HTML `required`.
- * The fieldset carries `data-flinkform-required` when required (see render.php).
- *
- * @param {HTMLElement} stepEl
- * @return {HTMLElement[]} Offending group fieldsets.
- */
-function requiredCheckboxGroupsMissing( stepEl ) {
-	return Array.from( stepEl.querySelectorAll( '[data-flinkform-required]' ) ).filter(
-		( group ) => ! group.querySelector( 'input[type="checkbox"]:checked' )
-	);
-}
 
 /**
  * Render a persistent, role="alert" error for a single control + wire
