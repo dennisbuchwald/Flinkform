@@ -80,11 +80,17 @@ final class Renderer {
 		// pick it up via a single querySelector per form. The
 		// data-flinkform-pow-* attributes carry the parameters the
 		// solver needs — no extra fetch, no JSON inside an
-		// attribute, no parse step.
+		// attribute, no parse step. data-flinkform-refresh-url points
+		// at the token-refresh REST endpoint (rest_url() so it works
+		// with and without pretty permalinks); view.js re-mints the
+		// challenge from there before the rendered token can expire.
+		$refresh_url = add_query_arg( 'form_id', rawurlencode( $form_id ), rest_url( 'flinkform/v1/challenge' ) );
+
 		$markup  = '<div class="flinkform-form__spam"';
 		$markup .= ' data-flinkform-spam="1"';
 		$markup .= ' data-flinkform-pow-salt="' . esc_attr( $salt ) . '"';
 		$markup .= ' data-flinkform-pow-difficulty="' . esc_attr( (string) $diff ) . '"';
+		$markup .= ' data-flinkform-refresh-url="' . esc_url( $refresh_url ) . '"';
 		$markup .= '>';
 
 		// Token + solution: always hidden, always present. The

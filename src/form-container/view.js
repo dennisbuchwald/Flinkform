@@ -31,6 +31,7 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
 import resolveSurfaceColour from '../shared/surface-colour';
 import evaluateRuleSet, { resolveHiddenFields, applyHidden } from '../shared/rule-evaluator';
+import { shouldDeferRefresh, applyChallengeData, challengeExpiry } from '../shared/challenge-refresh';
 import { requiredCheckboxGroupsMissing } from '../shared/group-validation';
 
 const NAMESPACE = 'flinkform/form';
@@ -69,6 +70,22 @@ const POPUP_SELECTOR = '.wp-block-dbw-base-popup, dialog, [role="dialog"]';
 // is available, so a device too slow to solve the challenge would otherwise
 // be left with nothing to fill in.
 const SPAM_FALLBACK_DELAY = 4000;
+
+// Same TDZ rule as above — read inside setupSpamChallengeBlock, which the
+// init block below runs synchronously during module evaluation.
+//
+// The rendered token carries a 30-minute server-side TTL. Refresh it well
+// before that so a long-open page never submits an aged token. The
+// stale-check reads the expiry OUT OF the token (see challengeExpiry), so
+// a page served old from an HTML cache refreshes right away instead of
+// waiting out a timer that started too late.
+const SPAM_REFRESH_MARGIN = 10 * 60 * 1000;
+const SPAM_REFRESH_AFTER  = 20 * 60 * 1000;
+const SPAM_REFRESH_TICK   = 60 * 1000;
+
+// Per-block refresh handles. The fetch-submit recovery path uses this to
+// force-refresh the one form whose token the server just called expired.
+const spamBlockControls = new WeakMap();
 
 if ( typeof document !== 'undefined' ) {
 	// initFinalValidation BEFORE initConditionalLogic: both attach capture
@@ -165,6 +182,21 @@ async function submitViaFetch( form ) {
 		}
 		showFetchSuccess( form, data.data.message || '' );
 		return;
+	}
+
+	// Expired-token recovery: the server refused the aged challenge but
+	// kept nothing — fetch a fresh one, re-solve, resubmit the identical
+	// FormData once. The flag caps it at a single automatic attempt so a
+	// server that keeps answering "expired" can never loop us.
+	const errorCode = data && data.data && data.data.code ? data.data.code : '';
+	if ( errorCode === 'spam_expired' && ! form.dataset.flinkformSpamRetried ) {
+		form.dataset.flinkformSpamRetried = '1';
+		const spamBlock = form.querySelector( '.flinkform-form__spam[data-flinkform-spam]' );
+		const controls  = spamBlock ? spamBlockControls.get( spamBlock ) : null;
+		if ( controls && ( await controls.refresh( true ) ) ) {
+			await submitViaFetch( form );
+			return;
+		}
 	}
 
 	const errors = data && data.data && data.data.errors ? data.data.errors : {};
@@ -1347,61 +1379,81 @@ if ( typeof document !== 'undefined' ) {
 
 function initSpamChallenge() {
 	const blocks = document.querySelectorAll( '.flinkform-form__spam[data-flinkform-spam]' );
-	blocks.forEach( ( block ) => {
+	blocks.forEach( setupSpamChallengeBlock );
+}
+
+function setupSpamChallengeBlock( block ) {
+	const solutionInput = block.querySelector( '[data-flinkform-spam-solution]' );
+	const mathRow       = block.querySelector( '[data-flinkform-spam-math]' );
+	const mathInput     = mathRow ? mathRow.querySelector( 'input[type="text"]' ) : null;
+
+	// The row is hidden by CSS from the first paint, and a hidden
+	// `required` control makes the browser refuse to submit with
+	// nothing to focus. Drop it now and put it back only if the row
+	// actually returns.
+	if ( mathInput ) {
+		mathInput.removeAttribute( 'required' );
+	}
+
+	/** Bring the math fallback back — every path the solver cannot finish. */
+	const showFallback = () => {
+		block.classList.add( 'flinkform-form__spam--fallback' );
+		if ( mathRow ) {
+			mathRow.removeAttribute( 'hidden' );
+		}
+		if ( mathInput ) {
+			mathInput.setAttribute( 'required', '' );
+		}
+	};
+
+	// Each solve run belongs to one generation of the challenge. A token
+	// refresh swaps the salt and bumps the generation, so a solver still
+	// chewing on the OLD salt must never write its (now worthless)
+	// solution over the fresh state.
+	let generation = 0;
+
+	/**
+	 * Solve the challenge currently held by the block's data attributes.
+	 * Resolves true once a solution is written, false on every path that
+	 * ends in the math fallback (or in a stale, discarded run).
+	 */
+	const solve = () => {
+		const gen        = ++generation;
 		const salt       = block.getAttribute( 'data-flinkform-pow-salt' ) || '';
 		const difficulty = parseInt(
 			block.getAttribute( 'data-flinkform-pow-difficulty' ) || '0',
 			10
 		);
-		const solutionInput = block.querySelector( '[data-flinkform-spam-solution]' );
-		const mathRow       = block.querySelector( '[data-flinkform-spam-math]' );
-		const mathInput     = mathRow ? mathRow.querySelector( 'input[type="text"]' ) : null;
-
-		// The row is hidden by CSS from the first paint, and a hidden
-		// `required` control makes the browser refuse to submit with
-		// nothing to focus. Drop it now and put it back only if the row
-		// actually returns.
-		if ( mathInput ) {
-			mathInput.removeAttribute( 'required' );
-		}
-
-		/** Bring the math fallback back — every path the solver cannot finish. */
-		const showFallback = () => {
-			block.classList.add( 'flinkform-form__spam--fallback' );
-			if ( mathRow ) {
-				mathRow.removeAttribute( 'hidden' );
-			}
-			if ( mathInput ) {
-				mathInput.setAttribute( 'required', '' );
-			}
-		};
 
 		if ( ! salt || ! difficulty || ! solutionInput ) {
 			// Mis-rendered block — the visitor can still submit by
 			// answering the question.
 			showFallback();
-			return;
+			return Promise.resolve( false );
 		}
 
 		if ( ! window.crypto || ! window.crypto.subtle ) {
 			// Browser lacks Web Crypto (or the page is not a secure
 			// context) — same fallback path.
 			showFallback();
-			return;
+			return Promise.resolve( false );
 		}
 
 		let settled = false;
 		const slowTimer = setTimeout( () => {
-			if ( ! settled ) {
+			if ( ! settled && gen === generation ) {
 				showFallback();
 			}
 		}, SPAM_FALLBACK_DELAY );
 
-		solvePoWInWorker( salt, difficulty )
+		return solvePoWInWorker( salt, difficulty )
 			.catch( () => solvePoW( salt, difficulty ) )
 			.then( ( solution ) => {
 				settled = true;
 				clearTimeout( slowTimer );
+				if ( gen !== generation ) {
+					return false;
+				}
 				solutionInput.value = String( solution );
 
 				// Solved → the math row is redundant. If the slow-device
@@ -1416,6 +1468,7 @@ function initSpamChallenge() {
 					mathInput.value = '';
 					mathInput.removeAttribute( 'required' );
 				}
+				return true;
 			} )
 			.catch( () => {
 				// Compute aborted (e.g. tab backgrounded long enough for
@@ -1423,9 +1476,103 @@ function initSpamChallenge() {
 				// the question instead.
 				settled = true;
 				clearTimeout( slowTimer );
-				showFallback();
+				if ( gen === generation ) {
+					showFallback();
+				}
+				return false;
 			} );
+	};
+
+	let mintedAt   = Date.now();
+	let refreshing = null;
+
+	/**
+	 * When the current token should be considered stale. Preferably 10
+	 * minutes before its embedded expiry — that catches tokens that were
+	 * already old on arrival (HTML cache). Falls back to counting from
+	 * script start when the token is unreadable.
+	 */
+	const staleAt = () => {
+		const tokenInput = block.querySelector( 'input[name="flinkform_spam_token"]' );
+		const expiry     = challengeExpiry( tokenInput ? tokenInput.value : '' );
+		if ( expiry > 0 ) {
+			return expiry * 1000 - SPAM_REFRESH_MARGIN;
+		}
+		return mintedAt + SPAM_REFRESH_AFTER;
+	};
+
+	/**
+	 * Fetch a fresh challenge from the REST endpoint and re-solve.
+	 * Resolves true when a fresh solution is in place. Every failure
+	 * (offline, endpoint blocked, malformed payload) resolves false and
+	 * leaves the current token untouched — the server-side safety net
+	 * catches an aged token without losing the visitor's input.
+	 *
+	 * @param {boolean} force Skip the age/typing checks (recovery path).
+	 */
+	const refresh = ( force ) => {
+		if ( refreshing ) {
+			return refreshing;
+		}
+		const url = block.getAttribute( 'data-flinkform-refresh-url' ) || '';
+		if ( ! url ) {
+			return Promise.resolve( false );
+		}
+		if ( ! force && Date.now() < staleAt() ) {
+			return Promise.resolve( false );
+		}
+		if ( ! force && shouldDeferRefresh( block ) ) {
+			// Visitor is typing a math answer — try again next tick.
+			return Promise.resolve( false );
+		}
+
+		refreshing = ( async () => {
+			try {
+				const response = await fetch( url, {
+					headers: { Accept: 'application/json' },
+					cache: 'no-store',
+				} );
+				if ( ! response.ok ) {
+					return false;
+				}
+				const data = await response.json();
+				if ( ! applyChallengeData( block, data ) ) {
+					return false;
+				}
+				mintedAt = Date.now();
+				return await solve();
+			} catch {
+				return false;
+			} finally {
+				refreshing = null;
+			}
+		} )();
+		return refreshing;
+	};
+
+	solve();
+
+	// One immediate stale-check covers HTML served old from a cache —
+	// its token can be near (or past) expiry before the first tick.
+	refresh( false );
+
+	// Background tabs throttle intervals to a crawl, so the timer alone
+	// is not enough: also check when the tab comes back into view and
+	// when the page is restored from the back/forward cache (both are
+	// exactly the "parked for an hour" moments the refresh exists for).
+	setInterval( () => refresh( false ), SPAM_REFRESH_TICK );
+	document.addEventListener( 'visibilitychange', () => {
+		if ( ! document.hidden ) {
+			refresh( false );
+		}
 	} );
+	window.addEventListener( 'pageshow', ( event ) => {
+		if ( event.persisted ) {
+			refresh( false );
+		}
+	} );
+
+	spamBlockControls.set( block, { refresh } );
 }
 
 /**

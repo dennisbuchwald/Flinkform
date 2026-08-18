@@ -58,7 +58,12 @@ namespace {
 	function __( $text, $domain = '' ) {
 		return $text;
 	}
+	function wp_create_nonce( $action = -1 ) {
+		return 'nonce-for-' . $action;
+	}
+
 	require_once __DIR__ . '/../includes/Spam/Challenge.php';
+	require_once __DIR__ . '/../includes/Spam/RefreshEndpoint.php';
 
 	use Flinkform\Spam\Challenge;
 
@@ -234,6 +239,25 @@ namespace {
 	$t = craft( [ 'e' => time() - 60 ] );
 	check( 'verify(): expired → false', false === Challenge::verify( $t['token'], $form, [ 'math_answer' => (string) $t['answer'] ], false ) );
 	check( 'verify(): forged → false', false === Challenge::verify( 'x.y', $form, [ 'pow_solution' => '1' ], false ) );
+
+	// --- RefreshEndpoint::payload() — what the client-side refresh gets ---
+
+	$payload = \Flinkform\Spam\RefreshEndpoint::payload( $form );
+	check( 'payload: carries a token', isset( $payload['token'] ) && '' !== $payload['token'] );
+	check( 'payload: carries the PoW salt', isset( $payload['salt'] ) && '' !== $payload['salt'] );
+	check( 'payload: carries the PoW difficulty', ( $payload['difficulty'] ?? 0 ) === Challenge::POW_DIFFICULTY );
+	check( 'payload: carries the math question', isset( $payload['question'] ) && '' !== $payload['question'] );
+	check( 'payload: carries a form-bound nonce', ( $payload['nonce'] ?? '' ) === 'nonce-for-flinkform_submit_' . $form );
+
+	$sol = solve_pow( (string) $payload['salt'], (int) $payload['difficulty'] );
+	check(
+		'payload: reissued token passes assess for its form',
+		Challenge::STATUS_OK === Challenge::assess( (string) $payload['token'], $form, [ 'pow_solution' => $sol ], false )
+	);
+	check(
+		'payload: reissued token stays bound to its form',
+		Challenge::STATUS_INVALID === Challenge::assess( (string) $payload['token'], 'other-form', [ 'pow_solution' => $sol ], false )
+	);
 
 	// --- Summary ----------------------------------------------------------
 

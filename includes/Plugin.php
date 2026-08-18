@@ -81,6 +81,11 @@ final class Plugin {
 		// unconditionally — even REST-context saves should mail the admin.
 		( new Notifications\Mailer() )->register();
 
+		// Token-refresh endpoint: view.js swaps the spam-challenge token
+		// for a fresh one before it can expire, so long-open pages and
+		// cached HTML never submit an aged token in the first place.
+		( new Spam\RefreshEndpoint() )->register();
+
 		// Webhooks are owned by Flinkform Pro (REST CRUD, cron dispatcher,
 		// submission listener, the delivery tables + the Webhook Log page).
 		// Pro wires the whole subsystem via the bridge's
