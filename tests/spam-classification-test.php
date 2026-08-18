@@ -151,6 +151,37 @@ namespace {
 		}
 	}
 
+	/**
+	 * A solution that provably does NOT meet the difficulty. A fixed
+	 * "wrong" number only fails the PoW by chance (1/16 at difficulty 4,
+	 * once the salt is random) — that made the wrong-PoW check flaky.
+	 * This returns the first n whose hash falls short, which is
+	 * deterministic against the actual salt.
+	 */
+	function unsolved_pow( string $salt, int $difficulty ): string {
+		for ( $n = 0; ; $n++ ) {
+			$hash = hash( 'sha256', $salt . '|' . $n );
+			$bits = 0;
+			for ( $i = 0; $i < strlen( $hash ) && $bits < $difficulty; $i++ ) {
+				$v = hexdec( $hash[ $i ] );
+				if ( 0 === $v ) {
+					$bits += 4;
+					continue;
+				}
+				foreach ( [ 8, 4, 2, 1 ] as $bit ) {
+					if ( $v & $bit ) {
+						break 2;
+					}
+					++$bits;
+				}
+				break;
+			}
+			if ( $bits < $difficulty ) {
+				return (string) $n;
+			}
+		}
+	}
+
 	$form = 'form-uuid-1';
 
 	// --- Happy paths ------------------------------------------------------
@@ -224,7 +255,7 @@ namespace {
 
 	$t = craft();
 	check( 'fresh token + wrong math answer → failed', Challenge::STATUS_FAILED === Challenge::assess( $t['token'], $form, [ 'math_answer' => '99' ], false ) );
-	check( 'fresh token + wrong PoW solution → failed', Challenge::STATUS_FAILED === Challenge::assess( $t['token'], $form, [ 'pow_solution' => '99999999' ], false ) );
+	check( 'fresh token + wrong PoW solution → failed', Challenge::STATUS_FAILED === Challenge::assess( $t['token'], $form, [ 'pow_solution' => unsolved_pow( $t['salt'], $t['d'] ) ], false ) );
 
 	// A failed attempt must not burn the token — the retry with the right
 	// answer has to succeed.

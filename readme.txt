@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.12.2
+Stable tag: 1.13.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -130,6 +130,11 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.13.0 =
+* Fix (important): a submission could be lost without a trace. The anti-spam token is valid for 30 minutes; if a form sat open longer than that (a long multi-step form, a tab left open, an HTML cache serving an older page), submitting sent the visitor silently to the home page with no message and no email, and their entries were gone. A form that came from our own server is never a bot, so an expired or already-used token no longer drops the submission: the form re-renders with the entries kept and a clear "your session has expired, please send again" message, and the second attempt goes through. The no-JavaScript path is covered too.
+* New: the token now refreshes itself in the browser before it can expire, so the situation above rarely arises in the first place. A small, cache-safe endpoint mints a fresh challenge; the form renews roughly ten minutes before expiry, when a tab regains focus, and when restored from the back/forward cache. Forms in a popup repair an expired token automatically and resend once, without the visitor retyping anything. The page itself may now be cached without breaking submissions.
+* Fix: a double-click or a back-button resend no longer lands on the home page. The first submission is saved once, and a repeat shows the success page instead of being rejected.
 
 = 1.12.2 =
 * Fix: a form could refuse to submit because of a required checkbox group the visitor could not see. In an either/or form — pick A and one branch appears, pick B and the other does — a required group belonging to the branch you did not choose stayed hidden, was still counted as unanswered, and blocked the submit. Its error message rendered inside the hidden wrapper, so the button appeared to do nothing at all. Every other field type was already exempt (hidden fields are disabled, and the browser never validates a disabled control); the group check is ours rather than the browser's and did not apply that rule. It does now. The server had always accepted these submissions, so the two sides finally agree again.
@@ -328,6 +333,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.13.0 =
+Important: submissions could be lost silently when a form sat open past the 30-minute spam-token window. Fixed - no submission is dropped without a message, and the token now refreshes itself. Update recommended for every site.
 
 = 1.12.2 =
 Important fix: forms with a conditionally hidden required checkbox group could not be submitted. Update if you use either/or branching.
