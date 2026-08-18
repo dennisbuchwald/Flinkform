@@ -2291,3 +2291,25 @@ msgstr "trenner"
 #: src/section-heading/block.json
 msgid "section"
 msgstr "abschnitt"
+
+#: includes/Submissions/Handler.php:207
+msgid "The spam-check answer was not correct. Please try again."
+msgstr ""
+"Die Antwort auf die Spam-Schutz-Frage war nicht richtig. Bitte versuchen Sie"
+" es noch einmal."
+
+#: includes/Submissions/Handler.php:211
+msgid ""
+"Your session has expired. Please reload the page and send your message "
+"again."
+msgstr ""
+"Ihre Sitzung ist abgelaufen. Bitte laden Sie die Seite neu und senden Sie "
+"Ihre Nachricht noch einmal ab."
+
+#: includes/Submissions/Handler.php:213
+msgid ""
+"Your session has expired. Please check your entries and send your message "
+"again."
+msgstr ""
+"Ihre Sitzung ist abgelaufen. Bitte prüfen Sie Ihre Eingaben und senden Sie "
+"Ihre Nachricht noch einmal ab."

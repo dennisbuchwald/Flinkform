@@ -167,7 +167,7 @@ if ( '' === $form_id ) {
 }
 
 // Tell caching plugins not to cache this page. The form embeds a
-// time-limited spam-challenge token (5 min TTL), a WordPress nonce
+// time-limited spam-challenge token (30 min TTL), a WordPress nonce
 // and a signed render timestamp — all of which become invalid when
 // served from a stale full-page cache. DONOTCACHEPAGE is respected
 // by WP Super Cache, W3 Total Cache, LiteSpeed Cache, AccelerateWP,

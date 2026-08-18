@@ -137,22 +137,102 @@ final class Handler {
 			$this->silent_reject();
 		}
 
+		$form_attrs = isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [];
+
+		// Idempotency guard. A double-click, back-button resubmit or a
+		// parallel request replays the same page — and with it the same
+		// HMAC-signed timestamp token minted at render time. Keying off
+		// (form_id + that token) lets us recognise a repeat of THIS exact
+		// render and short-circuit to the success outcome instead of
+		// inserting a second row, sending a second notification and firing
+		// the after-submission side effects (webhooks, payment capture)
+		// twice. Placed BEFORE the spam gate on purpose: the resubmit
+		// carries the spam token the first accepted submission already
+		// burnt, so behind the gate this branch would be unreachable and
+		// every double submit would bounce off the replay-guard instead of
+		// seeing its success page. Replaying a success outcome is safe
+		// pre-gate — nothing is stored, no hook fires, and the key derives
+		// from the HMAC-verified render timestamp checked above. A failed
+		// first attempt never sets the marker (it is only set once the row
+		// is saved), so a corrected resubmit still goes through.
+		$idem_key   = $this->idempotency_key( $form_id, $ts_raw );
+		$idem_prior = get_transient( $idem_key );
+		if ( false !== $idem_prior ) {
+			if ( $this->is_fetch_request() ) {
+				$this->send_fetch_success(
+					is_numeric( $idem_prior ) ? (int) $idem_prior : null,
+					$form_attrs,
+					$form_id
+				);
+			}
+			$this->redirect_success(
+				$post_id,
+				$form_id,
+				$form_attrs,
+				is_numeric( $idem_prior ) ? (int) $idem_prior : null
+			);
+		}
+
 		// Built-in spam challenge verify (Phase B-a). Sits between
-		// the time-check and field validation: a missing or invalid
-		// challenge token is silent-rejected the same way honeypot
-		// hits are. The Guard façade reads the form's spamProtection
-		// attribute to decide whether to run a check at all — so a
-		// form explicitly opted out via 'none' falls through here
-		// instantly. Honeypot + time-check from Phase 1 still apply
-		// even when spam protection is 'none' (defense in depth).
+		// the time-check and field validation. The Guard façade reads
+		// the form's spamProtection attribute to decide whether to run
+		// a check at all — so a form explicitly opted out via 'none'
+		// falls through here instantly. Honeypot + time-check from
+		// Phase 1 still apply even when spam protection is 'none'
+		// (defense in depth).
 		// burn: false — the token is only CHECKED here and consumed later,
 		// right before the submission is accepted. A submission that fails
 		// field validation must be retryable with the same rendered page:
 		// the fetch/popup flow never re-renders, so an eager burn would
 		// turn every corrected retry into a replay-reject.
-		$form_attrs = isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [];
-		if ( ! \Flinkform\Spam\Guard::verify_submission( $form_id, $form_attrs, false ) ) {
-			$this->silent_reject();
+		//
+		// The verdict decides the failure handling. A token that was never
+		// minted by this server for this form (forged, malformed, wrong
+		// form, or no solution attempt at all) is an attack signature and
+		// stays a silent reject. A token that IS ours but expired, was
+		// already consumed, or carries a wrong human answer belongs to a
+		// real visitor — their input must never vanish. Those get the same
+		// treatment as a validation error: values + a form-level message
+		// are flashed and the form re-renders (with a fresh token), so the
+		// next attempt goes through. A bot gains nothing from the soft
+		// path — nothing is stored, no mail is sent, and every retry still
+		// has to clear all gates with a fresh, solved challenge.
+		$spam_status = \Flinkform\Spam\Guard::verify_submission_status( $form_id, $form_attrs, false );
+		if ( \Flinkform\Spam\Challenge::STATUS_OK !== $spam_status ) {
+			if ( \Flinkform\Spam\Challenge::STATUS_INVALID === $spam_status ) {
+				$this->silent_reject();
+			}
+
+			if ( \Flinkform\Spam\Challenge::STATUS_FAILED === $spam_status ) {
+				$message = __( 'The spam-check answer was not correct. Please try again.', 'flinkform' );
+			} elseif ( $this->is_fetch_request() ) {
+				// Expired/replayed in the fetch (popup) flow: no redirect
+				// re-renders the page, so a fresh token needs a reload.
+				$message = __( 'Your session has expired. Please reload the page and send your message again.', 'flinkform' );
+			} else {
+				$message = __( 'Your session has expired. Please check your entries and send your message again.', 'flinkform' );
+			}
+
+			$soft_errors = [ '_form' => $message ];
+			if ( $this->is_fetch_request() ) {
+				// The machine-readable code lets view.js recover from an
+				// expired token transparently: fetch a fresh challenge,
+				// re-solve, resubmit — no reload, nothing retyped.
+				wp_send_json_error(
+					[
+						'errors' => $soft_errors,
+						'code'   => 'spam_' . $spam_status,
+					],
+					422
+				);
+			}
+
+			// Flash the sanitised values so the re-rendered form keeps
+			// everything the visitor typed. Validation errors are NOT
+			// flashed here — the resend runs the full validation anyway.
+			[ $soft_values, ] = $this->validate( $definition['fields'] );
+			$this->flash( $form_id, $soft_errors, $soft_values );
+			$this->redirect_error( $post_id, $form_id );
 		}
 
 		// Sanitize + validate user input against that definition.
@@ -198,37 +278,6 @@ final class Handler {
 			if ( ! $evaluator->should_show( $submit_condition, $clean ) ) {
 				$errors['_form'] = __( 'Please complete the required selection before submitting.', 'flinkform' );
 			}
-		}
-
-		// Idempotency guard. A double-click, back-button resubmit or a
-		// parallel request replays the same page — and with it the same
-		// HMAC-signed timestamp token minted at render time. Keying off
-		// (form_id + that token) lets us recognise a repeat of THIS exact
-		// render and short-circuit to the success outcome instead of
-		// inserting a second row, sending a second notification and firing
-		// the after-submission side effects (webhooks, payment capture)
-		// twice. Placed BEFORE the process_submission seam on purpose: the
-		// side-effectful listeners (file moves, payment verification) must
-		// not run a second time for a duplicate. A failed first attempt
-		// never sets the marker (it is only set once the row is saved), so
-		// a corrected resubmit still goes through.
-		$idem_key   = $this->idempotency_key( $form_id, $ts_raw );
-		$idem_prior = get_transient( $idem_key );
-		if ( false !== $idem_prior ) {
-			$idem_attrs = isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [];
-			if ( $this->is_fetch_request() ) {
-				$this->send_fetch_success(
-					is_numeric( $idem_prior ) ? (int) $idem_prior : null,
-					$idem_attrs,
-					$form_id
-				);
-			}
-			$this->redirect_success(
-				$post_id,
-				$form_id,
-				$idem_attrs,
-				is_numeric( $idem_prior ) ? (int) $idem_prior : null
-			);
 		}
 
 		/**
@@ -298,7 +347,6 @@ final class Handler {
 		// admin even if the source form is later edited or deleted. The
 		// form_title snapshot keeps history-friendly: a later rename of
 		// the form doesn't retroactively change what this row says.
-		$form_attrs = isset( $definition['attributes'] ) && is_array( $definition['attributes'] ) ? $definition['attributes'] : [];
 		$form_title = isset( $form_attrs['title'] ) && is_string( $form_attrs['title'] ) ? trim( $form_attrs['title'] ) : '';
 
 		$payload = [

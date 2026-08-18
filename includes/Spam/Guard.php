@@ -116,8 +116,26 @@ final class Guard {
 	 * @return bool
 	 */
 	public static function verify_submission( string $form_id, array $form_attributes, bool $burn = true ): bool {
+		return Challenge::STATUS_OK === self::verify_submission_status( $form_id, $form_attributes, $burn );
+	}
+
+	/**
+	 * Classify the submission against the active strategy.
+	 *
+	 * Same gate as verify_submission(), but the caller learns WHY a
+	 * challenge failed (Challenge::assess verdicts). The Handler needs
+	 * the distinction to keep a real visitor's input alive when the
+	 * token merely expired instead of silently discarding the request.
+	 *
+	 * @param string               $form_id         UUID of the form being submitted.
+	 * @param array<string, mixed> $form_attributes Block attributes from the form-container.
+	 * @param bool                 $burn            Whether a successful verify burns the
+	 *                                              token immediately (see Challenge::verify).
+	 * @return string One of the Challenge::STATUS_* constants.
+	 */
+	public static function verify_submission_status( string $form_id, array $form_attributes, bool $burn = true ): string {
 		if ( 'none' === self::resolve_strategy( $form_attributes ) ) {
-			return true;
+			return Challenge::STATUS_OK;
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce already validated upstream in Handler::handle().
@@ -133,10 +151,10 @@ final class Guard {
 			// markup. Reject either way; legitimate visitors re-
 			// rendering the page after the upgrade get a fresh
 			// token automatically.
-			return false;
+			return Challenge::STATUS_INVALID;
 		}
 
-		return Challenge::verify(
+		return Challenge::assess(
 			$token,
 			$form_id,
 			[

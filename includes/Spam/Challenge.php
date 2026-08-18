@@ -74,13 +74,26 @@ final class Challenge {
 	private const VERSION = 1;
 
 	/**
-	 * Token lifetime in seconds. 5 minutes is long enough to cover
+	 * Token lifetime in seconds. 30 minutes is long enough to cover
 	 * users that read the form thoroughly, short enough to keep the
 	 * replay-window (and the transient TTL) bounded.
 	 *
 	 * @var int
 	 */
 	private const TTL_SECONDS = 1800;
+
+	/**
+	 * assess() verdicts. Everything that is not STATUS_OK failed the
+	 * challenge — the distinction is WHY, because the Handler treats a
+	 * forged token (attack → silent reject) fundamentally differently
+	 * from a token this server provably minted that merely aged out
+	 * (real visitor → keep their input, ask them to resend).
+	 */
+	public const STATUS_OK       = 'ok';
+	public const STATUS_INVALID  = 'invalid';
+	public const STATUS_EXPIRED  = 'expired';
+	public const STATUS_REPLAYED = 'replayed';
+	public const STATUS_FAILED   = 'failed';
 
 	/**
 	 * PoW difficulty (in leading-zero bits the sha256 must satisfy).
@@ -171,18 +184,8 @@ final class Challenge {
 	/**
 	 * Verify a submitted token + solution pair.
 	 *
-	 * Order of checks (each independent + cheap):
-	 *   1. Token structurally valid (two dot-separated parts).
-	 *   2. HMAC matches (constant-time compare).
-	 *   3. Payload decodes to expected shape.
-	 *   4. Version matches.
-	 *   5. Form ID matches the submitted form.
-	 *   6. Not expired.
-	 *   7. Not already used (transient replay-guard).
-	 *   8. Solution actually solves the puzzle.
-	 *
-	 * On success the per-token transient is set so a second
-	 * verify with the same token within the TTL fails at step 7.
+	 * Boolean façade over assess() — true only for STATUS_OK. Kept so
+	 * callers that just need pass/fail don't have to know the verdicts.
 	 *
 	 * @param string $token_string
 	 * @param string $form_id
@@ -196,34 +199,83 @@ final class Challenge {
 	 * @return bool
 	 */
 	public static function verify( string $token_string, string $form_id, array $submitted, bool $burn = true ): bool {
+		return self::STATUS_OK === self::assess( $token_string, $form_id, $submitted, $burn );
+	}
+
+	/**
+	 * Classify a submitted token + solution pair instead of collapsing
+	 * everything into true/false.
+	 *
+	 * The classification exists because "challenge failed" covers two very
+	 * different visitors. A token whose HMAC does not verify (or that is
+	 * bound to another form) was never minted by this server for this form
+	 * — that is an attack signature and stays a silent reject. A token
+	 * whose HMAC DOES verify provably came from our own render; if it
+	 * merely expired, was already consumed, or carries a wrong human
+	 * answer, the visitor is almost certainly real and must not lose
+	 * their input.
+	 *
+	 * Verdicts, in check order:
+	 *
+	 *   STATUS_INVALID  — structurally broken, HMAC mismatch, undecodable
+	 *                     payload, version mismatch, wrong form binding,
+	 *                     or no solution attempt at all (a bot that never
+	 *                     ran the solver nor typed the math answer).
+	 *   STATUS_EXPIRED  — HMAC-valid but past its TTL (page open too
+	 *                     long, or served from a stale HTML cache).
+	 *   STATUS_REPLAYED — HMAC-valid but already burnt (double submit,
+	 *                     back-button resend after the idempotency window).
+	 *   STATUS_FAILED   — HMAC-valid and fresh, but the submitted solution
+	 *                     is wrong (typically a typo in the math fallback).
+	 *   STATUS_OK       — token good, solution good; burnt when $burn.
+	 *
+	 * @param string $token_string
+	 * @param string $form_id
+	 * @param array{pow_solution?: string, math_answer?: string} $submitted
+	 * @param bool   $burn See verify().
+	 * @return string One of the STATUS_* constants.
+	 */
+	public static function assess( string $token_string, string $form_id, array $submitted, bool $burn = true ): string {
 		$parts = explode( '.', $token_string, 2 );
 		if ( 2 !== count( $parts ) ) {
-			return false;
+			return self::STATUS_INVALID;
 		}
 		[ $encoded, $hmac ] = $parts;
 
 		$expected_hmac = hash_hmac( 'sha256', $encoded, self::derive_key() );
 		if ( ! hash_equals( $expected_hmac, $hmac ) ) {
-			return false;
+			return self::STATUS_INVALID;
 		}
 
 		$decoded = self::base64_url_decode( $encoded );
 		if ( '' === $decoded ) {
-			return false;
+			return self::STATUS_INVALID;
 		}
 		$payload = json_decode( $decoded, true );
 		if ( ! is_array( $payload ) ) {
-			return false;
+			return self::STATUS_INVALID;
 		}
 
 		if ( (int) ( $payload['v'] ?? 0 ) !== self::VERSION ) {
-			return false;
+			return self::STATUS_INVALID;
 		}
 		if ( (string) ( $payload['f'] ?? '' ) !== $form_id ) {
-			return false;
+			return self::STATUS_INVALID;
 		}
+
+		// No solution attempt of any kind: neither the PoW solver ran nor
+		// was the math fallback answered. Real visitors always produce one
+		// of the two (the math input is `required` on the no-JS path), so
+		// this is a bot signature — checked before expiry on purpose, an
+		// aged token doesn't make an empty submission more legitimate.
+		$pow_solution = isset( $submitted['pow_solution'] ) ? (string) $submitted['pow_solution'] : '';
+		$math_answer  = isset( $submitted['math_answer'] ) ? (string) $submitted['math_answer'] : '';
+		if ( '' === $pow_solution && '' === trim( $math_answer ) ) {
+			return self::STATUS_INVALID;
+		}
+
 		if ( (int) ( $payload['e'] ?? 0 ) < time() ) {
-			return false;
+			return self::STATUS_EXPIRED;
 		}
 
 		// Replay-guard: a successful verify burns the token. If
@@ -241,16 +293,13 @@ final class Challenge {
 		// marginal gain an attacker gets here.
 		$used_key = 'flinkform_spam_used_' . md5( (string) ( $payload['n'] ?? '' ) );
 		if ( false !== get_transient( $used_key ) ) {
-			return false;
+			return self::STATUS_REPLAYED;
 		}
 
 		// Solution check — accept EITHER a valid PoW solution OR
 		// the math answer. The frontend picks whichever it could
 		// produce; servers don't care which arrived as long as one
 		// of them satisfies its branch.
-		$pow_solution = isset( $submitted['pow_solution'] ) ? (string) $submitted['pow_solution'] : '';
-		$math_answer  = isset( $submitted['math_answer'] ) ? (string) $submitted['math_answer'] : '';
-
 		$pow_ok  = '' !== $pow_solution && self::verify_pow(
 			(string) ( $payload['s'] ?? '' ),
 			(int) ( $payload['d'] ?? self::POW_DIFFICULTY ),
@@ -263,7 +312,7 @@ final class Challenge {
 		);
 
 		if ( ! $pow_ok && ! $math_ok ) {
-			return false;
+			return self::STATUS_FAILED;
 		}
 
 		// Burn the token for the remainder of its TTL (unless the caller
@@ -273,7 +322,7 @@ final class Challenge {
 			set_transient( $used_key, 1, $remaining );
 		}
 
-		return true;
+		return self::STATUS_OK;
 	}
 
 	/**
