@@ -86,10 +86,13 @@ export function applyChallengeData( block, data ) {
 		block.setAttribute( 'data-flinkform-pow-difficulty', String( data.difficulty ) );
 	}
 
-	const solutionInput = block.querySelector( '[data-flinkform-spam-solution]' );
-	if ( solutionInput ) {
-		solutionInput.value = '';
-	}
+	// The solution input is deliberately NOT cleared here. The caller solves
+	// the new challenge first and then writes token and solution together, so
+	// clearing it in this step would re-open the exact race this avoids: a
+	// fresh token next to an empty solution. Until the caller writes the new
+	// solution, the previous one stays in place — paired with the new salt it
+	// simply fails the proof-of-work and takes the gentle "please resend"
+	// path, never the silent drop.
 
 	const mathRow = block.querySelector( '[data-flinkform-spam-math]' );
 	if ( mathRow ) {

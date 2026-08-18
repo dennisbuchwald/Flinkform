@@ -1536,11 +1536,54 @@ function setupSpamChallengeBlock( block ) {
 					return false;
 				}
 				const data = await response.json();
+				if ( ! data || typeof data.token !== 'string' || data.token === ''
+					|| typeof data.salt !== 'string' || data.salt === '' ) {
+					return false;
+				}
+
+				// Solve the NEW challenge BEFORE swapping it into the DOM.
+				// The old token is still valid and stays submittable for the
+				// 0.2–2s the compute takes, so the form never holds a fresh
+				// token paired with a stale or empty solution — the tiny race
+				// that would otherwise read as a bot signature and drop the
+				// submission on the safety net's silent branch.
+				const gen = ++generation;
+				let solution;
+				try {
+					solution = await solvePoWInWorker( data.salt, data.difficulty )
+						.catch( () => solvePoW( data.salt, data.difficulty ) );
+				} catch {
+					// Could not solve the fresh challenge — leave the current
+					// token in place; the server-side safety net covers an
+					// aged token without losing the visitor's input.
+					return false;
+				}
+				if ( gen !== generation ) {
+					return false; // A newer solve run has taken over.
+				}
+				if ( ! solutionInput ) {
+					return false;
+				}
+
+				// Atomic swap: token, salt/difficulty and the matching
+				// solution land together, with no await in between.
 				if ( ! applyChallengeData( block, data ) ) {
 					return false;
 				}
+				solutionInput.value = String( solution );
 				mintedAt = Date.now();
-				return await solve();
+
+				// Solved → the math fallback is redundant; take it back off
+				// screen if a slow-device timer had revealed it.
+				block.classList.remove( 'flinkform-form__spam--fallback' );
+				if ( mathRow ) {
+					mathRow.setAttribute( 'hidden', '' );
+				}
+				if ( mathInput ) {
+					mathInput.value = '';
+					mathInput.removeAttribute( 'required' );
+				}
+				return true;
 			} catch {
 				return false;
 			} finally {

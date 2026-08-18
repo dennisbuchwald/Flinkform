@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.13.0
+Stable tag: 1.13.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -130,6 +130,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.13.1 =
+* Fix: closes a tiny timing gap in the 1.13.0 token refresh. For a fraction of a second right after the token renewed itself, the form briefly held a fresh token with no solution yet, and a submit landing in that window could still be dropped. The refresh now solves the new challenge before swapping it in, so the token and its solution are always written together and that window no longer exists.
 
 = 1.13.0 =
 * Fix (important): a submission could be lost without a trace. The anti-spam token is valid for 30 minutes; if a form sat open longer than that (a long multi-step form, a tab left open, an HTML cache serving an older page), submitting sent the visitor silently to the home page with no message and no email, and their entries were gone. A form that came from our own server is never a bot, so an expired or already-used token no longer drops the submission: the form re-renders with the entries kept and a clear "your session has expired, please send again" message, and the second attempt goes through. The no-JavaScript path is covered too.
@@ -333,6 +336,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.13.1 =
+Closes a small timing gap in the 1.13.0 token refresh. Recommended follow-up to 1.13.0.
 
 = 1.13.0 =
 Important: submissions could be lost silently when a form sat open past the 30-minute spam-token window. Fixed - no submission is dropped without a message, and the token now refreshes itself. Update recommended for every site.

@@ -92,7 +92,12 @@ const freshData = {
 	check( 'apply: token input updated', block.querySelector( '[name="flinkform_spam_token"]' ).value === 'new-token' );
 	check( 'apply: salt attribute updated', block.getAttribute( 'data-flinkform-pow-salt' ) === 'new-salt' );
 	check( 'apply: difficulty attribute updated', block.getAttribute( 'data-flinkform-pow-difficulty' ) === '14' );
-	check( 'apply: stale solution cleared', block.querySelector( '[data-flinkform-spam-solution]' ).value === '' );
+	// The solution is NOT cleared by the swap on purpose: the caller solves
+	// the new challenge first and then writes token + solution together, so
+	// clearing here would re-open the race (fresh token, empty solution).
+	// The previous solution stays until the caller overwrites it; against the
+	// new salt it fails the PoW and takes the gentle path, never a silent drop.
+	check( 'apply: solution left for the caller to overwrite atomically', block.querySelector( '[data-flinkform-spam-solution]' ).value === '1234' );
 	check( 'apply: math question swapped', block.querySelector( 'label' ).textContent === 'What is 3 + 5?' );
 	check( 'apply: nonce input updated', form.querySelector( '[name="_flinkform_nonce"]' ).value === 'new-nonce' );
 }
