@@ -1315,6 +1315,36 @@
 		position: relative;
 		gap: 0;
 
+		/* Grid instead of the base flex column, so the resting label can be
+		 * centred on the INPUT rather than on the whole wrapper.
+		 *
+		 * An absolutely positioned grid child with an explicit grid
+		 * placement uses that grid area as its containing block (CSS Grid
+		 * §9), so pinning the label to row 1 makes `top: 50%` mean "middle
+		 * of the input" even when the wrapper is taller than the input —
+		 * because it carries help text below, or because a 2-column row
+		 * stretched it to match a taller neighbour. Both cases used to drop
+		 * the resting label to the bottom edge of the field or below it.
+		 *
+		 * Measuring the input in CSS instead (top = half its height) would
+		 * hard-code padding, border and line-height, and the field height
+		 * comes from the theme.
+		 *
+		 * The row and column must be EXPLICIT: grid-placement lines that
+		 * only exist in the implicit grid are treated as `auto` for
+		 * absolutely positioned children, which falls back to the wrapper's
+		 * padding box and reintroduces the bug. Help text and error message
+		 * flow into implicit rows underneath.
+		 *
+		 * `align-content: start` keeps row 1 at the input's own height when
+		 * the wrapper is stretched; the default (`normal`, which behaves as
+		 * `stretch` here) would grow the auto row into the spare space and
+		 * push the centre line back down. */
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: auto;
+		align-content: start;
+
 		> .flinkform-field__input {
 			padding-top: 1em;
 			padding-bottom: 0.6em;
@@ -1322,6 +1352,8 @@
 
 		> .flinkform-field__label {
 			position: absolute;
+			grid-row: 1 / 2;
+			grid-column: 1 / 2;
 			top: 50%;
 			left: 0.55em;
 			margin: 0;

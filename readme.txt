@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.13.2
+Stable tag: 1.13.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -130,6 +130,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.13.3 =
+* Fix: with the "Floating" label position, the resting label sat at the bottom edge of the field or slipped below it instead of sitting in the middle. It showed up wherever a field wrapper was taller than the input itself - a field with help text underneath, or a two-column row stretched to match a taller neighbour - because the label was centred on the whole field, not on the input. It is now anchored to the input, whatever else the field carries. The lifted state, the notch on the border, textareas, selects and date fields are unchanged.
 
 = 1.13.2 =
 * Fix: the Style panel cut its own option labels short. "Bordered / Soft / Underline / Minimal" and "Above / Beside / Floating / Hidden" were squeezed into a ~250px sidebar as segmented buttons and came out as "Borde… / Unde… / Minim…", so the setting could only be guessed at. Every setting with more than a couple of options is a dropdown now and reads in full, in every language. Nothing changes on the front end: the same values, the same defaults, existing forms render exactly as before.
@@ -340,6 +343,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.13.3 =
+Style fix for floating labels: the resting label is centred on the input again, also next to help text and in two-column layouts.
 
 = 1.13.2 =
 Editor fix: the Style panel no longer truncates its option labels. Front end unchanged.
