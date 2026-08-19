@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, conditional logic, block editor
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.13.1
+Stable tag: 1.13.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -130,6 +130,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 7. Style panel — field style, label position, colours
 
 == Changelog ==
+
+= 1.13.2 =
+* Fix: the Style panel cut its own option labels short. "Bordered / Soft / Underline / Minimal" and "Above / Beside / Floating / Hidden" were squeezed into a ~250px sidebar as segmented buttons and came out as "Borde… / Unde… / Minim…", so the setting could only be guessed at. Every setting with more than a couple of options is a dropdown now and reads in full, in every language. Nothing changes on the front end: the same values, the same defaults, existing forms render exactly as before.
+* Reported by Eric Saner — thank you!
 
 = 1.13.1 =
 * Fix: closes a tiny timing gap in the 1.13.0 token refresh. For a fraction of a second right after the token renewed itself, the form briefly held a fresh token with no solution yet, and a submit landing in that window could still be dropped. The refresh now solves the new challenge before swapping it in, so the token and its solution are always written together and that window no longer exists.
@@ -336,6 +340,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.13.2 =
+Editor fix: the Style panel no longer truncates its option labels. Front end unchanged.
 
 = 1.13.1 =
 Closes a small timing gap in the 1.13.0 token refresh. Recommended follow-up to 1.13.0.

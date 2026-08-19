@@ -4,16 +4,11 @@
  * Loaded via block.json "editorStyle" — never reaches the frontend.
  */
 
-/* ToggleGroupControl items in the Style panel overflow when labels are
- * long (especially in German). Force truncation so buttons stay in line. */
-.flinkform-style-panel .components-toggle-group-control-option-base {
-	min-width: 0;
-	overflow: hidden;
-
-	/* The inner label element needs truncation too. */
-	> * {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-}
+/* Nothing to override here at the moment.
+ *
+ * Until 1.13.1 this file truncated the labels of the Style panel's
+ * ToggleGroupControls with an ellipsis, because four word labels never fit
+ * across a ~250px sidebar ("Bordered / Soft / Underline / Minimal" rendered
+ * as "Borde… / Unde… / Minim…"). Truncating the label is not a fix — the
+ * settings that need more than three short options are dropdowns now, so
+ * every option reads in full and nothing has to be clipped. */

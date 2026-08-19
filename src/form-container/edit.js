@@ -565,20 +565,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							enableAlpha={ false }
 						/>
 					</BaseControl>
-					<ToggleGroupControl
+					<SelectControl
 						label={ __( 'Field style', 'flinkform' ) }
 						help={ __( 'Bordered: full outline. Soft: light gray border. Underline: bottom border only. Minimal: no border, subtle background.', 'flinkform' ) }
 						value={ fieldStyle }
+						options={ [
+							{ value: 'bordered', label: __( 'Bordered', 'flinkform' ) },
+							{ value: 'soft', label: __( 'Soft', 'flinkform' ) },
+							{ value: 'underline', label: __( 'Underline', 'flinkform' ) },
+							{ value: 'minimal', label: __( 'Minimal', 'flinkform' ) },
+						] }
 						onChange={ ( value ) => updateAppearance( { fieldStyle: value } ) }
-						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					>
-						<ToggleGroupControlOption value="bordered" label={ __( 'Bordered', 'flinkform' ) } />
-						<ToggleGroupControlOption value="soft" label={ __( 'Soft', 'flinkform' ) } />
-						<ToggleGroupControlOption value="underline" label={ __( 'Underline', 'flinkform' ) } />
-						<ToggleGroupControlOption value="minimal" label={ __( 'Minimal', 'flinkform' ) } />
-					</ToggleGroupControl>
+					/>
 					<RangeControl
 						label={ __( 'Border radius', 'flinkform' ) }
 						help={ __( 'Applies to fields and the submit button. Leave at the default to inherit from your theme.', 'flinkform' ) }
@@ -594,19 +594,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<ToggleGroupControl
+					<SelectControl
 						label={ __( 'Field spacing', 'flinkform' ) }
 						value={ fieldSpacing }
+						options={ [
+							{ value: 'compact', label: __( 'Compact', 'flinkform' ) },
+							{ value: 'normal', label: __( 'Normal', 'flinkform' ) },
+							{ value: 'relaxed', label: __( 'Relaxed', 'flinkform' ) },
+						] }
 						onChange={ ( value ) => updateAppearance( { fieldSpacing: value } ) }
-						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					>
-						<ToggleGroupControlOption value="compact" label={ __( 'Compact', 'flinkform' ) } />
-						<ToggleGroupControlOption value="normal" label={ __( 'Normal', 'flinkform' ) } />
-						<ToggleGroupControlOption value="relaxed" label={ __( 'Relaxed', 'flinkform' ) } />
-					</ToggleGroupControl>
-					<ToggleGroupControl
+					/>
+					<SelectControl
 						label={ __( 'Label position', 'flinkform' ) }
 						help={
 							labelPosition === 'floating'
@@ -616,16 +616,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									: __( 'Beside, Floating and Hidden apply to text-style fields only.', 'flinkform' )
 						}
 						value={ labelPosition }
+						options={ [
+							{ value: 'above', label: __( 'Above', 'flinkform' ) },
+							{ value: 'beside', label: __( 'Beside', 'flinkform' ) },
+							{ value: 'floating', label: __( 'Floating', 'flinkform' ) },
+							{ value: 'placeholder', label: __( 'Hidden', 'flinkform' ) },
+						] }
 						onChange={ ( value ) => updateAppearance( { labelPosition: value } ) }
-						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					>
-						<ToggleGroupControlOption value="above" label={ __( 'Above', 'flinkform' ) } />
-						<ToggleGroupControlOption value="beside" label={ __( 'Beside', 'flinkform' ) } />
-						<ToggleGroupControlOption value="floating" label={ __( 'Floating', 'flinkform' ) } />
-						<ToggleGroupControlOption value="placeholder" label={ __( 'Hidden', 'flinkform' ) } />
-					</ToggleGroupControl>
+					/>
 					<ToggleGroupControl
 						label={ __( 'Columns', 'flinkform' ) }
 						help={ __( 'Two-column layout collapses to a single column on mobile. Individual fields can be set to span both columns via their own inspector.', 'flinkform' ) }
@@ -638,18 +638,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleGroupControlOption value={ 1 } label={ __( '1 column', 'flinkform' ) } />
 						<ToggleGroupControlOption value={ 2 } label={ __( '2 columns', 'flinkform' ) } />
 					</ToggleGroupControl>
-					<ToggleGroupControl
+					<SelectControl
 						label={ __( 'Submit button style', 'flinkform' ) }
 						value={ submitButtonStyle }
+						options={ [
+							{ value: 'fill', label: __( 'Fill', 'flinkform' ) },
+							{ value: 'outline', label: __( 'Outline', 'flinkform' ) },
+							{ value: 'ghost', label: __( 'Ghost', 'flinkform' ) },
+						] }
 						onChange={ ( value ) => updateAppearance( { submitButtonStyle: value } ) }
-						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					>
-						<ToggleGroupControlOption value="fill" label={ __( 'Fill', 'flinkform' ) } />
-						<ToggleGroupControlOption value="outline" label={ __( 'Outline', 'flinkform' ) } />
-						<ToggleGroupControlOption value="ghost" label={ __( 'Ghost', 'flinkform' ) } />
-					</ToggleGroupControl>
+					/>
 					<BaseControl
 						label={ __( 'Button background', 'flinkform' ) }
 						help={ __( 'Leave unset to use the primary colour.', 'flinkform' ) }
@@ -689,20 +689,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							enableAlpha={ false }
 						/>
 					</BaseControl>
-					<ToggleGroupControl
+					<SelectControl
 						label={ __( 'Progress indicator', 'flinkform' ) }
 						help={ __( 'Shown on multi-step forms only. Bar fills as the user advances; Dots marks each step; Numbers reads "Step X of Y".', 'flinkform' ) }
 						value={ progressIndicator }
+						options={ [
+							{ value: 'bar', label: __( 'Bar', 'flinkform' ) },
+							{ value: 'dots', label: __( 'Dots', 'flinkform' ) },
+							{ value: 'numbers', label: __( 'Numbers', 'flinkform' ) },
+							{ value: 'none', label: __( 'None', 'flinkform' ) },
+						] }
 						onChange={ ( value ) => updateAppearance( { progressIndicator: value } ) }
-						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					>
-						<ToggleGroupControlOption value="bar" label={ __( 'Bar', 'flinkform' ) } />
-						<ToggleGroupControlOption value="dots" label={ __( 'Dots', 'flinkform' ) } />
-						<ToggleGroupControlOption value="numbers" label={ __( 'Numbers', 'flinkform' ) } />
-						<ToggleGroupControlOption value="none" label={ __( 'None', 'flinkform' ) } />
-					</ToggleGroupControl>
+					/>
 					{ progressIndicator !== 'none' && (
 						<ToggleControl
 							label={ __( 'Show step labels', 'flinkform' ) }
