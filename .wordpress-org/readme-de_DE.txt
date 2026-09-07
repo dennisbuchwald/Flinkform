@@ -20,6 +20,8 @@ Flinkform ist ein Formular-Builder, der vollständig im WordPress-Block-Editor l
 
 Entwickelt in Deutschland für Websites, die Datenschutz ernst nehmen. Das deutschsprachige Kontaktformular-Plugin für den Block-Editor.
 
+**Erst ausprobieren, dann installieren:** Live-Demo mit echten Formularen, inklusive Multi-Step und bedingter Logik, unter https://demo.flinkform.de/
+
 = DSGVO by Design =
 
 Keine IP-Adressen, keine User-Agent-Daten, kein Tracking, keine externen Dienste im kostenlosen Kern. Der Spam-Schutz besteht aus einem Honeypot, einer signierten Zeitprüfung und einer Proof-of-Work-Aufgabe mit Rechenaufgabe als Fallback ohne JavaScript: kein reCAPTCHA, kein hCaptcha, kein Cloudflare Turnstile und damit keine Datenübertragung an US-Server. Enthalten sind ein Consent-Feld, Aufbewahrungsfristen mit automatischer Löschung und die Anbindung an die Datenschutz-Werkzeuge von WordPress.
@@ -106,6 +108,10 @@ WordPress 6.5 oder neuer, PHP 8.1 oder neuer, Block-Editor (Gutenberg).
 5. Felder hinzufügen, Einstellungen im Block-Inspektor setzen, veröffentlichen, fertig
 
 == Frequently Asked Questions ==
+
+= Kann ich Flinkform ausprobieren, bevor ich es installiere? =
+
+Ja. Unter https://demo.flinkform.de/ läuft eine Live-Demo mit mehreren Formularen zum Ausfüllen und Absenden, darunter ein Multi-Step-Formular und bedingte Logik. Das ist eine echte WordPress-Seite mit diesem Plugin, eine Anmeldung ist nicht nötig.
 
 = Funktioniert Flinkform ohne reCAPTCHA? =
 
