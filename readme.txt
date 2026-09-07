@@ -167,13 +167,12 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 
 == Screenshots ==
 
-1. Block Editor — building a contact form with the Flinkform blocks
-2. Frontend — a styled single-step form on GeneratePress
-3. Multi-step form with progress bar
-4. Submissions list in wp-admin
-5. Submission detail view
-6. Conditional logic in the block inspector
-7. Style panel — field style, label position, colours
+1. Building a form from native blocks in the WordPress Block Editor
+2. Multi-step form with progress indicator on the frontend
+3. Conditional logic — show, hide and skip based on answers
+4. Submissions dashboard with search, filters and read state
+5. Spam protection without reCAPTCHA
+6. Forms inherit theme.json styling automatically
 
 == Changelog ==
 
