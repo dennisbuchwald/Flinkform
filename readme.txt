@@ -4,7 +4,7 @@ Tags: contact form, kontaktformular, form builder, dsgvo, block editor
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.13.3
+Stable tag: 1.14.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -181,6 +181,15 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 6. Forms inherit theme.json styling automatically
 
 == Changelog ==
+
+= 1.14.0 =
+* Performance: pages with a form can be cached again. Until now every page holding a Flinkform form told caching plugins not to cache it, because the form carried a spam token, a security nonce and a signed render time that are only valid for one request. On a site measured for this release that cost about 0.7 seconds of extra server time on every view of a form page - and those are usually the pages that matter most. Flinkform now loads those values in the background the moment a visitor first touches the form, so the page itself is plain, cacheable HTML.
+* Spam protection is unchanged in strength. The same proof-of-work, the same signed single-use token, the same honeypot. The minimum-fill-time check actually gets more accurate: it now starts counting when the visitor reaches the form instead of when the page was rendered.
+* Without JavaScript the form still works. Those visitors are offered a one-click link to an uncached version of the same page, which behaves exactly as before with the arithmetic question.
+* Submissions that arrive before the background load finished are no longer lost. Everything typed is kept and the form comes back asking to send it again, instead of the request being dropped.
+* New: Tools > Site Health reports whether your form pages are actually being cached, so this cannot quietly break again.
+* Forms with a payment field (Pro) keep the previous behaviour and stay uncached, because the payment field brings request-specific data of its own.
+* For developers: the old behaviour is one filter away - `add_filter( 'flinkform_render_challenge_inline', '__return_true' );`.
 
 = 1.13.3 =
 * Fix: with the "Floating" label position, the resting label sat at the bottom edge of the field or slipped below it instead of sitting in the middle. It showed up wherever a field wrapper was taller than the input itself - a field with help text underneath, or a two-column row stretched to match a taller neighbour - because the label was centred on the whole field, not on the input. It is now anchored to the input, whatever else the field carries. The lifted state, the notch on the border, textareas, selects and date fields are unchanged.
@@ -394,6 +403,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.14.0 =
+Pages with a form can be cached again - typically a few hundred milliseconds faster per view, with unchanged spam protection. Clear your page cache after updating.
 
 = 1.13.3 =
 Style fix for floating labels: the resting label is centred on the input again, also next to help text and in two-column layouts.

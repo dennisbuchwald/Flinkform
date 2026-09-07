@@ -1715,3 +1715,47 @@
 		outline-offset: 2px;
 	}
 }
+
+/* --------------------------------------------------------------------
+ * Deferred rendering (1.14.0) — the no-JavaScript escape hatch.
+ *
+ * A deferred form ships without a spam challenge, without a nonce and
+ * without a signed render timestamp; view.js fetches all three on first
+ * contact. That is what lets the page sit in a full-page cache, and it
+ * means a visitor without scripting has a form they could never submit.
+ *
+ * So: hide the form for them and show the <noscript> block instead,
+ * which links to one uncached inline render of the same page.
+ *
+ * The switch is `.flinkform-js`, set on <html> by a synchronous inline
+ * script in render.php. Scripting off → class absent → form hidden and
+ * the browser renders the <noscript> content. Scripting on → class set
+ * before first paint → form visible, no flash, <noscript> never renders.
+ *
+ * Not scoped to the doubled `.flinkform-form.flinkform-form` wrapper:
+ * this rule has to beat nothing but its own default, and keeping the
+ * `html:not(...)` prefix out of the specificity race keeps it readable.
+ * ------------------------------------------------------------------ */
+html:not(.flinkform-js) .flinkform-form--deferred .flinkform-form__form {
+	display: none;
+}
+
+.flinkform-form.flinkform-form .flinkform-form__nojs {
+	padding: 1rem 1.25rem;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: var(--flinkform-border-radius, 8px);
+	background: rgba(0, 0, 0, 0.02);
+}
+
+.flinkform-form.flinkform-form .flinkform-form__nojs-text {
+	margin: 0 0 0.75rem;
+}
+
+.flinkform-form.flinkform-form .flinkform-form__nojs-link {
+	display: inline-block;
+	padding: 0.6em 1.2em;
+	border-radius: var(--flinkform-border-radius, 8px);
+	background: var(--flinkform-button-bg, var(--flinkform-color-primary, #1e1e1e));
+	color: var(--flinkform-button-color, #fff);
+	text-decoration: none;
+}

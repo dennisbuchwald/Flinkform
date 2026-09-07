@@ -41,12 +41,70 @@ final class RefreshEndpoint {
 	private const REST_ROUTE     = '/challenge';
 
 	/**
+	 * admin-ajax action name for the fallback transport.
+	 *
+	 * @var string
+	 */
+	public const AJAX_ACTION = 'flinkform_challenge';
+
+	/**
+	 * URL of the admin-ajax fallback for one form.
+	 *
+	 * @param string $form_id Form UUID.
+	 * @return string
+	 */
+	public static function ajax_url( string $form_id ): string {
+		return add_query_arg(
+			[
+				'action'  => self::AJAX_ACTION,
+				'form_id' => rawurlencode( $form_id ),
+			],
+			admin_url( 'admin-ajax.php' )
+		);
+	}
+
+	/**
+	 * URL of the REST route for one form.
+	 *
+	 * @param string $form_id Form UUID.
+	 * @return string
+	 */
+	public static function rest_url( string $form_id ): string {
+		return add_query_arg( 'form_id', rawurlencode( $form_id ), rest_url( self::REST_NAMESPACE . self::REST_ROUTE ) );
+	}
+
+	/**
 	 * Hook the route registration.
 	 *
 	 * @return void
 	 */
 	public function register(): void {
 		add_action( 'rest_api_init', [ $this, 'register_route' ] );
+
+		// Second transport for the exact same payload. Since 1.14.0 the
+		// challenge is not rendered into the HTML any more, so a site that
+		// walls off /wp-json/ (a common "hardening" recipe, and this
+		// plugin's own security-hardening habit) would have no way to arm
+		// a form at all. admin-ajax.php is reachable wherever WordPress is,
+		// which makes it the right belt to the REST route's braces.
+		add_action( 'wp_ajax_' . self::AJAX_ACTION, [ $this, 'serve_ajax' ] );
+		add_action( 'wp_ajax_nopriv_' . self::AJAX_ACTION, [ $this, 'serve_ajax' ] );
+	}
+
+	/**
+	 * Serve the challenge over admin-ajax.php.
+	 *
+	 * @return never
+	 */
+	public function serve_ajax(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public challenge issuer, identical to the REST route below; it hands out challenges, never verdicts.
+		$form_id = isset( $_GET['form_id'] ) ? sanitize_text_field( wp_unslash( $_GET['form_id'] ) ) : '';
+		if ( '' === $form_id || strlen( $form_id ) > 64 ) {
+			wp_send_json_error( [ 'message' => 'Invalid form id.' ], 400 );
+		}
+
+		nocache_headers();
+		wp_send_json_success( self::payload( $form_id ) );
 	}
 
 	/**
@@ -101,7 +159,7 @@ final class RefreshEndpoint {
 	 * WP_REST_Request round-trip.
 	 *
 	 * @param string $form_id Form UUID the token is bound to.
-	 * @return array{token: string, salt: string, difficulty: int, question: string, nonce: string}
+	 * @return array{token: string, salt: string, difficulty: int, question: string, nonce: string, ts: string}
 	 */
 	public static function payload( string $form_id ): array {
 		$challenge = Challenge::mint( $form_id );
@@ -112,6 +170,13 @@ final class RefreshEndpoint {
 			'difficulty' => (int) ( $challenge['pow']['difficulty'] ?? Challenge::POW_DIFFICULTY ),
 			'question'   => (string) ( $challenge['math']['question'] ?? '' ),
 			'nonce'      => wp_create_nonce( 'flinkform_submit_' . $form_id ),
+			// The signed render timestamp. In deferred mode this is the
+			// only place it comes from, and issuing it here is strictly
+			// better than the old render-time mint: it starts counting
+			// when the visitor actually touches the form, so the minimum
+			// fill-time gate measures real dwell time instead of the age
+			// of a cached HTML file.
+			'ts'         => Challenge::mint_timestamp( $form_id ),
 		];
 	}
 }

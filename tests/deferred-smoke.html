@@ -1,0 +1,260 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Flinkform deferred-challenge smoke test</title>
+<script type="importmap">{ "imports": { "@wordpress/interactivity": "./interactivity-stub.js" } }</script>
+
+<!--
+  Browser smoke test for the 1.14.0 deferred challenge.
+
+  The PHP tests prove the markup ships empty and the server survives a
+  submission without a challenge. What neither can prove is the half that
+  runs in a browser, and that half carries the whole release:
+
+    1. A cached page that nobody touches must NOT hit the server. If this
+       breaks, every visitor costs a PHP request again and the caching win
+       is handed straight back.
+    2. Touching the form must arm it — nonce, timestamp, token, salt, and a
+       solved proof of work. If this breaks, every submission from a cached
+       page fails a server-side gate.
+    3. A submit that arrives before arming finished must be held, armed and
+       sent — not dropped. This is the safety net for autofill-then-Enter.
+
+  The challenge endpoint is a static JSON fixture: the browser code only
+  reads fields, it never verifies signatures, so a fixture exercises the
+  real code path. The salt is a real base64 string, so the proof-of-work
+  solver does actual work at the production difficulty.
+
+  Run:
+      npm run build
+      python3 -m http.server 8737 &
+      open http://localhost:8737/tests/deferred-smoke.html
+
+  Expected: every line green, and `window.__smoke.failed === 0`.
+-->
+
+<style>
+	body { font: 14px/1.6 system-ui, sans-serif; margin: 2rem; max-width: 46rem; }
+	li { list-style: none; }
+	.ok::before   { content: "PASS  "; color: #0a7c2f; font-weight: 700; }
+	.fail::before { content: "FAIL  "; color: #b80000; font-weight: 700; }
+	.fail { color: #b80000; }
+	#log { padding: 0; }
+	.note { color: #555; }
+</style>
+
+<h1>Deferred challenge — browser smoke test</h1>
+<ul id="log"></ul>
+<p class="note" id="verdict">running…</p>
+
+<!-- Rendered exactly the way form-container/render.php emits a deferred form. -->
+<div class="flinkform-form flinkform-form--deferred" id="flinkform-form-smoke-form" data-flinkform-id="smoke-form">
+	<form
+		class="flinkform-form__form"
+		method="post"
+		action="/wp-admin/admin-post.php"
+		novalidate
+		data-flinkform-challenge="deferred"
+		data-flinkform-challenge-url="./fixtures-challenge.json"
+		data-flinkform-challenge-fallback-url="./fixtures-challenge.json"
+	>
+		<input type="hidden" name="_flinkform_nonce" value="">
+		<input type="hidden" name="action" value="flinkform_submit">
+		<input type="hidden" name="flinkform_form_id" value="smoke-form">
+		<input type="hidden" name="flinkform_ts" value="">
+		<input type="hidden" name="flinkform_challenge" value="deferred">
+
+		<label>Name <input type="text" name="flinkform_field_name" id="probe"></label>
+
+		<div class="flinkform-form__spam" data-flinkform-spam="1"
+		     data-flinkform-pow-salt=""
+		     data-flinkform-pow-difficulty="0"
+		     data-flinkform-refresh-url="./fixtures-challenge.json"
+		     data-flinkform-refresh-fallback-url="./fixtures-challenge.json"
+		     data-flinkform-spam-deferred="1">
+			<input type="hidden" name="flinkform_spam_token" value="">
+			<input type="hidden" name="flinkform_spam_solution" value="" data-flinkform-spam-solution>
+			<div class="flinkform-form__spam-math" data-flinkform-spam-math>
+				<label for="m"></label>
+				<input type="text" id="m" name="flinkform_spam_answer" value="" size="4">
+			</div>
+		</div>
+
+		<button type="submit" class="flinkform-form__submit">Send</button>
+	</form>
+</div>
+
+<!-- A second, identical form that the test never touches: it exists to be
+     submitted cold, which is what a password manager's autofill-then-Enter
+     does. The submit must be held back, armed and replayed. -->
+<div class="flinkform-form flinkform-form--deferred" id="flinkform-form-smoke-form-2" data-flinkform-id="smoke-form-2">
+	<form
+		class="flinkform-form__form"
+		method="post"
+		action="/wp-admin/admin-post.php"
+		novalidate
+		data-flinkform-challenge="deferred"
+		data-flinkform-challenge-url="./fixtures-challenge.json"
+		data-flinkform-challenge-fallback-url="./fixtures-challenge.json"
+	>
+		<input type="hidden" name="_flinkform_nonce" value="">
+		<input type="hidden" name="action" value="flinkform_submit">
+		<input type="hidden" name="flinkform_form_id" value="smoke-form-2">
+		<input type="hidden" name="flinkform_ts" value="">
+		<input type="hidden" name="flinkform_challenge" value="deferred">
+
+		<label>Name <input type="text" name="flinkform_field_name"></label>
+
+		<div class="flinkform-form__spam" data-flinkform-spam="1"
+		     data-flinkform-pow-salt=""
+		     data-flinkform-pow-difficulty="0"
+		     data-flinkform-refresh-url="./fixtures-challenge.json"
+		     data-flinkform-refresh-fallback-url="./fixtures-challenge.json"
+		     data-flinkform-spam-deferred="1">
+			<input type="hidden" name="flinkform_spam_token" value="">
+			<input type="hidden" name="flinkform_spam_solution" value="" data-flinkform-spam-solution>
+			<div class="flinkform-form__spam-math" data-flinkform-spam-math>
+				<label for="m2"></label>
+				<input type="text" id="m2" name="flinkform_spam_answer" value="" size="4">
+			</div>
+		</div>
+
+		<button type="submit" class="flinkform-form__submit">Send</button>
+	</form>
+</div>
+
+<script type="module">
+	const log      = document.getElementById( 'log' );
+	const smoke    = { passed: 0, failed: 0, loaded: false, error: null };
+	window.__smoke = smoke;
+
+	function check( label, ok, detail = '' ) {
+		const li = document.createElement( 'li' );
+		li.className = ok ? 'ok' : 'fail';
+		li.textContent = label + ( ok || ! detail ? '' : ` — ${ detail }` );
+		log.appendChild( li );
+		ok ? smoke.passed++ : smoke.failed++;
+	}
+
+	// Count every request to the challenge endpoint, so "no request until
+	// the visitor touches the form" is measured, not assumed.
+	let fetches = 0;
+	const realFetch = window.fetch;
+	window.fetch = ( ...args ) => {
+		if ( String( args[ 0 ] ).includes( 'fixtures-challenge.json' ) ) {
+			fetches++;
+		}
+		return realFetch( ...args );
+	};
+
+	const forms = document.querySelectorAll( 'form' );
+	const form  = forms[ 0 ];
+	const cold  = forms[ 1 ];
+	const val   = ( target, name ) => target.querySelector( `[name="${ name }"]` ).value;
+	const sleep = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) );
+
+	// Intercept the submits so the page does not navigate away mid-test.
+	// Bubble phase, so the plugin's capture-phase gate still runs first —
+	// exactly the ordering it has on a real page.
+	const submits = new Map( [ [ form, 0 ], [ cold, 0 ] ] );
+	forms.forEach( ( f ) => {
+		f.addEventListener( 'submit', ( event ) => {
+			event.preventDefault();
+			submits.set( f, submits.get( f ) + 1 );
+		} );
+	} );
+
+	try {
+		await import( '../build/form-container/view.js' );
+		smoke.loaded = true;
+	} catch ( e ) {
+		smoke.error = String( e );
+		check( 'module loads', false, smoke.error );
+	}
+
+	if ( smoke.loaded ) {
+		check( 'module loads without a runtime error', true );
+
+		// --- 1. An untouched page must stay silent -----------------------
+		await sleep( 1200 );
+		check(
+			'no request on page load',
+			fetches === 0,
+			`${ fetches } request(s) — a cached page would cost a PHP hit per visitor`
+		);
+		check( 'nonce still empty before contact', val( form, '_flinkform_nonce' ) === '' );
+		check( 'timestamp still empty before contact', val( form, 'flinkform_ts' ) === '' );
+
+		// --- 2. First contact arms the form ------------------------------
+		// pointerdown, not focus(): a browser tab that does not have the
+		// window focus fires no focus events at all, so a headless or
+		// backgrounded run would report a false failure. pointerdown is
+		// one of the three arming triggers and is what a tap really sends.
+		const touch = () =>
+			document.getElementById( 'probe' ).dispatchEvent(
+				new PointerEvent( 'pointerdown', { bubbles: true } )
+			);
+
+		touch();
+		await sleep( 2500 );
+
+		check( 'first contact triggers exactly one request', fetches === 1, `saw ${ fetches }` );
+		check( 'nonce filled', val( form, '_flinkform_nonce' ) === 'smoke-nonce-abc123', `got "${ val( form, '_flinkform_nonce' ) }"` );
+		check( 'signed timestamp filled', val( form, 'flinkform_ts' ) === 'MTc4ODc5MTM2Mw.smoke-signature' );
+		check( 'spam token filled', val( form, 'flinkform_spam_token' ).startsWith( 'eyJ2IjoxL' ) );
+		check(
+			'proof of work solved',
+			/^\d+$/.test( val( form, 'flinkform_spam_solution' ) ),
+			`solution "${ val( form, 'flinkform_spam_solution' ) }"`
+		);
+		check(
+			'math fallback stays hidden once solved',
+			form.querySelector( '[data-flinkform-spam-math]' ).hasAttribute( 'hidden' )
+		);
+		check(
+			'math answer is not required while hidden',
+			! document.getElementById( 'm' ).hasAttribute( 'required' ),
+			'a hidden required control makes the browser refuse the submit'
+		);
+
+		// --- 3. Arming the first form must not touch the second ----------
+		check( 'a second form on the page stays unarmed', val( cold, '_flinkform_nonce' ) === '' );
+
+		// --- 4. Touching again must not re-fetch -------------------------
+		touch();
+		await sleep( 400 );
+		check( 'an armed form does not fetch again', fetches === 1, `saw ${ fetches }` );
+
+		// --- 5. An armed form submits straight through -------------------
+		form.querySelector( 'button[type="submit"]' ).click();
+		await sleep( 300 );
+		check( 'an armed form submits once, immediately', submits.get( form ) === 1, `${ submits.get( form ) } submit(s)` );
+
+		// --- 6. The safety net: submit before arming ---------------------
+		// The cold form has never been focused, clicked or typed into —
+		// this is autofill followed by Enter. The gate must hold the
+		// submit, arm the form and send it again rather than letting it
+		// leave without a challenge.
+		cold.querySelector( 'button[type="submit"]' ).click();
+		await sleep( 3000 );
+
+		check( 'a cold submit arms the form', fetches === 2, `saw ${ fetches } request(s)` );
+		check( 'cold form: nonce filled by the gate', val( cold, '_flinkform_nonce' ) === 'smoke-nonce-abc123' );
+		check( 'cold form: timestamp filled by the gate', val( cold, 'flinkform_ts' ) !== '' );
+		check(
+			'cold form: proof of work solved before sending',
+			/^\d+$/.test( val( cold, 'flinkform_spam_solution' ) ),
+			`solution "${ val( cold, 'flinkform_spam_solution' ) }"`
+		);
+		check(
+			'cold form: the submission is replayed, not dropped',
+			submits.get( cold ) === 2,
+			`${ submits.get( cold ) } submit event(s) — expected the held one plus the replay`
+		);
+	}
+
+	document.getElementById( 'verdict' ).textContent =
+		smoke.failed === 0
+			? `All ${ smoke.passed } checks passed.`
+			: `${ smoke.failed } of ${ smoke.passed + smoke.failed } checks failed.`;
+	document.getElementById( 'verdict' ).className = smoke.failed === 0 ? '' : 'fail';
+</script>

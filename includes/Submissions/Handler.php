@@ -38,8 +38,26 @@ final class Handler {
 	private const TIMESTAMP_FIELD    = 'flinkform_ts';
 	private const MIN_FILL_SECONDS   = 2;
 	private const FLASH_TTL_SECONDS  = 60;
-	private const FLASH_COOKIE_NAME  = 'flinkform_flash';
+
+	/**
+	 * Cookie that ties a flashed error state to one visitor.
+	 *
+	 * Public because Spam\RenderMode has to know it: a request carrying
+	 * this cookie may render repopulated values and must therefore never
+	 * be served from — or written into — a shared full-page cache.
+	 *
+	 * @var string
+	 */
+	public const FLASH_COOKIE_NAME = 'flinkform_flash';
+
 	private const IDEM_TTL_SECONDS   = 300;
+
+	/**
+	 * Hidden field marking a form that was rendered in deferred mode.
+	 *
+	 * @var string
+	 */
+	private const CHALLENGE_FIELD = 'flinkform_challenge';
 
 	/**
 	 * Errors for the form currently being rendered.
@@ -97,6 +115,50 @@ final class Handler {
 			$this->silent_reject();
 		}
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce is checked below explicitly.
+		$nonce_raw = isset( $_POST[ self::NONCE_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::NONCE_FIELD ] ) ) : '';
+		$ts_raw    = isset( $_POST[ self::TIMESTAMP_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::TIMESTAMP_FIELD ] ) ) : '';
+		$deferred  = isset( $_POST[ self::CHALLENGE_FIELD ] )
+			&& \Flinkform\Spam\RenderMode::DEFERRED === sanitize_key( wp_unslash( $_POST[ self::CHALLENGE_FIELD ] ) );
+		// phpcs:enable
+
+		// A deferred render (1.14.0) ships the page without a nonce, without
+		// a signed timestamp and without a spam challenge — that is what
+		// lets it be cached — and the browser fills them in on first contact
+		// with the form. Arriving here with those fields still empty means
+		// the arming fetch never landed: JavaScript is off, the endpoint is
+		// blocked, or the visitor was faster than the network.
+		//
+		// This must never be a silent drop. The two gates below would do
+		// exactly that (an empty nonce dies with a 403 screen, an empty
+		// timestamp is silently rejected), and losing a real person's
+		// message to a plumbing problem is the failure this plugin has
+		// already been bitten by twice. So: keep what they typed, hand them
+		// an inline-rendered page, ask them to send it again.
+		//
+		// Nothing is stored, no mail is sent and no hook fires on this path,
+		// so skipping the nonce check here grants an attacker nothing they
+		// could not already have — the challenge endpoint hands out valid
+		// nonces to anyone who asks, by design.
+		if ( $deferred && ( '' === $nonce_raw || '' === $ts_raw ) ) {
+			// Honeypot first. This branch writes a flash transient, and a
+			// bot must not be able to make the server do that by posting an
+			// empty form with the marker attached. A filled honeypot gets
+			// the usual fake success and touches nothing.
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- honeypot check on an unauthenticated path by design; see the branch comment above.
+			$hp = isset( $_POST[ self::HONEYPOT_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::HONEYPOT_FIELD ] ) ) : '';
+			if ( '' !== trim( $hp ) ) {
+				$this->redirect_success( $post_id, $form_id );
+			}
+
+			$this->reject_softly(
+				$form_id,
+				$post_id,
+				__( 'Your form was not ready to send yet. Please check your entries and send your message again.', 'flinkform' ),
+				'challenge_missing'
+			);
+		}
+
 		// Nonce — the only check whose failure we surface as 403, because
 		// it usually means a real human ran into a caching/session issue.
 		if ( ! check_admin_referer( 'flinkform_submit_' . $form_id, self::NONCE_FIELD ) ) {
@@ -116,11 +178,10 @@ final class Handler {
 		}
 
 		// Time-check — render-to-submit faster than humans can read. The
-		// timestamp is HMAC-signed at render time (Challenge::mint_timestamp)
-		// so a bot cannot forge an aged value to skip the gate; verify()
-		// returns 0 for any tampered, malformed or unsigned token.
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce already validated above.
-		$ts_raw     = isset( $_POST[ self::TIMESTAMP_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::TIMESTAMP_FIELD ] ) ) : '';
+		// timestamp is HMAC-signed when it is issued (at render time for an
+		// inline form, by the challenge endpoint for a deferred one) so a
+		// bot cannot forge an aged value to skip the gate; verify() returns
+		// 0 for any tampered, malformed or unsigned token.
 		$ts_decoded = \Flinkform\Spam\Challenge::verify_timestamp( $ts_raw, $form_id );
 		if ( $ts_decoded <= 0 || ( time() - $ts_decoded ) < self::MIN_FILL_SECONDS ) {
 			$this->silent_reject();
@@ -173,6 +234,25 @@ final class Handler {
 			);
 		}
 
+		// One more deferred case, and it has to be caught before the Guard:
+		// nonce and timestamp arrived (so the form was armed) but the spam
+		// token is empty. That means the challenge fetch succeeded while the
+		// proof-of-work part did not — a browser without Web Crypto, or a
+		// solve that was still running. The Guard reads an empty token as a
+		// forged submission and drops it silently, which for this shape of
+		// request would be wrong: there is a real person behind it.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce validated above.
+		$posted_token = isset( $_POST[ \Flinkform\Spam\Renderer::FIELD_TOKEN ] ) ? sanitize_text_field( wp_unslash( $_POST[ \Flinkform\Spam\Renderer::FIELD_TOKEN ] ) ) : '';
+		if ( $deferred && '' === $posted_token && \Flinkform\Spam\Guard::should_protect( $form_attrs ) ) {
+			$this->reject_softly(
+				$form_id,
+				$post_id,
+				__( 'Your form was not ready to send yet. Please check your entries and send your message again.', 'flinkform' ),
+				'challenge_missing',
+				$definition
+			);
+		}
+
 		// Built-in spam challenge verify (Phase B-a). Sits between
 		// the time-check and field validation. The Guard façade reads
 		// the form's spamProtection attribute to decide whether to run
@@ -213,26 +293,10 @@ final class Handler {
 				$message = __( 'Your session has expired. Please check your entries and send your message again.', 'flinkform' );
 			}
 
-			$soft_errors = [ '_form' => $message ];
-			if ( $this->is_fetch_request() ) {
-				// The machine-readable code lets view.js recover from an
-				// expired token transparently: fetch a fresh challenge,
-				// re-solve, resubmit — no reload, nothing retyped.
-				wp_send_json_error(
-					[
-						'errors' => $soft_errors,
-						'code'   => 'spam_' . $spam_status,
-					],
-					422
-				);
-			}
-
-			// Flash the sanitised values so the re-rendered form keeps
-			// everything the visitor typed. Validation errors are NOT
-			// flashed here — the resend runs the full validation anyway.
-			[ $soft_values, ] = $this->validate( $definition['fields'] );
-			$this->flash( $form_id, $soft_errors, $soft_values );
-			$this->redirect_error( $post_id, $form_id );
+			// The machine-readable code lets view.js recover from an expired
+			// token transparently: fetch a fresh challenge, re-solve,
+			// resubmit — no reload, nothing retyped.
+			$this->reject_softly( $form_id, $post_id, $message, 'spam_' . $spam_status, $definition );
 		}
 
 		// Sanitize + validate user input against that definition.
@@ -910,6 +974,60 @@ final class Handler {
 	 */
 	private function idempotency_key( string $form_id, string $ts_raw ): string {
 		return 'flinkform_idem_' . md5( $form_id . '|' . $ts_raw );
+	}
+
+	/**
+	 * Refuse a submission without losing it.
+	 *
+	 * The counterpart to silent_reject(): used wherever a request failed a
+	 * gate but there is good reason to believe a real person is behind it —
+	 * an aged challenge, or a deferred form whose challenge never arrived.
+	 * Their values are flashed so the re-rendered form comes back filled in,
+	 * and they get a form-level message asking them to send it again.
+	 *
+	 * Nothing is stored, no notification is sent and no after-submission
+	 * hook fires, so this path is safe to reach without having verified the
+	 * nonce. Every retry still has to clear every gate.
+	 *
+	 * @param string                    $form_id    Form UUID.
+	 * @param int                       $post_id    Post the form was submitted from.
+	 * @param string                    $message    Form-level message for the visitor.
+	 * @param string                    $code       Machine-readable code for the fetch flow.
+	 * @param array<string, mixed>|null $definition Form definition, when the caller already has it.
+	 * @return never
+	 */
+	private function reject_softly( string $form_id, int $post_id, string $message, string $code, ?array $definition = null ): void {
+		$errors = [ '_form' => $message ];
+
+		if ( $this->is_fetch_request() ) {
+			wp_send_json_error(
+				[
+					'errors' => $errors,
+					'code'   => $code,
+				],
+				422
+			);
+		}
+
+		// Flash the sanitised values so the re-rendered form keeps
+		// everything the visitor typed. Validation errors are NOT flashed
+		// here — the resend runs the full validation anyway.
+		if ( null === $definition ) {
+			$definition = $this->locator->locate_by_form_id( $form_id, $post_id );
+		}
+
+		$values = [];
+		if ( is_array( $definition ) && ! empty( $definition['fields'] ) ) {
+			[ $values, ] = $this->validate( $definition['fields'] );
+		}
+
+		$this->flash( $form_id, $errors, $values );
+
+		// The redirect target carries flinkform_status=error, which makes
+		// RenderMode fall back to an inline render: the retry page arrives
+		// with a challenge already in it, so the second attempt goes through
+		// even if whatever broke the arming fetch is still broken.
+		$this->redirect_error( $post_id, $form_id );
 	}
 
 	/**

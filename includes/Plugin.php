@@ -112,6 +112,9 @@ final class Plugin {
 
 		if ( is_admin() ) {
 			( new Admin\Menu() )->register();
+			// Site Health: keeps the 1.14.0 caching fix from quietly
+			// regressing — the exclusion was invisible from the admin.
+			( new Admin\CacheHealth() )->register();
 		}
 
 		/**

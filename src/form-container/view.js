@@ -31,7 +31,7 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
 import resolveSurfaceColour from '../shared/surface-colour';
 import evaluateRuleSet, { resolveHiddenFields, applyHidden } from '../shared/rule-evaluator';
-import { shouldDeferRefresh, applyChallengeData, challengeExpiry } from '../shared/challenge-refresh';
+import { shouldDeferRefresh, applyChallengeData, applyFormChallenge, challengeExpiry } from '../shared/challenge-refresh';
 import { requiredCheckboxGroupsMissing } from '../shared/group-validation';
 
 const NAMESPACE = 'flinkform/form';
@@ -86,6 +86,12 @@ const SPAM_REFRESH_TICK   = 60 * 1000;
 // Per-block refresh handles. The fetch-submit recovery path uses this to
 // force-refresh the one form whose token the server just called expired.
 const spamBlockControls = new WeakMap();
+
+// Per-form challenge handles for deferred renders (1.14.0). The fetch-submit
+// recovery path uses this the same way spamBlockControls is used above: when
+// the server reports a submission that arrived without a challenge, arm the
+// form and send it again.
+const formChallengeControls = new WeakMap();
 
 if ( typeof document !== 'undefined' ) {
 	// initFinalValidation BEFORE initConditionalLogic: both attach capture
@@ -189,6 +195,20 @@ async function submitViaFetch( form ) {
 	// FormData once. The flag caps it at a single automatic attempt so a
 	// server that keeps answering "expired" can never loop us.
 	const errorCode = data && data.data && data.data.code ? data.data.code : '';
+
+	// The submission reached the server without a challenge — a deferred
+	// form whose arming fetch had not landed yet, or had failed. Arm it now
+	// and send the identical FormData once. Same single-attempt cap as the
+	// expired-token recovery below, for the same reason.
+	if ( errorCode === 'challenge_missing' && ! form.dataset.flinkformChallengeRetried ) {
+		form.dataset.flinkformChallengeRetried = '1';
+		const challenge = formChallengeControls.get( form );
+		if ( challenge && ( await challenge.ensure( true ) ) ) {
+			await submitViaFetch( form );
+			return;
+		}
+	}
+
 	if ( errorCode === 'spam_expired' && ! form.dataset.flinkformSpamRetried ) {
 		form.dataset.flinkformSpamRetried = '1';
 		const spamBlock = form.querySelector( '.flinkform-form__spam[data-flinkform-spam]' );
@@ -1380,6 +1400,10 @@ if ( typeof document !== 'undefined' ) {
 function initSpamChallenge() {
 	const blocks = document.querySelectorAll( '.flinkform-form__spam[data-flinkform-spam]' );
 	blocks.forEach( setupSpamChallengeBlock );
+
+	// After the blocks, never before: a deferred form hands its fetched
+	// challenge to the block's controls, which have to exist by then.
+	initDeferredChallenges();
 }
 
 function setupSpamChallengeBlock( block ) {
@@ -1483,8 +1507,16 @@ function setupSpamChallengeBlock( block ) {
 			} );
 	};
 
-	let mintedAt   = Date.now();
-	let refreshing = null;
+	// A deferred render (1.14.0) ships this block with empty placeholders so
+	// the page can be cached — the values arrive from the challenge endpoint
+	// on first contact with the form. Without this flag the solver would see
+	// an empty salt at start-up and drop straight to the math fallback,
+	// showing a question that has no answer yet.
+	const deferred = block.hasAttribute( 'data-flinkform-spam-deferred' );
+
+	let mintedAt      = Date.now();
+	let refreshing    = null;
+	let timersStarted = false;
 
 	/**
 	 * When the current token should be considered stale. Preferably 10
@@ -1502,6 +1534,38 @@ function setupSpamChallengeBlock( block ) {
 	};
 
 	/**
+	 * Start the keep-alive timers for the live challenge.
+	 *
+	 * Called once, and only once there IS a challenge to keep alive: on a
+	 * deferred render the block sits idle until the visitor touches the
+	 * form, and a timer ticking away on an untouched cached page would
+	 * hand the server exactly the background request this release exists
+	 * to remove.
+	 */
+	function startTimers() {
+		if ( timersStarted ) {
+			return;
+		}
+		timersStarted = true;
+
+		// Background tabs throttle intervals to a crawl, so the timer alone
+		// is not enough: also check when the tab comes back into view and
+		// when the page is restored from the back/forward cache (both are
+		// exactly the "parked for an hour" moments the refresh exists for).
+		setInterval( () => refresh( false ), SPAM_REFRESH_TICK );
+		document.addEventListener( 'visibilitychange', () => {
+			if ( ! document.hidden ) {
+				refresh( false );
+			}
+		} );
+		window.addEventListener( 'pageshow', ( event ) => {
+			if ( event.persisted ) {
+				refresh( false );
+			}
+		} );
+	}
+
+	/**
 	 * Fetch a fresh challenge from the REST endpoint and re-solve.
 	 * Resolves true when a fresh solution is in place. Every failure
 	 * (offline, endpoint blocked, malformed payload) resolves false and
@@ -1510,6 +1574,102 @@ function setupSpamChallengeBlock( block ) {
 	 *
 	 * @param {boolean} force Skip the age/typing checks (recovery path).
 	 */
+	/**
+	 * Take a freshly issued challenge and make it the live one.
+	 *
+	 * Split out of refresh() because a deferred render has no challenge to
+	 * refresh — its first arm comes from the form-level controller, which
+	 * has already fetched the payload and hands it straight to this.
+	 *
+	 * Returns both facts the callers need: whether the challenge is now IN
+	 * the form at all (`applied` — the form can be submitted), and whether
+	 * a proof-of-work solution came with it (`solved` — an automatic
+	 * resubmit will actually pass). They differ on slow or crypto-less
+	 * devices, where the visitor answers the math question by hand.
+	 *
+	 * @param {Object} data Endpoint payload: token, salt, difficulty, question, nonce, ts.
+	 * @return {Promise<{applied: boolean, solved: boolean}>}
+	 */
+	const adopt = async ( data ) => {
+		const failed = { applied: false, solved: false };
+
+		if ( ! data || typeof data.token !== 'string' || data.token === ''
+			|| typeof data.salt !== 'string' || data.salt === '' ) {
+			return failed;
+		}
+
+		// Solve the NEW challenge BEFORE swapping it into the DOM. On a
+		// refresh the old token is still valid and stays submittable for the
+		// 0.2–2s the compute takes, so the form never holds a fresh token
+		// paired with a stale or empty solution — the tiny race that would
+		// otherwise read as a bot signature and drop the submission on the
+		// safety net's silent branch.
+		const gen = ++generation;
+
+		// Same slow-device guarantee solve() gives: if the proof of work
+		// takes longer than a visitor should wait, put the question on
+		// screen so there is always something to fill in.
+		let settled = false;
+		const slowTimer = setTimeout( () => {
+			if ( ! settled && gen === generation ) {
+				showFallback();
+			}
+		}, SPAM_FALLBACK_DELAY );
+
+		let solution;
+		try {
+			solution = await solvePoWInWorker( data.salt, data.difficulty )
+				.catch( () => solvePoW( data.salt, data.difficulty ) );
+		} catch {
+			// Could not solve it (no Web Crypto, aborted compute). On a
+			// refresh the previous challenge stays in place; on a deferred
+			// first arm there is no previous challenge, so apply this one
+			// anyway and let the visitor answer the question — an armed
+			// form with a math question beats no form at all.
+			settled = true;
+			clearTimeout( slowTimer );
+			if ( gen === generation && deferred && applyChallengeData( block, data ) ) {
+				mintedAt = Date.now();
+				showFallback();
+				startTimers();
+				return { applied: true, solved: false };
+			}
+			return failed;
+		}
+
+		settled = true;
+		clearTimeout( slowTimer );
+
+		if ( gen !== generation ) {
+			return failed; // A newer solve run has taken over.
+		}
+		if ( ! solutionInput ) {
+			return failed;
+		}
+
+		// Atomic swap: token, salt/difficulty and the matching solution
+		// land together, with no await in between.
+		if ( ! applyChallengeData( block, data ) ) {
+			return failed;
+		}
+		solutionInput.value = String( solution );
+		mintedAt = Date.now();
+
+		// Solved → the math fallback is redundant; take it back off screen
+		// if a slow-device timer had revealed it.
+		block.classList.remove( 'flinkform-form__spam--fallback' );
+		if ( mathRow ) {
+			mathRow.setAttribute( 'hidden', '' );
+		}
+		if ( mathInput ) {
+			mathInput.value = '';
+			mathInput.removeAttribute( 'required' );
+		}
+
+		startTimers();
+		return { applied: true, solved: true };
+	};
+
 	const refresh = ( force ) => {
 		if ( refreshing ) {
 			return refreshing;
@@ -1535,55 +1695,8 @@ function setupSpamChallengeBlock( block ) {
 				if ( ! response.ok ) {
 					return false;
 				}
-				const data = await response.json();
-				if ( ! data || typeof data.token !== 'string' || data.token === ''
-					|| typeof data.salt !== 'string' || data.salt === '' ) {
-					return false;
-				}
-
-				// Solve the NEW challenge BEFORE swapping it into the DOM.
-				// The old token is still valid and stays submittable for the
-				// 0.2–2s the compute takes, so the form never holds a fresh
-				// token paired with a stale or empty solution — the tiny race
-				// that would otherwise read as a bot signature and drop the
-				// submission on the safety net's silent branch.
-				const gen = ++generation;
-				let solution;
-				try {
-					solution = await solvePoWInWorker( data.salt, data.difficulty )
-						.catch( () => solvePoW( data.salt, data.difficulty ) );
-				} catch {
-					// Could not solve the fresh challenge — leave the current
-					// token in place; the server-side safety net covers an
-					// aged token without losing the visitor's input.
-					return false;
-				}
-				if ( gen !== generation ) {
-					return false; // A newer solve run has taken over.
-				}
-				if ( ! solutionInput ) {
-					return false;
-				}
-
-				// Atomic swap: token, salt/difficulty and the matching
-				// solution land together, with no await in between.
-				if ( ! applyChallengeData( block, data ) ) {
-					return false;
-				}
-				solutionInput.value = String( solution );
-				mintedAt = Date.now();
-
-				// Solved → the math fallback is redundant; take it back off
-				// screen if a slow-device timer had revealed it.
-				block.classList.remove( 'flinkform-form__spam--fallback' );
-				if ( mathRow ) {
-					mathRow.setAttribute( 'hidden', '' );
-				}
-				if ( mathInput ) {
-					mathInput.value = '';
-					mathInput.removeAttribute( 'required' );
-				}
-				return true;
+				const result = await adopt( await response.json() );
+				return result.solved;
 			} catch {
 				return false;
 			} finally {
@@ -1593,29 +1706,211 @@ function setupSpamChallengeBlock( block ) {
 		return refreshing;
 	};
 
-	solve();
+	if ( ! deferred ) {
+		solve();
 
-	// One immediate stale-check covers HTML served old from a cache —
-	// its token can be near (or past) expiry before the first tick.
-	refresh( false );
+		// One immediate stale-check covers HTML served old from a cache —
+		// its token can be near (or past) expiry before the first tick.
+		refresh( false );
+		startTimers();
+	}
 
-	// Background tabs throttle intervals to a crawl, so the timer alone
-	// is not enough: also check when the tab comes back into view and
-	// when the page is restored from the back/forward cache (both are
-	// exactly the "parked for an hour" moments the refresh exists for).
-	setInterval( () => refresh( false ), SPAM_REFRESH_TICK );
-	document.addEventListener( 'visibilitychange', () => {
-		if ( ! document.hidden ) {
-			refresh( false );
+	spamBlockControls.set( block, { refresh, adopt } );
+}
+
+// ---------------------------------------------------------------------
+// Deferred challenge arming (1.14.0)
+//
+// A deferred render carries no nonce, no signed timestamp and no spam
+// challenge — that is what lets the page sit in a full-page cache. This
+// is the code that fills them in, and the contract is simple: no request
+// leaves the browser until the visitor actually touches the form, and no
+// submission leaves the browser before the challenge is in place.
+//
+// Failure is survivable by design. If both transports are unreachable the
+// form is submitted as it stands; the server recognises the deferred
+// marker, keeps everything the visitor typed and asks them to send it
+// again on an inline-rendered page. That is one extra click in a rare
+// failure case, against silently dropping the submission — the failure
+// mode this plugin has been bitten by before.
+// ---------------------------------------------------------------------
+
+function initDeferredChallenges() {
+	document
+		.querySelectorAll( 'form[data-flinkform-challenge="deferred"]' )
+		.forEach( setupDeferredForm );
+}
+
+/**
+ * Fetch a challenge, trying the REST route first and admin-ajax second.
+ *
+ * Two transports because since 1.14.0 this fetch is load-bearing: a site
+ * that walls off /wp-json/ would otherwise have no way to arm a form.
+ *
+ * @param {string[]} urls Candidate endpoints, in order of preference.
+ * @return {Promise<Object|null>} The payload, or null when all transports failed.
+ */
+async function fetchChallenge( urls ) {
+	for ( const url of urls ) {
+		try {
+			const response = await fetch( url, {
+				headers: { Accept: 'application/json' },
+				cache: 'no-store',
+				credentials: 'same-origin',
+			} );
+			if ( ! response.ok ) {
+				continue;
+			}
+			const json = await response.json();
+			// The REST route answers with the payload itself, admin-ajax
+			// wraps it in WordPress's {success, data} envelope.
+			const data = json && json.success === true && json.data ? json.data : json;
+			if ( data && typeof data.nonce === 'string' && typeof data.ts === 'string' ) {
+				return data;
+			}
+		} catch {
+			// Network error, blocked endpoint, non-JSON answer (a security
+			// plugin's HTML challenge page) — try the next transport.
 		}
-	} );
-	window.addEventListener( 'pageshow', ( event ) => {
-		if ( event.persisted ) {
-			refresh( false );
+	}
+
+	return null;
+}
+
+function setupDeferredForm( form ) {
+	const urls = [
+		form.getAttribute( 'data-flinkform-challenge-url' ) || '',
+		form.getAttribute( 'data-flinkform-challenge-fallback-url' ) || '',
+	].filter( Boolean );
+
+	const block = form.querySelector( '.flinkform-form__spam[data-flinkform-spam]' );
+
+	let ready   = false;
+	let pending = null;
+	// Set for the moment we re-dispatch a submit we had held back, so the
+	// gate below lets that one through instead of holding it again.
+	let bypass  = false;
+
+	/**
+	 * Make sure the form carries a usable challenge.
+	 *
+	 * @param {boolean} force Re-arm even if already armed (recovery path).
+	 * @return {Promise<boolean>} Whether the form is armed.
+	 */
+	const ensure = ( force ) => {
+		if ( ready && ! force ) {
+			return Promise.resolve( true );
 		}
+		if ( pending ) {
+			return pending;
+		}
+		if ( urls.length === 0 ) {
+			return Promise.resolve( false );
+		}
+
+		pending = ( async () => {
+			try {
+				const data = await fetchChallenge( urls );
+				if ( ! data ) {
+					return false;
+				}
+
+				// Nonce and timestamp belong to the form and are needed even
+				// when spam protection is switched off for this form.
+				const written = applyFormChallenge( form, data );
+
+				if ( ! block ) {
+					ready = written;
+					return written;
+				}
+
+				const controls = spamBlockControls.get( block );
+				if ( ! controls ) {
+					// The spam block never initialised (a partially loaded
+					// module). Write what we can and let the server's soft
+					// path deal with the missing solution.
+					ready = applyChallengeData( block, data ) && written;
+					return ready;
+				}
+
+				const result = await controls.adopt( data );
+				ready = result.applied && written;
+				return ready;
+			} catch {
+				return false;
+			} finally {
+				pending = null;
+			}
+		} )();
+
+		return pending;
+	};
+
+	// First contact, not page load. A cached page that nobody interacts
+	// with must not cost a PHP request — otherwise the caching win is
+	// handed straight back. focusin covers keyboard and assistive tech,
+	// pointerdown covers taps and clicks, keydown covers a visitor who
+	// tabs in and starts typing before any of the others fire.
+	const arm = () => ensure( false );
+	[ 'focusin', 'pointerdown', 'keydown' ].forEach( ( type ) => {
+		form.addEventListener( type, arm, { once: true, passive: true } );
 	} );
 
-	spamBlockControls.set( block, { refresh } );
+	// The safety net: a submit that beats the arming listeners (password
+	// manager autofill followed by Enter, a script-driven submit) is held
+	// back, armed, and sent again.
+	//
+	// Capture phase, registered last, so the guards that can cancel a
+	// submit outright — field validation and the submit-condition gate —
+	// have already had their say and we never fetch a challenge for a
+	// submission that was never going to leave the page.
+	form.addEventListener(
+		'submit',
+		( event ) => {
+			if ( event.defaultPrevented || bypass || ready ) {
+				return;
+			}
+
+			event.preventDefault();
+
+			const submitter = event.submitter && event.submitter.form === form
+				&& event.submitter.type === 'submit'
+				? event.submitter
+				: undefined;
+
+			// Note the `finally`: whether or not arming worked, the
+			// submission goes out. A failed fetch must not leave the
+			// visitor with a button that does nothing — the server knows
+			// what a deferred submission without a challenge means and
+			// answers with "please send it again", input intact.
+			ensure( false ).finally( () => {
+				bypass = true;
+				try {
+					if ( typeof form.requestSubmit === 'function' ) {
+						// Replays the full listener chain, so the popup
+						// fetch-submit path still gets its turn.
+						form.requestSubmit( submitter );
+					} else if ( form.closest( POPUP_SELECTOR ) ) {
+						submitViaFetch( form );
+					} else {
+						// Prototype call: the form has an input named
+						// "action", which shadows form.submit().
+						HTMLFormElement.prototype.submit.call( form );
+					}
+				} finally {
+					// requestSubmit dispatches synchronously, so the flag
+					// has done its job by the time we get here.
+					bypass = false;
+				}
+			} );
+		},
+		true
+	);
+
+	formChallengeControls.set( form, {
+		ensure,
+		isReady: () => ready,
+	} );
 }
 
 /**

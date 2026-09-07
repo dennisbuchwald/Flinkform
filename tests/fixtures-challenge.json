@@ -1,0 +1,8 @@
+{
+  "token": "eyJ2IjoxLCJmIjoic21va2UtZm9ybSIsInMiOiJzbW9rZXNhbHQiLCJkIjoxMywiZSI6NDEwMjQ0NDgwMCwibiI6InNtb2tlIn0.0000000000000000000000000000000000000000000000000000000000000000",
+  "salt": "c21va2Utc2FsdA",
+  "difficulty": 13,
+  "question": "What is 3 + 4?",
+  "nonce": "smoke-nonce-abc123",
+  "ts": "MTc4ODc5MTM2Mw.smoke-signature"
+}

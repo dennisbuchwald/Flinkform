@@ -29,6 +29,7 @@
 import { JSDOM } from 'jsdom';
 import {
 	applyChallengeData,
+	applyFormChallenge,
 	challengeExpiry,
 	shouldDeferRefresh,
 } from '../src/shared/challenge-refresh.js';
@@ -57,6 +58,7 @@ function formWithBlock( { mathVisible = false, mathValue = '' } = {} ) {
 	const dom = new JSDOM( `<!doctype html><body>
 		<form>
 			<input type="hidden" name="_flinkform_nonce" value="old-nonce" />
+			<input type="hidden" name="flinkform_ts" value="old-ts" />
 			<div class="flinkform-form__spam" data-flinkform-spam="1"
 			     data-flinkform-pow-salt="old-salt"
 			     data-flinkform-pow-difficulty="13"
@@ -81,6 +83,7 @@ const freshData = {
 	difficulty: 14,
 	question: 'What is 3 + 5?',
 	nonce: 'new-nonce',
+	ts: 'new-ts',
 };
 
 // --- applyChallengeData: full swap -------------------------------------
@@ -100,6 +103,43 @@ const freshData = {
 	check( 'apply: solution left for the caller to overwrite atomically', block.querySelector( '[data-flinkform-spam-solution]' ).value === '1234' );
 	check( 'apply: math question swapped', block.querySelector( 'label' ).textContent === 'What is 3 + 5?' );
 	check( 'apply: nonce input updated', form.querySelector( '[name="_flinkform_nonce"]' ).value === 'new-nonce' );
+	check( 'apply: timestamp input updated', form.querySelector( '[name="flinkform_ts"]' ).value === 'new-ts' );
+}
+
+// --- applyFormChallenge: the deferred-render arming path ---------------
+//
+// Since 1.14.0 a cached page ships with an empty nonce and an empty
+// signed timestamp so nothing request-specific sits in the cache file.
+// This is the function that fills them in; if it stops writing either
+// one, every submission from a cached page fails a server-side gate.
+
+{
+	const { form } = formWithBlock();
+	form.querySelector( '[name="_flinkform_nonce"]' ).value = '';
+	form.querySelector( '[name="flinkform_ts"]' ).value = '';
+
+	const ok = applyFormChallenge( form, freshData );
+	check( 'arm: reports success', ok === true );
+	check( 'arm: nonce filled from empty', form.querySelector( '[name="_flinkform_nonce"]' ).value === 'new-nonce' );
+	check( 'arm: timestamp filled from empty', form.querySelector( '[name="flinkform_ts"]' ).value === 'new-ts' );
+}
+
+for ( const [ label, bad ] of [
+	[ 'null payload', null ],
+	[ 'empty nonce and ts', { nonce: '', ts: '' } ],
+	[ 'non-string values', { nonce: 1, ts: 2 } ],
+] ) {
+	const { form } = formWithBlock();
+	const ok = applyFormChallenge( form, bad );
+	check( `arm rejects ${ label }: reports failure`, ok === false );
+	check( `arm rejects ${ label }: nonce untouched`, form.querySelector( '[name="_flinkform_nonce"]' ).value === 'old-nonce' );
+	check( `arm rejects ${ label }: timestamp untouched`, form.querySelector( '[name="flinkform_ts"]' ).value === 'old-ts' );
+}
+
+{
+	// A missing form must not throw — a spam block outside a <form> is a
+	// mis-render, not a crash.
+	check( 'arm: null form is survivable', applyFormChallenge( null, freshData ) === false );
 }
 
 // --- applyChallengeData: typed math answer is cleared with the swap ----
@@ -179,6 +219,33 @@ for ( const [ label, bad ] of [
 	check( 'contract: Renderer emits data-flinkform-refresh-url', renderer.includes( 'data-flinkform-refresh-url' ) );
 	check( 'contract: view.js reads data-flinkform-refresh-url', view.includes( 'data-flinkform-refresh-url' ) );
 	check( 'contract: view.js sends X-Flinkform-Fetch on retry path', view.includes( 'spam_expired' ) );
+
+	// Deferred rendering (1.14.0). Each of these is a two-sided contract
+	// where a rename on one side disables the whole mechanism in silence —
+	// the form would ship without a challenge and never fetch one.
+	const render   = readFileSync( new URL( '../src/form-container/render.php', import.meta.url ), 'utf8' );
+	const endpoint = readFileSync( new URL( '../includes/Spam/RefreshEndpoint.php', import.meta.url ), 'utf8' );
+	const handler  = readFileSync( new URL( '../includes/Submissions/Handler.php', import.meta.url ), 'utf8' );
+
+	check( 'contract: render.php marks deferred forms', render.includes( 'data-flinkform-challenge="deferred"' ) );
+	check( 'contract: view.js selects deferred forms', view.includes( 'form[data-flinkform-challenge="deferred"]' ) );
+	check( 'contract: render.php emits the challenge URL', render.includes( 'data-flinkform-challenge-url' ) );
+	check( 'contract: view.js reads the challenge URL', view.includes( 'data-flinkform-challenge-url' ) );
+	check( 'contract: render.php emits the fallback URL', render.includes( 'data-flinkform-challenge-fallback-url' ) );
+	check( 'contract: view.js reads the fallback URL', view.includes( 'data-flinkform-challenge-fallback-url' ) );
+	check( 'contract: Renderer marks a deferred spam block', renderer.includes( 'data-flinkform-spam-deferred' ) );
+	check( 'contract: view.js reads the deferred spam marker', view.includes( 'data-flinkform-spam-deferred' ) );
+	check( 'contract: endpoint ships the signed timestamp', endpoint.includes( "'ts'" ) );
+	check( 'contract: endpoint ships the submit nonce', endpoint.includes( "'nonce'" ) );
+	check( 'contract: view.js requires both before arming', view.includes( "typeof data.nonce === 'string' && typeof data.ts === 'string'" ) );
+	check( 'contract: handler knows the deferred marker', handler.includes( 'CHALLENGE_FIELD' ) );
+	check( 'contract: handler answers challenge_missing', handler.includes( 'challenge_missing' ) );
+	check( 'contract: view.js recovers from challenge_missing', view.includes( 'challenge_missing' ) );
+
+	// The gate that keeps the caching win: no fetch on page load, only on
+	// first contact. If these listeners disappear, every cached page pays
+	// for a PHP request again and the whole exercise is undone.
+	check( 'contract: arming is bound to first contact', view.includes( "[ 'focusin', 'pointerdown', 'keydown' ]" ) );
 }
 
 if ( failed > 0 ) {

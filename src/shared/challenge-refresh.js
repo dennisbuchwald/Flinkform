@@ -59,6 +59,44 @@ export function shouldDeferRefresh( block ) {
 }
 
 /**
+ * Write the form-level challenge values: submit nonce and signed timestamp.
+ *
+ * Both live on the form, not on the spam block, because a form with spam
+ * protection switched off still needs them — and since 1.14.0 a deferred
+ * render ships them empty so the page can be cached. This is the only
+ * place they are filled in.
+ *
+ * @param {HTMLFormElement} form The form element.
+ * @param {Object}          data Endpoint payload: nonce, ts.
+ * @return {boolean} Whether anything was written.
+ */
+export function applyFormChallenge( form, data ) {
+	if ( ! form || ! data ) {
+		return false;
+	}
+
+	let written = false;
+
+	if ( typeof data.nonce === 'string' && data.nonce !== '' ) {
+		const nonceInput = form.querySelector( 'input[name="_flinkform_nonce"]' );
+		if ( nonceInput ) {
+			nonceInput.value = data.nonce;
+			written = true;
+		}
+	}
+
+	if ( typeof data.ts === 'string' && data.ts !== '' ) {
+		const tsInput = form.querySelector( 'input[name="flinkform_ts"]' );
+		if ( tsInput ) {
+			tsInput.value = data.ts;
+			written = true;
+		}
+	}
+
+	return written;
+}
+
+/**
  * Swap the rendered challenge for freshly issued data.
  *
  * Updates the token input, the PoW parameters the solver reads, the
@@ -108,15 +146,11 @@ export function applyChallengeData( block, data ) {
 		}
 	}
 
-	// The endpoint issues the nonce for the requesting visitor, so a page
-	// older than the nonce lifetime heals along with the token.
-	if ( typeof data.nonce === 'string' && data.nonce !== '' ) {
-		const form = block.closest( 'form' );
-		const nonceInput = form ? form.querySelector( 'input[name="_flinkform_nonce"]' ) : null;
-		if ( nonceInput ) {
-			nonceInput.value = data.nonce;
-		}
-	}
+	// The endpoint issues the nonce and the signed timestamp for the
+	// requesting visitor, so a page older than the nonce lifetime — or one
+	// that never carried either value because it was rendered deferred —
+	// heals along with the token.
+	applyFormChallenge( block.closest( 'form' ), data );
 
 	return true;
 }

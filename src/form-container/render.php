@@ -166,15 +166,19 @@ if ( '' === $form_id ) {
 	return;
 }
 
-// Tell caching plugins not to cache this page. The form embeds a
-// time-limited spam-challenge token (30 min TTL), a WordPress nonce
-// and a signed render timestamp — all of which become invalid when
-// served from a stale full-page cache. DONOTCACHEPAGE is respected
-// by WP Super Cache, W3 Total Cache, LiteSpeed Cache, AccelerateWP,
-// WP Rocket and virtually every other WordPress caching plugin.
-if ( ! defined( 'DONOTCACHEPAGE' ) ) {
-	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Community-standard constant that caching plugins (WP Super Cache, W3TC, LiteSpeed, WP Rocket) look for by exactly this name; a prefixed variant would be ignored by all of them.
-	define( 'DONOTCACHEPAGE', true );
+// How the form's request-specific state (nonce, signed render timestamp,
+// spam challenge) reaches the browser. Until 1.13.x all of it was printed
+// into the HTML, which forced this page out of every full-page cache and
+// cost roughly 0.7 s of TTFB on exactly the pages that are supposed to
+// convert. In deferred mode the markup carries empty placeholders, the
+// browser fetches the real values on first contact with the form, and the
+// page caches like any other. See Spam\RenderMode for the (few) renders
+// that still have to be inline — and only those still mark the page
+// uncacheable.
+$render_mode = \Flinkform\Spam\RenderMode::resolve( $form_id, $attributes, $block );
+$is_deferred = \Flinkform\Spam\RenderMode::DEFERRED === $render_mode;
+if ( ! $is_deferred ) {
+	\Flinkform\Spam\RenderMode::mark_uncacheable();
 }
 
 // Success state: a successful submission redirects back with this query arg
@@ -219,6 +223,12 @@ $wrapper_classes = [
 if ( $is_multi_step && ! $is_success ) {
 	$wrapper_classes[] = 'flinkform-form--multi-step';
 }
+// Deferred renders hide the form itself from visitors without scripting
+// (see style.scss) and show the <noscript> escape hatch below instead —
+// they cannot fetch a challenge, so submitting this markup would fail.
+if ( $is_deferred && ! $is_success ) {
+	$wrapper_classes[] = 'flinkform-form--deferred';
+}
 
 $inline_style_parts = [];
 if ( '' !== $primary_color ) {
@@ -247,6 +257,15 @@ $wrapper_args = [
 	'class'           => implode( ' ', $wrapper_classes ),
 	'data-flinkform-id' => $form_id,
 ];
+// Anchor target for the fragment the Handler's redirects have always
+// appended (#flinkform-form-<uuid>) and that the <noscript> link below
+// uses — it pointed at nothing, so an error redirect dropped the visitor
+// at the top of the page instead of at their half-filled form. Skipped
+// when the author set their own anchor via the block's HTML-anchor
+// support, which owns the id.
+if ( empty( $attributes['anchor'] ) ) {
+	$wrapper_args['id'] = 'flinkform-form-' . $form_id;
+}
 if ( ! empty( $inline_style_parts ) ) {
 	$wrapper_args['style'] = implode( ';', $inline_style_parts ) . ';';
 }
@@ -437,7 +456,12 @@ if ( 1 === $step_count ) {
 // to catch bots that submit a form within microseconds of rendering it. The
 // signature (bound to the form UUID) prevents bots from forging an older
 // timestamp to skip the minimum-fill-time gate.
-$timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
+//
+// Deferred renders leave it empty on purpose. A timestamp baked into a
+// cached HTML file measures the age of the cache entry, not how long this
+// visitor took — the gate it feeds was effectively dead on cached pages.
+// Fetched on first contact instead, it measures real dwell time again.
+$timestamp_token = $is_deferred ? '' : \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attrs is the return value of the WordPress core function get_block_wrapper_attributes(), which returns an already-escaped attribute string. ?>>
 	<form
@@ -450,8 +474,40 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 		<?php if ( $is_multi_step ) : ?>
 			data-wp-on--submit="actions.submitGuard"
 		<?php endif; ?>
+		<?php if ( $is_deferred ) : ?>
+			data-flinkform-challenge="deferred"
+			data-flinkform-challenge-url="<?php echo esc_url( \Flinkform\Spam\RefreshEndpoint::rest_url( $form_id ) ); ?>"
+			data-flinkform-challenge-fallback-url="<?php echo esc_url( \Flinkform\Spam\RefreshEndpoint::ajax_url( $form_id ) ); ?>"
+		<?php endif; ?>
 	>
-		<?php wp_nonce_field( 'flinkform_submit_' . $form_id, '_flinkform_nonce' ); ?>
+		<?php
+		if ( $is_deferred ) {
+			// Empty placeholder, filled by view.js from the challenge
+			// endpoint. wp_nonce_field() is not used here because a real
+			// nonce in cached HTML is the thing we are removing: it is
+			// valid for 12-24 h, and every visitor served the cache file
+			// after that would hit WordPress's "Are you sure you want to
+			// do this?" screen instead of sending their message.
+			echo '<input type="hidden" name="_flinkform_nonce" value="" />';
+			// Kept for parity with wp_nonce_field(): stable per URL, so it
+			// caches cleanly. check_admin_referer() only consults it for
+			// the -1 action, but omitting it would be a silent behaviour
+			// change for anything filtering on the referer.
+			wp_referer_field();
+			// Lets the Handler tell "this form was rendered without a
+			// challenge on purpose" apart from a forged submission. Without
+			// it an empty nonce or timestamp would look like an attack and
+			// be dropped in silence — the failure mode this release is
+			// specifically built to avoid.
+			printf(
+				'<input type="hidden" name="%s" value="%s" />',
+				esc_attr( \Flinkform\Spam\RenderMode::MARKER_FIELD ),
+				esc_attr( \Flinkform\Spam\RenderMode::DEFERRED )
+			);
+		} else {
+			wp_nonce_field( 'flinkform_submit_' . $form_id, '_flinkform_nonce' );
+		}
+		?>
 		<input type="hidden" name="action" value="flinkform_submit" />
 		<input type="hidden" name="flinkform_form_id" value="<?php echo esc_attr( $form_id ); ?>" />
 		<input type="hidden" name="flinkform_post_id" value="<?php echo esc_attr( (string) $source_post_id ); ?>" />
@@ -571,8 +627,15 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 		// submit button so it sits at the bottom of the form, not above
 		// the fields. The Guard façade decides whether to protect.
 		if ( \Flinkform\Spam\Guard::should_protect( $attributes ) ) {
-			echo \Flinkform\Spam\Renderer::render( $form_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Renderer::render() builds a fixed markup string and escapes every dynamic value with esc_attr() at the point of concatenation. It cannot be passed through wp_kses_post(), which strips the input elements the spam challenge relies on.
+			echo \Flinkform\Spam\Renderer::render( $form_id, $render_mode ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Renderer::render() builds a fixed markup string and escapes every dynamic value with esc_attr() at the point of concatenation. It cannot be passed through wp_kses_post(), which strips the input elements the spam challenge relies on.
+		}
 
+		// The marker is needed for two independent jobs, so it is printed
+		// whenever either applies: hiding the math fallback before first
+		// paint (protected forms), and hiding a deferred form from visitors
+		// without scripting so they take the <noscript> route instead of a
+		// form they could never submit.
+		if ( \Flinkform\Spam\Guard::should_protect( $attributes ) || $is_deferred ) {
 			// Mark the document as script-capable so the stylesheet can hide
 			// the math fallback from the very first paint instead of leaving
 			// it on screen until the proof-of-work finishes solving.
@@ -657,6 +720,49 @@ $timestamp_token = \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
 			<?php endif; ?>
 		</div>
 	</form>
+	<?php if ( $is_deferred && ! $is_success ) : ?>
+		<?php
+		// The no-JS escape hatch.
+		//
+		// A deferred form carries no challenge, and fetching one needs
+		// JavaScript — so for a visitor without scripting this markup is a
+		// form that could never be sent. The stylesheet hides it for them
+		// (html:not(.flinkform-js), set by the inline marker above) and
+		// shows this block instead. <noscript> content only renders when
+		// scripting is off, so nobody else ever sees it.
+		//
+		// The link asks for one uncached, fully inline render of the same
+		// page — RenderMode treats the query arg as "must render inline"
+		// and marks that single request uncacheable. From there everything
+		// behaves exactly as it did before 1.14.0: challenge in the markup,
+		// math question instead of proof-of-work, plain POST.
+		//
+		// Chosen over a server-side two-step submit on purpose: that would
+		// have run every no-JS submission through an extra interstitial
+		// round in the most fragile part of the plugin (flash state, nonce,
+		// token burn, idempotency) and would still have needed an uncached
+		// render at the end. This costs one click, in the one path that
+		// already asked the visitor to solve a sum by hand.
+		// Current URL plus the query arg — not get_permalink(), so a form in
+		// a footer template part keeps the visitor on the page they were
+		// actually reading (archives and the front page included).
+		$flinkform_nojs_url = add_query_arg( \Flinkform\Spam\RenderMode::NOJS_QUERY_ARG, $form_id );
+		?>
+		<noscript>
+			<div class="flinkform-form__nojs">
+				<p class="flinkform-form__nojs-text">
+					<?php esc_html_e( 'This form needs one more step without JavaScript.', 'flinkform' ); ?>
+				</p>
+				<a
+					class="flinkform-form__nojs-link"
+					href="<?php echo esc_url( $flinkform_nojs_url . '#flinkform-form-' . $form_id ); ?>"
+					rel="nofollow"
+				>
+					<?php esc_html_e( 'Open the form', 'flinkform' ); ?>
+				</a>
+			</div>
+		</noscript>
+	<?php endif; ?>
 </div>
 <?php
 // Boot scripts — use wp_add_inline_script() instead of raw <script> tags

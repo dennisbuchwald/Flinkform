@@ -3,7 +3,7 @@
  * Plugin Name:       Flinkform
  * Plugin URI:        https://flinkform.de
  * Description:       Contact forms built from native blocks. Multi-step, conditional logic and spam protection without reCAPTCHA. Free, GDPR-compliant, made in Germany.
- * Version:           1.13.3
+ * Version:           1.14.0
  * Requires at least: 6.5
  * Tested up to:      7.1
  * Requires PHP:      8.1
@@ -28,7 +28,7 @@ defined( 'ABSPATH' ) || exit;
  * every subsystem (block registration, asset enqueueing, activation,
  * uninstall) so a version bump or a relocation only ever happens here.
  */
-define( 'FLINKFORM_VERSION', '1.13.3' );
+define( 'FLINKFORM_VERSION', '1.14.0' );
 define( 'FLINKFORM_PLUGIN_FILE', __FILE__ );
 define( 'FLINKFORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FLINKFORM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

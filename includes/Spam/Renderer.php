@@ -65,16 +65,34 @@ final class Renderer {
 	 * Render the spam-challenge block for a form.
 	 *
 	 * @param string $form_id Form UUID.
+	 * @param string $mode    RenderMode::INLINE mints the challenge into the
+	 *                        markup (pre-1.14 behaviour, page uncacheable);
+	 *                        RenderMode::DEFERRED emits placeholders that
+	 *                        view.js fills from the challenge endpoint.
 	 * @return string Already-escaped HTML, safe to echo straight
 	 *                into render.php.
 	 */
-	public static function render( string $form_id ): string {
-		$challenge = Challenge::mint( $form_id );
+	public static function render( string $form_id, string $mode = RenderMode::INLINE ): string {
+		$deferred = RenderMode::DEFERRED === $mode;
 
-		$token    = (string) $challenge['token'];
-		$salt     = (string) ( $challenge['pow']['salt'] ?? '' );
-		$diff     = (int) ( $challenge['pow']['difficulty'] ?? Challenge::POW_DIFFICULTY );
-		$question = (string) ( $challenge['math']['question'] ?? '' );
+		if ( $deferred ) {
+			// Nothing request-specific goes into the markup — every value
+			// below stays empty and view.js fills them from the challenge
+			// endpoint on first contact with the form. A minted token in
+			// the HTML is exactly what kept these pages out of every
+			// full-page cache until 1.14.0.
+			$token    = '';
+			$salt     = '';
+			$diff     = 0;
+			$question = '';
+		} else {
+			$challenge = Challenge::mint( $form_id );
+
+			$token    = (string) $challenge['token'];
+			$salt     = (string) ( $challenge['pow']['salt'] ?? '' );
+			$diff     = (int) ( $challenge['pow']['difficulty'] ?? Challenge::POW_DIFFICULTY );
+			$question = (string) ( $challenge['math']['question'] ?? '' );
+		}
 
 		// data-flinkform-spam wraps the whole block so view.js can
 		// pick it up via a single querySelector per form. The
@@ -84,13 +102,20 @@ final class Renderer {
 		// at the token-refresh REST endpoint (rest_url() so it works
 		// with and without pretty permalinks); view.js re-mints the
 		// challenge from there before the rendered token can expire.
-		$refresh_url = add_query_arg( 'form_id', rawurlencode( $form_id ), rest_url( 'flinkform/v1/challenge' ) );
+		$refresh_url = RefreshEndpoint::rest_url( $form_id );
 
 		$markup  = '<div class="flinkform-form__spam"';
 		$markup .= ' data-flinkform-spam="1"';
 		$markup .= ' data-flinkform-pow-salt="' . esc_attr( $salt ) . '"';
 		$markup .= ' data-flinkform-pow-difficulty="' . esc_attr( (string) $diff ) . '"';
 		$markup .= ' data-flinkform-refresh-url="' . esc_url( $refresh_url ) . '"';
+		$markup .= ' data-flinkform-refresh-fallback-url="' . esc_url( RefreshEndpoint::ajax_url( $form_id ) ) . '"';
+		if ( $deferred ) {
+			// Tells view.js that the values below are placeholders and the
+			// solver must wait for the fetch instead of falling straight
+			// through to the math fallback on an empty salt.
+			$markup .= ' data-flinkform-spam-deferred="1"';
+		}
 		$markup .= '>';
 
 		// Token + solution: always hidden, always present. The
@@ -123,7 +148,16 @@ final class Renderer {
 		// `required` gives JS-off visitors proper inline validation. On the
 		// JS path view.js clears AND removes `required` when it hides this row
 		// after the PoW solves, so a hidden field never blocks submission.
-		$markup .= ' <input type="text" id="' . esc_attr( $math_id ) . '" name="' . esc_attr( self::FIELD_ANSWER ) . '" value="" autocomplete="off" inputmode="numeric" pattern="[0-9]*" size="4" required aria-describedby="' . esc_attr( $hint_id ) . '" />';
+		//
+		// In deferred mode it is omitted entirely: there is no question in
+		// the markup yet, and a hidden `required` control the browser cannot
+		// focus makes it refuse the submit outright. view.js puts `required`
+		// back the moment it actually reveals the row (showFallback), which
+		// is the only state in which answering is expected. JS-off visitors
+		// never see this markup at all — they take the <noscript> route to
+		// an inline render, where the attribute is present as before.
+		$required_attr = $deferred ? '' : ' required';
+		$markup .= ' <input type="text" id="' . esc_attr( $math_id ) . '" name="' . esc_attr( self::FIELD_ANSWER ) . '" value="" autocomplete="off" inputmode="numeric" pattern="[0-9]*" size="4"' . $required_attr . ' aria-describedby="' . esc_attr( $hint_id ) . '" />';
 		$markup .= '<p class="flinkform-form__spam-hint" id="' . esc_attr( $hint_id ) . '">' . esc_html__( 'Spam protection — answer the question above to submit the form.', 'flinkform' ) . '</p>';
 		$markup .= '</div>';
 

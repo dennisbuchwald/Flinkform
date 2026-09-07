@@ -19,6 +19,8 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
     php tests/script-translations-test.php
     php tests/default-strings-test.php
     php tests/asset-version-test.php
+    php tests/render-mode-test.php
+    php tests/deferred-render-test.php
 
 `rule-evaluator-date-test.php` covers the `date_before` / `date_on_or_after`
 operators, including the guards against empty and malformed values.
@@ -122,6 +124,24 @@ risk is output rather than validation: an unknown variant must not reach the
 class attribute, an empty note must not render as a bare coloured strip, and
 the message must be filtered down to inline formatting only.
 
+`render-mode-test.php` and `deferred-render-test.php` cover the 1.14.0
+caching change. `render-mode-test.php` pins the decision — deferred is the
+default, and the four situations that must stay inline (logged-in visitor,
+the no-JS escape hatch, a success/error URL, a visitor holding a flash
+cookie) cannot be overridden by the `flinkform_render_challenge_inline`
+filter, because two of them render one visitor's own input and caching that
+would hand it to the next.
+
+`deferred-render-test.php` is the one to keep an eye on: it renders the real
+`form-container/render.php` and greps the HTML for the four values that used
+to force `DONOTCACHEPAGE` — the signed timestamp, the submit nonce, the spam
+token and the arithmetic question. Each of them fails differently once a
+cache serves the page to someone else (the fill-time gate measures the cache
+entry's age; the nonce expires into WordPress's "Are you sure you want to do
+this?" screen; the token expires; the answer belongs to a salt nobody holds).
+A grep-level assertion is deliberate — it is the same check a person would
+run by viewing source on the live page.
+
 # Frontend smoke tests
 
 ## module-smoke.html
@@ -146,3 +166,36 @@ Run after every build, before every deploy:
 
 Expected on the page/console: `window.__result.loaded === true` and the
 hidden spam-solution input fills with a number within ~1 second.
+
+## deferred-smoke.html
+
+The browser half of the 1.14.0 caching change, against the BUILT module.
+The PHP tests prove the markup ships empty and that the server survives a
+submission without a challenge; neither can prove the part that runs in a
+browser, and that part carries the release:
+
+1. An untouched page must send **no** request. If this breaks, every
+   visitor to a cached page costs a PHP request again and the whole
+   exercise is undone. Measured, not assumed: the page counts fetches.
+2. First contact must arm the form completely — nonce, signed timestamp,
+   token, salt and a solved proof of work. If this breaks, every
+   submission from a cached page fails a server-side gate.
+3. A submit that arrives before arming finished (autofill, then Enter)
+   must be held, armed and replayed. A second form on the page is left
+   deliberately untouched to exercise exactly that path.
+
+The challenge endpoint is the static `fixtures-challenge.json`: the browser
+code only reads fields, so a fixture drives the real code path, and its salt
+is real base64 so the solver does genuine work at production difficulty.
+
+    npm run build
+    python3 -m http.server 8737 &
+    open http://localhost:8737/tests/deferred-smoke.html
+
+Expected: `window.__smoke.failed === 0`.
+
+Note when driving this from a headless or backgrounded browser: a tab
+without window focus fires no focus events, so the page arms the form with
+a synthetic `pointerdown` rather than `focus()`. A `focus()`-based version
+reports a false failure there — it is a property of the environment, not of
+the plugin.
