@@ -101,8 +101,9 @@ msgstr "Formular"
 msgid "Form submissions stored by the Flinkform plugin."
 msgstr "Formulareinsendungen, die vom Flinkform-Plugin gespeichert wurden."
 
+#. Plugin Name of the plugin
 #: includes/Blocks/Registry.php:78 includes/Admin/Menu.php:56
-#: includes/Admin/Menu.php:57
+#: includes/Admin/Menu.php:57 flinkform.php
 msgid "Flinkform"
 msgstr "Flinkform"
 
@@ -1801,33 +1802,28 @@ msgstr "Platzhalter (nur Einzelauswahl)"
 msgid "Allow multiple selections"
 msgstr "Mehrfachauswahl erlauben"
 
-#. Plugin Name of the plugin
-#: flinkform.php
-msgid "Flinkform - Forms for the Block Editor"
-msgstr "Flinkform - Formulare für den Block Editor"
-
 #. Plugin URI of the plugin
 #: flinkform.php
-msgid "https://flinkform.de/"
+msgid "https://flinkform.de"
 msgstr ""
 
 #. Description of the plugin
 #: flinkform.php
 msgid ""
-"Block-native form builder for the WordPress Block Editor — theme.json "
-"styling, conditional logic, Interactivity API."
+"Contact forms built from native blocks. Multi-step, conditional logic and "
+"spam protection without reCAPTCHA. Free, GDPR-compliant, made in Germany."
 msgstr ""
-"Block-nativer Formular-Builder für den WordPress Block Editor: theme.json-"
-"Styling, bedingte Logik, Interactivity API."
+"Kontaktformulare aus nativen Blöcken. Multi-Step, bedingte Logik, Spam-Schutz "
+"ohne reCAPTCHA. Kostenlos, DSGVO-konform, aus Deutschland."
 
 #. Author of the plugin
 #: flinkform.php
-msgid "Dennis Buchwald"
+msgid "dbw media"
 msgstr ""
 
 #. Author URI of the plugin
 #: flinkform.php
-msgid "https://www.dennisbuchwald.de"
+msgid "https://dbw-media.de"
 msgstr ""
 
 #. title of the block flinkform/field-address
