@@ -29,6 +29,7 @@ includes/Bridge/README.md
 # Explicit entries + glob guards so a new dev doc never leaks into the
 # distributed zip (WP.org flags internal specs/prompts inside a plugin).
 /readme.md
+/README-RELEASE.md
 /AUDIT_PROMPT.md
 /*_PROMPT.md
 /PERFORM_*.md

@@ -114,7 +114,12 @@ success "Files synced to SVN trunk"
 if [ -d "$ASSETS_DIR" ]; then
     info "Syncing assets to SVN assets/..."
     mkdir -p "$SVN_PATH/assets"
-    rsync -av --delete "$ASSETS_DIR/" "$SVN_PATH/assets/" || error "Asset sync failed"
+    # .wordpress-org/ also holds working documents (the asset spec, the German
+    # readme prepared for GlotPress). Only the images belong in SVN assets/.
+    rsync -av --delete \
+        --exclude="README.md" \
+        --exclude="readme-de_DE.txt" \
+        "$ASSETS_DIR/" "$SVN_PATH/assets/" || error "Asset sync failed"
     success "Assets synced"
 else
     warning "No .wordpress-org/ directory found, skipping assets"
