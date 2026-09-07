@@ -1,18 +1,44 @@
-=== Flinkform - Forms for the Block Editor ===
+=== Flinkform – GDPR Contact Forms for the Block Editor ===
 Contributors: dbwmediadennis
-Tags: forms, contact form, form builder, conditional logic, block editor
+Tags: contact form, kontaktformular, form builder, dsgvo, block editor
 Requires at least: 6.5
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.1
 Stable tag: 1.13.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Block-native form builder for the WordPress Block Editor — theme.json styling, multi-step forms, conditional logic, Interactivity API.
+Contact forms built from native blocks. Multi-step, conditional logic and spam protection without reCAPTCHA. Free, GDPR-compliant, made in Germany.
 
 == Description ==
 
-Flinkform is a form builder that lives entirely inside the WordPress Block Editor. Forms are composed from native blocks (`block.json` v3), styled through `theme.json` design tokens, and powered by the Interactivity API — no separate admin UI, no shortcodes, no jQuery.
+Flinkform is a form builder that lives entirely inside the WordPress Block Editor. Forms are composed from native blocks (`block.json` v3), styled through `theme.json` design tokens, and powered by the Interactivity API — no separate form builder UI, no shortcodes, no jQuery, under 15 KB of frontend JavaScript (gzipped).
+
+Built in Germany for GDPR-first websites. Das deutschsprachige Kontaktformular-Plugin für den Block-Editor.
+
+= GDPR by design =
+
+No IP logging, no user-agent logging, no tracking, no external services in the free core. Spam protection runs on a honeypot, a signed timing check and a proof-of-work challenge with a no-JavaScript maths fallback — no reCAPTCHA, no hCaptcha, no Cloudflare Turnstile, and therefore no data transfer to US servers. Includes a consent field, retention periods with automatic deletion and integration with the WordPress privacy tools.
+
+= Free, not a trial =
+
+Multi-step forms and conditional logic are in the free core, not behind a paywall:
+
+* Multi-step forms with progress indicator and per-step validation
+* Conditional logic for fields, steps, skipping steps and gating the submit button
+* 14 field types including a dedicated consent field
+* Submissions dashboard inside WordPress with search, filters and read state
+* Email notifications with merge tags, plus an optional confirmation mail
+* Automatic theme.json styling — forms match your theme without extra CSS
+* Built for accessibility: the rendered markup passes axe-core against WCAG 2.1 A/AA with zero violations
+
+= Flinkform Pro =
+
+The optional Pro add-on adds Stripe payments (card, SEPA direct debit, Apple Pay, Google Pay — whichever methods you enable in Stripe), calculation fields, multi-file upload, SMTP delivery, webhooks, newsletter integrations, CSV export and custom CSS. Details and pricing: https://flinkform.de/pro
+
+= Requirements =
+
+WordPress 6.5 or newer, PHP 8.1 or newer, Block Editor (Gutenberg).
 
 = How it works =
 
@@ -21,7 +47,7 @@ Flinkform is a form builder that lives entirely inside the WordPress Block Edito
 * **Modern stack** — WordPress 6.5+, PHP 8.1+, no jQuery, frontend JS under 15 KB gzipped
 * **Multi-step forms** — split long forms into steps with a Page Break block, included in the free core
 * **Conditional logic** — show/hide fields based on user input, included in the free core
-* **WCAG 2.1 AA** — full keyboard navigation, screen-reader compatible, aria-live announcements
+* **Accessible by default** — full keyboard navigation, screen-reader compatible, aria-live announcements
 * **Privacy by design** — no external services, no tracking cookies, no IP tracking — everything stays on your server
 
 = Features (free core) =
@@ -77,9 +103,33 @@ Flinkform is a form builder that lives entirely inside the WordPress Block Edito
 
 == Frequently Asked Questions ==
 
+= Does Flinkform work without reCAPTCHA? =
+
+Yes, and it has no reCAPTCHA integration at all. Spam is filtered by a honeypot field, a signed timing check and a proof-of-work challenge that falls back to a simple maths question when JavaScript is unavailable. No third-party service is contacted, so no visitor data leaves your server.
+
+= Is Flinkform GDPR compliant? =
+
+Flinkform stores submissions in your own WordPress database and contacts no external service in the free core. It logs no IP addresses and no user-agent strings, ships a consent field, supports retention periods with automatic deletion and hooks into the WordPress privacy export and erasure tools (see the Privacy section below for the full detail). Whether your overall setup is compliant still depends on your privacy policy and your mail provider.
+
+= Are multi-step forms really free? =
+
+Yes. Multi-step forms with progress indicator, per-step validation and conditional step skipping are part of the free plugin. Most competitors put this behind a paid tier.
+
+= Do I need a page builder like Elementor or Divi? =
+
+No. Forms are built in the standard WordPress Block Editor from native blocks. No page builder, no shortcodes, no separate form builder UI.
+
+= Can I migrate from Contact Form 7 or WPForms? =
+
+Forms need to be rebuilt in the Block Editor — there is no automatic importer. Rebuilding a typical contact form takes a few minutes because the fields are plain blocks.
+
+= Funktioniert Flinkform auf Deutsch? =
+
+Ja. Die Oberfläche ist auf Deutsch verfügbar — Block-Editor, Admin-Bereich und die Texte im Formular. Die Entwicklung findet in Heilbronn statt, der Support läuft auf Deutsch und Englisch.
+
 = Is Flinkform free? =
 
-Yes. Flinkform is GPLv2-licensed and completely free — including multi-step forms and conditional logic. Everything you need to build and run real forms is in the core.
+Yes. Flinkform is GPLv2-licensed and completely free — including multi-step forms and conditional logic. Everything you need to build and run real forms is in the core. The optional Flinkform Pro add-on is a separate, paid plugin.
 
 = What WordPress version do I need? =
 
@@ -89,9 +139,9 @@ WordPress 6.5 or higher and PHP 8.1 or higher. Flinkform uses modern WordPress A
 
 Yes. Flinkform reads your theme's design tokens from `theme.json` and inherits colours, typography, spacing and border radius automatically. Forms look native on any modern WordPress theme — tested with GeneratePress, Twenty Twenty-Five, Astra and Kadence.
 
-= Does Flinkform support multi-step forms? =
+= How do I build a multi-step form? =
 
-Yes, in the free core. Insert a **Page Break** block between fields to split the form into steps, choose a progress indicator style (bar, dots or numbers), and benefit from per-step validation. Steps can even be skipped conditionally based on earlier answers.
+Insert a **Page Break** block between fields to split the form into steps, choose a progress indicator style (bar, dots or numbers), and benefit from per-step validation. Steps can even be skipped conditionally based on earlier answers.
 
 = How does the spam protection work? =
 
@@ -106,10 +156,6 @@ No external service is contacted. No tracking cookies are set. No personal data 
 = Is Flinkform accessible? =
 
 Accessibility is built in, not bolted on: real label/for pairs, fieldset/legend for groups, errors announced via role="alert" and linked to their fields, focus management and aria-live announcements across multi-step navigation, visible focus rings, prefers-reduced-motion support, and spam protection without a CAPTCHA. The rendered form markup passes automated axe-core checks against WCAG 2.1 A/AA with zero violations, including the validation error state. A formal audit with screen-reader protocols has not been commissioned yet — if you run one, we would love to hear the results. Note that colour choices you make in the editor (and your theme's palette) affect contrast and remain your responsibility.
-
-= Is Flinkform GDPR-compliant? =
-
-Flinkform is designed with privacy by default — see the Privacy section below for the full detail. In short: no IP addresses or user-agent strings are stored, no data ever leaves your server, no external spam service is used, and Flinkform integrates with WordPress's privacy tools for data-subject access and erasure requests.
 
 = My notification emails don't arrive. What can I do? =
 
