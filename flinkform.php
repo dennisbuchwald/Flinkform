@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name:       Flinkform
- * Plugin URI:        https://flinkform.de
- * Description:       Contact forms built from native blocks. Multi-step, conditional logic and spam protection without reCAPTCHA. Free, GDPR-compliant, made in Germany.
- * Version:           1.14.0
+ * Plugin Name:       Flinkform - Forms for the Block Editor
+ * Plugin URI:        https://flinkform.de/
+ * Description:       Block-native form builder for the WordPress Block Editor — theme.json styling, conditional logic, Interactivity API.
+ * Version:           1.14.1
  * Requires at least: 6.5
  * Tested up to:      7.1
  * Requires PHP:      8.1
- * Author:            dbw media
- * Author URI:        https://dbw-media.de
+ * Author:            Dennis Buchwald
+ * Author URI:        https://www.dennisbuchwald.de
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       flinkform
@@ -28,7 +28,7 @@ defined( 'ABSPATH' ) || exit;
  * every subsystem (block registration, asset enqueueing, activation,
  * uninstall) so a version bump or a relocation only ever happens here.
  */
-define( 'FLINKFORM_VERSION', '1.14.0' );
+define( 'FLINKFORM_VERSION', '1.14.1' );
 define( 'FLINKFORM_PLUGIN_FILE', __FILE__ );
 define( 'FLINKFORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FLINKFORM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

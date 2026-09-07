@@ -4,7 +4,7 @@ Tags: contact form, kontaktformular, form builder, dsgvo, block editor
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.14.0
+Stable tag: 1.14.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -181,6 +181,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 6. Forms inherit theme.json styling automatically
 
 == Changelog ==
+
+= 1.14.1 =
+* Fix: restores the plugin name, author and description in the plugin header. 1.14.0 shipped with a shortened name and a changed author by mistake, which is what your Plugins screen showed. No functional change.
 
 = 1.14.0 =
 * Performance: pages with a form can be cached again. Until now every page holding a Flinkform form told caching plugins not to cache it, because the form carried a spam token, a security nonce and a signed render time that are only valid for one request. On a site measured for this release that cost about 0.7 seconds of extra server time on every view of a form page - and those are usually the pages that matter most. Flinkform now loads those values in the background the moment a visitor first touches the form, so the page itself is plain, cacheable HTML.
@@ -403,6 +406,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.14.1 =
+Restores the plugin name and author in the plugin header, which 1.14.0 changed by mistake. No functional change.
 
 = 1.14.0 =
 Pages with a form can be cached again - typically a few hundred milliseconds faster per view, with unchanged spam protection. Clear your page cache after updating.

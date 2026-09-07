@@ -79,9 +79,8 @@ msgstr ""
 msgid "Form submissions stored by the Flinkform plugin."
 msgstr ""
 
-#. Plugin Name of the plugin
 #: includes/Blocks/Registry.php:78 includes/Admin/Menu.php:56
-#: includes/Admin/Menu.php:57 flinkform.php
+#: includes/Admin/Menu.php:57
 msgid "Flinkform"
 msgstr ""
 
@@ -1657,26 +1656,31 @@ msgstr ""
 msgid "Allow multiple selections"
 msgstr ""
 
+#. Plugin Name of the plugin
+#: flinkform.php
+msgid "Flinkform - Forms for the Block Editor"
+msgstr ""
+
 #. Plugin URI of the plugin
 #: flinkform.php
-msgid "https://flinkform.de"
+msgid "https://flinkform.de/"
 msgstr ""
 
 #. Description of the plugin
 #: flinkform.php
 msgid ""
-"Contact forms built from native blocks. Multi-step, conditional logic and "
-"spam protection without reCAPTCHA. Free, GDPR-compliant, made in Germany."
+"Block-native form builder for the WordPress Block Editor — theme.json "
+"styling, conditional logic, Interactivity API."
 msgstr ""
 
 #. Author of the plugin
 #: flinkform.php
-msgid "dbw media"
+msgid "Dennis Buchwald"
 msgstr ""
 
 #. Author URI of the plugin
 #: flinkform.php
-msgid "https://dbw-media.de"
+msgid "https://www.dennisbuchwald.de"
 msgstr ""
 
 #. title of the block flinkform/field-address
