@@ -85,9 +85,28 @@ export function applyFormChallenge( form, data ) {
 		}
 	}
 
+	// The timestamp is WRITE-ONCE, and that is not a detail.
+	//
+	// It records when this visitor reached the form, and the server rejects
+	// anything submitted less than two seconds after it — silently, because
+	// that pattern is a bot. The token has to keep refreshing (it expires
+	// after 30 minutes); the timestamp must not, because it has no upper
+	// bound and nothing to gain from being renewed.
+	//
+	// Overwriting it on every refresh opened a real hole: park a filled-in
+	// form in a background tab for twenty minutes, come back, and the
+	// visibility refresh installs a brand-new timestamp. Click Send within
+	// the next two seconds — which is exactly what someone returning to a
+	// finished form does — and the submission is dropped without a word.
+	// That is the 1.13.0 failure again through a different door.
+	//
+	// So it is only ever filled in when it is empty: on a deferred render,
+	// where the markup ships without one. An inline render already carries
+	// a server-minted timestamp and keeps it, which is precisely how this
+	// behaved before deferred rendering existed.
 	if ( typeof data.ts === 'string' && data.ts !== '' ) {
 		const tsInput = form.querySelector( 'input[name="flinkform_ts"]' );
-		if ( tsInput ) {
+		if ( tsInput && tsInput.value === '' ) {
 			tsInput.value = data.ts;
 			written = true;
 		}

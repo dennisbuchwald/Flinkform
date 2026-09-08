@@ -4,7 +4,7 @@ Tags: contact form, kontaktformular, form builder, dsgvo, block editor
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.14.1
+Stable tag: 1.14.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -181,6 +181,10 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 6. Forms inherit theme.json styling automatically
 
 == Changelog ==
+
+= 1.14.2 =
+* Fix (important): a submission could still be lost in one specific case introduced by 1.14.0. Leave a filled-in form in a background tab for twenty minutes and come back: the automatic token renewal also renewed the signed timestamp, and a submit within the next two seconds — exactly what returning to a finished form looks like — was treated as a bot and dropped silently. The timestamp is now written once, when the visitor reaches the form, and never moved again. The token keeps renewing as before.
+* Fix: the German translation now covers the messages added in 1.14.0. On German sites, the "please send again" message and the no-JavaScript route showed English text. The new Site Health check is translated too.
 
 = 1.14.1 =
 * Fix: restores the plugin name, author and description in the plugin header. 1.14.0 shipped with a shortened name and a changed author by mistake, which is what your Plugins screen showed. No functional change.
@@ -406,6 +410,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.14.2 =
+Important: closes a case where a submission from a long-open tab could still be dropped silently, introduced in 1.14.0. Update if you are on 1.14.0 or 1.14.1.
 
 = 1.14.1 =
 Restores the plugin name and author in the plugin header, which 1.14.0 changed by mistake. No functional change.

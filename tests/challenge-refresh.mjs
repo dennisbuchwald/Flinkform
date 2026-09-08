@@ -103,7 +103,9 @@ const freshData = {
 	check( 'apply: solution left for the caller to overwrite atomically', block.querySelector( '[data-flinkform-spam-solution]' ).value === '1234' );
 	check( 'apply: math question swapped', block.querySelector( 'label' ).textContent === 'What is 3 + 5?' );
 	check( 'apply: nonce input updated', form.querySelector( '[name="_flinkform_nonce"]' ).value === 'new-nonce' );
-	check( 'apply: timestamp input updated', form.querySelector( '[name="flinkform_ts"]' ).value === 'new-ts' );
+	// NOT updated on purpose — see the write-once block further down. A
+	// refresh renews the token and the nonce; the timestamp stays put.
+	check( 'apply: timestamp left alone on a refresh', form.querySelector( '[name="flinkform_ts"]' ).value === 'old-ts' );
 }
 
 // --- applyFormChallenge: the deferred-render arming path ---------------
@@ -140,6 +142,61 @@ for ( const [ label, bad ] of [
 	// A missing form must not throw — a spam block outside a <form> is a
 	// mis-render, not a crash.
 	check( 'arm: null form is survivable', applyFormChallenge( null, freshData ) === false );
+}
+
+// --- The timestamp is write-once, and this is the test that pins it ------
+//
+// The signed timestamp records when the visitor reached the form. The
+// server silently rejects anything sent less than two seconds after it,
+// because that is a bot signature. The token must keep refreshing (30-minute
+// TTL); the timestamp must NOT, because it has no upper bound.
+//
+// Overwriting it on every refresh reopened the 1.13.0 failure by another
+// route: leave a filled-in form in a background tab for twenty minutes, come
+// back, and the visibility refresh installs a fresh timestamp. Clicking Send
+// in the next two seconds — what someone returning to a finished form
+// actually does — got the submission dropped without a message.
+
+{
+	const { block, form } = formWithBlock();
+	const tsInput = form.querySelector( '[name="flinkform_ts"]' );
+
+	// An inline render arrives with a server-minted timestamp.
+	check( 'write-once: starts with the rendered timestamp', tsInput.value === 'old-ts' );
+
+	applyChallengeData( block, { ...freshData, ts: 'refreshed-ts' } );
+	check(
+		'write-once: a token refresh must NOT move the timestamp',
+		tsInput.value === 'old-ts',
+		'a moved timestamp puts the submit back inside the two-second reject window'
+	);
+	check(
+		'write-once: the token still refreshes',
+		block.querySelector( '[name="flinkform_spam_token"]' ).value === 'new-token'
+	);
+	check(
+		'write-once: the nonce still refreshes',
+		form.querySelector( '[name="_flinkform_nonce"]' ).value === 'new-nonce',
+		'the nonce expires after 12-24h and does have to be renewed'
+	);
+}
+
+{
+	// The deferred case: empty markup, so the first arm has to fill it, and
+	// every later refresh has to leave it alone.
+	const { block, form } = formWithBlock();
+	const tsInput = form.querySelector( '[name="flinkform_ts"]' );
+	tsInput.value = '';
+
+	applyFormChallenge( form, { ...freshData, ts: 'first-arm-ts' } );
+	check( 'write-once: the first arm fills an empty timestamp', tsInput.value === 'first-arm-ts' );
+
+	applyFormChallenge( form, { ...freshData, ts: 'second-ts' } );
+	applyChallengeData( block, { ...freshData, ts: 'third-ts' } );
+	check(
+		'write-once: neither a re-arm nor a refresh moves it again',
+		tsInput.value === 'first-arm-ts'
+	);
 }
 
 // --- applyChallengeData: typed math answer is cleared with the swap ----

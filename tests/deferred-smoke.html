@@ -250,6 +250,31 @@
 			submits.get( cold ) === 2,
 			`${ submits.get( cold ) } submit event(s) — expected the held one plus the replay`
 		);
+
+		// --- 7. The 1.11.0 regression: buttons must not stay dead --------
+		// Holding a submit back means calling preventDefault, and 1.11.0
+		// fixed a bug where a cancelled submit left every button disabled
+		// on a page that was never going anywhere. The loading listener
+		// bails on defaultPrevented, but that is worth proving, not
+		// assuming: a form nobody can send twice is as bad as a lost one.
+		const stuck = [ ...document.querySelectorAll( '.flinkform-form__submit' ) ]
+			.filter( ( b ) => b.disabled || b.classList.contains( 'is-loading' ) );
+		check(
+			'no button is left disabled after a held-back submit',
+			stuck.length === 0,
+			`${ stuck.length } button(s) still disabled or spinning`
+		);
+
+		// --- 8. The 1.12.2 regression: no hidden required control --------
+		// A hidden required field makes the browser refuse to submit with
+		// nothing to focus, and the click appears to do nothing at all.
+		const hiddenRequired = [ ...document.querySelectorAll( '[required]' ) ]
+			.filter( ( el ) => el.offsetParent === null );
+		check(
+			'no hidden required control blocks the form',
+			hiddenRequired.length === 0,
+			hiddenRequired.map( ( el ) => el.name ).join( ', ' )
+		);
 	}
 
 	document.getElementById( 'verdict' ).textContent =

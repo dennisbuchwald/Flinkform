@@ -2145,3 +2145,73 @@ msgid ""
 "Your session has expired. Please check your entries and send your message "
 "again."
 msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "Flinkform form pages can be cached"
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "Performance"
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "No published form pages to check"
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "Flinkform did not find a published page containing a form, so there is nothing to measure yet."
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "Could not check whether form pages are cached"
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "Flinkform could not fetch one of its own form pages: %s. This says nothing about your caching — only that this check could not run."
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "Form pages are excluded from the page cache"
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "The page %s tells caching plugins not to cache it. Every visit to it therefore runs the full WordPress stack, which typically costs a few hundred milliseconds of extra server time."
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "Since version 1.14.0 Flinkform itself does not do this any more. Something else on the page does: another plugin, a snippet, or the flinkform_render_challenge_inline filter set to true."
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "Form pages are being cached"
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "The page %1$s was served from a page cache (%2$s). Flinkform loads its spam challenge after the page, so caching and spam protection both work."
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "No page cache detected on form pages"
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "Flinkform found nothing blocking the cache on %s, and no sign that a cache answered either. Either no page caching is active, or your cache skips requests that come from the server itself."
+msgstr ""
+
+#: includes/Admin/CacheHealth.php
+msgid "To check for certain, open a form page in a private browser window twice and look at the end of the page source for your caching plugin's comment."
+msgstr ""
+
+#: includes/Submissions/Handler.php
+msgid "Your form was not ready to send yet. Please check your entries and send your message again."
+msgstr ""
+
+
+
+#: src/form-container/render.php
+msgid "This form needs one more step without JavaScript."
+msgstr ""
+
+#: src/form-container/render.php
+msgid "Open the form"
+msgstr ""

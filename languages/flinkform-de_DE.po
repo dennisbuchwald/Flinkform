@@ -2313,3 +2313,73 @@ msgid ""
 msgstr ""
 "Ihre Sitzung ist abgelaufen. Bitte prüfen Sie Ihre Eingaben und senden Sie "
 "Ihre Nachricht noch einmal ab."
+
+#: includes/Admin/CacheHealth.php
+msgid "Flinkform form pages can be cached"
+msgstr "Formularseiten von Flinkform sind cachebar"
+
+#: includes/Admin/CacheHealth.php
+msgid "Performance"
+msgstr "Performance"
+
+#: includes/Admin/CacheHealth.php
+msgid "No published form pages to check"
+msgstr "Keine veröffentlichten Formularseiten zum Prüfen"
+
+#: includes/Admin/CacheHealth.php
+msgid "Flinkform did not find a published page containing a form, so there is nothing to measure yet."
+msgstr "Flinkform hat keine veröffentlichte Seite mit einem Formular gefunden, es gibt also noch nichts zu messen."
+
+#: includes/Admin/CacheHealth.php
+msgid "Could not check whether form pages are cached"
+msgstr "Konnte nicht prüfen, ob Formularseiten gecacht werden"
+
+#: includes/Admin/CacheHealth.php
+msgid "Flinkform could not fetch one of its own form pages: %s. This says nothing about your caching — only that this check could not run."
+msgstr "Flinkform konnte eine eigene Formularseite nicht abrufen: %s. Das sagt nichts über dein Caching aus, sondern nur, dass diese Prüfung nicht laufen konnte."
+
+#: includes/Admin/CacheHealth.php
+msgid "Form pages are excluded from the page cache"
+msgstr "Formularseiten sind vom Seiten-Cache ausgeschlossen"
+
+#: includes/Admin/CacheHealth.php
+msgid "The page %s tells caching plugins not to cache it. Every visit to it therefore runs the full WordPress stack, which typically costs a few hundred milliseconds of extra server time."
+msgstr "Die Seite %s sagt Caching-Plugins, dass sie nicht gecacht werden soll. Jeder Aufruf durchläuft deshalb den kompletten WordPress-Stack, was üblicherweise ein paar hundert Millisekunden zusätzliche Serverzeit kostet."
+
+#: includes/Admin/CacheHealth.php
+msgid "Since version 1.14.0 Flinkform itself does not do this any more. Something else on the page does: another plugin, a snippet, or the flinkform_render_challenge_inline filter set to true."
+msgstr "Seit Version 1.14.0 macht Flinkform das nicht mehr selbst. Es kommt also von etwas anderem auf der Seite: einem weiteren Plugin, einem Snippet oder dem Filter flinkform_render_challenge_inline, der auf true steht."
+
+#: includes/Admin/CacheHealth.php
+msgid "Form pages are being cached"
+msgstr "Formularseiten werden gecacht"
+
+#: includes/Admin/CacheHealth.php
+msgid "The page %1$s was served from a page cache (%2$s). Flinkform loads its spam challenge after the page, so caching and spam protection both work."
+msgstr "Die Seite %1$s kam aus einem Seiten-Cache (%2$s). Flinkform lädt seinen Spam-Schutz erst nach der Seite, dadurch funktionieren Caching und Spam-Schutz gleichzeitig."
+
+#: includes/Admin/CacheHealth.php
+msgid "No page cache detected on form pages"
+msgstr "Kein Seiten-Cache auf Formularseiten erkennbar"
+
+#: includes/Admin/CacheHealth.php
+msgid "Flinkform found nothing blocking the cache on %s, and no sign that a cache answered either. Either no page caching is active, or your cache skips requests that come from the server itself."
+msgstr "Flinkform hat auf %s nichts gefunden, was den Cache blockiert, aber auch kein Anzeichen, dass ein Cache geantwortet hat. Entweder läuft kein Seiten-Caching, oder dein Cache überspringt Anfragen, die vom Server selbst kommen."
+
+#: includes/Admin/CacheHealth.php
+msgid "To check for certain, open a form page in a private browser window twice and look at the end of the page source for your caching plugin's comment."
+msgstr "Um sicher zu gehen: Öffne eine Formularseite zweimal in einem privaten Browserfenster und sieh dir am Ende des Seitenquelltextes den Kommentar deines Caching-Plugins an."
+
+#: includes/Submissions/Handler.php
+msgid "Your form was not ready to send yet. Please check your entries and send your message again."
+msgstr "Ihr Formular war noch nicht bereit zum Senden. Bitte prüfen Sie Ihre Eingaben und senden Sie Ihre Nachricht erneut."
+
+
+
+#: src/form-container/render.php
+msgid "This form needs one more step without JavaScript."
+msgstr "Dieses Formular braucht ohne JavaScript einen Schritt mehr."
+
+#: src/form-container/render.php
+msgid "Open the form"
+msgstr "Formular öffnen"
