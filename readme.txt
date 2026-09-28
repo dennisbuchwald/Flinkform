@@ -194,6 +194,7 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Fix: German translation of the reply hint in the notification email no longer assumes the sender is a woman.
 * Improvement: a field's error message disappears as soon as the field is corrected, the browser's duplicate error tooltip is gone, and error messages of two forms on the same page no longer get mixed up for screen readers.
 * Improvement: on phones, form fields use at least 16px text, so iOS no longer zooms into the page when a field is tapped.
+* Developer: new filter `flinkform_values_before_visibility` for values the server derives before conditional logic runs (used by Flinkform Pro's calculation field).
 
 = 1.14.2 =
 * Fix (important): a submission could still be lost in one specific case introduced by 1.14.0. Leave a filled-in form in a background tab for twenty minutes and come back: the automatic token renewal also renewed the signed timestamp, and a submit within the next two seconds — exactly what returning to a finished form looks like — was treated as a bot and dropped silently. The timestamp is now written once, when the visitor reaches the form, and never moved again. The token keeps renewing as before.
