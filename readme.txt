@@ -4,7 +4,7 @@ Tags: contact form, form builder, multi step form, kontaktformular, dsgvo
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.14.3
+Stable tag: 1.14.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -196,6 +196,11 @@ WordPress 6.5 or higher and PHP 8.1 or higher. Flinkform uses modern WordPress A
 
 == Changelog ==
 
+= 1.14.4 =
+* Improvement: the block names in the inserter are translated now. On German sites every Flinkform block showed its English name ("Text Field" instead of "Textfeld").
+* Improvement: German now ships in both forms of address. Sites set to "Deutsch" get the informal "du", which matches the language pack WordPress.org will deliver, and sites set to "Deutsch (Sie)" get the formal "Sie" instead of falling back to English.
+* Readme: clearer description, FAQ and screenshot captions, and a Live Preview in the plugin directory.
+
 = 1.14.3 =
 * Fix (important): a submission sent very quickly after the first click into the form was dropped silently and the visitor landed on the homepage. Since 1.14.0 the anti-bot timer starts at the first contact with the form, so clicking into a field, picking an autofill entry and pressing Send within two seconds looked like a bot. The browser now waits out the remaining moment before sending, and should a submission still arrive too early, the visitor gets their filled-in form back with a request to send again.
 * Fix (important): after a successful submission, going back, changing the message and sending again showed the success message without storing the second message. A resend with different content is now always treated as a new submission.
@@ -246,6 +251,9 @@ WordPress 6.5 or higher and PHP 8.1 or higher. Flinkform uses modern WordPress A
 The complete release history is in `changelog.txt`, shipped with the plugin and available at https://github.com/dennisbuchwald/Flinkform/blob/main/changelog.txt
 
 == Upgrade Notice ==
+
+= 1.14.4 =
+German sites: block names are translated and German ships in both "du" and "Sie". Note that "Deutsch" now uses the informal "du", as WordPress.org does.
 
 = 1.14.3 =
 Important: fixes two cases where a submission could be lost (sending within two seconds of the first click, and resending a changed message from the back button). Recommended for everyone on 1.14.x.
