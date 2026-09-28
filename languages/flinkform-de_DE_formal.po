@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flinkform 1.12.0\n"
 "Report-Msgid-Bugs-To: https://flinkform.de/\n"
-"Language: de_DE\n"
+"Language: de_DE_formal\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -56,7 +56,7 @@ msgstr "Flinkform"
 
 #: includes/Spam/Renderer.php:121
 msgid "Spam protection — answer the question above to submit the form."
-msgstr "Spam-Schutz: Beantworte die Frage oben, um das Formular abzusenden."
+msgstr "Spam-Schutz: Beantworten Sie die Frage oben, um das Formular abzusenden."
 
 #. translators: 1: first integer 2-9, 2: second integer 2-9
 #: includes/Spam/Challenge.php:163
@@ -194,7 +194,7 @@ msgstr "(gelöscht)"
 
 #: includes/Admin/SubmissionsPage.php:99
 msgid "You do not have permission to view Flinkform submissions."
-msgstr "Du hast keine Berechtigung, Flinkform-Einsendungen anzuzeigen."
+msgstr "Sie haben keine Berechtigung, Flinkform-Einsendungen anzuzeigen."
 
 #: includes/Admin/SubmissionsPage.php:122 includes/Admin/Menu.php:67 includes/Admin/Menu.php:68 includes/Admin/FormsListTable.php:59
 msgid "Submissions"
@@ -307,7 +307,7 @@ msgstr "Letzte Einsendung"
 
 #: includes/Admin/FormsListTable.php:152
 msgid "No forms found. Add a Flinkform Form block to a page to get started."
-msgstr "Keine Formulare gefunden. Füge einen Flinkform-Formular-Block zu einer Seite hinzu, um loszulegen."
+msgstr "Keine Formulare gefunden. Fügen Sie einen Flinkform-Formular-Block zu einer Seite hinzu, um zu beginnen."
 
 #: includes/Admin/FormsListTable.php:179
 msgid "No explicit title set — falling back to the source page name."
@@ -351,7 +351,7 @@ msgstr "Formular-Index wurde aktualisiert."
 
 #: includes/Admin/FormsPage.php:65
 msgid "You do not have permission to view Flinkform forms."
-msgstr "Du hast keine Berechtigung, Flinkform-Formulare anzuzeigen."
+msgstr "Sie haben keine Berechtigung, Flinkform-Formulare anzuzeigen."
 
 #: includes/Admin/FormsPage.php:85
 msgid "Refresh index"
@@ -363,7 +363,7 @@ msgstr "Formulare suchen"
 
 #: includes/Submissions/Handler.php:104
 msgid "Security check failed. Please go back and try again."
-msgstr "Sicherheitsprüfung fehlgeschlagen. Bitte geh zurück und versuche es erneut."
+msgstr "Sicherheitsprüfung fehlgeschlagen. Bitte gehen Sie zurück und versuchen Sie es erneut."
 
 #: includes/Submissions/Handler.php:105
 msgid "Submission rejected"
@@ -371,19 +371,19 @@ msgstr "Einsendung abgelehnt"
 
 #: includes/Submissions/Handler.php:199
 msgid "Please complete the required selection before submitting."
-msgstr "Bitte triff die erforderliche Auswahl, bevor du das Formular absendest."
+msgstr "Bitte treffen Sie die erforderliche Auswahl, bevor Sie das Formular absenden."
 
 #: includes/Submissions/Handler.php:317
 msgid "Sorry, something went wrong saving your message. Please try again."
-msgstr "Es tut uns leid, beim Speichern deiner Nachricht ist ein Fehler aufgetreten. Bitte versuche es erneut."
+msgstr "Es tut uns leid, beim Speichern Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
 
 #: includes/Submissions/Handler.php:396 src/form-container/render.php:44 src/form-container/edit.js:108
 msgid "Thank you! Your message has been sent successfully."
-msgstr "Vielen Dank! Deine Nachricht wurde erfolgreich gesendet."
+msgstr "Vielen Dank! Ihre Nachricht wurde erfolgreich gesendet."
 
 #: includes/Submissions/Handler.php:556
 msgid "Please agree to continue."
-msgstr "Bitte stimme zu, um fortzufahren."
+msgstr "Bitte stimmen Sie zu, um fortzufahren."
 
 #. translators: %s: field label
 #: includes/Submissions/Handler.php:560
@@ -453,15 +453,15 @@ msgstr "Gesendet von %1$s (%2$s)"
 #. translators: %s: the name the visitor entered.
 #: includes/Notifications/Mailer.php:176
 msgid "New enquiry from %s via your website"
-msgstr "Neue Anfrage von %s über deine Website"
+msgstr "Neue Anfrage von %s über Ihre Website"
 
 #: includes/Notifications/Mailer.php:177
 msgid "New enquiry via your website"
-msgstr "Neue Anfrage über deine Website"
+msgstr "Neue Anfrage über Ihre Website"
 
 #: includes/Notifications/Mailer.php:182
 msgid "You can reply to this email directly — your answer goes straight to the sender."
-msgstr "Du kannst direkt auf diese E-Mail antworten, deine Antwort geht an die Person, die das Formular ausgefüllt hat."
+msgstr "Sie können direkt auf diese E-Mail antworten, Ihre Antwort geht an die Person, die das Formular ausgefüllt hat."
 
 #: includes/Notifications/Mailer.php:433 src/form-container/edit.js:774
 msgid "New submission: {form:title}"
@@ -469,7 +469,7 @@ msgstr "Neue Einsendung: {form:title}"
 
 #: includes/Notifications/Mailer.php:467 src/form-container/edit.js:832
 msgid "We received your submission"
-msgstr "Wir haben deine Einsendung erhalten"
+msgstr "Wir haben Ihre Einsendung erhalten"
 
 #: includes/Notifications/Mailer.php:496
 msgid "A new submission was received:"
@@ -481,7 +481,7 @@ msgstr "Hallo,"
 
 #: includes/Notifications/Mailer.php:530
 msgid "Thanks for your submission. We received the following and will be in touch shortly:"
-msgstr "Vielen Dank für deine Einsendung. Wir haben Folgendes erhalten und melden uns in Kürze bei dir:"
+msgstr "Vielen Dank für Ihre Einsendung. Wir haben Folgendes erhalten und melden uns in Kürze bei Ihnen:"
 
 #: includes/Notifications/MergeTags.php:71
 msgid "Untitled form"
@@ -519,7 +519,7 @@ msgstr "Nur Ziffern und + - / ( ) ."
 
 #: src/field-checkbox/render.php:41 src/field-checkbox/edit.js:46
 msgid "Please select at least one option."
-msgstr "Bitte wähle mindestens eine Option aus."
+msgstr "Bitte wählen Sie mindestens eine Option aus."
 
 #: src/form-container/render.php:37 src/form-container/edit.js:104 src/form-container/edit.js:993
 msgid "Send"
@@ -542,7 +542,7 @@ msgstr "Schritt %d"
 
 #: src/form-container/render.php:449
 msgid "Please check this field."
-msgstr "Bitte prüfe dieses Feld."
+msgstr "Bitte prüfen Sie dieses Feld."
 
 #: src/form-container/render.php:463
 msgid "Leave this field empty"
@@ -558,7 +558,7 @@ msgstr "Weiter"
 
 #: src/form-container/render.php:655
 msgid "Please complete the required selection above to enable submission."
-msgstr "Bitte triff oben die erforderliche Auswahl, um das Formular absenden zu können."
+msgstr "Bitte treffen Sie die erforderliche Auswahl oben, um das Formular absenden zu können."
 
 #: src/field-select/render.php:34
 msgid "Please choose …"
@@ -696,7 +696,7 @@ msgstr "Einwilligungstext"
 
 #: src/field-consent/edit.js:42
 msgid "Use {privacy_policy} as placeholder — it will be replaced with a link to your privacy policy page (Settings → Privacy)."
-msgstr "Verwende {privacy_policy} als Platzhalter. Er wird durch einen Link zu deiner Datenschutzseite ersetzt (Einstellungen → Datenschutz)."
+msgstr "Verwenden Sie {privacy_policy} als Platzhalter. Er wird durch einen Link zu Ihrer Datenschutzseite ersetzt (Einstellungen → Datenschutz)."
 
 #. #-#-#-#-#  extra.pot  #-#-#-#-#
 #. title of the block flinkform/page-break
@@ -830,7 +830,7 @@ msgstr "Nur anzeigen, wenn die unten stehenden Regeln zutreffen. Ausgeblendete F
 
 #: src/shared/conditional-logic-panel.js:254
 msgid "Add at least one other field block to the form to use conditional logic."
-msgstr "Füge dem Formular mindestens einen weiteren Feldblock hinzu, um die bedingte Logik zu nutzen."
+msgstr "Fügen Sie dem Formular mindestens einen weiteren Feldblock hinzu, um die bedingte Logik zu nutzen."
 
 #: src/shared/conditional-logic-panel.js:259
 msgid "Match"
@@ -854,7 +854,7 @@ msgstr "+ Gruppe hinzufügen"
 
 #: src/shared/conditional-logic-panel.js:311
 msgid "A group is evaluated on its own ALL/ANY and then counts as a single rule here — that is how you express “(A or B) and C”."
-msgstr "Eine Gruppe wird nach ihrer eigenen Verknüpfung ausgewertet und zählt hier dann wie eine einzelne Regel. So drückst du „(A oder B) und C\" aus."
+msgstr "Eine Gruppe wird nach ihrer eigenen Verknüpfung ausgewertet und zählt hier dann wie eine einzelne Regel. So drücken Sie „(A oder B) und C“ aus."
 
 #: src/shared/conditional-logic-panel.js:368
 msgid "Match within group"
@@ -930,7 +930,7 @@ msgstr "Regel entfernen"
 
 #: src/shared/options-editor.js:63
 msgid "No options yet — add the first one below."
-msgstr "Noch keine Optionen. Füge unten die erste hinzu."
+msgstr "Noch keine Optionen. Fügen Sie unten die erste hinzu."
 
 #: src/shared/options-editor.js:96
 msgid "Move up"
@@ -988,7 +988,7 @@ msgstr "Diesen Hinweis nur anzeigen, wenn die Regeln unten zutreffen, zum Beispi
 
 #: src/notice/edit.js:71
 msgid "Write your note…"
-msgstr "Deinen Hinweis schreiben…"
+msgstr "Ihren Hinweis schreiben…"
 
 #: src/section-heading/edit.js:18
 msgid "Heading level"
@@ -996,7 +996,7 @@ msgstr "Überschriftenebene"
 
 #: src/section-heading/edit.js:19
 msgid "Pick the level that keeps your page’s heading order correct (H1 belongs to the page)."
-msgstr "Wähle die Ebene, die die Überschriften-Reihenfolge deiner Seite korrekt hält (H1 gehört zur Seite)."
+msgstr "Wählen Sie die Ebene, die die Überschriften-Reihenfolge Ihrer Seite korrekt hält (H1 gehört zur Seite)."
 
 #: src/section-heading/edit.js:33
 msgid "Description"
@@ -1092,7 +1092,7 @@ msgstr "Weiterleitungs-URL"
 
 #: src/form-container/edit.js:492
 msgid "Same-origin only. Enter a path (/danke) or a full URL on this site. External URLs are silently rejected by the safe-redirect filter — operators who need cross-domain thank-you pages get a site-wide opt-in toggle in a later release."
-msgstr "Nur gleiche Domain. Gib einen Pfad (/danke) oder eine vollständige URL dieser Website ein. Externe URLs werden vom Sicherheitsfilter still verworfen. Betreiber, die domainübergreifende Dankesseiten benötigen, erhalten in einer späteren Version eine websiteweite Opt-in-Option."
+msgstr "Nur gleiche Domain. Geben Sie einen Pfad (/danke) oder eine vollständige URL dieser Website ein. Externe URLs werden vom Sicherheitsfilter still verworfen. Betreiber, die domainübergreifende Dankesseiten benötigen, erhalten in einer späteren Version eine websiteweite Opt-in-Option."
 
 #: src/form-container/edit.js:500
 msgid "https://example.com/danke"
@@ -1320,7 +1320,7 @@ msgstr "Absender (Name)"
 
 #: src/form-container/edit.js:723
 msgid "Shown as the sender of both emails below. Leave empty to keep what WordPress or your SMTP plugin uses."
-msgstr "Erscheint als Absender beider unten stehenden E-Mails. Leer lassen, um es bei WordPress oder deinem SMTP-Plugin zu belassen."
+msgstr "Erscheint als Absender beider unten stehenden E-Mails. Leer lassen, um es bei WordPress oder Ihrem SMTP-Plugin zu belassen."
 
 #: src/form-container/edit.js:730
 msgid "Send from (address)"
@@ -1333,7 +1333,7 @@ msgstr "Eine Adresse auf der eigenen Domain dieser Website verwenden. Leer lasse
 #. translators: 1: domain of the sender address, 2: the website's own domain.
 #: src/form-container/edit.js:743
 msgid "The sender address is on %1$s, but this website is %2$s. Your server is not authorised to send as %1$s, so these emails will likely fail SPF and land in spam. Send from your own domain and put the other address in a Reply-To field instead."
-msgstr "Die Absenderadresse liegt auf %1$s, diese Website ist aber %2$s. Dein Server ist nicht berechtigt, als %1$s zu senden. Diese E-Mails werden deshalb voraussichtlich an SPF scheitern und im Spam landen. Sende von deiner eigenen Domain und trage die andere Adresse stattdessen unter Antwort an ein."
+msgstr "Die Absenderadresse liegt auf %1$s, diese Website ist aber %2$s. Ihr Server ist nicht berechtigt, als %1$s zu senden. Diese E-Mails werden deshalb voraussichtlich an SPF scheitern und im Spam landen. Senden Sie von Ihrer eigenen Domain und tragen Sie die andere Adresse stattdessen unter Antwort an ein."
 
 #: src/form-container/edit.js:753
 msgid "Send admin notification"
@@ -1389,7 +1389,7 @@ msgstr "Eine Kopie der Einsendung per E-Mail an die Person zurückschicken, die 
 
 #: src/form-container/edit.js:811
 msgid "Add an email field to this form to enable submitter confirmations."
-msgstr "Füge diesem Formular ein E-Mail-Feld hinzu, um Einsender-Bestätigungen zu aktivieren."
+msgstr "Fügen Sie diesem Formular ein E-Mail-Feld hinzu, um Einsender-Bestätigungen zu aktivieren."
 
 #: src/form-container/edit.js:817
 msgid "Email field"
@@ -1409,7 +1409,7 @@ msgstr "Automatisch generierte Danksagung mit den eingesendeten Werten"
 
 #: src/form-container/edit.js:848
 msgid "Where a reply from the submitter should go. Useful when the form sends from the website address but you read your mail somewhere else. Leave empty to reply to the sender address."
-msgstr "Wohin eine Antwort des Absenders gehen soll. Praktisch, wenn das Formular von der Website-Adresse sendet, du deine Mails aber woanders liest. Leer lassen, um Antworten an die Absenderadresse gehen zu lassen."
+msgstr "Wohin eine Antwort des Absenders gehen soll. Praktisch, wenn das Formular von der Website-Adresse sendet, Sie Ihre Mails aber woanders lesen. Leer lassen, um Antworten an die Absenderadresse gehen zu lassen."
 
 #: src/form-container/edit.js:865
 msgid "Submit Condition"
@@ -1803,7 +1803,7 @@ msgstr "Flinkform-Formular"
 #. description of the block flinkform/form
 #: src/form-container/block.json
 msgid "A form container. Add field blocks inside to build your form."
-msgstr "Ein Formular-Container. Füge Feldblöcke hinzu, um dein Formular zu erstellen."
+msgstr "Ein Formular-Container. Fügen Sie Feldblöcke hinzu, um Ihr Formular zu erstellen."
 
 #. keyword of the block flinkform/form
 #: src/form-container/block.json
@@ -1917,15 +1917,15 @@ msgstr "abschnitt"
 
 #: includes/Submissions/Handler.php:207
 msgid "The spam-check answer was not correct. Please try again."
-msgstr "Die Antwort auf die Spam-Schutz-Frage war nicht richtig. Bitte versuche es noch einmal."
+msgstr "Die Antwort auf die Spam-Schutz-Frage war nicht richtig. Bitte versuchen Sie es noch einmal."
 
 #: includes/Submissions/Handler.php:211
 msgid "Your session has expired. Please reload the page and send your message again."
-msgstr "Deine Sitzung ist abgelaufen. Bitte lade die Seite neu und sende deine Nachricht noch einmal ab."
+msgstr "Ihre Sitzung ist abgelaufen. Bitte laden Sie die Seite neu und senden Sie Ihre Nachricht noch einmal ab."
 
 #: includes/Submissions/Handler.php:213
 msgid "Your session has expired. Please check your entries and send your message again."
-msgstr "Deine Sitzung ist abgelaufen. Bitte prüfe deine Eingaben und sende deine Nachricht noch einmal ab."
+msgstr "Ihre Sitzung ist abgelaufen. Bitte prüfen Sie Ihre Eingaben und senden Sie Ihre Nachricht noch einmal ab."
 
 #: includes/Admin/CacheHealth.php
 msgid "Flinkform form pages can be cached"
@@ -1949,7 +1949,7 @@ msgstr "Konnte nicht prüfen, ob Formularseiten gecacht werden"
 
 #: includes/Admin/CacheHealth.php
 msgid "Flinkform could not fetch one of its own form pages: %s. This says nothing about your caching — only that this check could not run."
-msgstr "Flinkform konnte eine eigene Formularseite nicht abrufen: %s. Das sagt nichts über dein Caching aus, sondern nur, dass diese Prüfung nicht laufen konnte."
+msgstr "Flinkform konnte eine eigene Formularseite nicht abrufen: %s. Das sagt nichts über Ihr Caching aus, sondern nur, dass diese Prüfung nicht laufen konnte."
 
 #: includes/Admin/CacheHealth.php
 msgid "Form pages are excluded from the page cache"
@@ -1977,15 +1977,15 @@ msgstr "Kein Seiten-Cache auf Formularseiten erkennbar"
 
 #: includes/Admin/CacheHealth.php
 msgid "Flinkform found nothing blocking the cache on %s, and no sign that a cache answered either. Either no page caching is active, or your cache skips requests that come from the server itself."
-msgstr "Flinkform hat auf %s nichts gefunden, was den Cache blockiert, aber auch kein Anzeichen, dass ein Cache geantwortet hat. Entweder läuft kein Seiten-Caching, oder dein Cache überspringt Anfragen, die vom Server selbst kommen."
+msgstr "Flinkform hat auf %s nichts gefunden, was den Cache blockiert, aber auch kein Anzeichen, dass ein Cache geantwortet hat. Entweder läuft kein Seiten-Caching, oder Ihr Cache überspringt Anfragen, die vom Server selbst kommen."
 
 #: includes/Admin/CacheHealth.php
 msgid "To check for certain, open a form page in a private browser window twice and look at the end of the page source for your caching plugin's comment."
-msgstr "Um sicher zu gehen: Öffne eine Formularseite zweimal in einem privaten Browserfenster und sieh dir am Ende des Seitenquelltextes den Kommentar deines Caching-Plugins an."
+msgstr "Um sicher zu gehen: Öffnen Sie eine Formularseite zweimal in einem privaten Browserfenster und sehen Sie sich am Ende des Seitenquelltextes den Kommentar Ihres Caching-Plugins an."
 
 #: includes/Submissions/Handler.php
 msgid "Your form was not ready to send yet. Please check your entries and send your message again."
-msgstr "Dein Formular war noch nicht bereit zum Senden. Bitte prüfe deine Eingaben und sende deine Nachricht erneut."
+msgstr "Ihr Formular war noch nicht bereit zum Senden. Bitte prüfen Sie Ihre Eingaben und senden Sie Ihre Nachricht erneut."
 
 #: src/form-container/render.php
 msgid "This form needs one more step without JavaScript."
@@ -2261,7 +2261,7 @@ msgstr "Flinkform-Formular"
 
 msgctxt "block description"
 msgid "A form container. Add field blocks inside to build your form."
-msgstr "Ein Formular-Container. Füge Feldblöcke hinzu, um dein Formular zu erstellen."
+msgstr "Ein Formular-Container. Fügen Sie Feldblöcke hinzu, um Ihr Formular zu erstellen."
 
 msgctxt "block keyword"
 msgid "form"
