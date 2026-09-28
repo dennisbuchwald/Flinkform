@@ -83,6 +83,15 @@ info "Creating production build..."
 npm run build || error "Build failed"
 success "Production build created"
 
+# --- Tests ------------------------------------------------------------------
+# After the build on purpose: some tests read the built files (script
+# translations, asset versions). A release never leaves with a red test —
+# every submission-losing bug so far would have been caught by one.
+info "Running the test suite..."
+tests/run.sh || error "Tests failed — fix them before releasing"
+success "All tests passed"
+warning "Browser smoke tests are manual: tests/module-smoke.html + tests/deferred-smoke.html (see their headers)"
+
 # --- SVN update ------------------------------------------------------------
 info "Updating SVN working copy..."
 svn update "$SVN_PATH" || error "SVN update failed"

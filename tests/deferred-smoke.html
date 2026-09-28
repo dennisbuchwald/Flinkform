@@ -122,6 +122,46 @@
 	</form>
 </div>
 
+<!-- A third form for the minimum fill time (1.14.3): touched, then sent
+     inside two seconds — a click into a field, an autofill pick, Send. The
+     server rejects a timestamp younger than two seconds, so the gate must
+     hold this submit and send it exactly once when the time is up. -->
+<div class="flinkform-form flinkform-form--deferred" id="flinkform-form-smoke-form-3" data-flinkform-id="smoke-form-3">
+	<form
+		class="flinkform-form__form"
+		method="post"
+		action="/wp-admin/admin-post.php"
+		novalidate
+		data-flinkform-challenge="deferred"
+		data-flinkform-challenge-url="./fixtures-challenge.json"
+		data-flinkform-challenge-fallback-url="./fixtures-challenge.json"
+	>
+		<input type="hidden" name="_flinkform_nonce" value="">
+		<input type="hidden" name="action" value="flinkform_submit">
+		<input type="hidden" name="flinkform_form_id" value="smoke-form-3">
+		<input type="hidden" name="flinkform_ts" value="">
+		<input type="hidden" name="flinkform_challenge" value="deferred">
+
+		<label>Name <input type="text" name="flinkform_field_name" id="probe-fast"></label>
+
+		<div class="flinkform-form__spam" data-flinkform-spam="1"
+		     data-flinkform-pow-salt=""
+		     data-flinkform-pow-difficulty="0"
+		     data-flinkform-refresh-url="./fixtures-challenge.json"
+		     data-flinkform-refresh-fallback-url="./fixtures-challenge.json"
+		     data-flinkform-spam-deferred="1">
+			<input type="hidden" name="flinkform_spam_token" value="">
+			<input type="hidden" name="flinkform_spam_solution" value="" data-flinkform-spam-solution>
+			<div class="flinkform-form__spam-math" data-flinkform-spam-math>
+				<label for="m3"></label>
+				<input type="text" id="m3" name="flinkform_spam_answer" value="" size="4">
+			</div>
+		</div>
+
+		<button type="submit" class="flinkform-form__submit">Send</button>
+	</form>
+</div>
+
 <script type="module">
 	const log      = document.getElementById( 'log' );
 	const smoke    = { passed: 0, failed: 0, loaded: false, error: null };
@@ -149,13 +189,14 @@
 	const forms = document.querySelectorAll( 'form' );
 	const form  = forms[ 0 ];
 	const cold  = forms[ 1 ];
+	const fast  = forms[ 2 ];
 	const val   = ( target, name ) => target.querySelector( `[name="${ name }"]` ).value;
 	const sleep = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) );
 
 	// Intercept the submits so the page does not navigate away mid-test.
 	// Bubble phase, so the plugin's capture-phase gate still runs first —
 	// exactly the ordering it has on a real page.
-	const submits = new Map( [ [ form, 0 ], [ cold, 0 ] ] );
+	const submits = new Map( [ [ form, 0 ], [ cold, 0 ], [ fast, 0 ] ] );
 	forms.forEach( ( f ) => {
 		f.addEventListener( 'submit', ( event ) => {
 			event.preventDefault();
@@ -235,7 +276,8 @@
 		// submit, arm the form and send it again rather than letting it
 		// leave without a challenge.
 		cold.querySelector( 'button[type="submit"]' ).click();
-		await sleep( 3000 );
+		// Arming plus the minimum fill time (MIN_FILL_MS) before the replay.
+		await sleep( 3500 );
 
 		check( 'a cold submit arms the form', fetches === 2, `saw ${ fetches } request(s)` );
 		check( 'cold form: nonce filled by the gate', val( cold, '_flinkform_nonce' ) === 'smoke-nonce-abc123' );
@@ -275,6 +317,34 @@
 			hiddenRequired.length === 0,
 			hiddenRequired.map( ( el ) => el.name ).join( ', ' )
 		);
+
+		// --- 9. Minimum fill time (1.14.3) -------------------------------
+		// Touch, then Send after 300 ms, then a nervous second click. The
+		// server would silently drop this if it left now (the timestamp is
+		// younger than two seconds): it must wait, and go out exactly once.
+		const fastButton = fast.querySelector( 'button[type="submit"]' );
+		document.getElementById( 'probe-fast' ).dispatchEvent(
+			new PointerEvent( 'pointerdown', { bubbles: true } )
+		);
+		await sleep( 300 );
+		fastButton.click();
+		await sleep( 200 );
+		fastButton.click();
+		await sleep( 500 );
+
+		check( 'sent inside 2 s: held, not sent yet', submits.get( fast ) === 2, `${ submits.get( fast ) } submit event(s) — expected the two held clicks only` );
+		check(
+			'sent inside 2 s: the button shows it is working, without being disabled',
+			fastButton.classList.contains( 'is-loading' ) && ! fastButton.disabled
+		);
+
+		await sleep( 2500 );
+		check(
+			'sent inside 2 s: sent exactly once when the time is up',
+			submits.get( fast ) === 3,
+			`${ submits.get( fast ) } submit event(s) — expected two held clicks plus one replay`
+		);
+		check( 'sent inside 2 s: button released after the replay', ! fastButton.classList.contains( 'is-loading' ) );
 	}
 
 	document.getElementById( 'verdict' ).textContent =

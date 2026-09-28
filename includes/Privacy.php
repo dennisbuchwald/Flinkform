@@ -108,7 +108,8 @@ final class Privacy {
 	 */
 	public static function export_personal_data( string $email_address, int $page = 1 ): array {
 		$per_page    = 50;
-		$submissions = self::find_by_email( $email_address, $page, $per_page );
+		$result      = self::query_by_email( $email_address, max( 0, ( $page - 1 ) * $per_page ), $per_page );
+		$submissions = $result['matches'];
 		$export_data = [];
 
 		foreach ( $submissions as $submission ) {
@@ -151,9 +152,13 @@ final class Privacy {
 			];
 		}
 
+		// "Done" is decided by the raw page, not by the filtered matches: a
+		// single LIKE hit that turns out not to be this address (a longer
+		// address containing it) would otherwise end the export early and
+		// leave the remaining pages unexported.
 		return [
 			'data' => $export_data,
-			'done' => count( $submissions ) < $per_page,
+			'done' => $result['raw'] < $per_page,
 		];
 	}
 
@@ -165,23 +170,32 @@ final class Privacy {
 	 * @return array{items_removed: int, items_retained: int, messages: list<string>, done: bool}
 	 */
 	public static function erase_personal_data( string $email_address, int $page = 1 ): array {
-		$per_page    = 50;
-		$submissions = self::find_by_email( $email_address, $page, $per_page );
+		unset( $page );
 
+		// Walk every LIKE hit with an id cursor and erase the real matches in
+		// one call. Offset paging does not survive deleting as you go (page 2
+		// starts after rows that moved up into page 1), and a filtered count
+		// below the page size is not the end of the table either. One data
+		// subject's submissions are a small set, so a single pass is fine.
+		$batch   = 200;
+		$after   = 0;
 		$removed = 0;
+		$repo    = new Submissions\Repository();
 
-		if ( ! empty( $submissions ) ) {
-			$ids = array_map( fn( array $s ): int => $s['id'], $submissions );
-
-			$repo    = new Submissions\Repository();
-			$removed = $repo->delete_many( $ids );
-		}
+		do {
+			$result = self::query_by_email( $email_address, 0, $batch, $after );
+			$ids    = array_map( static fn( array $s ): int => $s['id'], $result['matches'] );
+			if ( ! empty( $ids ) ) {
+				$removed += (int) $repo->delete_many( $ids );
+			}
+			$after = $result['last_id'];
+		} while ( $result['raw'] >= $batch && $after > 0 );
 
 		return [
 			'items_removed'  => $removed,
 			'items_retained' => 0,
 			'messages'       => [],
-			'done'           => count( $submissions ) < $per_page,
+			'done'           => true,
 		];
 	}
 
@@ -209,8 +223,7 @@ final class Privacy {
 
 	/**
 	 * Find submissions whose JSON `data` column contains the given
-	 * email address. Uses a LIKE query against the serialised JSON —
-	 * pragmatic for the data volumes Flinkform targets.
+	 * email address (one page, filtered to real matches).
 	 *
 	 * @param string $email    Email address to search for.
 	 * @param int    $page     Page (1-based).
@@ -218,29 +231,57 @@ final class Privacy {
 	 * @return list<array{id: int, form_id: string, data: array<string, mixed>, created_at: string, status: string}>
 	 */
 	private static function find_by_email( string $email, int $page, int $per_page ): array {
+		return self::query_by_email( $email, max( 0, ( $page - 1 ) * $per_page ), $per_page )['matches'];
+	}
+
+	/**
+	 * Run the LIKE query against the serialised JSON and keep the rows whose
+	 * field values really contain the address. Pragmatic for the data
+	 * volumes Flinkform targets.
+	 *
+	 * Returns the raw row count next to the filtered matches: callers that
+	 * page through the table must decide "done" on the raw count, because a
+	 * substring false positive shrinks the filtered list without meaning the
+	 * table is exhausted.
+	 *
+	 * @param string $email    Email address to search for.
+	 * @param int    $offset   Rows to skip (offset paging).
+	 * @param int    $limit    Rows to read.
+	 * @param int    $after_id Only rows with a higher id (cursor paging); 0 = off.
+	 * @return array{matches: list<array{id: int, form_id: string, data: array<string, mixed>, created_at: string, status: string}>, raw: int, last_id: int}
+	 */
+	private static function query_by_email( string $email, int $offset, int $limit, int $after_id = 0 ): array {
 		global $wpdb;
 
-		$table  = Schema::table_name();
-		$offset = max( 0, ( $page - 1 ) * $per_page );
+		$table = Schema::table_name();
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom submissions table; only the controlled table name is interpolated, the email is prepared + esc_like'd, this is a rare on-demand GDPR query.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, form_id, data, created_at, status FROM {$table} WHERE data LIKE %s ORDER BY id ASC LIMIT %d OFFSET %d",
+				"SELECT id, form_id, data, created_at, status FROM {$table} WHERE data LIKE %s AND id > %d ORDER BY id ASC LIMIT %d OFFSET %d",
 				'%' . $wpdb->esc_like( $email ) . '%',
-				$per_page,
-				$offset
+				max( 0, $after_id ),
+				$limit,
+				max( 0, $offset )
 			),
 			ARRAY_A
 		);
 		// phpcs:enable
 
-		if ( ! is_array( $rows ) ) {
-			return [];
+		$empty = [
+			'matches' => [],
+			'raw'     => 0,
+			'last_id' => 0,
+		];
+		if ( ! is_array( $rows ) || empty( $rows ) ) {
+			return $empty;
 		}
 
 		$results = [];
+		$last_id = 0;
 		foreach ( $rows as $row ) {
+			$last_id = max( $last_id, (int) ( $row['id'] ?? 0 ) );
+
 			$decoded = json_decode( (string) ( $row['data'] ?? '' ), true );
 			if ( ! is_array( $decoded ) ) {
 				$decoded = [];
@@ -261,7 +302,11 @@ final class Privacy {
 			];
 		}
 
-		return $results;
+		return [
+			'matches' => $results,
+			'raw'     => count( $rows ),
+			'last_id' => $last_id,
+		];
 	}
 
 	/**

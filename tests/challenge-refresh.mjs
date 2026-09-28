@@ -299,6 +299,26 @@ for ( const [ label, bad ] of [
 	check( 'contract: handler answers challenge_missing', handler.includes( 'challenge_missing' ) );
 	check( 'contract: view.js recovers from challenge_missing', view.includes( 'challenge_missing' ) );
 
+	// 1.14.3. The minimum fill time: the server answers a too-young signed
+	// timestamp with too_fast (soft), and the browser both holds a submit
+	// that would arrive too early and recovers from too_fast on the fetch path.
+	check( 'contract: handler answers too_fast', handler.includes( "'too_fast'" ) );
+	check( 'contract: view.js recovers from too_fast', view.includes( "errorCode === 'too_fast'" ) );
+	check( 'contract: view.js holds submits inside the fill time', view.includes( 'MIN_FILL_MS' ) && view.includes( 'fillWait()' ) );
+	check( 'contract: a held submit has an upper time bound', view.includes( 'MAX_HOLD_MS' ) && view.includes( 'Promise.race' ) );
+	check( 'contract: a held submit is dropped when the visible step changed', view.includes( 'heldStep !== visibleStep()' ) );
+	check( 'contract: Enter on a middle step is never held', view.includes( 'submitter && submitter.hidden' ) );
+
+	// 1.14.3. Logged-in visitors: the refresh must run as them, or the guest
+	// nonce it returns replaces theirs and the submit dies with a 403.
+	check( 'contract: Renderer emits the REST nonce attribute', renderer.includes( 'data-flinkform-rest-nonce' ) );
+	check( 'contract: view.js sends it as X-WP-Nonce', view.includes( 'data-flinkform-rest-nonce' ) && view.includes( "'X-WP-Nonce'" ) );
+	check(
+		'contract: the deferred arming fetch never sends X-WP-Nonce',
+		! /async function fetchChallenge[\s\S]*?X-WP-Nonce[\s\S]*?\n}/.test( view.slice( view.indexOf( 'async function fetchChallenge' ), view.indexOf( 'function setupDeferredForm' ) ) ),
+		'a stale X-WP-Nonce from cached HTML is a hard rest_cookie_invalid_nonce 403'
+	);
+
 	// The gate that keeps the caching win: no fetch on page load, only on
 	// first contact. If these listeners disappear, every cached page pays
 	// for a PHP request again and the whole exercise is undone.

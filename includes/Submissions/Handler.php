@@ -50,7 +50,10 @@ final class Handler {
 	 */
 	public const FLASH_COOKIE_NAME = 'flinkform_flash';
 
-	private const IDEM_TTL_SECONDS   = 300;
+	// As long as the spam token lives: a resubmit within that window carries
+	// an already-burnt token and would otherwise be told "session expired".
+	// Safe to keep this long because the key includes the content.
+	private const IDEM_TTL_SECONDS   = 1800;
 
 	/**
 	 * Hidden field marking a form that was rendered in deferred mode.
@@ -159,6 +162,29 @@ final class Handler {
 			);
 		}
 
+		// A deferred render carries a nonce the browser fetched for itself.
+		// When that one does not verify, the page and the visitor disagree
+		// about who is asking: typically a logged-in visitor who was served
+		// a cached page, whose arming fetch ran as a guest. check_admin_referer()
+		// below would end that in core's "link expired" screen with the
+		// message gone. Same reasoning as the branch above: nothing is
+		// stored on the soft path, so it grants nothing, and the retry page
+		// is rendered inline with a nonce for the right user.
+		if ( $deferred && ! wp_verify_nonce( $nonce_raw, 'flinkform_submit_' . $form_id ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- honeypot check on the unverified soft path, see above.
+			$hp = isset( $_POST[ self::HONEYPOT_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::HONEYPOT_FIELD ] ) ) : '';
+			if ( '' !== trim( $hp ) ) {
+				$this->redirect_success( $post_id, $form_id );
+			}
+
+			$this->reject_softly(
+				$form_id,
+				$post_id,
+				__( 'Your form was not ready to send yet. Please check your entries and send your message again.', 'flinkform' ),
+				'challenge_missing'
+			);
+		}
+
 		// Nonce — the only check whose failure we surface as 403, because
 		// it usually means a real human ran into a caching/session issue.
 		if ( ! check_admin_referer( 'flinkform_submit_' . $form_id, self::NONCE_FIELD ) ) {
@@ -183,8 +209,24 @@ final class Handler {
 		// bot cannot forge an aged value to skip the gate; verify() returns
 		// 0 for any tampered, malformed or unsigned token.
 		$ts_decoded = \Flinkform\Spam\Challenge::verify_timestamp( $ts_raw, $form_id );
-		if ( $ts_decoded <= 0 || ( time() - $ts_decoded ) < self::MIN_FILL_SECONDS ) {
+		if ( $ts_decoded <= 0 ) {
 			$this->silent_reject();
+		}
+
+		// Signed by us but younger than the minimum fill time. On a deferred
+		// render the timestamp is issued at first contact, not at page load,
+		// so a visitor who clicks into a field, picks an autofill entry and
+		// hits Send inside two seconds lands here — as does someone who
+		// sends a pre-filled retry page straight away. A person, not a bot:
+		// the timestamp is ours and the honeypot above is empty. Keep what
+		// they typed and ask again; a bot still gets nothing stored.
+		if ( ( time() - $ts_decoded ) < self::MIN_FILL_SECONDS ) {
+			$this->reject_softly(
+				$form_id,
+				$post_id,
+				__( 'Your form was not ready to send yet. Please check your entries and send your message again.', 'flinkform' ),
+				'too_fast'
+			);
 		}
 
 		// Locate the authoritative form definition. Tries the submitting page
@@ -216,7 +258,9 @@ final class Handler {
 		// from the HMAC-verified render timestamp checked above. A failed
 		// first attempt never sets the marker (it is only set once the row
 		// is saved), so a corrected resubmit still goes through.
-		$idem_key   = $this->idempotency_key( $form_id, $ts_raw );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce validated above; only hashed, never stored or output.
+		$idem_fields = isset( $_POST['flinkform_field'] ) && is_array( $_POST['flinkform_field'] ) ? wp_unslash( $_POST['flinkform_field'] ) : [];
+		$idem_key    = $this->idempotency_key( $form_id, $ts_raw, $idem_fields );
 		$idem_prior = get_transient( $idem_key );
 		if ( false !== $idem_prior ) {
 			if ( $this->is_fetch_request() ) {
@@ -438,8 +482,8 @@ final class Handler {
 
 		// Mark this render as processed so an immediate resubmit replays the
 		// success outcome (see the idempotency guard above) instead of
-		// creating a duplicate. Short TTL: it only needs to outlive the
-		// double-click / back-button window, not the whole session.
+		// creating a duplicate. Lives as long as the spam token, so a resend
+		// with an already-burnt token still finds its success outcome.
 		set_transient( $idem_key, $submission_id, self::IDEM_TTL_SECONDS );
 
 		/**
@@ -968,12 +1012,19 @@ final class Handler {
 	 * rendered page but unique per render, so it distinguishes "the same
 	 * submission sent twice" from "a fresh submission of the same form".
 	 *
-	 * @param string $form_id Form UUID.
-	 * @param string $ts_raw  The signed timestamp token posted with the form.
+	 * The submitted values are part of the key. The timestamp alone is not
+	 * enough: the back button restores the page from the bfcache with its
+	 * hidden inputs intact, so a visitor who goes back, changes the message
+	 * and sends again carries the same timestamp — and was answered with
+	 * the success page for a message that was never stored.
+	 *
+	 * @param string               $form_id Form UUID.
+	 * @param string               $ts_raw  The signed timestamp token posted with the form.
+	 * @param array<string, mixed> $fields  Raw submitted field values.
 	 * @return string
 	 */
-	private function idempotency_key( string $form_id, string $ts_raw ): string {
-		return 'flinkform_idem_' . md5( $form_id . '|' . $ts_raw );
+	private function idempotency_key( string $form_id, string $ts_raw, array $fields ): string {
+		return 'flinkform_idem_' . md5( $form_id . '|' . $ts_raw . '|' . md5( (string) wp_json_encode( $fields ) ) );
 	}
 
 	/**
@@ -1016,12 +1067,16 @@ final class Handler {
 			$definition = $this->locator->locate_by_form_id( $form_id, $post_id );
 		}
 
-		$values = [];
-		if ( is_array( $definition ) && ! empty( $definition['fields'] ) ) {
-			[ $values, ] = $this->validate( $definition['fields'] );
-		}
+		// No form definition means there is no form to come back to, and no
+		// reason to let an unauthenticated request write a transient.
+		if ( is_array( $definition ) ) {
+			$values = [];
+			if ( ! empty( $definition['fields'] ) ) {
+				[ $values, ] = $this->validate( $definition['fields'] );
+			}
 
-		$this->flash( $form_id, $errors, $values );
+			$this->flash( $form_id, $errors, $values );
+		}
 
 		// The redirect target carries flinkform_status=error, which makes
 		// RenderMode fall back to an inline render: the retry page arrives

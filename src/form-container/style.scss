@@ -670,6 +670,13 @@
 				outline: 2px solid var(--flinkform-color-primary);
 				outline-offset: 2px;
 			}
+
+			/* iOS zooms the whole page into any field whose text is
+			 * smaller than 16px and does not zoom back out. Themes
+			 * with 14-15px body text triggered it on every tap. */
+			@media (pointer: coarse) {
+				font-size: max(16px, 1em);
+			}
 		}
 
 		&__help {

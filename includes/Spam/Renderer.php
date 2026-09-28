@@ -115,6 +115,15 @@ final class Renderer {
 			// solver must wait for the fetch instead of falling straight
 			// through to the math fallback on an empty salt.
 			$markup .= ' data-flinkform-spam-deferred="1"';
+		} elseif ( is_user_logged_in() ) {
+			// A REST request without X-WP-Nonce runs as a guest, so the
+			// refresh endpoint handed a logged-in visitor a GUEST submit
+			// nonce, which then overwrote their own — and the next submit
+			// died with the 403 screen (any tab open longer than ~20 min).
+			// Only on inline renders, which are never cached: a user nonce
+			// must never sit in HTML someone else could be served, and a
+			// stale X-WP-Nonce would itself turn into a hard 403.
+			$markup .= ' data-flinkform-rest-nonce="' . esc_attr( wp_create_nonce( 'wp_rest' ) ) . '"';
 		}
 		$markup .= '>';
 

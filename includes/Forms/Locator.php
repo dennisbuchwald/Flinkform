@@ -35,6 +35,11 @@ final class Locator {
 	private const CACHE_TTL   = 5 * MINUTE_IN_SECONDS;
 
 	/**
+	 * Transient that throttles the index self-heal on a miss.
+	 */
+	private const HEAL_LOCK = 'flinkform_index_heal';
+
+	/**
 	 * Block name of the form container.
 	 */
 	private const FORM_BLOCK = 'flinkform/form';
@@ -135,12 +140,44 @@ final class Locator {
 			}
 		}
 
-		$record = ( new Indexer() )->find( $form_id );
+		$indexer = new Indexer();
+		$tried   = [ $preferred_post_id => true ];
+
+		$found = $this->locate_in_sources( $indexer->find( $form_id ), $form_id, $tried );
+		if ( null !== $found ) {
+			return $found;
+		}
+
+		// Self-heal once. The index is a cache, and some changes bypass the
+		// hooks that invalidate it: imports, search-replace from the command
+		// line, a database copied between installs. A miss here ends in a
+		// dropped submission, so rebuild and look again before giving up.
+		// Throttled to one rebuild a minute, so requests for forms that
+		// really do not exist cannot turn into a stream of full scans.
+		if ( false === get_transient( self::HEAL_LOCK ) ) {
+			set_transient( self::HEAL_LOCK, 1, MINUTE_IN_SECONDS );
+			$indexer->invalidate();
+			return $this->locate_in_sources( $indexer->find( $form_id ), $form_id, $tried );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Try every source post of an index record that was not tried yet.
+	 *
+	 * @param array<string, mixed>|null $record  Indexer record for the form.
+	 * @param string                    $form_id Form UUID.
+	 * @param array<int, bool>          $tried   Post IDs already tried (updated in place).
+	 * @return array{attributes: array<string, mixed>, fields: array<int, array<string, mixed>>, steps: array<int, array<string, mixed>>}|null
+	 */
+	private function locate_in_sources( ?array $record, string $form_id, array &$tried ): ?array {
 		$sources = is_array( $record ) && isset( $record['sources'] ) && is_array( $record['sources'] ) ? $record['sources'] : [];
 
 		foreach ( $sources as $source ) {
 			$source_id = isset( $source['post_id'] ) ? (int) $source['post_id'] : 0;
-			if ( $source_id > 0 && $source_id !== $preferred_post_id ) {
+			if ( $source_id > 0 && ! isset( $tried[ $source_id ] ) ) {
+				$tried[ $source_id ] = true;
 				$found = $this->locate( $source_id, $form_id );
 				if ( null !== $found ) {
 					return $found;
@@ -154,6 +191,16 @@ final class Locator {
 	public function locate( int $post_id, string $form_id ): ?array {
 		$post = get_post( $post_id );
 		if ( ! $post instanceof \WP_Post ) {
+			return null;
+		}
+
+		// Only a form the visitor can actually see may take submissions.
+		// Without this, any post id worked: a draft, a private page, an old
+		// revision still holding a form the author has since removed — each
+		// with its own notification settings, including the recipient and
+		// sender. Unpublished hosts stay open to whoever may read them, so
+		// the author previewing a draft can still test the form.
+		if ( ! $this->is_visible_to_visitor( $post ) ) {
 			return null;
 		}
 
@@ -188,6 +235,38 @@ final class Locator {
 		wp_cache_set( $cache_key, $result, self::CACHE_GROUP, self::CACHE_TTL );
 
 		return $result;
+	}
+
+	/**
+	 * Whether the current visitor may see the post that hosts a form.
+	 *
+	 * Published posts of any type qualify — pages, template parts, synced
+	 * patterns and theme-builder elements are all "publish". Everything
+	 * else (draft, pending, future, private, revisions, autosaves, trash)
+	 * needs read access, which map_meta_cap resolves per status and, for
+	 * revisions, against the parent.
+	 *
+	 * @param \WP_Post $post Host post.
+	 * @return bool
+	 */
+	private function is_visible_to_visitor( \WP_Post $post ): bool {
+		$visible = ( 'publish' === $post->post_status && 'revision' !== $post->post_type )
+			|| current_user_can( 'read_post', $post->ID );
+
+		/**
+		 * Filter whether a form on this post may take submissions from the
+		 * current visitor.
+		 *
+		 * For setups that show unpublished content to guests on purpose —
+		 * a public preview link for a client, say — and want the form on
+		 * it to work there too.
+		 *
+		 * @since 1.14.3
+		 *
+		 * @param bool     $visible Whether the visitor can see the host post.
+		 * @param \WP_Post $post    The post that holds the form.
+		 */
+		return (bool) apply_filters( 'flinkform_form_host_visible', $visible, $post );
 	}
 
 	/**

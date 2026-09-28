@@ -4,7 +4,7 @@ Tags: contact form, kontaktformular, form builder, dsgvo, block editor
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.14.2
+Stable tag: 1.14.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -181,6 +181,19 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 6. Forms inherit theme.json styling automatically
 
 == Changelog ==
+
+= 1.14.3 =
+* Fix (important): a submission sent very quickly after the first click into the form was dropped silently and the visitor landed on the homepage. Since 1.14.0 the anti-bot timer starts at the first contact with the form, so clicking into a field, picking an autofill entry and pressing Send within two seconds looked like a bot. The browser now waits out the remaining moment before sending, and should a submission still arrive too early, the visitor gets their filled-in form back with a request to send again.
+* Fix (important): after a successful submission, going back, changing the message and sending again showed the success message without storing the second message. A resend with different content is now always treated as a new submission.
+* Fix: logged-in visitors who kept a form open for more than about 20 minutes could get a "security check failed" page on submit. The automatic token renewal now runs as the logged-in user.
+* Fix: forms on drafts, private pages and old revisions no longer accept submissions from visitors who cannot see those pages. Previewing a draft as its author still works.
+* Fix: moving a form to a different page or into a template part could leave submissions pointing at the old place for a few minutes. The form index now notices removals and rebuilds itself once when a form cannot be found.
+* Fix: the personal-data exporter and eraser (Tools → Export/Erase Personal Data) could stop early and miss submissions of a person who had sent more than 50.
+* Fix: conditional rules now compare text the same way in the browser and on the server, including umlauts and trailing spaces from autofill.
+* Fix: the notification email replies to the visitor's email address by default, also for forms that were never opened in the editor.
+* Fix: German translation of the reply hint in the notification email no longer assumes the sender is a woman.
+* Improvement: a field's error message disappears as soon as the field is corrected, the browser's duplicate error tooltip is gone, and error messages of two forms on the same page no longer get mixed up for screen readers.
+* Improvement: on phones, form fields use at least 16px text, so iOS no longer zooms into the page when a field is tapped.
 
 = 1.14.2 =
 * Fix (important): a submission could still be lost in one specific case introduced by 1.14.0. Leave a filled-in form in a background tab for twenty minutes and come back: the automatic token renewal also renewed the signed timestamp, and a submit within the next two seconds — exactly what returning to a finished form looks like — was treated as a bot and dropped silently. The timestamp is now written once, when the visitor reaches the form, and never moved again. The token keeps renewing as before.
@@ -410,6 +423,9 @@ Yes. In the block inspector's "After Submit" panel, choose "Redirect to URL" and
 * Initial build
 
 == Upgrade Notice ==
+
+= 1.14.3 =
+Important: fixes two cases where a submission could be lost (sending within two seconds of the first click, and resending a changed message from the back button). Recommended for everyone on 1.14.x.
 
 = 1.14.2 =
 Important: closes a case where a submission from a long-open tab could still be dropped silently, introduced in 1.14.0. Update if you are on 1.14.0 or 1.14.1.

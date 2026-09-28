@@ -206,13 +206,13 @@ final class RuleEvaluator {
 				// `is` would silently fail when the form builder
 				// types "Skip" in the rule UI to match a label they
 				// wrote as "Skip" but ended up serialised as "skip".
-				return 0 === strcasecmp( $field_string, $value );
+				return self::fold( $field_string ) === self::fold( $value );
 			case 'is_not':
-				return 0 !== strcasecmp( $field_string, $value );
+				return self::fold( $field_string ) !== self::fold( $value );
 			case 'contains':
-				return '' !== $value && false !== stripos( $field_string, $value );
+				return '' !== self::fold( $value ) && str_contains( self::fold( $field_string ), self::fold( $value ) );
 			case 'not_contains':
-				return '' === $value || false === stripos( $field_string, $value );
+				return '' === self::fold( $value ) || ! str_contains( self::fold( $field_string ), self::fold( $value ) );
 			case 'greater_than':
 				if ( ! is_numeric( $field_string ) || ! is_numeric( $value ) ) {
 					return false;
@@ -238,6 +238,27 @@ final class RuleEvaluator {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Normalise a string for the text operators: trimmed, lower-cased.
+	 *
+	 * Mirrors fold() in src/shared/rule-evaluator.js. Two details keep the
+	 * browser and the server on the same verdict:
+	 *   - multibyte lower-casing: strcasecmp()/stripos() only fold ASCII,
+	 *     so "Ärzte" vs "ärzte" matched in the browser and not here;
+	 *   - trimming: the server compares sanitised values (sanitize_text_field
+	 *     trims), the browser the raw input, so a trailing space from
+	 *     autofill flipped `is` on one side only.
+	 *
+	 * @param string $value Raw string.
+	 * @return string
+	 */
+	private static function fold( string $value ): string {
+		// Unicode-aware trim, matching the browser's String.trim(): PHP's
+		// trim() leaves a no-break space from a copy-paste in place.
+		$value = (string) preg_replace( '/(*UCP)^[\s\x{FEFF}]+|[\s\x{FEFF}]+$/u', '', $value );
+		return function_exists( 'mb_strtolower' ) ? mb_strtolower( $value, 'UTF-8' ) : strtolower( $value );
 	}
 
 	/**

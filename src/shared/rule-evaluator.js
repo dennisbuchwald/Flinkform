@@ -149,13 +149,13 @@ function evaluateRule( rule, values ) {
 			// there for the slugify rationale; in short: "Skip" in
 			// the rule UI must match "skip" in the serialised option
 			// value the editor's slugify helper produced.
-			return fieldString.toLowerCase() === value.toLowerCase();
+			return fold( fieldString ) === fold( value );
 		case 'is_not':
-			return fieldString.toLowerCase() !== value.toLowerCase();
+			return fold( fieldString ) !== fold( value );
 		case 'contains':
-			return value !== '' && fieldString.toLowerCase().includes( value.toLowerCase() );
+			return fold( value ) !== '' && fold( fieldString ).includes( fold( value ) );
 		case 'not_contains':
-			return value === '' || ! fieldString.toLowerCase().includes( value.toLowerCase() );
+			return fold( value ) === '' || ! fold( fieldString ).includes( fold( value ) );
 		case 'greater_than':
 			if ( fieldString === '' || isNaN( Number( fieldString ) ) || isNaN( Number( value ) ) ) {
 				return false;
@@ -179,6 +179,21 @@ function evaluateRule( rule, values ) {
 		default:
 			return false;
 	}
+}
+
+/**
+ * Normalise a string for the text operators: trimmed, lower-cased.
+ * Mirrors RuleEvaluator::fold() in PHP — the server compares sanitised
+ * (trimmed) values, so the browser has to trim too or a trailing space
+ * from autofill flips `is` on one side only.
+ *
+ * @param {string} s Raw string.
+ * @return {string} Folded string.
+ */
+function fold( s ) {
+	// Same whitespace class as the PHP side: Unicode spaces (incl. the
+	// no-break space a copy-paste brings along) plus the BOM.
+	return String( s ).replace( /^[\s\uFEFF]+|[\s\uFEFF]+$/g, '' ).toLowerCase();
 }
 
 function toComparableString( v ) {

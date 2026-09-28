@@ -64,6 +64,11 @@ final class Indexer {
 	 */
 	public function register(): void {
 		add_action( 'save_post', [ $this, 'maybe_invalidate' ], 10, 2 );
+		// save_post only sees the NEW content. Moving a form out of a page
+		// (into a template part, say) leaves a new content without the
+		// block, so the index kept pointing at the old page until its TTL
+		// ran out — and a Locator miss is a silently dropped submission.
+		add_action( 'post_updated', [ $this, 'maybe_invalidate_removed' ], 10, 3 );
 		add_action( 'delete_post', [ $this, 'invalidate' ], 10 );
 		add_action( 'wp_trash_post', [ $this, 'invalidate' ], 10 );
 		add_action( 'untrash_post', [ $this, 'invalidate' ], 10 );
@@ -130,6 +135,27 @@ final class Indexer {
 			return;
 		}
 		if ( false === strpos( $post->post_content, '<!-- wp:' . self::FORM_BLOCK ) ) {
+			return;
+		}
+		$this->invalidate();
+	}
+
+	/**
+	 * Invalidate when an update REMOVED a form from a post.
+	 *
+	 * @param int      $post_id     Post ID.
+	 * @param \WP_Post $post_after  Post after the update.
+	 * @param \WP_Post $post_before Post before the update.
+	 * @return void
+	 */
+	public function maybe_invalidate_removed( int $post_id, $post_after, $post_before ): void {
+		if ( ! $post_before instanceof \WP_Post ) {
+			return;
+		}
+		if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+			return;
+		}
+		if ( false === strpos( $post_before->post_content, '<!-- wp:' . self::FORM_BLOCK ) ) {
 			return;
 		}
 		$this->invalidate();

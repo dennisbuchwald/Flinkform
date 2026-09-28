@@ -415,6 +415,22 @@ final class Mailer {
 	}
 
 	/**
+	 * Merge tag for the form's first email field, or '' when it has none.
+	 *
+	 * @param array{attributes: array<string, mixed>, fields: array<int, array<string, mixed>>} $form_def
+	 * @return string
+	 */
+	private function first_email_merge_tag( array $form_def ): string {
+		$fields = isset( $form_def['fields'] ) && is_array( $form_def['fields'] ) ? $form_def['fields'] : [];
+		foreach ( $fields as $field ) {
+			if ( 'email' === ( $field['type'] ?? '' ) && '' !== (string) ( $field['name'] ?? '' ) ) {
+				return '{field:' . (string) $field['name'] . '}';
+			}
+		}
+		return '';
+	}
+
+	/**
 	 * Merge the form's notification attributes with safe defaults.
 	 *
 	 * Every key falls back independently — a half-configured form (e.g. a
@@ -440,7 +456,12 @@ final class Mailer {
 			'to'       => isset( $notif['to'] ) && '' !== trim( (string) $notif['to'] ) ? (string) $notif['to'] : $default_to,
 			'subject'  => isset( $notif['subject'] ) && '' !== trim( (string) $notif['subject'] ) ? (string) $notif['subject'] : $default_subject,
 			'body'     => isset( $notif['body'] ) && '' !== trim( (string) $notif['body'] ) ? (string) $notif['body'] : $default_body,
-			'reply_to' => isset( $notif['replyTo'] ) ? (string) $notif['replyTo'] : '',
+			// Never touched (attribute absent) → reply to the first email
+			// field, the same default the editor fills in when the form is
+			// opened there. Forms that were inserted from a pattern or copied
+			// around without ever being opened would otherwise answer to
+			// wordpress@. A deliberately cleared value ('') stays empty.
+			'reply_to' => isset( $notif['replyTo'] ) ? (string) $notif['replyTo'] : $this->first_email_merge_tag( $form_def ),
 			// Whether the body above is ours. Only our own gets rebuilt from
 			// the field records into the laid-out HTML; an author's text is
 			// wrapped but never rewritten.

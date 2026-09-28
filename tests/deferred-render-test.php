@@ -329,6 +329,26 @@ namespace {
 		str_contains( $inline_html, 'size="4" required' )
 	);
 	check(
+		'inline, guest: no REST nonce in the markup',
+		! str_contains( $inline_html, 'data-flinkform-rest-nonce' ),
+		'guests need none, and a stale one would be a hard 403'
+	);
+	check(
+		'deferred: no REST nonce in cacheable markup',
+		! str_contains( $deferred_html, 'data-flinkform-rest-nonce' )
+	);
+
+	// Logged in: always inline, and the token refresh must run as this user.
+	$GLOBALS['logged_in'] = true;
+	$_GET = [];
+	$logged_in_html = render_form( $attrs, $block );
+	$GLOBALS['logged_in'] = false;
+	check(
+		'logged in: the refresh carries a REST nonce for this user',
+		str_contains( $logged_in_html, 'data-flinkform-rest-nonce="live-nonce-' ),
+		'without it the refresh runs as a guest and its nonce fails the submit (403)'
+	);
+	check(
 		'inline: the page IS excluded from the cache',
 		defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE,
 		'a per-visitor render must never be written into a shared cache'

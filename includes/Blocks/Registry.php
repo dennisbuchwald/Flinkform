@@ -137,12 +137,68 @@ final class Registry {
 			// Re-registering with the third argument is enough — the file
 			// names already follow core's convention, md5() of the script's
 			// path relative to the plugin folder.
-			if ( $block_type instanceof \WP_Block_Type ) {
-				foreach ( (array) $block_type->editor_script_handles as $handle ) {
-					wp_set_script_translations( $handle, 'flinkform', FLINKFORM_PLUGIN_DIR . 'languages' );
-				}
+			if ( ! $block_type instanceof \WP_Block_Type ) {
+				continue;
+			}
 
-				$this->version_assets( $block_type );
+			// Blocks an add-on registers through `flinkform_block_dirs` live in
+			// the add-on's folder, carry the add-on's textdomain and ship on
+			// the add-on's release cycle. Pointing their scripts at OUR
+			// textdomain made WordPress look for Pro's JED files under the
+			// wrong name (the Pro inspectors stayed English), and stamping
+			// OUR version on their assets meant a Pro-only release never
+			// changed a URL, so browsers kept the old view.js.
+			if ( ! $this->is_own_block_dir( $path ) ) {
+				$this->version_foreign_styles( $block_type );
+				continue;
+			}
+
+			foreach ( (array) $block_type->editor_script_handles as $handle ) {
+				wp_set_script_translations( $handle, 'flinkform', FLINKFORM_PLUGIN_DIR . 'languages' );
+			}
+
+			$this->version_assets( $block_type );
+		}
+	}
+
+	/**
+	 * Whether a block directory belongs to this plugin (not to an add-on).
+	 *
+	 * @param string $path Absolute path to the block.json directory.
+	 * @return bool
+	 */
+	private function is_own_block_dir( string $path ): bool {
+		return str_starts_with(
+			wp_normalize_path( $path ),
+			wp_normalize_path( FLINKFORM_PLUGIN_DIR )
+		);
+	}
+
+	/**
+	 * Cache-bust an add-on block's stylesheets by file modification time.
+	 *
+	 * Scripts need nothing: register_block_type() already versions them
+	 * with the content hash from their *.asset.php. Stylesheets only get
+	 * block.json's static `version`, so they take the file's mtime, which
+	 * moves with every deploy of the add-on.
+	 *
+	 * @param \WP_Block_Type $block_type A freshly registered add-on block.
+	 * @return void
+	 */
+	private function version_foreign_styles( \WP_Block_Type $block_type ): void {
+		$styles = wp_styles();
+
+		$style_handles = array_merge(
+			(array) $block_type->style_handles,
+			(array) $block_type->editor_style_handles
+		);
+		foreach ( $style_handles as $handle ) {
+			if ( ! isset( $styles->registered[ $handle ] ) ) {
+				continue;
+			}
+			$file = $styles->registered[ $handle ]->extra['path'] ?? '';
+			if ( is_string( $file ) && '' !== $file && is_readable( $file ) ) {
+				$styles->registered[ $handle ]->ver = (string) filemtime( $file );
 			}
 		}
 	}

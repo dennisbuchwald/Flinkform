@@ -83,6 +83,23 @@ const SPAM_REFRESH_MARGIN = 10 * 60 * 1000;
 const SPAM_REFRESH_AFTER  = 20 * 60 * 1000;
 const SPAM_REFRESH_TICK   = 60 * 1000;
 
+// Same TDZ rule — read inside setupDeferredForm during module evaluation.
+//
+// The server drops a submission that arrives less than two seconds after its
+// signed timestamp (a bot tell) and, since 1.14.3, asks a person to send it
+// again. On a deferred form the timestamp is issued at first contact, so a
+// click into a field, an autofill pick and Send can easily beat it. Holding
+// the submit until this long after the timestamp arrived makes that path
+// invisible. 200 ms above the server's two seconds covers the rounding of
+// its whole-second clock.
+const MIN_FILL_MS = 2200;
+
+// Upper bound for holding a submit while the form is being armed. A stalled
+// connection or a very slow device must not leave a spinning button that
+// swallows every click: after this long the submission goes out as it
+// stands and the server's "please send again" path takes over.
+const MAX_HOLD_MS = 8000;
+
 // Per-block refresh handles. The fetch-submit recovery path uses this to
 // force-refresh the one form whose token the server just called expired.
 const spamBlockControls = new WeakMap();
@@ -207,6 +224,16 @@ async function submitViaFetch( form ) {
 			await submitViaFetch( form );
 			return;
 		}
+	}
+
+	// Sent inside the minimum fill time (a retry page sent straight away,
+	// or a challenge that was armed a moment ago). The server kept
+	// nothing; wait it out and send the identical data once more.
+	if ( errorCode === 'too_fast' && ! form.dataset.flinkformTooFastRetried ) {
+		form.dataset.flinkformTooFastRetried = '1';
+		await new Promise( ( resolve ) => setTimeout( resolve, MIN_FILL_MS ) );
+		await submitViaFetch( form );
+		return;
 	}
 
 	if ( errorCode === 'spam_expired' && ! form.dataset.flinkformSpamRetried ) {
@@ -1014,10 +1041,10 @@ function validateScope( scopeEl ) {
 	} );
 	missingGroups.forEach( ( group ) => markGroupError( group ) );
 
-	// Native tooltip + focus on the first offending control.
-	if ( invalid[ 0 ] ) {
-		invalid[ 0 ].reportValidity();
-	}
+	// Focus the first offending control. No reportValidity(): the
+	// persistent message is already on screen, and the browser's tooltip
+	// on top of it showed the same error twice, often in the browser's
+	// language rather than the site's.
 	const first = invalid[ 0 ] || missingGroups[ 0 ];
 	if ( first && typeof first.focus === 'function' ) {
 		first.focus();
@@ -1070,6 +1097,37 @@ function initFinalValidation() {
 				event.preventDefault();
 			}
 		}, true );
+
+		// Take a message away as soon as the visitor has fixed the field.
+		// Errors are only ever raised on submit/Next, so a corrected field
+		// kept its message until the next attempt. Only the client's own
+		// messages: a server message can be about something the browser
+		// cannot check, and it goes away on the next submit anyway.
+		const settle = ( event ) => {
+			const field = event.target;
+			if ( ! field || typeof field.checkValidity !== 'function' ) {
+				return;
+			}
+			const wrapper = field.closest( '.flinkform-field' );
+			if ( ! wrapper || ! wrapper.querySelector( '.flinkform-field__error--client' ) ) {
+				return;
+			}
+			const group = field.type === 'checkbox'
+				? field.closest( '[data-flinkform-required-message]' )
+				: null;
+			// Every control in the wrapper, not just the one typed into: the
+			// address field holds several, and fixing the street must not
+			// clear the error of a postcode that is still missing.
+			const fixed = group
+				? group.querySelector( 'input[type="checkbox"]:checked' ) !== null
+				: [ ...wrapper.querySelectorAll( 'input, select, textarea' ) ]
+					.every( ( el ) => el.disabled || el.type === 'hidden' || el.checkValidity() );
+			if ( fixed ) {
+				clearStepErrors( wrapper );
+			}
+		};
+		form.addEventListener( 'input', settle );
+		form.addEventListener( 'change', settle );
 	} );
 }
 
@@ -1142,10 +1200,15 @@ function renderFieldError( wrapper, field, message ) {
 	let errorEl = wrapper.querySelector( '.flinkform-field__error--client' );
 	if ( ! errorEl ) {
 		const name = wrapper.getAttribute( 'data-flinkform-field-name' ) || 'field';
+		// Scoped to the form: two forms on one page (a footer popup and
+		// the contact page) both have an "email" field, and a shared id
+		// pointed aria-describedby at the other form's message.
+		const formEl = wrapper.closest( 'form' );
+		const formId = formEl ? formEl.querySelector( 'input[name="flinkform_form_id"]' ) : null;
 		errorEl = document.createElement( 'p' );
 		errorEl.className = 'flinkform-field__error flinkform-field__error--client';
 		errorEl.setAttribute( 'role', 'alert' );
-		errorEl.id = 'flinkform-client-error-' + name;
+		errorEl.id = 'flinkform-client-error-' + ( formId && formId.value ? formId.value + '-' : '' ) + name;
 		wrapper.appendChild( errorEl );
 	}
 	errorEl.textContent = message;
@@ -1688,8 +1751,17 @@ function setupSpamChallengeBlock( block ) {
 
 		refreshing = ( async () => {
 			try {
+				const headers = { Accept: 'application/json' };
+				// Logged-in visitors only (the attribute is never rendered
+				// for guests or into cacheable HTML): without it the REST
+				// request runs as a guest and returns a guest nonce that
+				// would replace the visitor's own and fail the submit.
+				const restNonce = block.getAttribute( 'data-flinkform-rest-nonce' );
+				if ( restNonce ) {
+					headers[ 'X-WP-Nonce' ] = restNonce;
+				}
 				const response = await fetch( url, {
-					headers: { Accept: 'application/json' },
+					headers,
 					cache: 'no-store',
 				} );
 				if ( ! response.ok ) {
@@ -1757,6 +1829,11 @@ async function fetchChallenge( urls ) {
 				headers: { Accept: 'application/json' },
 				cache: 'no-store',
 				credentials: 'same-origin',
+				// A hanging transport must fall through to the next one
+				// instead of blocking arming for good.
+				signal: typeof AbortSignal !== 'undefined' && AbortSignal.timeout
+					? AbortSignal.timeout( MAX_HOLD_MS )
+					: undefined,
 			} );
 			if ( ! response.ok ) {
 				continue;
@@ -1790,6 +1867,14 @@ function setupDeferredForm( form ) {
 	// Set for the moment we re-dispatch a submit we had held back, so the
 	// gate below lets that one through instead of holding it again.
 	let bypass  = false;
+	// When this browser received the signed timestamp (0 = not yet). The
+	// timestamp is write-once, so this is set once and never moves.
+	let armedAt = 0;
+	// The submit currently being held back, if any. A second click while
+	// one is waiting only updates the submitter; it never queues another.
+	let held    = null;
+
+	const tsInput = form.querySelector( 'input[name="flinkform_ts"]' );
 
 	/**
 	 * Make sure the form carries a usable challenge.
@@ -1817,7 +1902,11 @@ function setupDeferredForm( form ) {
 
 				// Nonce and timestamp belong to the form and are needed even
 				// when spam protection is switched off for this form.
+				const hadTs   = !! ( tsInput && tsInput.value !== '' );
 				const written = applyFormChallenge( form, data );
+				if ( ! hadTs && tsInput && tsInput.value !== '' ) {
+					armedAt = Date.now();
+				}
 
 				if ( ! block ) {
 					ready = written;
@@ -1856,9 +1945,32 @@ function setupDeferredForm( form ) {
 		form.addEventListener( type, arm, { once: true, passive: true } );
 	} );
 
+	/** The step element currently on screen (null on single-step forms). */
+	const visibleStep = () => form.querySelector( '.flinkform-form__step:not([hidden])' );
+
+	/** Milliseconds until the server accepts this form's timestamp. */
+	const fillWait = () => ( armedAt > 0 ? Math.max( 0, armedAt + MIN_FILL_MS - Date.now() ) : 0 );
+
+	/** Show that the click registered while the submit is held back. */
+	const setHolding = ( holding ) => {
+		// Real submit buttons only. The multi-step Next button shares the
+		// class but must stay what it is.
+		form.querySelectorAll( 'button[type="submit"].flinkform-form__submit' ).forEach( ( btn ) => {
+			// Visual only, never `disabled`: the held submit is replayed
+			// with this very button as its submitter.
+			btn.classList.toggle( 'is-loading', holding );
+			if ( holding ) {
+				btn.setAttribute( 'aria-busy', 'true' );
+			} else {
+				btn.removeAttribute( 'aria-busy' );
+			}
+		} );
+	};
+
 	// The safety net: a submit that beats the arming listeners (password
 	// manager autofill followed by Enter, a script-driven submit) is held
-	// back, armed, and sent again.
+	// back, armed, and sent again. So is one that arrives armed but inside
+	// the minimum fill time — see MIN_FILL_MS.
 	//
 	// Capture phase, registered last, so the guards that can cancel a
 	// submit outright — field validation and the submit-condition gate —
@@ -1867,42 +1979,78 @@ function setupDeferredForm( form ) {
 	form.addEventListener(
 		'submit',
 		( event ) => {
-			if ( event.defaultPrevented || bypass || ready ) {
+			if ( event.defaultPrevented || bypass ) {
 				return;
 			}
-
-			event.preventDefault();
+			if ( ready && fillWait() === 0 ) {
+				return;
+			}
 
 			const submitter = event.submitter && event.submitter.form === form
 				&& event.submitter.type === 'submit'
 				? event.submitter
 				: undefined;
 
-			// Note the `finally`: whether or not arming worked, the
-			// submission goes out. A failed fetch must not leave the
-			// visitor with a button that does nothing — the server knows
-			// what a deferred submission without a challenge means and
-			// answers with "please send it again", input intact.
-			ensure( false ).finally( () => {
-				bypass = true;
-				try {
-					if ( typeof form.requestSubmit === 'function' ) {
-						// Replays the full listener chain, so the popup
-						// fetch-submit path still gets its turn.
-						form.requestSubmit( submitter );
-					} else if ( form.closest( POPUP_SELECTOR ) ) {
-						submitViaFetch( form );
-					} else {
-						// Prototype call: the form has an input named
-						// "action", which shadows form.submit().
-						HTMLFormElement.prototype.submit.call( form );
+			if ( submitter && submitter.hidden ) {
+				// Enter on a middle step of a multi-step form: the implicit
+				// submitter is the hidden final button, and the step guard turns
+				// this into "Next". Nothing is being sent, so nothing to hold —
+				// holding it would only produce a delayed, unasked-for Next.
+				return;
+			}
+
+			event.preventDefault();
+
+			if ( held ) {
+				held.submitter = submitter || held.submitter;
+				return;
+			}
+			held = { submitter, step: visibleStep() };
+			setHolding( true );
+
+			// Whether or not arming worked, the submission goes out. A
+			// failed fetch must not leave the visitor with a button that
+			// does nothing — the server knows what a deferred submission
+			// without a challenge means and answers with "please send it
+			// again", input intact. ensure() never rejects; the catch is
+			// belt and braces so the replay below can never be skipped.
+			Promise.race( [
+				ensure( false ).catch( () => false ),
+				new Promise( ( resolve ) => setTimeout( resolve, MAX_HOLD_MS ) ),
+			] )
+				.then( () => new Promise( ( resolve ) => setTimeout( resolve, fillWait() ) ) )
+				.then( () => {
+					const replayWith = held ? held.submitter : submitter;
+					const heldStep   = held ? held.step : null;
+					held = null;
+					setHolding( false );
+
+					// The visitor moved to another step while we waited. Sending
+					// now would submit a multi-step form before its later steps
+					// are filled in; they will press Send again when they get there.
+					if ( heldStep !== visibleStep() ) {
+						return;
 					}
-				} finally {
-					// requestSubmit dispatches synchronously, so the flag
-					// has done its job by the time we get here.
-					bypass = false;
-				}
-			} );
+
+					bypass = true;
+					try {
+						if ( typeof form.requestSubmit === 'function' ) {
+							// Replays the full listener chain, so the popup
+							// fetch-submit path still gets its turn.
+							form.requestSubmit( replayWith );
+						} else if ( form.closest( POPUP_SELECTOR ) ) {
+							submitViaFetch( form );
+						} else {
+							// Prototype call: the form has an input named
+							// "action", which shadows form.submit().
+							HTMLFormElement.prototype.submit.call( form );
+						}
+					} finally {
+						// requestSubmit dispatches synchronously, so the flag
+						// has done its job by the time we get here.
+						bypass = false;
+					}
+				} );
 		},
 		true
 	);

@@ -565,7 +565,7 @@ msgid ""
 "sender."
 msgstr ""
 "Du kannst direkt auf diese E-Mail antworten, deine Antwort geht an die "
-"Absenderin."
+"Person, die das Formular ausgefüllt hat."
 
 #: includes/Notifications/Mailer.php:433 src/form-container/edit.js:774
 msgid "New submission: {form:title}"

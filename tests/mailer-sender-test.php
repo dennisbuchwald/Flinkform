@@ -126,13 +126,17 @@ namespace {
 }
 
 namespace Flinkform\Notifications {
-	/** Stub: merge tags are covered by their own paths; identity is enough. */
+	/** Stub: merge tags are covered by their own paths; only {field:x} is resolved. */
 	class MergeTags {
 		public static function render( $template, $context ) {
-			return (string) $template;
+			return (string) preg_replace_callback(
+				'/\{field:([a-z0-9_\-]+)\}/i',
+				static fn( $m ) => (string) ( $context[ $m[1] ] ?? $m[0] ),
+				(string) $template
+			);
 		}
 		public static function context( $id, $form_id, $clean, $form_def ) {
-			return [];
+			return $clean;
 		}
 	}
 }
@@ -309,6 +313,20 @@ namespace {
 		in_array( 'Reply-To: besucherin@example.org', mail_to( $mails, 'a@b.de' )['headers'], true ),
 		json_encode( mail_to( $mails, 'a@b.de' )['headers'] )
 	);
+
+	// A form that was never opened in the editor has no replyTo attribute at
+	// all. Replying to the notification must still reach the visitor, not
+	// wordpress@ — that is the default the editor would have filled in.
+	$mails = dispatch( [ 'admin' => [ 'enabled' => true, 'to' => 'a@b.de' ] ] );
+	check(
+		'admin Reply-To defaults to the first email field when never set',
+		in_array( 'Reply-To: besucherin@example.org', mail_to( $mails, 'a@b.de' )['headers'], true ),
+		json_encode( mail_to( $mails, 'a@b.de' )['headers'] )
+	);
+
+	// Deliberately cleared by the author: stays cleared.
+	$mails = dispatch( [ 'admin' => [ 'enabled' => true, 'to' => 'a@b.de', 'replyTo' => '' ] ] );
+	check( 'a cleared admin Reply-To stays empty', ! has_reply_to( mail_to( $mails, 'a@b.de' ) ) );
 
 	// --- Summary --------------------------------------------------------
 

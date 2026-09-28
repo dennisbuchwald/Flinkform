@@ -1,5 +1,14 @@
 # Tests
 
+## Run everything
+
+    tests/run.sh
+
+Runs every `*-test.php` and `*.mjs` below and exits non-zero if one fails.
+`deploy.sh` runs it after the build and refuses to release on a red test.
+The two browser smoke tests are not included (they need a browser), see
+the bottom of this file.
+
 ## PHP unit tests
 
 Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
@@ -21,6 +30,26 @@ Standalone, no PHPUnit. Each exits 0 on success, 1 on failure.
     php tests/asset-version-test.php
     php tests/render-mode-test.php
     php tests/deferred-render-test.php
+    php tests/handler-gates-test.php
+    php tests/privacy-paging-test.php
+    php tests/spam-classification-test.php
+    node tests/challenge-refresh.mjs
+
+`handler-gates-test.php` is the one to run first after touching anything in
+the submit path. It drives `Submissions\Handler::handle()` end to end and
+asserts which of the four outcomes each request gets: **silent** (redirect
+home, nothing stored, only for provable bot traffic), **soft** (back to the
+form with the values kept), **403** (bad nonce on an inline render) or
+**success**. Every submission this plugin ever lost went through a gate that
+picked the wrong one of those four, and until 1.14.3 no test called
+`handle()` at all. It covers the minimum fill time (inline, deferred, fetch),
+the idempotency guard including a changed resend from the back button, the
+honeypot on the soft paths, the deferred nonce, forms on drafts and private
+pages, and the form index healing itself when it points at the wrong post.
+
+`privacy-paging-test.php` runs the GDPR exporter and eraser over more than
+one page of matches with near misses in between (`xa@b.de` next to
+`a@b.de`), which is what made both of them stop early.
 
 `rule-evaluator-date-test.php` covers the `date_before` / `date_on_or_after`
 operators, including the guards against empty and malformed values.
@@ -183,6 +212,10 @@ browser, and that part carries the release:
 3. A submit that arrives before arming finished (autofill, then Enter)
    must be held, armed and replayed. A second form on the page is left
    deliberately untouched to exercise exactly that path.
+4. A submit that arrives armed but inside the minimum fill time (click
+   into a field, Send 300 ms later, then a nervous second click) must be
+   held and sent exactly once when the time is up (1.14.3). A third form
+   exercises that.
 
 The challenge endpoint is the static `fixtures-challenge.json`: the browser
 code only reads fields, so a fixture drives the real code path, and its salt

@@ -1070,5 +1070,149 @@
    "a": "2"
   },
   "expected": false
+ },
+ {
+  "name": "Umlaut: is ignoriert Gross/Klein (Ä/ä)",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "ärzte"
+    }
+   ]
+  },
+  "values": {
+   "a": "Ärzte"
+  },
+  "expected": true
+ },
+ {
+  "name": "Umlaut: contains ignoriert Gross/Klein (Ü/ü)",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "contains",
+     "value": "über"
+    }
+   ]
+  },
+  "values": {
+   "a": "Frage ÜBER Preise"
+  },
+  "expected": true
+ },
+ {
+  "name": "Umlaut: is_not bei gleichem Wort in anderer Schreibung",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is_not",
+     "value": "STRASSE-ÖL"
+    }
+   ]
+  },
+  "values": {
+   "a": "straße-öl"
+  },
+  "expected": true
+ },
+ {
+  "name": "Leerzeichen am Ende (Autofill): is trifft trotzdem",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "Berlin"
+    }
+   ]
+  },
+  "values": {
+   "a": "Berlin "
+  },
+  "expected": true
+ },
+ {
+  "name": "Leerzeichen im Regelwert: is trifft trotzdem",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is",
+     "value": " Berlin "
+    }
+   ]
+  },
+  "values": {
+   "a": "Berlin"
+  },
+  "expected": true
+ },
+ {
+  "name": "Nur Leerzeichen im Regelwert: contains trifft nie",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "contains",
+     "value": "  "
+    }
+   ]
+  },
+  "values": {
+   "a": "irgendwas"
+  },
+  "expected": false
+ },
+ {
+  "name": "Nur Leerzeichen im Regelwert: not_contains trifft immer",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "not_contains",
+     "value": "  "
+    }
+   ]
+  },
+  "values": {
+   "a": "irgendwas"
+  },
+  "expected": true
+ },
+ {
+  "name": "Geschütztes Leerzeichen am Ende (Copy-Paste im Regelwert): is trifft",
+  "ruleSet": {
+   "enabled": true,
+   "logic": "all",
+   "rules": [
+    {
+     "field": "a",
+     "operator": "is",
+     "value": "Berlin "
+    }
+   ]
+  },
+  "values": {
+   "a": "Berlin"
+  },
+  "expected": true
  }
 ]
