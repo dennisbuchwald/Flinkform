@@ -1,0 +1,19 @@
+<h3>Ihr Projekt</h3>
+<p>Bitte füllen Sie alle Pflichtfelder aus.</p>
+<p>Art des Projekts*<br>
+[radio projekt "Neue Website|neu" "Relaunch|relaunch" "Shop"]</p>
+<p>Budget<br>[select budget first_as_label "Bitte wählen" "bis 5.000 €|klein" "über 5.000 €|gross"]</p>
+<p>Leistungen<br>[checkbox leistungen "SEO" "Texte" "Fotos"]</p>
+[checkbox newsletter "Newsletter abonnieren"]
+<p>[text firma placeholder "Firma"]</p>
+[tel telefon]
+[number mitarbeiter min:1 max:500 step:1]
+[date termin min:today max:2027-12-31]
+[file anhang filetypes:pdf|jpg limit:2mb]
+[quiz quiz-1 "1+1=?|2"]
+[group extra][text extra-info][/group]
+[hidden quelle "website"]
+[hidden kampagne default:get]
+[acceptance datenschutz] Ich habe die <a href="https://example.test/datenschutz/">Datenschutzerklärung</a> gelesen. [/acceptance]
+[[text escaped]]
+[submit "Anfrage senden"]

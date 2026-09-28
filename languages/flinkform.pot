@@ -77,6 +77,148 @@ msgstr ""
 msgid "To check for certain, open a form page in a private browser window twice and look at the end of the page source for your caching plugin's comment."
 msgstr ""
 
+#: includes/Admin/Cf7ImportPage.php:56 includes/Admin/Cf7ImportPage.php:126
+msgid "Move from Contact Form 7"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:57
+msgid "Import from CF7"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:81
+msgid "Importing…"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:82
+msgid "Undoing…"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:83
+msgid "Imported"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:84
+msgid "Undone"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:85
+msgid "Failed"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:86
+msgid "Undo this import? The pages get their Contact Form 7 shortcode back and the Flinkform pattern goes to the trash. Submissions already received stay in Flinkform."
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:87 includes/Admin/Cf7ImportPage.php:157
+msgid "Edit form"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:88
+msgid "Test these pages:"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:89
+msgid "Done. Test every page listed, then deactivate Contact Form 7 when you are happy."
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:110
+msgid "Complete"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:111
+msgid "Please check"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:112
+msgid "Partly not transferable"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:115
+msgid "from its label"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:116
+msgid "from the text before it"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:117
+msgid "from the placeholder, please check"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:118
+msgid "from the field name, please check"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:119
+msgid "the checkbox text"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:120
+msgid "consent field"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:121
+msgid "hidden field, not shown"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:128
+msgid "Each Contact Form 7 form becomes a Flinkform form, stored as a synced pattern, and every page that used it is switched over. Contact Form 7 itself is not changed or deactivated, and every import can be undone."
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:131
+msgid "Contact Form 7 is not active. The forms are read from the database, that works just the same."
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:134
+msgid "Import all forms that are not imported yet"
+msgstr ""
+
+#. translators: 1: date, 2: number of pages, 3: number of submissions.
+#: includes/Admin/Cf7ImportPage.php:151
+#, php-format
+msgid "Imported on %1$s, %2$d page(s) switched, %3$d submission(s) received since."
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:162
+msgid "Fields and notes"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:178 includes/Admin/Upsell.php:210 src/form-container/upsell.js:73 src/form-container/upsell.js:104
+msgid "See Flinkform Pro"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:188
+msgid "Not embedded on any page. The form is imported as a pattern you can insert anywhere."
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:190
+msgid "Used on:"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:198
+msgid "Import"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:199
+msgid "Undo import"
+msgstr ""
+
+#: includes/Admin/Cf7ImportPage.php:244
+msgid "You are not allowed to do this."
+msgstr ""
+
+#. translators: %d: number of Contact Form 7 forms.
+#: includes/Admin/Cf7ImportPage.php:279
+#, php-format
+msgid "%d Contact Form 7 form found."
+msgid_plural "%d Contact Form 7 forms found."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/Cf7ImportPage.php:284
+msgid "Move them to Flinkform"
+msgstr ""
+
 #: includes/Admin/FormsListTable.php:56
 msgid "Title"
 msgstr ""
@@ -551,10 +693,6 @@ msgstr ""
 msgid "From 59 € per year for one website. 14-day money-back guarantee."
 msgstr ""
 
-#: includes/Admin/Upsell.php:210 src/form-container/upsell.js:73 src/form-container/upsell.js:104
-msgid "See Flinkform Pro"
-msgstr ""
-
 #. translators: %s: filter name.
 #: includes/Admin/Upsell.php:217
 #, php-format
@@ -669,6 +807,184 @@ msgstr ""
 
 #: includes/Forms/Locator.php:476 src/field-address/render.php:62 src/field-address/edit.js:41 src/field-text/edit.js:71 src/shared/conditional-logic-panel.js:86
 msgid "Country"
+msgstr ""
+
+#. translators: %s: field name.
+#: includes/Import/Cf7/Converter.php:90
+#, php-format
+msgid "The field name \"%s\" is used twice. Only the first field was imported."
+msgstr ""
+
+#. translators: 1: guessed label, 2: field name.
+#: includes/Import/Cf7/Converter.php:117
+#, php-format
+msgid "Label \"%1$s\" (field %2$s) was guessed. Please check it."
+msgstr ""
+
+#. translators: %s: a piece of text from the old form.
+#: includes/Import/Cf7/Converter.php:138
+#, php-format
+msgid "Text not carried over: \"%s\""
+msgstr ""
+
+#: includes/Import/Cf7/Converter.php:154
+msgid "No field could be carried over."
+msgstr ""
+
+#. translators: %s: field name.
+#: includes/Import/Cf7/Converter.php:234
+#, php-format
+msgid "Default value of \"%s\" not carried over (Flinkform fields start empty)."
+msgstr ""
+
+#. translators: %s: field name.
+#: includes/Import/Cf7/Converter.php:260
+#, php-format
+msgid "The slider \"%s\" becomes a number field."
+msgstr ""
+
+#. translators: 1: field name, 2: CF7 date expression like today+1_month.
+#: includes/Import/Cf7/Converter.php:276
+#, php-format
+msgid "Date field \"%1$s\": the relative limit \"%2$s\" was not carried over. Set a date range in Flinkform if needed."
+msgstr ""
+
+#. translators: %s: field name.
+#: includes/Import/Cf7/Converter.php:303
+#, php-format
+msgid "The consent box \"%s\" was inverted in CF7 (unticked = agreed). Flinkform asks for a tick. Please check the text."
+msgstr ""
+
+#. translators: %s: field name.
+#: includes/Import/Cf7/Converter.php:318
+#, php-format
+msgid "File upload \"%s\" needs Flinkform Pro and was left out."
+msgstr ""
+
+#: includes/Import/Cf7/Converter.php:338
+msgid "CAPTCHA / quiz left out: Flinkform has its own spam protection without third parties."
+msgstr ""
+
+#. translators: %s: CF7 tag type, e.g. "[group]".
+#: includes/Import/Cf7/Converter.php:345
+#, php-format
+msgid "Field type [%s] is not known to Flinkform and was left out (usually from a CF7 add-on)."
+msgstr ""
+
+#. translators: %s: field name.
+#: includes/Import/Cf7/Converter.php:379
+#, php-format
+msgid "Choice field \"%s\" has no options and was left out."
+msgstr ""
+
+#: includes/Import/Cf7/Converter.php:384
+msgid "the \"only one box\" behaviour"
+msgstr ""
+
+#: includes/Import/Cf7/Converter.php:384
+msgid "the free-text \"other\" option"
+msgstr ""
+
+#. translators: 1: field name, 2: feature description.
+#: includes/Import/Cf7/Converter.php:388
+#, php-format
+msgid "Field \"%1$s\": %2$s is not carried over."
+msgstr ""
+
+#. translators: 1: field name, 2: CF7 default source, e.g. get or user_email.
+#: includes/Import/Cf7/Converter.php:434
+#, php-format
+msgid "Field \"%1$s\" filled itself in CF7 (default:%2$s). Flinkform does not carry that over."
+msgstr ""
+
+#: includes/Import/Cf7/Converter.php:452
+msgid "The consent text contained a link that is not your privacy page. Only its text was kept."
+msgstr ""
+
+#. translators: %s: mail header name (Cc or Bcc).
+#: includes/Import/Cf7/Converter.php:488
+#, php-format
+msgid "The %s header of the notification was not carried over. Add those addresses to the recipients if needed."
+msgstr ""
+
+#: includes/Import/Cf7/Converter.php:495
+msgid "CF7 used its own sender address. Flinkform sends from the WordPress default (or your SMTP setup); a per-form sender can be set in the form."
+msgstr ""
+
+#: includes/Import/Cf7/Converter.php:498
+msgid "Mail attachments were not carried over."
+msgstr ""
+
+#: includes/Import/Cf7/Converter.php:516
+msgid "The confirmation mail (Mail 2) could not be carried over: its recipient is not a single email field. Set it up in the form's notifications."
+msgstr ""
+
+#: includes/Import/Cf7/Converter.php:529
+msgid "The HTML mail body was converted to text. Flinkform wraps it in its own mail layout."
+msgstr ""
+
+#. translators: %s: CF7 mail tag like [_remote_ip].
+#: includes/Import/Cf7/Converter.php:590
+#, php-format
+msgid "Mail tag [%s] was removed. Flinkform does not know it (and stores no IP addresses or browser data)."
+msgstr ""
+
+#. translators: %s: CF7 setting name.
+#: includes/Import/Cf7/Converter.php:623
+#, php-format
+msgid "CF7 had \"%s\" switched on (no mail sent). Flinkform will send notifications; switch them off in the form if that is wanted."
+msgstr ""
+
+#. translators: %s: CF7 setting name.
+#: includes/Import/Cf7/Converter.php:629
+#, php-format
+msgid "CF7 setting \"%s\" has no equivalent and was left out."
+msgstr ""
+
+#: includes/Import/Cf7/Importer.php:121
+msgid "This Contact Form 7 form no longer exists."
+msgstr ""
+
+#: includes/Import/Cf7/Importer.php:127
+msgid "This form was already imported. Undo the import first to import it again."
+msgstr ""
+
+#: includes/Import/Cf7/Importer.php:152
+msgid "Imported form"
+msgstr ""
+
+#: includes/Import/Cf7/Importer.php:194
+msgid "Nothing to undo for this form."
+msgstr ""
+
+#. translators: %s: page title.
+#: includes/Import/Cf7/Importer.php:308
+#, php-format
+msgid "\"%s\" uses the form inside running text. That spot is left as it is; replace it by hand."
+msgstr ""
+
+#. translators: %s: page title.
+#: includes/Import/Cf7/Importer.php:315
+#, php-format
+msgid "\"%s\" uses the classic editor. The form shows on the page as usual, but the classic editor displays it as an HTML comment."
+msgstr ""
+
+#. translators: %s: where a CF7 form was found (page builder data, widget, …).
+#: includes/Import/Cf7/Importer.php:330
+#, php-format
+msgid "A Contact Form 7 form is also used in %s. That is not changed automatically; please swap it by hand."
+msgstr ""
+
+#. translators: 1: post title, 2: meta key.
+#: includes/Import/Cf7/Importer.php:365
+#, php-format
+msgid "\"%1$s\" (%2$s, e.g. a page builder)"
+msgstr ""
+
+#. translators: %s: widget option name.
+#: includes/Import/Cf7/Importer.php:381
+#, php-format
+msgid "a widget (%s)"
 msgstr ""
 
 #: includes/Notifications/Mailer.php:136
