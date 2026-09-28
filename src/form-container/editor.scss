@@ -12,3 +12,45 @@
  * as "Borde… / Unde… / Minim…"). Truncating the label is not a fix — the
  * settings that need more than three short options are dropdowns now, so
  * every option reads in full and nothing has to be clipped. */
+
+/* Start screen of an empty form (1.15.0). */
+.flinkform-start {
+	.flinkform-start__list {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 8px;
+		width: 100%;
+		margin: 0 0 12px;
+		padding: 0;
+		list-style: none;
+	}
+
+	.flinkform-start__list li {
+		margin: 0;
+	}
+
+	.components-button.flinkform-start__item {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 2px;
+		width: 100%;
+		height: 100%;
+		padding: 12px;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		text-align: left;
+		white-space: normal;
+
+		&:hover,
+		&:focus-visible {
+			border-color: var(--wp-admin-theme-color, #3858e9);
+		}
+
+		span {
+			color: #757575;
+			font-size: 12px;
+			line-height: 1.4;
+		}
+	}
+}

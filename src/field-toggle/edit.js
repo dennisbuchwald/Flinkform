@@ -7,6 +7,7 @@ import { generateFieldName } from '../shared/field-name';
 import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 import displayDefaultLabel from '../shared/default-label';
+import RequiredMark from '../shared/required-mark';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, required, helpText, fieldName } = attributes;
@@ -64,7 +65,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					<input type="checkbox" disabled aria-disabled="true" />
 					<span>
 						{ displayDefaultLabel( label, 'I agree' ) }
-						{ required && <span className="flinkform-field__required" aria-hidden="true"> *</span> }
+						<RequiredMark required={ required } context={ context } />
 					</span>
 				</label>
 				{ helpText && <p className="flinkform-field__help">{ helpText }</p> }

@@ -13,6 +13,7 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { generateFieldName } from '../shared/field-name';
 import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
+import RequiredMark from '../shared/required-mark';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, required, helpText, fieldName, showCountry, showAddressLine2, countryDefault, fullWidth } = attributes;
@@ -118,7 +119,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			<fieldset { ...blockProps }>
 				<legend className="flinkform-field-address__legend">
 					{ legendLabel }
-					{ required && <span className="flinkform-field__required" aria-hidden="true"> *</span> }
+					<RequiredMark required={ required } context={ context } />
 				</legend>
 				<div className="flinkform-field-address__grid">
 					{ subFields.filter( ( sf ) => sf.show ).map( ( sf ) => {
@@ -131,7 +132,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 							>
 								<label className="flinkform-field__label">
 									{ sf.label }
-									{ subRequired && <span className="flinkform-field__required" aria-hidden="true"> *</span> }
+									<RequiredMark required={ subRequired } context={ context } />
 								</label>
 								<input
 									type="text"

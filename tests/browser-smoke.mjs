@@ -6,6 +6,8 @@
  *
  *   tests/module-smoke.html   view.js evaluates without a runtime error (TDZ, 1.4.3)
  *   tests/deferred-smoke.html deferred arming, submit hold, fill time, inline retry
+ *   tests/validation-smoke.html messages in the site language, check on leaving a field
+ *   tests/multistep-smoke.html  multi-step first paint without layout shift
  *
  * Both run against build/, so `npm run build` first.
  *
@@ -89,6 +91,28 @@ try {
 	smoke.fails.forEach( ( f ) => check( `deferred-smoke: ${ f }`, false ) );
 	check( 'deferred-smoke: ran checks', smoke.passed > 0 && smoke.failed === 0, `${ smoke.passed } passed, ${ smoke.failed } failed` );
 	passed += smoke.passed;
+
+	for ( const file of [ 'multistep-smoke.html' ] ) {
+		await page.goto( `${ base }/tests/${ file }` );
+		await page.waitForFunction( () => document.getElementById( 'verdict' ).textContent !== 'running…', null, { timeout: 15000 } );
+		const r = await page.evaluate( () => ( {
+			...window.__smoke,
+			fails: [ ...document.querySelectorAll( '#log .fail' ) ].map( ( li ) => li.textContent ),
+		} ) );
+		r.fails.forEach( ( f ) => check( `${ file }: ${ f }`, false ) );
+		check( `${ file }: ran checks`, r.passed > 0 && r.failed === 0, `${ r.passed } passed, ${ r.failed } failed` );
+		passed += r.passed;
+	}
+
+	await page.goto( `${ base }/tests/validation-smoke.html` );
+	await page.waitForFunction( () => document.getElementById( 'verdict' ).textContent !== 'running…', null, { timeout: 15000 } );
+	const val = await page.evaluate( () => ( {
+		...window.__smoke,
+		fails: [ ...document.querySelectorAll( '#log .fail' ) ].map( ( li ) => li.textContent ),
+	} ) );
+	val.fails.forEach( ( f ) => check( `validation-smoke: ${ f }`, false ) );
+	check( 'validation-smoke: ran checks', val.passed > 0 && val.failed === 0, `${ val.passed } passed, ${ val.failed } failed` );
+	passed += val.passed;
 } finally {
 	await browser.close();
 	server.close();

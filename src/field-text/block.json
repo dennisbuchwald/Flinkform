@@ -41,6 +41,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"autocomplete": {
+			"type": "string",
+			"default": ""
+		},
 		"fullWidth": {
 			"type": "boolean",
 			"default": false

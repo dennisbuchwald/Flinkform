@@ -240,6 +240,12 @@ namespace {
 		'deferred: renders a form at all',
 		str_contains( $deferred_html, '<form' ) && str_contains( $deferred_html, 'flinkform_submit' )
 	);
+	$marker_at = strpos( $deferred_html, 'classList.add("flinkform-js")' );
+	check(
+		'deferred: the script marker comes before the form (first paint, 1.15.0)',
+		false !== $marker_at && $marker_at < (int) strpos( $deferred_html, '<form' ),
+		'after the fields it runs too late to prevent the multi-step layout shift'
+	);
 	check(
 		'deferred: validation texts ship with the form (site language, not browser)',
 		(bool) preg_match( '/data-flinkform-messages="\{[^"]*&quot;required&quot;/', $deferred_html ),

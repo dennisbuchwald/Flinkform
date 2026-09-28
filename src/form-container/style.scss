@@ -117,6 +117,13 @@
 	// all. Without the class the label simply sits above the line, so
 	// this value is unused until we are sure of it.
 	--flinkform-page-background: transparent;
+	// Error red (1.15.0). Override --flinkform-color-error to pick your
+	// own; the fallback switches to a lighter red when view.js finds the
+	// form on a dark surface (`--on-dark`), because #b80000 on near-black
+	// is barely readable.
+	&.flinkform-form--on-dark {
+		--flinkform-error-auto: #ff8a80;
+	}
 	// Dropdown arrow, drawn by us because the native one goes away with
 	// `appearance: none` (see the select rule for why that is necessary).
 	// A data URI cannot resolve currentColor, hence a neutral grey that
@@ -213,7 +220,7 @@
 		padding: 0.75rem 1rem;
 		border-radius: var(--flinkform-border-radius);
 		background: rgba(204, 0, 0, 0.06);
-		color: #b80000;
+		color: var(--flinkform-color-error, var(--flinkform-error-auto, #b80000));
 		border: 1px solid rgba(204, 0, 0, 0.15);
 		font-size: 0.9em;
 
@@ -387,6 +394,23 @@
 	// reliable "JS is on, the bindings are wired up" signal. From
 	// that point on it becomes a flex row with the Back button pushed
 	// to the left and Next/Submit anchored to the right.
+	// Before the footer boot script and hydration have run, a JS-capable
+	// page already shows the multi-step layout the boot script will set
+	// (1.15.0): step 1 only, no separators, no Back, Next instead of
+	// Submit. html.flinkform-js is set by the inline marker printed
+	// before the form, so this holds from the first paint and nothing
+	// jumps. Without scripting the class never appears and every step
+	// stays on screen, as before.
+	html.flinkform-js &--multi-step:not([data-flinkform-enhanced]) {
+		.flinkform-form__step:not([data-step-index="0"]),
+		.flinkform-form__step-separator,
+		.flinkform-form__nav--back,
+		.flinkform-form__submit:not(.flinkform-form__nav--next) {
+			display: none;
+		}
+	}
+
+	html.flinkform-js &--multi-step &__actions,
 	&[data-flinkform-enhanced] &__actions {
 		display: flex;
 		justify-content: flex-end;
@@ -625,7 +649,12 @@
 		}
 
 		&__required {
-			color: #b80000;
+			color: var(--flinkform-color-error, var(--flinkform-error-auto, #b80000));
+		}
+
+		&__optional {
+			font-weight: 400;
+			opacity: 0.7;
 		}
 
 		&__input {
@@ -694,7 +723,7 @@
 			align-items: center;
 			gap: 0.35em;
 			font-size: 0.8em;
-			color: #b80000;
+			color: var(--flinkform-color-error, var(--flinkform-error-auto, #b80000));
 			margin: 0;
 
 			&::before {
@@ -714,7 +743,7 @@
 		// .flinkform-field__input`, which matches nothing — the red error
 		// border silently never rendered.
 		&--has-error .flinkform-field__input {
-			border-color: #b80000;
+			border-color: var(--flinkform-color-error, var(--flinkform-error-auto, #b80000));
 		}
 
 		@media (prefers-reduced-motion: no-preference) {
@@ -773,7 +802,9 @@
 		// Shares the help-text colour: both are the quiet explanatory
 		// layer an author wants readable on tinted/dark surfaces.
 		&--consent .flinkform-field__option {
-			font-size: 12px;
+			// Relative, not a fixed 12px (1.15.0): follows the theme's
+			// type scale and the visitor's font-size setting.
+			font-size: var(--flinkform-consent-font-size, 0.8125em);
 			align-items: flex-start;
 			color: var(--flinkform-help-color, inherit);
 
@@ -1050,8 +1081,8 @@
 	}
 
 	.flinkform-field--has-error .flinkform-field__input {
-		border-color: #b80000;
-		box-shadow: 0 0 0 1px #b80000;
+		border-color: var(--flinkform-color-error, var(--flinkform-error-auto, #b80000));
+		box-shadow: 0 0 0 1px var(--flinkform-color-error, var(--flinkform-error-auto, #b80000));
 	}
 }
 
@@ -1075,7 +1106,7 @@
 
 	.flinkform-field--has-error .flinkform-field__input {
 		// Errors still need a visible cue without a border to colour.
-		box-shadow: inset 0 0 0 1px #b80000;
+		box-shadow: inset 0 0 0 1px var(--flinkform-color-error, var(--flinkform-error-auto, #b80000));
 	}
 }
 

@@ -44,9 +44,7 @@ $described = trim( $help_id . ' ' . $error_id );
 <div class="flinkform-field flinkform-field--phone<?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"<?php echo \Flinkform\Conditions\Wrapper::condition_attributes( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- returns a pre-escaped attribute string (esc_attr applied inside). ?> data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>">
 	<label class="flinkform-field__label" for="<?php echo esc_attr( $field_uid ); ?>">
 		<?php echo esc_html( $label ); ?>
-		<?php if ( $required ) : ?>
-			<span class="flinkform-field__required" aria-hidden="true"> *</span>
-		<?php endif; ?>
+		<?php echo \Flinkform\Fields\LabelMarks::html( (bool) $required, $block ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside LabelMarks::html(). ?>
 	</label>
 	<input
 		type="tel"

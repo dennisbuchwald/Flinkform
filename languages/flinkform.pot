@@ -249,7 +249,7 @@ msgstr ""
 msgid "To date"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:388 src/form-container/edit.js:762
+#: includes/Admin/SubmissionsListTable.php:388 src/form-container/edit.js:770
 msgid "To"
 msgstr ""
 
@@ -293,7 +293,7 @@ msgstr ""
 msgid "Form:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:222 src/form-container/edit.js:458
+#: includes/Admin/SubmissionsPage.php:222 src/form-container/edit.js:459
 msgid "Form ID:"
 msgstr ""
 
@@ -353,7 +353,11 @@ msgstr ""
 msgid "Submission marked as unread."
 msgstr ""
 
-#: includes/Forms/ClientMessages.php:34 src/form-container/render.php:473
+#: includes/Fields/LabelMarks.php:48 src/shared/required-mark.js:15
+msgid "(optional)"
+msgstr ""
+
+#: includes/Forms/ClientMessages.php:34 src/form-container/render.php:497
 msgid "Please check this field."
 msgstr ""
 
@@ -439,23 +443,23 @@ msgstr ""
 msgid "Consent"
 msgstr ""
 
-#: includes/Forms/Locator.php:465 src/field-address/render.php:58 src/field-address/edit.js:36 src/shared/conditional-logic-panel.js:75
+#: includes/Forms/Locator.php:465 src/field-address/render.php:58 src/field-address/edit.js:37 src/shared/conditional-logic-panel.js:75
 msgid "Street"
 msgstr ""
 
-#: includes/Forms/Locator.php:466 src/field-address/render.php:60 src/field-address/edit.js:38 src/shared/conditional-logic-panel.js:81
+#: includes/Forms/Locator.php:466 src/field-address/render.php:60 src/field-address/edit.js:39 src/field-text/edit.js:69 src/shared/conditional-logic-panel.js:81
 msgid "Postal code"
 msgstr ""
 
-#: includes/Forms/Locator.php:467 src/field-address/render.php:61 src/field-address/edit.js:39 src/shared/conditional-logic-panel.js:82
+#: includes/Forms/Locator.php:467 src/field-address/render.php:61 src/field-address/edit.js:40 src/field-text/edit.js:70 src/shared/conditional-logic-panel.js:82
 msgid "City"
 msgstr ""
 
-#: includes/Forms/Locator.php:472 src/field-address/render.php:59 src/field-address/edit.js:37 src/shared/conditional-logic-panel.js:78
+#: includes/Forms/Locator.php:472 src/field-address/render.php:59 src/field-address/edit.js:38 src/shared/conditional-logic-panel.js:78
 msgid "Address line 2"
 msgstr ""
 
-#: includes/Forms/Locator.php:476 src/field-address/render.php:62 src/field-address/edit.js:40 src/shared/conditional-logic-panel.js:85
+#: includes/Forms/Locator.php:476 src/field-address/render.php:62 src/field-address/edit.js:41 src/field-text/edit.js:71 src/shared/conditional-logic-panel.js:85
 msgid "Country"
 msgstr ""
 
@@ -479,11 +483,11 @@ msgstr ""
 msgid "You can reply to this email directly — your answer goes straight to the sender."
 msgstr ""
 
-#: includes/Notifications/Mailer.php:449 src/form-container/edit.js:774
+#: includes/Notifications/Mailer.php:449 src/form-container/edit.js:782
 msgid "New submission: {form:title}"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:488 src/form-container/edit.js:832
+#: includes/Notifications/Mailer.php:488 src/form-container/edit.js:840
 msgid "We received your submission"
 msgstr ""
 
@@ -581,7 +585,7 @@ msgstr ""
 msgid "Sorry, something went wrong saving your message. Please try again."
 msgstr ""
 
-#: includes/Submissions/Handler.php:575 src/form-container/render.php:44 src/form-container/edit.js:108
+#: includes/Submissions/Handler.php:575 src/form-container/render.php:44 src/form-container/edit.js:103
 msgid "Thank you! Your message has been sent successfully."
 msgstr ""
 
@@ -661,19 +665,19 @@ msgstr ""
 msgid "%s contains an invalid choice."
 msgstr ""
 
-#: src/field-address/render.php:45 src/field-address/edit.js:55 src/shared/conditional-logic-panel.js:88 src/shared/default-label.js:39
+#: src/field-address/render.php:45 src/field-address/edit.js:56 src/shared/conditional-logic-panel.js:88 src/shared/default-label.js:39
 msgid "Address"
 msgstr ""
 
-#: src/field-address/render.php:58 src/field-address/edit.js:36
+#: src/field-address/render.php:58 src/field-address/edit.js:37
 msgid "Street + house number"
 msgstr ""
 
-#: src/field-address/render.php:59 src/field-address/edit.js:37
+#: src/field-address/render.php:59 src/field-address/edit.js:38
 msgid "Apartment, suite, floor etc."
 msgstr ""
 
-#: src/field-checkbox/render.php:41 src/field-checkbox/edit.js:46
+#: src/field-checkbox/render.php:41 src/field-checkbox/edit.js:47
 msgid "Please select at least one option."
 msgstr ""
 
@@ -689,7 +693,7 @@ msgstr ""
 msgid "(opens in a new tab)"
 msgstr ""
 
-#: src/field-phone/render.php:67
+#: src/field-phone/render.php:65
 msgid "Digits and + - / ( ) . only"
 msgstr ""
 
@@ -697,12 +701,12 @@ msgstr ""
 msgid "Please choose …"
 msgstr ""
 
-#: src/form-container/render.php:37 src/form-container/edit.js:104 src/form-container/edit.js:993
+#: src/form-container/render.php:37 src/form-container/edit.js:99 src/form-container/edit.js:1007
 msgid "Send"
 msgstr ""
 
 #. translators: 1: current step number, 2: total step count
-#: src/form-container/render.php:290 src/form-container/render.php:568 src/form-container/edit.js:943
+#: src/form-container/render.php:290 src/form-container/render.php:592 src/form-container/edit.js:951
 #, javascript-format, php-format
 msgid "Step %1$s of %2$s"
 msgstr ""
@@ -719,7 +723,7 @@ msgstr ""
 msgid "Step %d"
 msgstr ""
 
-#: src/form-container/render.php:520
+#: src/form-container/render.php:544
 msgid "Leave this field empty"
 msgstr ""
 
@@ -743,67 +747,67 @@ msgstr ""
 msgid "Open the form"
 msgstr ""
 
-#: src/field-address/edit.js:60 src/field-checkbox/edit.js:28 src/field-date/edit.js:28 src/field-email/edit.js:28 src/field-number/edit.js:25 src/field-phone/edit.js:28 src/field-radio/edit.js:32 src/field-select/edit.js:28 src/field-text/edit.js:28 src/field-textarea/edit.js:33 src/field-toggle/edit.js:25 src/field-url/edit.js:28
+#: src/field-address/edit.js:61 src/field-checkbox/edit.js:29 src/field-date/edit.js:29 src/field-email/edit.js:29 src/field-number/edit.js:26 src/field-phone/edit.js:29 src/field-radio/edit.js:33 src/field-select/edit.js:29 src/field-text/edit.js:29 src/field-textarea/edit.js:34 src/field-toggle/edit.js:26 src/field-url/edit.js:29
 msgid "Field Settings"
 msgstr ""
 
-#: src/field-address/edit.js:62 src/field-checkbox/edit.js:30 src/field-date/edit.js:30 src/field-email/edit.js:30 src/field-number/edit.js:27 src/field-phone/edit.js:30 src/field-radio/edit.js:34 src/field-select/edit.js:30 src/field-text/edit.js:30 src/field-textarea/edit.js:35 src/field-toggle/edit.js:27 src/field-url/edit.js:30 src/shared/options-editor.js:79
+#: src/field-address/edit.js:63 src/field-checkbox/edit.js:31 src/field-date/edit.js:31 src/field-email/edit.js:31 src/field-number/edit.js:28 src/field-phone/edit.js:31 src/field-radio/edit.js:35 src/field-select/edit.js:31 src/field-text/edit.js:31 src/field-textarea/edit.js:36 src/field-toggle/edit.js:28 src/field-url/edit.js:31 src/shared/options-editor.js:79
 msgid "Label"
 msgstr ""
 
-#: src/field-address/edit.js:69 src/field-date/edit.js:37 src/field-email/edit.js:44 src/field-number/edit.js:41 src/field-phone/edit.js:44 src/field-radio/edit.js:41 src/field-select/edit.js:44 src/field-text/edit.js:44 src/field-textarea/edit.js:49 src/field-url/edit.js:44
+#: src/field-address/edit.js:70 src/field-date/edit.js:38 src/field-email/edit.js:45 src/field-number/edit.js:42 src/field-phone/edit.js:45 src/field-radio/edit.js:42 src/field-select/edit.js:45 src/field-text/edit.js:45 src/field-textarea/edit.js:50 src/field-url/edit.js:45
 msgid "Required"
 msgstr ""
 
-#: src/field-address/edit.js:70
+#: src/field-address/edit.js:71
 msgid "When enabled, street, postal code and city are all required."
 msgstr ""
 
-#: src/field-address/edit.js:76
+#: src/field-address/edit.js:77
 msgid "Show address line 2"
 msgstr ""
 
-#: src/field-address/edit.js:77
+#: src/field-address/edit.js:78
 msgid "Additional line for apartment, suite, floor etc."
 msgstr ""
 
-#: src/field-address/edit.js:83
+#: src/field-address/edit.js:84
 msgid "Show country"
 msgstr ""
 
-#: src/field-address/edit.js:90
+#: src/field-address/edit.js:91
 msgid "Default country"
 msgstr ""
 
-#: src/field-address/edit.js:91
+#: src/field-address/edit.js:92
 msgid "Pre-filled value, e.g. \"Deutschland\". Leave empty for no default."
 msgstr ""
 
-#: src/field-address/edit.js:99 src/field-checkbox/edit.js:54 src/field-date/edit.js:59 src/field-email/edit.js:50 src/field-number/edit.js:69 src/field-phone/edit.js:50 src/field-radio/edit.js:47 src/field-select/edit.js:56 src/field-text/edit.js:50 src/field-textarea/edit.js:64 src/field-toggle/edit.js:40 src/field-url/edit.js:50
+#: src/field-address/edit.js:100 src/field-checkbox/edit.js:55 src/field-date/edit.js:60 src/field-email/edit.js:51 src/field-number/edit.js:70 src/field-phone/edit.js:51 src/field-radio/edit.js:48 src/field-select/edit.js:57 src/field-text/edit.js:51 src/field-textarea/edit.js:65 src/field-toggle/edit.js:41 src/field-url/edit.js:51
 msgid "Help Text"
 msgstr ""
 
-#: src/field-address/edit.js:106 src/field-checkbox/edit.js:61 src/field-consent/edit.js:48 src/field-date/edit.js:66 src/field-email/edit.js:57 src/field-hidden/edit.js:66 src/field-number/edit.js:76 src/field-phone/edit.js:57 src/field-radio/edit.js:54 src/field-select/edit.js:63 src/field-text/edit.js:57 src/field-textarea/edit.js:71 src/field-toggle/edit.js:47 src/field-url/edit.js:57
+#: src/field-address/edit.js:107 src/field-checkbox/edit.js:62 src/field-consent/edit.js:48 src/field-date/edit.js:67 src/field-email/edit.js:58 src/field-hidden/edit.js:66 src/field-number/edit.js:77 src/field-phone/edit.js:58 src/field-radio/edit.js:55 src/field-select/edit.js:64 src/field-text/edit.js:79 src/field-textarea/edit.js:72 src/field-toggle/edit.js:48 src/field-url/edit.js:58
 msgid "Field Name"
 msgstr ""
 
-#: src/field-address/edit.js:107
+#: src/field-address/edit.js:108
 msgid "Prefix for sub-field keys (e.g. address → address_street, address_zip, address_city). Auto-generated; change with care."
 msgstr ""
 
-#: src/field-checkbox/edit.js:37
+#: src/field-checkbox/edit.js:38
 msgid "Required (at least one)"
 msgstr ""
 
-#: src/field-checkbox/edit.js:44
+#: src/field-checkbox/edit.js:45
 msgid "Required Message"
 msgstr ""
 
-#: src/field-checkbox/edit.js:45
+#: src/field-checkbox/edit.js:46
 msgid "Shown when the visitor submits without selecting an option. Leave empty for the default."
 msgstr ""
 
-#: src/field-checkbox/edit.js:68 src/field-radio/edit.js:87 src/field-select/edit.js:70
+#: src/field-checkbox/edit.js:69 src/field-radio/edit.js:88 src/field-select/edit.js:71
 msgid "Options"
 msgstr ""
 
@@ -819,19 +823,19 @@ msgstr ""
 msgid "Use {privacy_policy} as placeholder — it will be replaced with a link to your privacy policy page (Settings → Privacy)."
 msgstr ""
 
-#: src/field-date/edit.js:43
+#: src/field-date/edit.js:44
 msgid "Earliest Date"
 msgstr ""
 
-#: src/field-date/edit.js:51
+#: src/field-date/edit.js:52
 msgid "Latest Date"
 msgstr ""
 
-#: src/field-date/edit.js:67 src/field-email/edit.js:58 src/field-number/edit.js:77 src/field-phone/edit.js:58 src/field-text/edit.js:58 src/field-textarea/edit.js:72 src/field-toggle/edit.js:48 src/field-url/edit.js:58
+#: src/field-date/edit.js:68 src/field-email/edit.js:59 src/field-number/edit.js:78 src/field-phone/edit.js:59 src/field-text/edit.js:80 src/field-textarea/edit.js:73 src/field-toggle/edit.js:49 src/field-url/edit.js:59
 msgid "Key used in submission data. Auto-generated; change with care."
 msgstr ""
 
-#: src/field-email/edit.js:37 src/field-number/edit.js:34 src/field-phone/edit.js:37 src/field-text/edit.js:37 src/field-textarea/edit.js:42 src/field-url/edit.js:37
+#: src/field-email/edit.js:38 src/field-number/edit.js:35 src/field-phone/edit.js:38 src/field-text/edit.js:38 src/field-textarea/edit.js:43 src/field-url/edit.js:38
 msgid "Placeholder"
 msgstr ""
 
@@ -887,482 +891,698 @@ msgstr ""
 msgid "Hidden:"
 msgstr ""
 
-#: src/field-number/edit.js:47
+#: src/field-number/edit.js:48
 msgid "Min"
 msgstr ""
 
-#: src/field-number/edit.js:54
+#: src/field-number/edit.js:55
 msgid "Max"
 msgstr ""
 
-#: src/field-number/edit.js:61
+#: src/field-number/edit.js:62
 msgid "Step"
 msgstr ""
 
-#: src/field-number/edit.js:62
+#: src/field-number/edit.js:63
 msgid "Decimal step, e.g. 0.01 for currency. Leave empty for whole numbers."
 msgstr ""
 
-#: src/field-radio/edit.js:61
+#: src/field-radio/edit.js:62
 msgid "Display"
 msgstr ""
 
-#: src/field-radio/edit.js:62
+#: src/field-radio/edit.js:63
 msgid "Show the choices as a plain list or as selectable buttons."
 msgstr ""
 
-#: src/field-radio/edit.js:65
+#: src/field-radio/edit.js:66
 msgid "List"
 msgstr ""
 
-#: src/field-radio/edit.js:66
+#: src/field-radio/edit.js:67
 msgid "Buttons"
 msgstr ""
 
-#: src/field-radio/edit.js:74
+#: src/field-radio/edit.js:75
 msgid "Button Shape"
 msgstr ""
 
-#: src/field-radio/edit.js:77
+#: src/field-radio/edit.js:78
 msgid "Pill"
 msgstr ""
 
-#: src/field-radio/edit.js:78
+#: src/field-radio/edit.js:79
 msgid "Rounded"
 msgstr ""
 
-#: src/field-radio/edit.js:79
+#: src/field-radio/edit.js:80
 msgid "Square"
 msgstr ""
 
-#: src/field-select/edit.js:37
+#: src/field-select/edit.js:38
 msgid "Placeholder (single select only)"
 msgstr ""
 
-#: src/field-select/edit.js:50
+#: src/field-select/edit.js:51
 msgid "Allow multiple selections"
 msgstr ""
 
-#: src/field-textarea/edit.js:55
+#: src/field-text/edit.js:58
+msgid "Autofill"
+msgstr ""
+
+#: src/field-text/edit.js:59
+msgid "Tells the browser what this field asks for, so it can fill it in. Saves typing, especially on phones."
+msgstr ""
+
+#: src/field-text/edit.js:62
+msgid "Not set"
+msgstr ""
+
+#: src/field-text/edit.js:63
+msgid "Full name"
+msgstr ""
+
+#: src/field-text/edit.js:64 src/form-container/templates.js:130
+msgid "First name"
+msgstr ""
+
+#: src/field-text/edit.js:65
+msgid "Last name"
+msgstr ""
+
+#: src/field-text/edit.js:66 src/form-container/templates.js:95
+msgid "Company"
+msgstr ""
+
+#: src/field-text/edit.js:67
+msgid "Job title"
+msgstr ""
+
+#: src/field-text/edit.js:68
+msgid "Street address"
+msgstr ""
+
+#: src/field-text/edit.js:72
+msgid "Off (never autofill)"
+msgstr ""
+
+#: src/field-textarea/edit.js:56
 msgid "Rows"
 msgstr ""
 
-#: src/field-toggle/edit.js:28
+#: src/field-toggle/edit.js:29
 msgid "Shown next to the checkbox. Plain HTML allowed."
 msgstr ""
 
-#: src/field-toggle/edit.js:34
+#: src/field-toggle/edit.js:35
 msgid "Required (must be checked)"
 msgstr ""
 
-#: src/form-container/edit.js:74
-msgid "Name"
-msgstr ""
-
-#: src/form-container/edit.js:75 src/shared/default-label.js:43
-msgid "Email"
-msgstr ""
-
-#: src/form-container/edit.js:76 src/shared/default-label.js:46
-msgid "Message"
-msgstr ""
-
-#: src/form-container/edit.js:441
+#: src/form-container/edit.js:442
 msgid "Form Settings"
 msgstr ""
 
-#: src/form-container/edit.js:443
+#: src/form-container/edit.js:444
 msgid "Form Title"
 msgstr ""
 
-#: src/form-container/edit.js:444
+#: src/form-container/edit.js:445
 msgid "Internal name shown in the Forms admin overview. Not visible to visitors."
 msgstr ""
 
-#: src/form-container/edit.js:451
+#: src/form-container/edit.js:452
 msgid "Submit Button Label"
 msgstr ""
 
-#: src/form-container/edit.js:463
+#: src/form-container/edit.js:464
 msgid "After Submit"
 msgstr ""
 
-#: src/form-container/edit.js:467
+#: src/form-container/edit.js:468
 msgid "On successful submission"
 msgstr ""
 
-#: src/form-container/edit.js:474
+#: src/form-container/edit.js:475
 msgid "Show message"
 msgstr ""
 
-#: src/form-container/edit.js:475
+#: src/form-container/edit.js:476
 msgid "Redirect to URL"
 msgstr ""
 
-#: src/form-container/edit.js:480
+#: src/form-container/edit.js:481
 msgid "Success Message"
 msgstr ""
 
-#: src/form-container/edit.js:481
+#: src/form-container/edit.js:482
 msgid "Shown in place of the form after a successful submission."
 msgstr ""
 
-#: src/form-container/edit.js:491
+#: src/form-container/edit.js:492
 msgid "Redirect URL"
 msgstr ""
 
-#: src/form-container/edit.js:492
+#: src/form-container/edit.js:493
 msgid "Same-origin only. Enter a path (/danke) or a full URL on this site. External URLs are silently rejected by the safe-redirect filter — operators who need cross-domain thank-you pages get a site-wide opt-in toggle in a later release."
 msgstr ""
 
-#: src/form-container/edit.js:500
+#: src/form-container/edit.js:501
 msgid "https://example.com/danke"
 msgstr ""
 
-#: src/form-container/edit.js:506
+#: src/form-container/edit.js:507
 msgid "Append submission ID"
 msgstr ""
 
-#: src/form-container/edit.js:507
+#: src/form-container/edit.js:508
 msgid "Adds ?flinkform_submission_id=N to the redirect URL — useful for analytics events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off because submission IDs are PII-adjacent and end up in browser history."
 msgstr ""
 
-#: src/form-container/edit.js:514
+#: src/form-container/edit.js:515
 msgid "Append form ID"
 msgstr ""
 
-#: src/form-container/edit.js:515
+#: src/form-container/edit.js:516
 msgid "Adds ?flinkform_form_id=UUID — lets a shared thank-you page differentiate conversions by source form."
 msgstr ""
 
-#: src/form-container/edit.js:525
+#: src/form-container/edit.js:526
 msgid "Style"
 msgstr ""
 
-#: src/form-container/edit.js:530
+#: src/form-container/edit.js:531
 msgid "Primary color"
 msgstr ""
 
-#: src/form-container/edit.js:531
+#: src/form-container/edit.js:532
 msgid "Used for submit button, focus rings, and accent details. Leave unset to inherit from your theme."
 msgstr ""
 
-#: src/form-container/edit.js:543
+#: src/form-container/edit.js:544
 msgid "Label colour"
 msgstr ""
 
-#: src/form-container/edit.js:544
+#: src/form-container/edit.js:545
 msgid "Field labels and group headings. Leave unset to inherit from your theme."
 msgstr ""
 
-#: src/form-container/edit.js:556
+#: src/form-container/edit.js:557
 msgid "Help & consent text colour"
 msgstr ""
 
-#: src/form-container/edit.js:557
+#: src/form-container/edit.js:558
 msgid "Help texts and the consent sentence — the quiet gray layer. Handy on dark backgrounds."
 msgstr ""
 
-#: src/form-container/edit.js:569
+#: src/form-container/edit.js:570
 msgid "Field style"
 msgstr ""
 
-#: src/form-container/edit.js:570
+#: src/form-container/edit.js:571
 msgid "Bordered: full outline. Soft: light gray border. Underline: bottom border only. Minimal: no border, subtle background."
 msgstr ""
 
-#: src/form-container/edit.js:573
+#: src/form-container/edit.js:574
 msgid "Bordered"
 msgstr ""
 
-#: src/form-container/edit.js:574
+#: src/form-container/edit.js:575
 msgid "Soft"
 msgstr ""
 
-#: src/form-container/edit.js:575
+#: src/form-container/edit.js:576
 msgid "Underline"
 msgstr ""
 
-#: src/form-container/edit.js:576
+#: src/form-container/edit.js:577
 msgid "Minimal"
 msgstr ""
 
-#: src/form-container/edit.js:583
+#: src/form-container/edit.js:584
 msgid "Border radius"
 msgstr ""
 
-#: src/form-container/edit.js:584
+#: src/form-container/edit.js:585
 msgid "Applies to fields and the submit button. Leave at the default to inherit from your theme."
 msgstr ""
 
-#: src/form-container/edit.js:598
+#: src/form-container/edit.js:599
 msgid "Field spacing"
 msgstr ""
 
-#: src/form-container/edit.js:601
+#: src/form-container/edit.js:602
 msgid "Compact"
 msgstr ""
 
-#: src/form-container/edit.js:602
+#: src/form-container/edit.js:603
 msgid "Normal"
 msgstr ""
 
-#: src/form-container/edit.js:603
+#: src/form-container/edit.js:604
 msgid "Relaxed"
 msgstr ""
 
-#: src/form-container/edit.js:610
+#: src/form-container/edit.js:611
 msgid "Label position"
 msgstr ""
 
-#: src/form-container/edit.js:613
+#: src/form-container/edit.js:614
 msgid "Material-style notched label: rests inside the input, then slides onto the top border on focus, cutting a notch through it. Applies to text-style fields."
 msgstr ""
 
-#: src/form-container/edit.js:615
+#: src/form-container/edit.js:616
 msgid "Labels are visually hidden (still accessible to screen readers). The label text is used as placeholder inside the field. Applies to text-style fields only."
 msgstr ""
 
-#: src/form-container/edit.js:616
+#: src/form-container/edit.js:617
 msgid "Beside, Floating and Hidden apply to text-style fields only."
 msgstr ""
 
-#: src/form-container/edit.js:620
+#: src/form-container/edit.js:621
 msgid "Above"
 msgstr ""
 
-#: src/form-container/edit.js:621
+#: src/form-container/edit.js:622
 msgid "Beside"
 msgstr ""
 
-#: src/form-container/edit.js:622
+#: src/form-container/edit.js:623
 msgid "Floating"
 msgstr ""
 
-#: src/form-container/edit.js:623
+#: src/form-container/edit.js:624
 msgid "Hidden"
 msgstr ""
 
-#: src/form-container/edit.js:630
-msgid "Columns"
+#: src/form-container/edit.js:631
+msgid "Mark optional fields"
 msgstr ""
 
-#: src/form-container/edit.js:631
-msgid "Two-column layout collapses to a single column on mobile. Individual fields can be set to span both columns via their own inspector."
+#: src/form-container/edit.js:632
+msgid "Adds \"(optional)\" to every field that is not required. Useful when most fields are required anyway."
 msgstr ""
 
 #: src/form-container/edit.js:638
-msgid "1 column"
+msgid "Columns"
 msgstr ""
 
 #: src/form-container/edit.js:639
-msgid "2 columns"
-msgstr ""
-
-#: src/form-container/edit.js:642
-msgid "Submit button style"
-msgstr ""
-
-#: src/form-container/edit.js:645
-msgid "Fill"
+msgid "Two-column layout collapses to a single column on mobile. Individual fields can be set to span both columns via their own inspector."
 msgstr ""
 
 #: src/form-container/edit.js:646
-msgid "Outline"
+msgid "1 column"
 msgstr ""
 
 #: src/form-container/edit.js:647
-msgid "Ghost"
+msgid "2 columns"
+msgstr ""
+
+#: src/form-container/edit.js:650
+msgid "Submit button style"
+msgstr ""
+
+#: src/form-container/edit.js:653
+msgid "Fill"
 msgstr ""
 
 #: src/form-container/edit.js:654
-msgid "Button background"
+msgid "Outline"
 msgstr ""
 
 #: src/form-container/edit.js:655
+msgid "Ghost"
+msgstr ""
+
+#: src/form-container/edit.js:662
+msgid "Button background"
+msgstr ""
+
+#: src/form-container/edit.js:663
 msgid "Leave unset to use the primary colour."
 msgstr ""
 
-#: src/form-container/edit.js:667
+#: src/form-container/edit.js:675
 msgid "Button text colour"
 msgstr ""
 
-#: src/form-container/edit.js:668
+#: src/form-container/edit.js:676
 msgid "Leave unset for automatic contrast."
 msgstr ""
 
-#: src/form-container/edit.js:680
+#: src/form-container/edit.js:688
 msgid "Button border colour"
 msgstr ""
 
-#: src/form-container/edit.js:681
+#: src/form-container/edit.js:689
 msgid "Only visible when button style is \"Outline\". Leave unset to match the background colour."
 msgstr ""
 
-#: src/form-container/edit.js:693
+#: src/form-container/edit.js:701
 msgid "Progress indicator"
 msgstr ""
 
-#: src/form-container/edit.js:694
+#: src/form-container/edit.js:702
 msgid "Shown on multi-step forms only. Bar fills as the user advances; Dots marks each step; Numbers reads \"Step X of Y\"."
 msgstr ""
 
-#: src/form-container/edit.js:697
+#: src/form-container/edit.js:705
 msgid "Bar"
 msgstr ""
 
-#: src/form-container/edit.js:698
+#: src/form-container/edit.js:706
 msgid "Dots"
 msgstr ""
 
-#: src/form-container/edit.js:699
+#: src/form-container/edit.js:707
 msgid "Numbers"
 msgstr ""
 
-#: src/form-container/edit.js:700
+#: src/form-container/edit.js:708
 msgid "None"
 msgstr ""
 
-#: src/form-container/edit.js:708
+#: src/form-container/edit.js:716
 msgid "Show step labels"
 msgstr ""
 
-#: src/form-container/edit.js:709
+#: src/form-container/edit.js:717
 msgid "Display the current step’s label (from the Page Break block) beneath the indicator. Only shows when at least one Page Break has a label."
 msgstr ""
 
-#: src/form-container/edit.js:718
+#: src/form-container/edit.js:726
 msgid "Notifications"
 msgstr ""
 
-#: src/form-container/edit.js:722
+#: src/form-container/edit.js:730
 msgid "Send from (name)"
 msgstr ""
 
-#: src/form-container/edit.js:723
+#: src/form-container/edit.js:731
 msgid "Shown as the sender of both emails below. Leave empty to keep what WordPress or your SMTP plugin uses."
 msgstr ""
 
-#: src/form-container/edit.js:730
+#: src/form-container/edit.js:738
 msgid "Send from (address)"
 msgstr ""
 
-#: src/form-container/edit.js:731
+#: src/form-container/edit.js:739
 msgid "Use an address on this website’s own domain. Leave empty to keep the site default."
 msgstr ""
 
 #. translators: 1: domain of the sender address, 2: the website's own domain.
-#: src/form-container/edit.js:743
+#: src/form-container/edit.js:751
 #, javascript-format
 msgid "The sender address is on %1$s, but this website is %2$s. Your server is not authorised to send as %1$s, so these emails will likely fail SPF and land in spam. Send from your own domain and put the other address in a Reply-To field instead."
 msgstr ""
 
-#: src/form-container/edit.js:753
+#: src/form-container/edit.js:761
 msgid "Send admin notification"
 msgstr ""
 
-#: src/form-container/edit.js:754
+#: src/form-container/edit.js:762
 msgid "Email the site admin when a submission is received."
 msgstr ""
 
-#: src/form-container/edit.js:763
+#: src/form-container/edit.js:771
 msgid "Comma-separated. Leave empty to use the site admin email. Supports merge tags like {field:email}."
 msgstr ""
 
-#: src/form-container/edit.js:765
+#: src/form-container/edit.js:773
 msgid "Site admin email"
 msgstr ""
 
-#: src/form-container/edit.js:771 src/form-container/edit.js:829
+#: src/form-container/edit.js:779 src/form-container/edit.js:837
 msgid "Subject"
 msgstr ""
 
-#: src/form-container/edit.js:772 src/form-container/edit.js:830
+#: src/form-container/edit.js:780 src/form-container/edit.js:838
 msgid "Supports merge tags. Leave empty for the default."
 msgstr ""
 
-#: src/form-container/edit.js:780 src/form-container/edit.js:838
+#: src/form-container/edit.js:788 src/form-container/edit.js:846
 msgid "Body"
 msgstr ""
 
-#: src/form-container/edit.js:781
+#: src/form-container/edit.js:789
 msgid "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated list of all fields."
 msgstr ""
 
-#: src/form-container/edit.js:783
+#: src/form-container/edit.js:791
 msgid "Auto-generated field list"
 msgstr ""
 
-#: src/form-container/edit.js:789 src/form-container/edit.js:847
+#: src/form-container/edit.js:797 src/form-container/edit.js:855
 msgid "Reply-To"
 msgstr ""
 
-#: src/form-container/edit.js:790
+#: src/form-container/edit.js:798
 msgid "Often set to {field:<emailFieldName>} so replies go to the submitter. Leave empty to use the site default."
 msgstr ""
 
-#: src/form-container/edit.js:803
+#: src/form-container/edit.js:811
 msgid "Send confirmation to submitter"
 msgstr ""
 
-#: src/form-container/edit.js:804
+#: src/form-container/edit.js:812
 msgid "Email a copy of the submission back to the person who filled out the form."
 msgstr ""
 
-#: src/form-container/edit.js:811
+#: src/form-container/edit.js:819
 msgid "Add an email field to this form to enable submitter confirmations."
 msgstr ""
 
-#: src/form-container/edit.js:817
+#: src/form-container/edit.js:825
 msgid "Email field"
 msgstr ""
 
-#: src/form-container/edit.js:818
+#: src/form-container/edit.js:826
 msgid "Which field contains the submitter’s email address."
 msgstr ""
 
-#: src/form-container/edit.js:821 src/shared/conditional-logic-panel.js:161
+#: src/form-container/edit.js:829 src/shared/conditional-logic-panel.js:161
 msgid "— Select a field —"
 msgstr ""
 
-#: src/form-container/edit.js:839
+#: src/form-container/edit.js:847
 msgid "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated thank-you with the submitted values."
 msgstr ""
 
-#: src/form-container/edit.js:841
+#: src/form-container/edit.js:849
 msgid "Auto-generated thank-you with submitted values"
 msgstr ""
 
-#: src/form-container/edit.js:848
+#: src/form-container/edit.js:856
 msgid "Where a reply from the submitter should go. Useful when the form sends from the website address but you read your mail somewhere else. Leave empty to reply to the sender address."
 msgstr ""
 
-#: src/form-container/edit.js:865
+#: src/form-container/edit.js:873
 msgid "Submit Condition"
 msgstr ""
 
-#: src/form-container/edit.js:866
+#: src/form-container/edit.js:874
 msgid "Gate the submit button"
 msgstr ""
 
-#: src/form-container/edit.js:867
+#: src/form-container/edit.js:875
 msgid "Disable the submit button until the rules below match. Useful for \"I agree to terms\" checkboxes."
 msgstr ""
 
-#: src/form-container/edit.js:889
+#: src/form-container/edit.js:897
 msgid "Data Retention"
 msgstr ""
 
-#: src/form-container/edit.js:893
+#: src/form-container/edit.js:901
 msgid "Auto-delete submissions after (days)"
 msgstr ""
 
-#: src/form-container/edit.js:895
+#: src/form-container/edit.js:903
 msgid "GDPR storage limitation: automatically delete this form’s submissions older than the chosen number of days. 0 = keep forever. Purges run daily and also remove any linked Flinkform Pro webhook delivery records."
 msgstr ""
 
-#: src/form-container/edit.js:976
+#: src/form-container/edit.js:990
 msgid "Add field"
+msgstr ""
+
+#: src/form-container/start-picker.js:26
+msgid "Start with a template"
+msgstr ""
+
+#: src/form-container/start-picker.js:27
+msgid "Every template includes the GDPR consent field. You can change everything afterwards."
+msgstr ""
+
+#: src/form-container/start-picker.js:40
+msgid "Start empty"
+msgstr ""
+
+#: src/form-container/templates.js:24
+msgid "Name"
+msgstr ""
+
+#: src/form-container/templates.js:25 src/shared/default-label.js:43
+msgid "Email"
+msgstr ""
+
+#: src/form-container/templates.js:30 src/form-container/templates.js:93
+msgid "Contact"
+msgstr ""
+
+#: src/form-container/templates.js:31
+msgid "Name, email, message."
+msgstr ""
+
+#: src/form-container/templates.js:32
+msgid "Contact form"
+msgstr ""
+
+#: src/form-container/templates.js:36 src/shared/default-label.js:46
+msgid "Message"
+msgstr ""
+
+#: src/form-container/templates.js:42 src/form-container/templates.js:44
+msgid "Callback request"
+msgstr ""
+
+#: src/form-container/templates.js:43
+msgid "Name, phone number and the best time to call."
+msgstr ""
+
+#: src/form-container/templates.js:44
+msgid "Request a callback"
+msgstr ""
+
+#: src/form-container/templates.js:47 src/form-container/templates.js:97 src/form-container/templates.js:109 src/shared/default-label.js:48
+msgid "Phone"
+msgstr ""
+
+#: src/form-container/templates.js:50
+msgid "Best time to call"
+msgstr ""
+
+#: src/form-container/templates.js:53 src/form-container/templates.js:116
+msgid "Morning"
+msgstr ""
+
+#: src/form-container/templates.js:54 src/form-container/templates.js:117
+msgid "Afternoon"
+msgstr ""
+
+#: src/form-container/templates.js:55
+msgid "Evening"
+msgstr ""
+
+#: src/form-container/templates.js:58
+msgid "What is it about?"
+msgstr ""
+
+#: src/form-container/templates.js:64
+msgid "Project inquiry (3 steps)"
+msgstr ""
+
+#: src/form-container/templates.js:65
+msgid "Project, details, contact. Short steps convert better than one long form."
+msgstr ""
+
+#: src/form-container/templates.js:66
+msgid "Project inquiry"
+msgstr ""
+
+#: src/form-container/templates.js:66
+msgid "Send inquiry"
+msgstr ""
+
+#: src/form-container/templates.js:70
+msgid "What are you planning?"
+msgstr ""
+
+#: src/form-container/templates.js:74
+msgid "New website"
+msgstr ""
+
+#: src/form-container/templates.js:75
+msgid "Relaunch"
+msgstr ""
+
+#: src/form-container/templates.js:76
+msgid "Online shop"
+msgstr ""
+
+#: src/form-container/templates.js:77
+msgid "Something else"
+msgstr ""
+
+#: src/form-container/templates.js:82
+msgid "Budget"
+msgstr ""
+
+#: src/form-container/templates.js:84
+msgid "Not sure yet"
+msgstr ""
+
+#: src/form-container/templates.js:85
+msgid "Up to 5,000"
+msgstr ""
+
+#: src/form-container/templates.js:86
+msgid "5,000 to 15,000"
+msgstr ""
+
+#: src/form-container/templates.js:87
+msgid "More than 15,000"
+msgstr ""
+
+#: src/form-container/templates.js:90
+msgid "Details"
+msgstr ""
+
+#: src/form-container/templates.js:91
+msgid "Tell us about the project"
+msgstr ""
+
+#: src/form-container/templates.js:92
+msgid "Current website (if any)"
+msgstr ""
+
+#: src/form-container/templates.js:103 src/form-container/templates.js:105
+msgid "Appointment request"
+msgstr ""
+
+#: src/form-container/templates.js:104
+msgid "Preferred date and time of day, plus contact details."
+msgstr ""
+
+#: src/form-container/templates.js:105
+msgid "Request appointment"
+msgstr ""
+
+#: src/form-container/templates.js:110
+msgid "Preferred date"
+msgstr ""
+
+#: src/form-container/templates.js:113
+msgid "Time of day"
+msgstr ""
+
+#: src/form-container/templates.js:120
+msgid "Anything we should know?"
+msgstr ""
+
+#: src/form-container/templates.js:126 src/form-container/templates.js:128
+msgid "Newsletter sign-up"
+msgstr ""
+
+#: src/form-container/templates.js:127
+msgid "First name and email with an explicit opt-in."
+msgstr ""
+
+#: src/form-container/templates.js:128
+msgid "Subscribe"
+msgstr ""
+
+#: src/form-container/templates.js:132
+msgid "Yes, I would like to receive the newsletter. I can unsubscribe at any time. Details in the {privacy_policy}."
 msgstr ""
 
 #: src/notice/edit.js:33 src/notice/block.json
@@ -1563,10 +1783,6 @@ msgstr ""
 
 #: src/shared/default-label.js:47
 msgid "Number"
-msgstr ""
-
-#: src/shared/default-label.js:48
-msgid "Phone"
 msgstr ""
 
 #: src/shared/default-label.js:50

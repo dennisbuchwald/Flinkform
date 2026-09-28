@@ -45,9 +45,7 @@ $described = trim( $help_id . ' ' . $error_id );
 >
 	<legend class="flinkform-field__label">
 		<?php echo esc_html( $label ); ?>
-		<?php if ( $required ) : ?>
-			<span class="flinkform-field__required" aria-hidden="true"> *</span>
-		<?php endif; ?>
+		<?php echo \Flinkform\Fields\LabelMarks::html( (bool) $required, $block ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside LabelMarks::html(). ?>
 	</legend>
 	<?php foreach ( $options as $i => $opt ) : ?>
 		<?php

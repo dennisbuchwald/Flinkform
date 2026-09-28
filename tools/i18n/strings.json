@@ -1,19 +1,64 @@
 {
-  "Please fill in this field.": ["Bitte fülle dieses Feld aus.", "Bitte füllen Sie dieses Feld aus."],
-  "Please choose an option.": ["Bitte wähle eine Option.", "Bitte wählen Sie eine Option."],
-  "Please tick this box to continue.": ["Bitte setze das Häkchen, um fortzufahren.", "Bitte setzen Sie das Häkchen, um fortzufahren."],
-  "Please enter a valid email address.": ["Bitte gib eine gültige E-Mail-Adresse ein.", "Bitte geben Sie eine gültige E-Mail-Adresse ein."],
-  "Please enter a valid web address (https://…).": ["Bitte gib eine gültige Webadresse ein (https://…).", "Bitte geben Sie eine gültige Webadresse ein (https://…)."],
-  "Please enter a valid phone number.": ["Bitte gib eine gültige Telefonnummer ein.", "Bitte geben Sie eine gültige Telefonnummer ein."],
-  "Please enter a number.": ["Bitte gib eine Zahl ein.", "Bitte geben Sie eine Zahl ein."],
-  "Please enter a valid date.": ["Bitte gib ein gültiges Datum ein.", "Bitte geben Sie ein gültiges Datum ein."],
-  "Please enter a value of at least %s.": ["Bitte gib mindestens %s ein.", "Bitte geben Sie mindestens %s ein."],
-  "Please enter a value of at most %s.": ["Bitte gib höchstens %s ein.", "Bitte geben Sie höchstens %s ein."],
-  "Please choose a date on or after %s.": ["Bitte wähle ein Datum ab dem %s.", "Bitte wählen Sie ein Datum ab dem %s."],
-  "Please choose a date on or before %s.": ["Bitte wähle ein Datum bis zum %s.", "Bitte wählen Sie ein Datum bis zum %s."],
-  "Please use at least %s characters.": ["Bitte verwende mindestens %s Zeichen.", "Bitte verwenden Sie mindestens %s Zeichen."],
-  "Please use at most %s characters.": ["Bitte verwende höchstens %s Zeichen.", "Bitte verwenden Sie höchstens %s Zeichen."],
-  "Please enter a valid value.": ["Bitte gib einen gültigen Wert ein.", "Bitte geben Sie einen gültigen Wert ein."],
+  "Please fill in this field.": [
+    "Bitte fülle dieses Feld aus.",
+    "Bitte füllen Sie dieses Feld aus."
+  ],
+  "Please choose an option.": [
+    "Bitte wähle eine Option.",
+    "Bitte wählen Sie eine Option."
+  ],
+  "Please tick this box to continue.": [
+    "Bitte setze das Häkchen, um fortzufahren.",
+    "Bitte setzen Sie das Häkchen, um fortzufahren."
+  ],
+  "Please enter a valid email address.": [
+    "Bitte gib eine gültige E-Mail-Adresse ein.",
+    "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+  ],
+  "Please enter a valid web address (https://…).": [
+    "Bitte gib eine gültige Webadresse ein (https://…).",
+    "Bitte geben Sie eine gültige Webadresse ein (https://…)."
+  ],
+  "Please enter a valid phone number.": [
+    "Bitte gib eine gültige Telefonnummer ein.",
+    "Bitte geben Sie eine gültige Telefonnummer ein."
+  ],
+  "Please enter a number.": [
+    "Bitte gib eine Zahl ein.",
+    "Bitte geben Sie eine Zahl ein."
+  ],
+  "Please enter a valid date.": [
+    "Bitte gib ein gültiges Datum ein.",
+    "Bitte geben Sie ein gültiges Datum ein."
+  ],
+  "Please enter a value of at least %s.": [
+    "Bitte gib mindestens %s ein.",
+    "Bitte geben Sie mindestens %s ein."
+  ],
+  "Please enter a value of at most %s.": [
+    "Bitte gib höchstens %s ein.",
+    "Bitte geben Sie höchstens %s ein."
+  ],
+  "Please choose a date on or after %s.": [
+    "Bitte wähle ein Datum ab dem %s.",
+    "Bitte wählen Sie ein Datum ab dem %s."
+  ],
+  "Please choose a date on or before %s.": [
+    "Bitte wähle ein Datum bis zum %s.",
+    "Bitte wählen Sie ein Datum bis zum %s."
+  ],
+  "Please use at least %s characters.": [
+    "Bitte verwende mindestens %s Zeichen.",
+    "Bitte verwenden Sie mindestens %s Zeichen."
+  ],
+  "Please use at most %s characters.": [
+    "Bitte verwende höchstens %s Zeichen.",
+    "Bitte verwenden Sie höchstens %s Zeichen."
+  ],
+  "Please enter a valid value.": [
+    "Bitte gib einen gültigen Wert ein.",
+    "Bitte geben Sie einen gültigen Wert ein."
+  ],
   "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated list of all fields.": [
     "Verfügbare Tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Auswahlfelder fügen die Beschriftung der Option ein, {field:<fieldName>:value} den gespeicherten Wert. Leer lassen für eine automatisch generierte Liste aller Felder.",
     "Verfügbare Tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Auswahlfelder fügen die Beschriftung der Option ein, {field:<fieldName>:value} den gespeicherten Wert. Leer lassen für eine automatisch generierte Liste aller Felder."
@@ -21,5 +66,221 @@
   "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated thank-you with the submitted values.": [
     "Verfügbare Tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Auswahlfelder fügen die Beschriftung der Option ein, {field:<fieldName>:value} den gespeicherten Wert. Leer lassen für eine automatisch generierte Danksagung mit den eingereichten Werten.",
     "Verfügbare Tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Auswahlfelder fügen die Beschriftung der Option ein, {field:<fieldName>:value} den gespeicherten Wert. Leer lassen für eine automatisch generierte Danksagung mit den eingereichten Werten."
+  ],
+  "(optional)": [
+    "(optional)",
+    "(optional)"
+  ],
+  "Autofill": [
+    "Automatisch ausfüllen",
+    "Automatisch ausfüllen"
+  ],
+  "Tells the browser what this field asks for, so it can fill it in. Saves typing, especially on phones.": [
+    "Sagt dem Browser, was in dieses Feld gehört, damit er es ausfüllen kann. Spart Tipparbeit, besonders auf dem Handy.",
+    "Sagt dem Browser, was in dieses Feld gehört, damit er es ausfüllen kann. Spart Tipparbeit, besonders auf dem Handy."
+  ],
+  "Not set": [
+    "Nicht festgelegt",
+    "Nicht festgelegt"
+  ],
+  "Full name": [
+    "Vollständiger Name",
+    "Vollständiger Name"
+  ],
+  "First name": [
+    "Vorname",
+    "Vorname"
+  ],
+  "Last name": [
+    "Nachname",
+    "Nachname"
+  ],
+  "Company": [
+    "Firma",
+    "Firma"
+  ],
+  "Job title": [
+    "Position",
+    "Position"
+  ],
+  "Street address": [
+    "Straße und Hausnummer",
+    "Straße und Hausnummer"
+  ],
+  "Off (never autofill)": [
+    "Aus (nie automatisch ausfüllen)",
+    "Aus (nie automatisch ausfüllen)"
+  ],
+  "Mark optional fields": [
+    "Optionale Felder kennzeichnen",
+    "Optionale Felder kennzeichnen"
+  ],
+  "Adds \"(optional)\" to every field that is not required. Useful when most fields are required anyway.": [
+    "Ergänzt „(optional)“ an jedem Feld, das kein Pflichtfeld ist. Sinnvoll, wenn ohnehin fast alle Felder Pflicht sind.",
+    "Ergänzt „(optional)“ an jedem Feld, das kein Pflichtfeld ist. Sinnvoll, wenn ohnehin fast alle Felder Pflicht sind."
+  ],
+  "Start with a template": [
+    "Starte mit einer Vorlage",
+    "Mit einer Vorlage starten"
+  ],
+  "Every template includes the GDPR consent field. You can change everything afterwards.": [
+    "Jede Vorlage enthält das DSGVO-Einwilligungsfeld. Du kannst danach alles ändern.",
+    "Jede Vorlage enthält das DSGVO-Einwilligungsfeld. Sie können danach alles ändern."
+  ],
+  "Start empty": [
+    "Leer beginnen",
+    "Leer beginnen"
+  ],
+  "Contact": [
+    "Kontakt",
+    "Kontakt"
+  ],
+  "Name, email, message.": [
+    "Name, E-Mail, Nachricht.",
+    "Name, E-Mail, Nachricht."
+  ],
+  "Contact form": [
+    "Kontaktformular",
+    "Kontaktformular"
+  ],
+  "Callback request": [
+    "Rückrufbitte",
+    "Rückrufbitte"
+  ],
+  "Name, phone number and the best time to call.": [
+    "Name, Telefonnummer und die beste Zeit für den Rückruf.",
+    "Name, Telefonnummer und die beste Zeit für den Rückruf."
+  ],
+  "Request a callback": [
+    "Rückruf anfordern",
+    "Rückruf anfordern"
+  ],
+  "Best time to call": [
+    "Wann bist du am besten erreichbar?",
+    "Wann sind Sie am besten erreichbar?"
+  ],
+  "Morning": [
+    "Vormittags",
+    "Vormittags"
+  ],
+  "Afternoon": [
+    "Nachmittags",
+    "Nachmittags"
+  ],
+  "Evening": [
+    "Abends",
+    "Abends"
+  ],
+  "What is it about?": [
+    "Worum geht es?",
+    "Worum geht es?"
+  ],
+  "Project inquiry (3 steps)": [
+    "Projektanfrage (3 Schritte)",
+    "Projektanfrage (3 Schritte)"
+  ],
+  "Project, details, contact. Short steps convert better than one long form.": [
+    "Projekt, Details, Kontakt. Kurze Schritte werden öfter abgeschickt als ein langes Formular.",
+    "Projekt, Details, Kontakt. Kurze Schritte werden öfter abgeschickt als ein langes Formular."
+  ],
+  "Project inquiry": [
+    "Projektanfrage",
+    "Projektanfrage"
+  ],
+  "Send inquiry": [
+    "Anfrage senden",
+    "Anfrage senden"
+  ],
+  "What are you planning?": [
+    "Was hast du vor?",
+    "Was haben Sie vor?"
+  ],
+  "New website": [
+    "Neue Website",
+    "Neue Website"
+  ],
+  "Relaunch": [
+    "Relaunch",
+    "Relaunch"
+  ],
+  "Online shop": [
+    "Onlineshop",
+    "Onlineshop"
+  ],
+  "Something else": [
+    "Etwas anderes",
+    "Etwas anderes"
+  ],
+  "Budget": [
+    "Budget",
+    "Budget"
+  ],
+  "Not sure yet": [
+    "Noch unklar",
+    "Noch unklar"
+  ],
+  "Up to 5,000": [
+    "Bis 5.000 €",
+    "Bis 5.000 €"
+  ],
+  "5,000 to 15,000": [
+    "5.000 bis 15.000 €",
+    "5.000 bis 15.000 €"
+  ],
+  "More than 15,000": [
+    "Mehr als 15.000 €",
+    "Mehr als 15.000 €"
+  ],
+  "Details": [
+    "Details",
+    "Details"
+  ],
+  "Tell us about the project": [
+    "Erzähl uns von deinem Projekt",
+    "Erzählen Sie uns von Ihrem Projekt"
+  ],
+  "Current website (if any)": [
+    "Deine aktuelle Website (falls vorhanden)",
+    "Ihre aktuelle Website (falls vorhanden)"
+  ],
+  "Appointment request": [
+    "Terminanfrage",
+    "Terminanfrage"
+  ],
+  "Preferred date and time of day, plus contact details.": [
+    "Wunschtermin und Tageszeit, dazu die Kontaktdaten.",
+    "Wunschtermin und Tageszeit, dazu die Kontaktdaten."
+  ],
+  "Request appointment": [
+    "Termin anfragen",
+    "Termin anfragen"
+  ],
+  "Preferred date": [
+    "Wunschtermin",
+    "Wunschtermin"
+  ],
+  "Time of day": [
+    "Tageszeit",
+    "Tageszeit"
+  ],
+  "Anything we should know?": [
+    "Gibt es etwas, das wir wissen sollten?",
+    "Gibt es etwas, das wir wissen sollten?"
+  ],
+  "Newsletter sign-up": [
+    "Newsletter-Anmeldung",
+    "Newsletter-Anmeldung"
+  ],
+  "First name and email with an explicit opt-in.": [
+    "Vorname und E-Mail mit ausdrücklicher Einwilligung.",
+    "Vorname und E-Mail mit ausdrücklicher Einwilligung."
+  ],
+  "Subscribe": [
+    "Anmelden",
+    "Anmelden"
+  ],
+  "Yes, I would like to receive the newsletter. I can unsubscribe at any time. Details in the {privacy_policy}.": [
+    "Ja, ich möchte den Newsletter erhalten. Ich kann mich jederzeit abmelden. Details in der {privacy_policy}.",
+    "Ja, ich möchte den Newsletter erhalten. Ich kann mich jederzeit abmelden. Details in der {privacy_policy}."
   ]
 }

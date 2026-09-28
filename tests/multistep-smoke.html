@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Flinkform multi-step first paint</title>
+<link rel="stylesheet" href="../build/form-container/style-index.css">
+<!--
+  Multi-step first paint (1.15.0). The inline marker now comes BEFORE the
+  form, and CSS alone shows the JS layout (step 1, Next, no Back/Submit)
+  until the footer boot script and hydration take over. Before, every step
+  was on screen until the footer script ran: a layout shift right where
+  people start filling in. Without scripting, every step stays visible.
+  Run through tests/browser-smoke.mjs.
+-->
+<ul id="log"></ul>
+<p id="verdict">running…</p>
+
+<script>document.documentElement.classList.add("flinkform-js")</script>
+<div class="flinkform-form flinkform-form--multi-step" id="ms">
+	<form class="flinkform-form__form" novalidate>
+		<div class="flinkform-form__step" data-step-index="0"><label>A <input name="a"></label></div>
+		<div class="flinkform-form__step-separator" aria-hidden="true"></div>
+		<div class="flinkform-form__step" data-step-index="1"><label>B <input name="b"></label></div>
+		<div class="flinkform-form__step-separator" aria-hidden="true"></div>
+		<div class="flinkform-form__step" data-step-index="2"><label>C <input name="c"></label></div>
+		<div class="flinkform-form__actions">
+			<button type="button" class="flinkform-form__nav flinkform-form__nav--back">Back</button>
+			<button type="button" class="flinkform-form__submit flinkform-form__nav flinkform-form__nav--next">Next</button>
+			<button type="submit" class="flinkform-form__submit">Send</button>
+		</div>
+	</form>
+</div>
+
+<script>
+	( function () {
+		var log = document.getElementById( 'log' );
+		var smoke = { passed: 0, failed: 0 };
+		window.__smoke = smoke;
+		function check( label, ok ) {
+			var li = document.createElement( 'li' );
+			li.className = ok ? 'ok' : 'fail';
+			li.textContent = label;
+			log.appendChild( li );
+			ok ? smoke.passed++ : smoke.failed++;
+		}
+		var f = document.getElementById( 'ms' );
+		var shown = function ( sel ) { var el = f.querySelector( sel ); return !! el && getComputedStyle( el ).display !== 'none'; };
+
+		check( 'JS on, before boot: step 1 visible', shown( '[data-step-index="0"]' ) );
+		check( 'JS on, before boot: step 2 hidden', ! shown( '[data-step-index="1"]' ) );
+		check( 'JS on, before boot: step 3 hidden', ! shown( '[data-step-index="2"]' ) );
+		check( 'JS on, before boot: separators hidden', ! shown( '.flinkform-form__step-separator' ) );
+		check( 'JS on, before boot: Back hidden', ! shown( '.flinkform-form__nav--back' ) );
+		check( 'JS on, before boot: Next visible', shown( '.flinkform-form__nav--next' ) );
+		check( 'JS on, before boot: Submit hidden', ! shown( 'button[type="submit"]' ) );
+
+		// Once enhanced, the bindings own visibility again: nothing of ours
+		// may still hide a step the visitor navigated to.
+		f.setAttribute( 'data-flinkform-enhanced', '' );
+		check( 'after boot: CSS no longer hides later steps', shown( '[data-step-index="1"]' ) );
+
+		// Without scripting the marker class never appears.
+		f.removeAttribute( 'data-flinkform-enhanced' );
+		document.documentElement.classList.remove( 'flinkform-js' );
+		check( 'no JS: every step visible', shown( '[data-step-index="1"]' ) && shown( '[data-step-index="2"]' ) );
+		check( 'no JS: Submit visible', shown( 'button[type="submit"]' ) );
+
+		document.getElementById( 'verdict' ).textContent = smoke.failed === 0 ? 'All ' + smoke.passed + ' checks passed.' : smoke.failed + ' failed';
+	} )();
+</script>

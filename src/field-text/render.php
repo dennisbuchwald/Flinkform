@@ -29,6 +29,9 @@ if ( '' === $placeholder && ( $flinkform_appearance['labelPosition'] ?? '' ) ===
 $required    = ! empty( $attributes['required'] );
 $help_text   = isset( $attributes['helpText'] ) && is_string( $attributes['helpText'] ) ? $attributes['helpText'] : '';
 $field_name  = isset( $attributes['fieldName'] ) && is_string( $attributes['fieldName'] ) ? $attributes['fieldName'] : '';
+// Autofill token (1.15.0). Allowlist, so a hand-edited attribute can't
+// inject anything; unknown tokens render no attribute at all.
+$autocomplete = isset( $attributes['autocomplete'] ) && in_array( $attributes['autocomplete'], [ 'name', 'given-name', 'family-name', 'organization', 'organization-title', 'street-address', 'postal-code', 'address-level2', 'country-name', 'off' ], true ) ? $attributes['autocomplete'] : '';
 
 if ( '' === $field_name || '' === $form_id ) {
 	return;
@@ -44,9 +47,7 @@ $described = trim( $help_id . ' ' . $error_id );
 <div class="flinkform-field flinkform-field--text<?php echo $error ? ' flinkform-field--has-error' : ''; ?><?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"<?php echo \Flinkform\Conditions\Wrapper::condition_attributes( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- returns a pre-escaped attribute string (esc_attr applied inside). ?> data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>">
 	<label class="flinkform-field__label" for="<?php echo esc_attr( $field_uid ); ?>">
 		<?php echo esc_html( $label ); ?>
-		<?php if ( $required ) : ?>
-			<span class="flinkform-field__required" aria-hidden="true"> *</span>
-		<?php endif; ?>
+		<?php echo \Flinkform\Fields\LabelMarks::html( (bool) $required, $block ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside LabelMarks::html(). ?>
 	</label>
 	<input
 		type="text"
@@ -55,6 +56,7 @@ $described = trim( $help_id . ' ' . $error_id );
 		class="flinkform-field__input"
 		value="<?php echo esc_attr( (string) $value ); ?>"
 		placeholder="<?php echo esc_attr( $placeholder ); ?>"
+		<?php echo '' !== $autocomplete ? 'autocomplete="' . esc_attr( $autocomplete ) . '"' : ''; ?>
 		<?php echo $required ? 'required aria-required="true"' : ''; ?>
 		<?php echo $described ? 'aria-describedby="' . esc_attr( $described ) . '"' : ''; ?>
 		<?php echo $error ? 'aria-invalid="true"' : ''; ?>

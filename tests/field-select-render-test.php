@@ -41,6 +41,10 @@ namespace {
 	if ( ! defined( 'ABSPATH' ) ) {
 		define( 'ABSPATH', __DIR__ . '/../' );
 	}
+	require_once __DIR__ . '/../includes/Fields/LabelMarks.php';
+	if ( ! function_exists( 'esc_html__' ) ) {
+		function esc_html__( $t, $d = '' ) { return htmlspecialchars( (string) $t, ENT_QUOTES, 'UTF-8' ); }
+	}
 
 	function esc_html( $t ) {
 		return htmlspecialchars( (string) $t, ENT_QUOTES, 'UTF-8' );

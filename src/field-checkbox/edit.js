@@ -8,6 +8,7 @@ import { OptionsEditor } from '../shared/options-editor';
 import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 import displayDefaultLabel from '../shared/default-label';
+import RequiredMark from '../shared/required-mark';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, required, requiredMessage, helpText, fieldName, options } = attributes;
@@ -78,7 +79,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			<fieldset { ...blockProps }>
 				<legend className="flinkform-field__label">
 					{ displayDefaultLabel( label, 'Choose any' ) }
-					{ required && <span className="flinkform-field__required" aria-hidden="true"> *</span> }
+					<RequiredMark required={ required } context={ context } />
 				</legend>
 				{ safeOptions.map( ( opt, i ) => (
 					<label key={ i } style={ { display: 'flex', alignItems: 'center', gap: '6px', margin: '4px 0' } }>

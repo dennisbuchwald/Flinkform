@@ -5,7 +5,7 @@
  * If a block is duplicated, both copies inherit the same UUID — Phase 1
  * accepts this; later phases may detect and re-key duplicates explicitly.
  */
-import { Fragment, useCallback, useEffect, useMemo, useRef } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { applyFilters } from '@wordpress/hooks';
 import { __, sprintf } from '@wordpress/i18n';
@@ -32,6 +32,7 @@ import {
 } from '@wordpress/components';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 import resolveSurfaceColour from '../shared/surface-colour';
+import StartPicker from './start-picker';
 
 // Inline plus glyph for the "Add field" appender button. Inline (not
 // @wordpress/icons) to avoid pulling in an extra dependency; the white
@@ -69,12 +70,6 @@ function getAllowedBlocks() {
 	const filtered = applyFilters( 'flinkform.formContainer.allowedBlocks', CORE_ALLOWED_BLOCKS );
 	return Array.isArray( filtered ) && filtered.length > 0 ? filtered : CORE_ALLOWED_BLOCKS;
 }
-
-const TEMPLATE = [
-	[ 'flinkform/field-text', { label: __( 'Name', 'flinkform' ), required: true } ],
-	[ 'flinkform/field-email', { label: __( 'Email', 'flinkform' ), required: true } ],
-	[ 'flinkform/field-textarea', { label: __( 'Message', 'flinkform' ), required: true } ],
-];
 
 function generateUuid() {
 	if ( typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' ) {
@@ -280,6 +275,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		( select ) => select( 'core/block-editor' ).getBlocks( clientId ),
 		[ clientId ]
 	);
+
+	// Empty form: offer the starter templates (1.15.0). "Start empty" only
+	// hides the picker for this editing session; an empty form is not
+	// something anyone keeps.
+	const [ startedEmpty, setStartedEmpty ] = useState( false );
+	const showStartPicker = ! startedEmpty && Array.isArray( innerBlocks ) && innerBlocks.length === 0;
 
 	// All email fields in this form, in document order. Powers the
 	// submitter-confirmation field picker and feeds the firstEmailFieldName
@@ -626,6 +627,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ToggleControl
+						label={ __( 'Mark optional fields', 'flinkform' ) }
+						help={ __( 'Adds "(optional)" to every field that is not required. Useful when most fields are required anyway.', 'flinkform' ) }
+						checked={ !! appearanceConfig.markOptional }
+						onChange={ ( value ) => updateAppearance( { markOptional: value || undefined } ) }
+						__nextHasNoMarginBottom
+					/>
 					<ToggleGroupControl
 						label={ __( 'Columns', 'flinkform' ) }
 						help={ __( 'Two-column layout collapses to a single column on mobile. Individual fields can be set to span both columns via their own inspector.', 'flinkform' ) }
@@ -950,11 +958,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</div>
 				) }
+				{ showStartPicker && (
+					<StartPicker
+						clientId={ clientId }
+						setAttributes={ setAttributes }
+						onStartEmpty={ () => setStartedEmpty( true ) }
+					/>
+				) }
 				<InnerBlocks
 					allowedBlocks={ getAllowedBlocks() }
-					template={ TEMPLATE }
 					templateLock={ false }
-					renderAppender={ () => (
+					renderAppender={ showStartPicker ? false : () => (
 						<Inserter
 							rootClientId={ clientId }
 							isAppender

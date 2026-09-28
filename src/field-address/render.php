@@ -67,9 +67,7 @@ $help_id = $help_text ? 'flinkform-field-' . md5( $form_id . '-' . $field_name )
 <fieldset class="flinkform-field flinkform-field--address<?php echo ! empty( $attributes['fullWidth'] ) ? ' flinkform-field--full-width' : ''; ?>"<?php echo \Flinkform\Conditions\Wrapper::condition_attributes( $attributes['conditionalLogic'] ?? [] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- returns a pre-escaped attribute string (esc_attr applied inside). ?> data-flinkform-field-name="<?php echo esc_attr( $field_name ); ?>">
 	<legend class="flinkform-field-address__legend">
 		<?php echo esc_html( $label ); ?>
-		<?php if ( $required ) : ?>
-			<span class="flinkform-field__required" aria-hidden="true"> *</span>
-		<?php endif; ?>
+		<?php echo \Flinkform\Fields\LabelMarks::html( (bool) $required, $block ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside LabelMarks::html(). ?>
 	</legend>
 	<div class="flinkform-field-address__grid">
 		<?php foreach ( $sub_fields as $sf ) : ?>
@@ -117,9 +115,7 @@ $help_id = $help_text ? 'flinkform-field-' . md5( $form_id . '-' . $field_name )
 			<div class="<?php echo esc_attr( $grid_class ); ?>">
 				<label class="flinkform-field__label" for="<?php echo esc_attr( $sub_uid ); ?>">
 					<?php echo esc_html( $sf['label'] ); ?>
-					<?php if ( $sub_required ) : ?>
-						<span class="flinkform-field__required" aria-hidden="true"> *</span>
-					<?php endif; ?>
+					<?php echo \Flinkform\Fields\LabelMarks::html( (bool) $sub_required, $block ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside LabelMarks::html(). ?>
 				</label>
 				<input
 					type="text"

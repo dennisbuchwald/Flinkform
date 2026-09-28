@@ -4,15 +4,16 @@
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 
 import { generateFieldName } from '../shared/field-name';
 import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 import displayDefaultLabel from '../shared/default-label';
+import RequiredMark from '../shared/required-mark';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
-	const { label, placeholder, required, helpText, fieldName } = attributes;
+	const { label, placeholder, required, helpText, fieldName, autocomplete } = attributes;
 	const blockProps = useBlockProps( { className: 'flinkform-field flinkform-field--text' } );
 
 	useEffect( () => {
@@ -53,6 +54,27 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<SelectControl
+						label={ __( 'Autofill', 'flinkform' ) }
+						help={ __( 'Tells the browser what this field asks for, so it can fill it in. Saves typing, especially on phones.', 'flinkform' ) }
+						value={ autocomplete || '' }
+						options={ [
+							{ label: __( 'Not set', 'flinkform' ), value: '' },
+							{ label: __( 'Full name', 'flinkform' ), value: 'name' },
+							{ label: __( 'First name', 'flinkform' ), value: 'given-name' },
+							{ label: __( 'Last name', 'flinkform' ), value: 'family-name' },
+							{ label: __( 'Company', 'flinkform' ), value: 'organization' },
+							{ label: __( 'Job title', 'flinkform' ), value: 'organization-title' },
+							{ label: __( 'Street address', 'flinkform' ), value: 'street-address' },
+							{ label: __( 'Postal code', 'flinkform' ), value: 'postal-code' },
+							{ label: __( 'City', 'flinkform' ), value: 'address-level2' },
+							{ label: __( 'Country', 'flinkform' ), value: 'country-name' },
+							{ label: __( 'Off (never autofill)', 'flinkform' ), value: 'off' },
+						] }
+						onChange={ ( v ) => setAttributes( { autocomplete: v } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<TextControl
 						label={ __( 'Field Name', 'flinkform' ) }
 						help={ __( 'Key used in submission data. Auto-generated; change with care.', 'flinkform' ) }
@@ -69,7 +91,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			<div { ...blockProps }>
 				<label className="flinkform-field__label">
 					{ displayDefaultLabel( label, 'Text' ) }
-					{ required && <span className="flinkform-field__required" aria-hidden="true"> *</span> }
+					<RequiredMark required={ required } context={ context } />
 				</label>
 				<input
 					type="text"

@@ -30,7 +30,7 @@
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
-import resolveSurfaceColour from '../shared/surface-colour';
+import resolveSurfaceColour, { isDarkColour } from '../shared/surface-colour';
 import evaluateRuleSet, { resolveHiddenFields, applyHidden } from '../shared/rule-evaluator';
 import { shouldDeferRefresh, applyChallengeData, applyFormChallenge, challengeExpiry } from '../shared/challenge-refresh';
 import { requiredCheckboxGroupsMissing } from '../shared/group-validation';
@@ -452,6 +452,13 @@ function initSubmitFeedback() {
 // ---------------------------------------------------------------------
 
 function initFloatingLabelBackground() {
+	// Every form: a dark surface switches the default error red to a
+	// lighter one (1.15.0). An author's --flinkform-color-error still wins,
+	// the class only changes the fallback.
+	document.querySelectorAll( '.flinkform-form' ).forEach( ( wrapper ) => {
+		wrapper.classList.toggle( 'flinkform-form--on-dark', isDarkColour( resolveSurfaceColour( wrapper ) ) );
+	} );
+
 	document.querySelectorAll( '.flinkform-form--labels-floating' ).forEach( ( wrapper ) => {
 		const colour = resolveSurfaceColour( wrapper );
 		if ( colour ) {
@@ -1133,6 +1140,33 @@ function initFinalValidation() {
 		};
 		form.addEventListener( 'input', settle );
 		form.addEventListener( 'change', settle );
+
+		// Check a field when the visitor leaves it (1.15.0), but only once
+		// they have typed into it: tabbing through an empty form must not
+		// paint every required field red. Choice groups wait for submit,
+		// focus moves between their options all the time.
+		const dirty = new WeakSet();
+		const markDirty = ( event ) => {
+			if ( event.target && typeof event.target.checkValidity === 'function' ) {
+				dirty.add( event.target );
+			}
+		};
+		form.addEventListener( 'input', markDirty );
+		form.addEventListener( 'change', markDirty );
+		form.addEventListener( 'focusout', ( event ) => {
+			const field = event.target;
+			if ( ! field || ! dirty.has( field ) || field.disabled ) {
+				return;
+			}
+			if ( field.type === 'checkbox' || field.type === 'radio' || field.type === 'hidden' ) {
+				return;
+			}
+			const wrapper = field.closest( '.flinkform-field' );
+			if ( ! wrapper || field.checkValidity() ) {
+				return;
+			}
+			showFieldError( field, messageFor( field, readMessages( form ), document.documentElement.lang || '' ) );
+		} );
 	} );
 }
 

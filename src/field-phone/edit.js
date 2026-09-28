@@ -10,6 +10,7 @@ import { generateFieldName } from '../shared/field-name';
 import FullWidthPanel from '../shared/full-width-panel';
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 import displayDefaultLabel from '../shared/default-label';
+import RequiredMark from '../shared/required-mark';
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { label, placeholder, required, helpText, fieldName } = attributes;
@@ -69,7 +70,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			<div { ...blockProps }>
 				<label className="flinkform-field__label">
 					{ displayDefaultLabel( label, 'Phone' ) }
-					{ required && <span className="flinkform-field__required" aria-hidden="true"> *</span> }
+					<RequiredMark required={ required } context={ context } />
 				</label>
 				<input
 					type="tel"

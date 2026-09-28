@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="de-DE">
+<meta charset="utf-8">
+<title>Flinkform validation smoke test</title>
+<script type="importmap">{ "imports": { "@wordpress/interactivity": "./interactivity-stub.js" } }</script>
+<!--
+  Validation in the browser (1.15.0):
+    - messages come from data-flinkform-messages (site language), never
+      from the browser's validationMessage;
+    - a field is checked when the visitor leaves it, but only after typing
+      into it; tabbing through an empty form paints nothing red;
+    - fixing the field takes the message away again.
+  Run through tests/browser-smoke.mjs (part of tests/run.sh).
+-->
+<ul id="log"></ul>
+<p id="verdict">running…</p>
+
+<div class="flinkform-form" data-flinkform-id="val-form">
+	<form class="flinkform-form__form" method="post" action="/wp-admin/admin-post.php" novalidate
+		data-flinkform-messages='{"invalid":"SITE: check","required":"SITE: required","email":"SITE: email"}'>
+		<input type="hidden" name="flinkform_form_id" value="val-form">
+		<div class="flinkform-field" data-flinkform-field-name="name">
+			<input type="text" id="name" name="flinkform_field[name]" required>
+		</div>
+		<div class="flinkform-field" data-flinkform-field-name="email">
+			<input type="email" id="email" name="flinkform_field[email]">
+		</div>
+		<button type="submit" class="flinkform-form__submit">Send</button>
+	</form>
+</div>
+
+<script type="module">
+	const log = document.getElementById( 'log' );
+	const smoke = { passed: 0, failed: 0 };
+	window.__smoke = smoke;
+	const check = ( label, ok, detail = '' ) => {
+		const li = document.createElement( 'li' );
+		li.className = ok ? 'ok' : 'fail';
+		li.textContent = label + ( ok || ! detail ? '' : ` — ${ detail }` );
+		log.appendChild( li );
+		ok ? smoke.passed++ : smoke.failed++;
+	};
+	const sleep = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) );
+	const form = document.querySelector( 'form' );
+	form.addEventListener( 'submit', ( e ) => e.preventDefault() );
+	const errorOf = ( id ) => {
+		const el = document.getElementById( id ).closest( '.flinkform-field' ).querySelector( '.flinkform-field__error--client' );
+		return el ? el.textContent : '';
+	};
+	const blur = ( el ) => el.dispatchEvent( new FocusEvent( 'focusout', { bubbles: true } ) );
+
+	await import( '../build/form-container/view.js' );
+	await sleep( 50 );
+
+	const name = document.getElementById( 'name' );
+	const email = document.getElementById( 'email' );
+
+	blur( name );
+	check( 'tabbing through an untouched required field shows nothing', errorOf( 'name' ) === '' );
+
+	email.value = 'not-an-email';
+	email.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+	blur( email );
+	check( 'leaving a mistyped email shows the site text', errorOf( 'email' ) === 'SITE: email', `"${ errorOf( 'email' ) }"` );
+	check( 'the field is marked invalid for assistive tech', email.getAttribute( 'aria-invalid' ) === 'true' );
+
+	email.value = 'ok@example.org';
+	email.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+	check( 'fixing it takes the message away', errorOf( 'email' ) === '' );
+
+	form.querySelector( 'button' ).click();
+	await sleep( 50 );
+	check( 'submit with an empty required field shows the site text', errorOf( 'name' ) === 'SITE: required', `"${ errorOf( 'name' ) }"` );
+	check( 'never the browser message', errorOf( 'name' ) !== name.validationMessage );
+
+	document.getElementById( 'verdict' ).textContent = smoke.failed === 0 ? `All ${ smoke.passed } checks passed.` : `${ smoke.failed } failed`;
+</script>

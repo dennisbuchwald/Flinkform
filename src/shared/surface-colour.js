@@ -113,3 +113,23 @@ export default function resolveSurfaceColour( start ) {
 
 	return flatten( translucent, canvas );
 }
+
+/**
+ * Is an `rgb(r, g, b)` colour dark? Relative luminance below 0.2, which
+ * is where the default error red (#b80000) stops being readable (1.15.0).
+ *
+ * @param {string|null} colour Output of resolveSurfaceColour().
+ * @returns {boolean} False when the colour is unknown.
+ */
+export function isDarkColour( colour ) {
+	const m = /rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/.exec( colour || '' );
+	if ( ! m ) {
+		return false;
+	}
+	const lin = ( c ) => {
+		const v = Number( c ) / 255;
+		return v <= 0.03928 ? v / 12.92 : ( ( v + 0.055 ) / 1.055 ) ** 2.4;
+	};
+	const luminance = 0.2126 * lin( m[ 1 ] ) + 0.7152 * lin( m[ 2 ] ) + 0.0722 * lin( m[ 3 ] );
+	return luminance < 0.2;
+}

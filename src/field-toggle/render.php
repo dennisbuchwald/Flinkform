@@ -47,9 +47,7 @@ $described = trim( $help_id . ' ' . $error_id );
 		/>
 		<span class="flinkform-field__toggle-text">
 			<?php echo wp_kses_post( $label ); ?>
-			<?php if ( $required ) : ?>
-				<span class="flinkform-field__required" aria-hidden="true"> *</span>
-			<?php endif; ?>
+			<?php echo \Flinkform\Fields\LabelMarks::html( (bool) $required, $block ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside LabelMarks::html(). ?>
 		</span>
 	</label>
 	<?php if ( $help_text ) : ?>

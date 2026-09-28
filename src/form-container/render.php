@@ -462,6 +462,30 @@ if ( 1 === $step_count ) {
 // visitor took — the gate it feeds was effectively dead on cached pages.
 // Fetched on first contact instead, it measures real dwell time again.
 $timestamp_token = $is_deferred ? '' : \Flinkform\Spam\Challenge::mint_timestamp( $form_id );
+
+// Mark the document as script-capable, BEFORE the form markup (1.15.0; it
+// used to come after the fields). Three jobs hang on it, all about the
+// first paint:
+//   - protected forms hide the math fallback instead of flashing it while
+//     the proof of work solves;
+//   - deferred forms hide themselves from visitors without scripting, who
+//     take the <noscript> route instead of a form they could never submit;
+//   - multi-step forms show only step 1 and the right buttons from the
+//     start. The footer boot script did that too, but a footer script runs
+//     after first paint: every step was on screen for a moment and then
+//     collapsed, a layout shift right where people start filling in.
+//
+// Decided in the browser, not here: rendering the JS-on layout server-side
+// would let a page cache serve it to a visitor without scripting. A cached
+// page carries this script for everyone and only runs it where scripting
+// is available. Synchronous and inline on purpose, printed once per page.
+if ( \Flinkform\Spam\Guard::should_protect( $attributes ) || $is_deferred || $is_multi_step ) {
+	static $flinkform_js_marker_printed = false;
+	if ( ! $flinkform_js_marker_printed ) {
+		$flinkform_js_marker_printed = true;
+		echo '<script>document.documentElement.classList.add("flinkform-js")</script>';
+	}
+}
 ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attrs is the return value of the WordPress core function get_block_wrapper_attributes(), which returns an already-escaped attribute string. ?>>
 	<form
@@ -631,32 +655,8 @@ $timestamp_token = $is_deferred ? '' : \Flinkform\Spam\Challenge::mint_timestamp
 			echo \Flinkform\Spam\Renderer::render( $form_id, $render_mode ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Renderer::render() builds a fixed markup string and escapes every dynamic value with esc_attr() at the point of concatenation. It cannot be passed through wp_kses_post(), which strips the input elements the spam challenge relies on.
 		}
 
-		// The marker is needed for two independent jobs, so it is printed
-		// whenever either applies: hiding the math fallback before first
-		// paint (protected forms), and hiding a deferred form from visitors
-		// without scripting so they take the <noscript> route instead of a
-		// form they could never submit.
-		if ( \Flinkform\Spam\Guard::should_protect( $attributes ) || $is_deferred ) {
-			// Mark the document as script-capable so the stylesheet can hide
-			// the math fallback from the very first paint instead of leaving
-			// it on screen until the proof-of-work finishes solving.
-			//
-			// This has to be decided in the browser, not here: rendering the
-			// row hidden server-side would let a page cache serve the JS-on
-			// layout to a JS-off visitor, who would then have no way to
-			// submit. A cached page carries this script for everyone and
-			// only runs it where scripting is available, which is precisely
-			// the distinction the fallback depends on.
-			//
-			// Synchronous and inline on purpose — a deferred or external
-			// script runs after first paint, which is the flash we are
-			// removing. Printed once per page, however many forms there are.
-			static $flinkform_js_marker_printed = false;
-			if ( ! $flinkform_js_marker_printed ) {
-				$flinkform_js_marker_printed = true;
-				echo '<script>document.documentElement.classList.add("flinkform-js")</script>';
-			}
-		}
+		// The script marker (html.flinkform-js) is printed before the form
+		// wrapper since 1.15.0, see above the wrapper.
 		?>
 
 		<div class="flinkform-form__actions">
