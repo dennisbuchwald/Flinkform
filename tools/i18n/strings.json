@@ -812,8 +812,8 @@
     "Mail-Anhänge wurden nicht übernommen."
   ],
   "The confirmation mail (Mail 2) could not be carried over: its recipient is not a single email field. Set it up in the form's notifications.": [
-    "Die Bestätigungsmail (Mail 2) konnte nicht übernommen werden: Ihr Empfänger ist kein einzelnes E-Mail-Feld. Bitte in den Benachrichtigungen des Formulars einrichten.",
-    "Die Bestätigungsmail (Mail 2) konnte nicht übernommen werden: Ihr Empfänger ist kein einzelnes E-Mail-Feld. Bitte in den Benachrichtigungen des Formulars einrichten."
+    "Die Bestätigungsmail (Mail 2) konnte nicht übernommen werden, weil als Empfänger kein einzelnes E-Mail-Feld eingetragen war. Bitte in den Benachrichtigungen des Formulars einrichten.",
+    "Die Bestätigungsmail (Mail 2) konnte nicht übernommen werden, weil als Empfänger kein einzelnes E-Mail-Feld eingetragen war. Bitte in den Benachrichtigungen des Formulars einrichten."
   ],
   "The HTML mail body was converted to text. Flinkform wraps it in its own mail layout.": [
     "Der HTML-Mailtext wurde in Text umgewandelt. Flinkform setzt ihn in sein eigenes Mail-Layout.",
