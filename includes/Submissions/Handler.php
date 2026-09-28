@@ -346,6 +346,29 @@ final class Handler {
 		// Sanitize + validate user input against that definition.
 		[ $clean, $errors ] = $this->validate( $definition['fields'] );
 
+		/**
+		 * Extension seam: derive values that conditional logic depends on,
+		 * before it runs.
+		 *
+		 * Conditions and the submit condition below are evaluated against
+		 * these values. A field whose value is computed on the server (the
+		 * Pro calculation field) has to be filled in HERE — computed later,
+		 * in `flinkform_process_submission`, a rule like "total > 0" saw an
+		 * empty value, blocked every submit and dropped the fields it should
+		 * have shown. Return the same array shape; only add or rewrite
+		 * values, never remove fields.
+		 *
+		 * @since 1.14.3
+		 *
+		 * @param array<string, mixed> $clean      Sanitised values keyed by field name.
+		 * @param array<string, mixed> $definition Located form definition.
+		 * @param string               $form_id    UUID of the form.
+		 */
+		$derived = apply_filters( 'flinkform_values_before_visibility', $clean, $definition, $form_id );
+		if ( is_array( $derived ) ) {
+			$clean = $derived;
+		}
+
 		// Conditional logic — server-side re-evaluation (Phase 7b).
 		// Walks every field's `conditionalLogic` rule set against the
 		// sanitised values we just collected; fields whose rules say

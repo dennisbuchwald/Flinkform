@@ -179,7 +179,14 @@ namespace {
 	function absint( $value ) {
 		return abs( (int) $value );
 	}
+	$GLOBALS['filters'] = [];
+	function add_filter( $hook, $callback ) {
+		$GLOBALS['filters'][ $hook ][] = $callback;
+	}
 	function apply_filters( $hook, $value, ...$args ) {
+		foreach ( $GLOBALS['filters'][ $hook ] ?? [] as $callback ) {
+			$value = $callback( $value, ...$args );
+		}
 		return $value;
 	}
 	function do_action( $hook, ...$args ) {
@@ -592,6 +599,34 @@ namespace {
 		'unknown form: second miss inside a minute does not rebuild again',
 		[] === ( $GLOBALS['transients']['flinkform_forms_index'] ?? null )
 	);
+
+	// --- Values derived before conditional logic (1.14.3) -----------------
+	// A server-computed field (Pro's calculation field) is filled in through
+	// flinkform_values_before_visibility. The submit condition must see it:
+	// before this seam existed it saw '' and refused every submission.
+	reset_world();
+	$content = $GLOBALS['posts'][ PAGE_ID ]->post_content;
+	$GLOBALS['blocks_by_content'][ $content ][0]['attrs']['submitCondition'] = [
+		'enabled' => true,
+		'logic'   => 'all',
+		'rules'   => [ [ 'field' => 'total', 'operator' => 'greater_than', 'value' => '0' ] ],
+	];
+	add_filter( 'flinkform_values_before_visibility', static function ( $clean ) {
+		$clean['total'] = '49.00';
+		return $clean;
+	} );
+	$out = submit( post() );
+	check( 'a value derived before visibility satisfies the submit condition', 'success' === $out['kind'] && 1 === rows(), $out['kind'] );
+	$GLOBALS['filters'] = [];
+
+	reset_world();
+	$GLOBALS['blocks_by_content'][ $content ][0]['attrs']['submitCondition'] = [
+		'enabled' => true,
+		'logic'   => 'all',
+		'rules'   => [ [ 'field' => 'total', 'operator' => 'greater_than', 'value' => '0' ] ],
+	];
+	$out = submit( post() );
+	check( 'without the derived value the same condition still blocks (soft, values kept)', 'soft' === $out['kind'] && 0 === rows(), $out['kind'] );
 
 	// --- Summary -------------------------------------------------------------
 

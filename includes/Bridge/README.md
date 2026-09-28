@@ -131,6 +131,48 @@ upload, rating, signature, …) without touching the core:
   `errors`. The form element always posts `multipart/form-data`, so file
   inputs work without core changes.
 
+- **`flinkform_values_before_visibility` (filter, 1.14.3)** —
+  `Submissions\Handler::handle()`, right after field validation and BEFORE
+  conditional logic and the submit condition are evaluated. Args:
+  `($clean, $definition, $form_id)`, return `$clean`. For values the server
+  derives itself that rules may depend on (Pro's calculation field). Only add
+  or rewrite values; `flinkform_process_submission` runs after visibility and
+  is too late for anything a condition reads.
+
+---
+
+### 8. Lifecycle and admin seams (documented in 1.14.3, in use since 0.2.x-1.3.0)
+
+Pro already relies on these; they are part of the contract like everything
+above.
+
+- **`flinkform_after_submission` (action)** — after the row is stored. Args:
+  `($submission_id, $form_id, $clean, $definition)`. Fires exactly once per
+  accepted submission; an idempotent replay does not fire it.
+- **`flinkform_email_notification` (filter)** — the mail array before
+  `wp_mail()`. Args: `($email, $context, $form_def, $type)`, `$type` is
+  `admin` or `submitter`. Add-ons append to `attachments`.
+- **`flinkform_submissions_before_delete` / `flinkform_submissions_deleted`
+  (actions)** — around deleting submission rows (admin, retention, privacy
+  eraser). Arg: `array<int> $submission_ids`. Resolve related data in the
+  first, delete it in the second.
+- **`flinkform_submission_detail_after` (action)** — end of the submission
+  detail screen. Arg: `int $submission_id`.
+- **`flinkform_admin_format_value` (filter)** — admin rendering of a stored
+  value. Args: `($html, $type, $value)`; return pre-escaped HTML or `''` for
+  the default.
+- **`flinkform_uncacheable_blocks` (filter)** — block names whose presence in
+  a form forces the inline (uncacheable) render, for blocks that mint their
+  own request-specific values. `flinkform/field-payment` is in the default.
+- **`flinkform_form_host_visible` (filter, 1.14.3)** — whether a form on an
+  unpublished post may take submissions from the current visitor.
+
+Classes and constants add-ons use directly (kept stable): `Admin\Menu::PARENT_SLUG`,
+`Admin\Menu::CAPABILITY`, `Submissions\Handler::flash_error()` and
+`::flash_value()`, `Submissions\Repository`, `Conditions\Wrapper::condition_value()`,
+`Forms\Locator::locate()` and `::locate_by_form_id()`,
+`Privacy::find_submission_ids_by_email()`, `Bridge\Features`, `FLINKFORM_VERSION`.
+
 ---
 
 ## Planned extension points (not yet cut — added when Pro needs them)

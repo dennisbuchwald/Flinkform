@@ -9,6 +9,7 @@
 # Usage:  tests/run.sh
 
 set -u
+shopt -s nullglob
 cd "$(dirname "$0")/.." || exit 1
 
 failed=0
