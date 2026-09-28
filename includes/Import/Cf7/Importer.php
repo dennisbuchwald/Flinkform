@@ -46,7 +46,6 @@ final class Importer {
 				'posts_per_page'   => -1,
 				'orderby'          => 'ID',
 				'order'            => 'ASC',
-				'suppress_filters' => true,
 			]
 		);
 		return array_map( [ $this, 'read_form' ], $posts );

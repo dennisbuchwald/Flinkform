@@ -136,7 +136,7 @@ final class Converter {
 			$this->note( self::INFO, sprintf(
 				/* translators: %s: a piece of text from the old form. */
 				__( 'Text not carried over: "%s"', 'flinkform' ),
-				mb_strimwidth( $text, 0, 80, '…' )
+				self::shorten( $text, 80 )
 			) );
 		}
 
@@ -447,7 +447,7 @@ final class Converter {
 			$quoted = preg_quote( rtrim( $privacy_url, '/' ), '#' );
 			$html   = preg_replace( '#<a\s[^>]*href=["\']' . $quoted . '/?["\'][^>]*>.*?</a>#is', '{privacy_policy}', $html ) ?? $html;
 		}
-		$text = trim( html_entity_decode( strip_tags( $html ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+		$text = trim( html_entity_decode( wp_strip_all_tags( $html ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
 		if ( '' !== $text && false === strpos( $text, '{privacy_policy}' ) && false !== stripos( $html, '<a ' ) ) {
 			$this->note( self::CHECK, __( 'The consent text contained a link that is not your privacy page. Only its text was kept.', 'flinkform' ) );
 		}
@@ -525,7 +525,7 @@ final class Converter {
 	private function mail_body( string $body, bool $is_html, array $fields ): string {
 		if ( $is_html ) {
 			$body = preg_replace( '/<br\s*\/?>|<\/p>|<\/div>|<\/tr>|<\/li>/i', "\n", $body ) ?? $body;
-			$body = trim( html_entity_decode( strip_tags( $body ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+			$body = trim( html_entity_decode( wp_strip_all_tags( $body ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
 			$this->note( self::INFO, __( 'The HTML mail body was converted to text. Flinkform wraps it in its own mail layout.', 'flinkform' ) );
 		}
 		return $this->mail_tags( $body, $fields );
@@ -631,6 +631,19 @@ final class Converter {
 				) );
 			}
 		}
+	}
+
+	/**
+	 * Shorten text for the preview. mb_strimwidth() needs the mbstring
+	 * extension, which WordPress does not guarantee; mb_substr() has a
+	 * WordPress fallback (compat.php).
+	 *
+	 * @param string $text
+	 * @param int    $max  Characters.
+	 * @return string
+	 */
+	public static function shorten( string $text, int $max ): string {
+		return mb_strlen( $text ) > $max ? rtrim( mb_substr( $text, 0, $max - 1 ) ) . '…' : $text;
 	}
 
 	/**

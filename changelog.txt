@@ -4,6 +4,21 @@ Flinkform changelog
 Full release history of the free Flinkform plugin. The readme.txt shown on
 WordPress.org lists only the most recent releases.
 
+= 1.15.0 =
+* New: Contact Form 7 importer. Flinkform > Import from CF7 turns each CF7 form into a Flinkform form (fields, labels, notification and confirmation mail, success message), stores it as a synced pattern and switches every page that used it. Preview with a traffic light first, undo per form, CF7 itself is never changed.
+* New: five starter templates when you insert a form: contact, callback request, three-step project inquiry, appointment request and newsletter sign-up, each with a consent field.
+* New: submissions trash with restore (emptied after 30 days), an unread count in the admin menu, and a mail status per submission. A Site Health check warns when notification emails fail.
+* New: "Mark optional fields" adds "(optional)" to every field that is not required.
+* New: autofill setting for text fields (name, company, address parts …).
+* New: in conditions, choice fields offer their values in a dropdown, and fields with an active condition carry a "Conditional" badge in the editor.
+* New: multi-step forms keep what the visitor typed when the page is reloaded (stored in the browser tab only, never the consent box).
+* Improvement: emails and the submissions screen show the option label a visitor chose instead of its internal value. {field:name} inserts the label, {field:name:value} the stored value.
+* Improvement: error messages under fields are in the site's language instead of the browser's, and fields are checked when the visitor leaves them.
+* Improvement: multi-step forms no longer jump while the page loads.
+* Improvement: error red is the CSS variable --flinkform-color-error and turns lighter on dark backgrounds; the consent text scales with the theme.
+* Improvement: a second quick click on the "please send again" page is held until the form may be sent, instead of asking again.
+* Flinkform Pro features appear, marked as Pro, where they would be used. Nothing is shown once Pro is active, and add_filter( 'flinkform_show_pro_upsell', '__return_false' ) hides all of it.
+
 = 1.14.4 =
 * Improvement: the block names in the inserter are translated now. On German sites every Flinkform block showed its English name ("Text Field" instead of "Textfeld").
 * Improvement: German now ships in both forms of address. Sites set to "Deutsch" get the informal "du", which matches the language pack WordPress.org will deliver, and sites set to "Deutsch (Sie)" get the formal "Sie" instead of falling back to English.

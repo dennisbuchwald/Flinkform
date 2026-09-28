@@ -195,7 +195,7 @@ final class LabelGuesser {
 	 * Strip markup, required markers and whitespace.
 	 */
 	private static function clean( string $html ): string {
-		$text = html_entity_decode( strip_tags( $html ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$text = html_entity_decode( wp_strip_all_tags( $html ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 		$text = preg_replace( '/\((?:required|pflichtfeld|erforderlich|optional)\)|\*/iu', '', $text ) ?? $text;
 		$text = preg_replace( '/\s+/u', ' ', $text ) ?? $text;
 		return trim( $text, " \t\n\r\0\x0B:" );

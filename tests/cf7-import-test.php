@@ -14,6 +14,7 @@ declare( strict_types = 1 );
 namespace {
 	define( 'ABSPATH', __DIR__ . '/../' );
 	function __( $t, $d = '' ) { return $t; }
+	function wp_strip_all_tags( $t, $b = false ) { $t = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', (string) $t ); return trim( strip_tags( $t ) ); }
 
 	require __DIR__ . '/../includes/Import/Cf7/TagParser.php';
 	require __DIR__ . '/../includes/Import/Cf7/LabelGuesser.php';

@@ -183,7 +183,7 @@ msgstr ""
 msgid "Fields and notes"
 msgstr ""
 
-#: includes/Admin/Cf7ImportPage.php:178 includes/Admin/Upsell.php:210 src/form-container/upsell.js:73 src/form-container/upsell.js:104
+#: includes/Admin/Cf7ImportPage.php:178 includes/Admin/Upsell.php:211 src/form-container/upsell.js:73 src/form-container/upsell.js:104
 msgid "See Flinkform Pro"
 msgstr ""
 
@@ -381,11 +381,11 @@ msgstr ""
 msgid "Mark as read"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:104 includes/Admin/SubmissionsListTable.php:116 includes/Admin/SubmissionsPage.php:296
+#: includes/Admin/SubmissionsListTable.php:104 includes/Admin/SubmissionsListTable.php:116 includes/Admin/SubmissionsPage.php:300
 msgid "Mark as unread"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:105 includes/Admin/SubmissionsListTable.php:111 includes/Admin/SubmissionsListTable.php:301 includes/Admin/SubmissionsPage.php:304
+#: includes/Admin/SubmissionsListTable.php:105 includes/Admin/SubmissionsListTable.php:111 includes/Admin/SubmissionsListTable.php:301 includes/Admin/SubmissionsPage.php:308
 msgid "Delete permanently"
 msgstr ""
 
@@ -393,7 +393,7 @@ msgstr ""
 msgid "Restore"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:117 includes/Admin/SubmissionsPage.php:300
+#: includes/Admin/SubmissionsListTable.php:117 includes/Admin/SubmissionsPage.php:304
 msgid "Move to trash"
 msgstr ""
 
@@ -421,7 +421,7 @@ msgstr ""
 msgid "No submissions yet."
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:300 includes/Admin/SubmissionsPage.php:303
+#: includes/Admin/SubmissionsListTable.php:300 includes/Admin/SubmissionsPage.php:307
 msgid "Delete this submission permanently?"
 msgstr ""
 
@@ -429,7 +429,7 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:421 includes/Admin/SubmissionsPage.php:346 includes/Admin/SubmissionsPage.php:362
+#: includes/Admin/SubmissionsListTable.php:421 includes/Admin/SubmissionsPage.php:350 includes/Admin/SubmissionsPage.php:366
 msgid "empty"
 msgstr ""
 
@@ -481,76 +481,76 @@ msgstr ""
 msgid "You do not have permission to view Flinkform submissions."
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:138
+#: includes/Admin/SubmissionsPage.php:142
 msgid "Search submissions"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:157
+#: includes/Admin/SubmissionsPage.php:161
 msgid "Submission not found"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:157
+#: includes/Admin/SubmissionsPage.php:161
 msgid "← Back to submissions"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:210
+#: includes/Admin/SubmissionsPage.php:214
 msgid "Submission"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:213
+#: includes/Admin/SubmissionsPage.php:217
 msgid "← Back"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:219
+#: includes/Admin/SubmissionsPage.php:223
 msgid "Received:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:224
+#: includes/Admin/SubmissionsPage.php:228
 msgid "Form:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:229 src/form-container/edit.js:460
+#: includes/Admin/SubmissionsPage.php:233 src/form-container/edit.js:460
 msgid "Form ID:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:235
+#: includes/Admin/SubmissionsPage.php:239
 msgid "Sent"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:236
+#: includes/Admin/SubmissionsPage.php:240
 msgid "Failed. The submission is saved here, but nobody was notified."
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:237
+#: includes/Admin/SubmissionsPage.php:241
 msgid "Off for this form"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:243
+#: includes/Admin/SubmissionsPage.php:247
 msgid "Notification mail:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:249
+#: includes/Admin/SubmissionsPage.php:253
 msgid "Source page:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:257
+#: includes/Admin/SubmissionsPage.php:261
 msgid "Fields"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:259
+#: includes/Admin/SubmissionsPage.php:263
 msgid "This submission has no fields."
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:357 includes/Notifications/BodyBuilder.php:301
+#: includes/Admin/SubmissionsPage.php:361 includes/Notifications/BodyBuilder.php:301
 msgid "Yes"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:358 includes/Notifications/BodyBuilder.php:301
+#: includes/Admin/SubmissionsPage.php:362 includes/Notifications/BodyBuilder.php:301
 msgid "No"
 msgstr ""
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:408
+#: includes/Admin/SubmissionsPage.php:412
 #, php-format
 msgid "%d submission marked as read."
 msgid_plural "%d submissions marked as read."
@@ -558,7 +558,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:416
+#: includes/Admin/SubmissionsPage.php:420
 #, php-format
 msgid "%d submission marked as unread."
 msgid_plural "%d submissions marked as unread."
@@ -566,7 +566,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:424
+#: includes/Admin/SubmissionsPage.php:428
 #, php-format
 msgid "%d submission deleted."
 msgid_plural "%d submissions deleted."
@@ -574,7 +574,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:432
+#: includes/Admin/SubmissionsPage.php:436
 #, php-format
 msgid "%d submission moved to the trash."
 msgid_plural "%d submissions moved to the trash."
@@ -582,119 +582,119 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:440
+#: includes/Admin/SubmissionsPage.php:444
 #, php-format
 msgid "%d submission restored."
 msgid_plural "%d submissions restored."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin/SubmissionsPage.php:470
+#: includes/Admin/SubmissionsPage.php:474
 msgid "Submission deleted."
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:478
+#: includes/Admin/SubmissionsPage.php:482
 msgid "Submission moved to the trash."
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:486
+#: includes/Admin/SubmissionsPage.php:490
 msgid "Submission restored."
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:494
+#: includes/Admin/SubmissionsPage.php:498
 msgid "Submission marked as unread."
 msgstr ""
 
-#: includes/Admin/Upsell.php:124 includes/Admin/Upsell.php:185
+#: includes/Admin/Upsell.php:124 includes/Admin/Upsell.php:186
 msgid "Flinkform Pro"
 msgstr ""
 
-#: includes/Admin/Upsell.php:125 includes/Admin/Upsell.php:155 includes/Admin/Upsell.php:192 src/form-container/upsell.js:62 src/form-container/upsell.js:99
+#: includes/Admin/Upsell.php:125 includes/Admin/Upsell.php:156 includes/Admin/Upsell.php:193 src/form-container/upsell.js:62 src/form-container/upsell.js:99
 msgid "Pro"
 msgstr ""
 
-#: includes/Admin/Upsell.php:154
+#: includes/Admin/Upsell.php:155
 msgid "Export CSV"
 msgstr ""
 
-#: includes/Admin/Upsell.php:156
+#: includes/Admin/Upsell.php:157
 msgid "(opens flinkform.de in a new tab)"
 msgstr ""
 
-#: includes/Admin/Upsell.php:170
+#: includes/Admin/Upsell.php:171
 msgid "Forms, all 13 field types, multi-step, conditional logic"
 msgstr ""
 
-#: includes/Admin/Upsell.php:171
+#: includes/Admin/Upsell.php:172
 msgid "Spam protection without CAPTCHA or third parties"
 msgstr ""
 
-#: includes/Admin/Upsell.php:172
+#: includes/Admin/Upsell.php:173
 msgid "Mail notifications, confirmation mail, submissions in the admin"
 msgstr ""
 
-#: includes/Admin/Upsell.php:173
+#: includes/Admin/Upsell.php:174
 msgid "GDPR: consent field, retention, privacy tools"
 msgstr ""
 
-#: includes/Admin/Upsell.php:174
+#: includes/Admin/Upsell.php:175
 msgid "Stripe payments (card, SEPA, Apple Pay, Google Pay)"
 msgstr ""
 
-#: includes/Admin/Upsell.php:175
+#: includes/Admin/Upsell.php:176
 msgid "Calculation fields for prices and totals"
 msgstr ""
 
-#: includes/Admin/Upsell.php:176
+#: includes/Admin/Upsell.php:177
 msgid "File uploads, several files per field"
 msgstr ""
 
-#: includes/Admin/Upsell.php:177
+#: includes/Admin/Upsell.php:178
 msgid "Webhooks to Zapier, Make, n8n, with retries and a log"
 msgstr ""
 
-#: includes/Admin/Upsell.php:178
+#: includes/Admin/Upsell.php:179
 msgid "SMTP sending with a send log"
 msgstr ""
 
-#: includes/Admin/Upsell.php:179
+#: includes/Admin/Upsell.php:180
 msgid "Newsletter sign-ups to Brevo, Mailchimp, CleverReach"
 msgstr ""
 
-#: includes/Admin/Upsell.php:180
+#: includes/Admin/Upsell.php:181
 msgid "CSV export of submissions"
 msgstr ""
 
-#: includes/Admin/Upsell.php:181
+#: includes/Admin/Upsell.php:182
 msgid "Custom CSS per form"
 msgstr ""
 
-#: includes/Admin/Upsell.php:186
+#: includes/Admin/Upsell.php:187
 msgid "Everything you have now stays free. Pro adds the things businesses and agencies ask for: payments, uploads, integrations."
 msgstr ""
 
-#: includes/Admin/Upsell.php:190
+#: includes/Admin/Upsell.php:191
 msgid "Feature"
 msgstr ""
 
-#: includes/Admin/Upsell.php:191
+#: includes/Admin/Upsell.php:192
 msgid "Free"
 msgstr ""
 
-#: includes/Admin/Upsell.php:199 includes/Admin/Upsell.php:200
+#: includes/Admin/Upsell.php:200 includes/Admin/Upsell.php:201
 msgid "included"
 msgstr ""
 
-#: includes/Admin/Upsell.php:199
+#: includes/Admin/Upsell.php:200
 msgid "not included"
 msgstr ""
 
-#: includes/Admin/Upsell.php:206
+#: includes/Admin/Upsell.php:207
 msgid "From 59 € per year for one website. 14-day money-back guarantee."
 msgstr ""
 
 #. translators: %s: filter name.
-#: includes/Admin/Upsell.php:217
+#: includes/Admin/Upsell.php:218
 #, php-format
 msgid "Building sites for clients? %s hides every Pro hint in the free plugin."
 msgstr ""
@@ -941,11 +941,11 @@ msgstr ""
 msgid "CF7 setting \"%s\" has no equivalent and was left out."
 msgstr ""
 
-#: includes/Import/Cf7/Importer.php:121
+#: includes/Import/Cf7/Importer.php:120
 msgid "This Contact Form 7 form no longer exists."
 msgstr ""
 
-#: includes/Import/Cf7/Importer.php:127
+#: includes/Import/Cf7/Importer.php:126
 msgid "This form was already imported. Undo the import first to import it again."
 msgstr ""
 
@@ -953,36 +953,36 @@ msgstr ""
 msgid "Imported form"
 msgstr ""
 
-#: includes/Import/Cf7/Importer.php:194
+#: includes/Import/Cf7/Importer.php:195
 msgid "Nothing to undo for this form."
 msgstr ""
 
 #. translators: %s: page title.
-#: includes/Import/Cf7/Importer.php:308
+#: includes/Import/Cf7/Importer.php:337
 #, php-format
 msgid "\"%s\" uses the form inside running text. That spot is left as it is; replace it by hand."
 msgstr ""
 
 #. translators: %s: page title.
-#: includes/Import/Cf7/Importer.php:315
+#: includes/Import/Cf7/Importer.php:344
 #, php-format
 msgid "\"%s\" uses the classic editor. The form shows on the page as usual, but the classic editor displays it as an HTML comment."
 msgstr ""
 
 #. translators: %s: where a CF7 form was found (page builder data, widget, …).
-#: includes/Import/Cf7/Importer.php:330
+#: includes/Import/Cf7/Importer.php:359
 #, php-format
 msgid "A Contact Form 7 form is also used in %s. That is not changed automatically; please swap it by hand."
 msgstr ""
 
 #. translators: 1: post title, 2: meta key.
-#: includes/Import/Cf7/Importer.php:365
+#: includes/Import/Cf7/Importer.php:394
 #, php-format
 msgid "\"%1$s\" (%2$s, e.g. a page builder)"
 msgstr ""
 
 #. translators: %s: widget option name.
-#: includes/Import/Cf7/Importer.php:381
+#: includes/Import/Cf7/Importer.php:410
 #, php-format
 msgid "a widget (%s)"
 msgstr ""
@@ -1011,23 +1011,23 @@ msgstr ""
 msgid "You can reply to this email directly — your answer goes straight to the sender."
 msgstr ""
 
-#: includes/Notifications/Mailer.php:477 src/form-container/edit.js:783
+#: includes/Notifications/Mailer.php:485 src/form-container/edit.js:783
 msgid "New submission: {form:title}"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:516 src/form-container/edit.js:841
+#: includes/Notifications/Mailer.php:524 src/form-container/edit.js:841
 msgid "We received your submission"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:545
+#: includes/Notifications/Mailer.php:553
 msgid "A new submission was received:"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:577
+#: includes/Notifications/Mailer.php:585
 msgid "Hi,"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:579
+#: includes/Notifications/Mailer.php:587
 msgid "Thanks for your submission. We received the following and will be in touch shortly:"
 msgstr ""
 

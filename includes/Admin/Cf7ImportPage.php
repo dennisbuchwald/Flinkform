@@ -163,7 +163,7 @@ final class Cf7ImportPage {
 						<ul class="flinkform-cf7__fields">
 							<?php foreach ( $p['fields'] as $f ) : ?>
 								<li<?php echo in_array( $f['source'], [ 'placeholder', 'name' ], true ) ? ' class="is-guess"' : ''; ?>>
-									<strong><?php echo esc_html( mb_strimwidth( $f['label'], 0, 70, '…' ) ); ?></strong>
+									<strong><?php echo esc_html( \Flinkform\Import\Cf7\Converter::shorten( (string) $f['label'], 70 ) ); ?></strong>
 									<code><?php echo esc_html( $f['name'] ); ?></code>
 									<span><?php echo esc_html( $sources[ $f['source'] ] ?? '' ); ?></span>
 								</li>

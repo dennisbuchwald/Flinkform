@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Flinkform 1.14.4\n"
+"Project-Id-Version: Flinkform 1.15.0\n"
 "Report-Msgid-Bugs-To: https://flinkform.de/\n"
 "Language: de_DE_formal\n"
 "MIME-Version: 1.0\n"
@@ -180,7 +180,7 @@ msgstr "Importiert am %1$s, %2$d Seite(n) umgestellt, seitdem %3$d Einsendung(en
 msgid "Fields and notes"
 msgstr "Felder und Hinweise"
 
-#: includes/Admin/Cf7ImportPage.php:178 includes/Admin/Upsell.php:210 src/form-container/upsell.js:73 src/form-container/upsell.js:104
+#: includes/Admin/Cf7ImportPage.php:178 includes/Admin/Upsell.php:211 src/form-container/upsell.js:73 src/form-container/upsell.js:104
 msgid "See Flinkform Pro"
 msgstr "Flinkform Pro ansehen"
 
@@ -378,11 +378,11 @@ msgstr "Status"
 msgid "Mark as read"
 msgstr "Als gelesen markieren"
 
-#: includes/Admin/SubmissionsListTable.php:104 includes/Admin/SubmissionsListTable.php:116 includes/Admin/SubmissionsPage.php:296
+#: includes/Admin/SubmissionsListTable.php:104 includes/Admin/SubmissionsListTable.php:116 includes/Admin/SubmissionsPage.php:300
 msgid "Mark as unread"
 msgstr "Als ungelesen markieren"
 
-#: includes/Admin/SubmissionsListTable.php:105 includes/Admin/SubmissionsListTable.php:111 includes/Admin/SubmissionsListTable.php:301 includes/Admin/SubmissionsPage.php:304
+#: includes/Admin/SubmissionsListTable.php:105 includes/Admin/SubmissionsListTable.php:111 includes/Admin/SubmissionsListTable.php:301 includes/Admin/SubmissionsPage.php:308
 msgid "Delete permanently"
 msgstr "Endgültig löschen"
 
@@ -390,7 +390,7 @@ msgstr "Endgültig löschen"
 msgid "Restore"
 msgstr "Wiederherstellen"
 
-#: includes/Admin/SubmissionsListTable.php:117 includes/Admin/SubmissionsPage.php:300
+#: includes/Admin/SubmissionsListTable.php:117 includes/Admin/SubmissionsPage.php:304
 msgid "Move to trash"
 msgstr "In den Papierkorb"
 
@@ -418,7 +418,7 @@ msgstr "Der Papierkorb ist leer."
 msgid "No submissions yet."
 msgstr "Noch keine Einsendungen vorhanden."
 
-#: includes/Admin/SubmissionsListTable.php:300 includes/Admin/SubmissionsPage.php:303
+#: includes/Admin/SubmissionsListTable.php:300 includes/Admin/SubmissionsPage.php:307
 msgid "Delete this submission permanently?"
 msgstr "Diese Einsendung dauerhaft löschen?"
 
@@ -426,7 +426,7 @@ msgstr "Diese Einsendung dauerhaft löschen?"
 msgid "View"
 msgstr "Ansehen"
 
-#: includes/Admin/SubmissionsListTable.php:421 includes/Admin/SubmissionsPage.php:346 includes/Admin/SubmissionsPage.php:362
+#: includes/Admin/SubmissionsListTable.php:421 includes/Admin/SubmissionsPage.php:350 includes/Admin/SubmissionsPage.php:366
 msgid "empty"
 msgstr "leer"
 
@@ -478,76 +478,76 @@ msgstr "(gelöscht)"
 msgid "You do not have permission to view Flinkform submissions."
 msgstr "Sie haben keine Berechtigung, Flinkform-Einsendungen anzuzeigen."
 
-#: includes/Admin/SubmissionsPage.php:138
+#: includes/Admin/SubmissionsPage.php:142
 msgid "Search submissions"
 msgstr "Einsendungen suchen"
 
-#: includes/Admin/SubmissionsPage.php:157
+#: includes/Admin/SubmissionsPage.php:161
 msgid "Submission not found"
 msgstr "Einsendung nicht gefunden"
 
-#: includes/Admin/SubmissionsPage.php:157
+#: includes/Admin/SubmissionsPage.php:161
 msgid "← Back to submissions"
 msgstr "← Zurück zu den Einsendungen"
 
-#: includes/Admin/SubmissionsPage.php:210
+#: includes/Admin/SubmissionsPage.php:214
 msgid "Submission"
 msgstr "Einsendung"
 
-#: includes/Admin/SubmissionsPage.php:213
+#: includes/Admin/SubmissionsPage.php:217
 msgid "← Back"
 msgstr "← Zurück"
 
-#: includes/Admin/SubmissionsPage.php:219
+#: includes/Admin/SubmissionsPage.php:223
 msgid "Received:"
 msgstr "Eingegangen:"
 
-#: includes/Admin/SubmissionsPage.php:224
+#: includes/Admin/SubmissionsPage.php:228
 msgid "Form:"
 msgstr "Formular:"
 
-#: includes/Admin/SubmissionsPage.php:229 src/form-container/edit.js:460
+#: includes/Admin/SubmissionsPage.php:233 src/form-container/edit.js:460
 msgid "Form ID:"
 msgstr "Formular-ID:"
 
-#: includes/Admin/SubmissionsPage.php:235
+#: includes/Admin/SubmissionsPage.php:239
 msgid "Sent"
 msgstr "Versendet"
 
-#: includes/Admin/SubmissionsPage.php:236
+#: includes/Admin/SubmissionsPage.php:240
 msgid "Failed. The submission is saved here, but nobody was notified."
 msgstr "Fehlgeschlagen. Die Einsendung ist hier gespeichert, aber niemand wurde benachrichtigt."
 
-#: includes/Admin/SubmissionsPage.php:237
+#: includes/Admin/SubmissionsPage.php:241
 msgid "Off for this form"
 msgstr "Für dieses Formular ausgeschaltet"
 
-#: includes/Admin/SubmissionsPage.php:243
+#: includes/Admin/SubmissionsPage.php:247
 msgid "Notification mail:"
 msgstr "Benachrichtigungsmail:"
 
-#: includes/Admin/SubmissionsPage.php:249
+#: includes/Admin/SubmissionsPage.php:253
 msgid "Source page:"
 msgstr "Quellseite:"
 
-#: includes/Admin/SubmissionsPage.php:257
+#: includes/Admin/SubmissionsPage.php:261
 msgid "Fields"
 msgstr "Felder"
 
-#: includes/Admin/SubmissionsPage.php:259
+#: includes/Admin/SubmissionsPage.php:263
 msgid "This submission has no fields."
 msgstr "Diese Einsendung enthält keine Felder."
 
-#: includes/Admin/SubmissionsPage.php:357 includes/Notifications/BodyBuilder.php:301
+#: includes/Admin/SubmissionsPage.php:361 includes/Notifications/BodyBuilder.php:301
 msgid "Yes"
 msgstr "Ja"
 
-#: includes/Admin/SubmissionsPage.php:358 includes/Notifications/BodyBuilder.php:301
+#: includes/Admin/SubmissionsPage.php:362 includes/Notifications/BodyBuilder.php:301
 msgid "No"
 msgstr "Nein"
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:408
+#: includes/Admin/SubmissionsPage.php:412
 #, php-format
 msgid "%d submission marked as read."
 msgid_plural "%d submissions marked as read."
@@ -555,7 +555,7 @@ msgstr[0] "%d Einsendung als gelesen markiert."
 msgstr[1] "%d Einsendungen als gelesen markiert."
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:416
+#: includes/Admin/SubmissionsPage.php:420
 #, php-format
 msgid "%d submission marked as unread."
 msgid_plural "%d submissions marked as unread."
@@ -563,7 +563,7 @@ msgstr[0] "%d Einsendung als ungelesen markiert."
 msgstr[1] "%d Einsendungen als ungelesen markiert."
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:424
+#: includes/Admin/SubmissionsPage.php:428
 #, php-format
 msgid "%d submission deleted."
 msgid_plural "%d submissions deleted."
@@ -571,7 +571,7 @@ msgstr[0] "%d Einsendung gelöscht."
 msgstr[1] "%d Einsendungen gelöscht."
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:432
+#: includes/Admin/SubmissionsPage.php:436
 #, php-format
 msgid "%d submission moved to the trash."
 msgid_plural "%d submissions moved to the trash."
@@ -579,119 +579,119 @@ msgstr[0] "%d Einsendung in den Papierkorb verschoben."
 msgstr[1] "%d Einsendungen in den Papierkorb verschoben."
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:440
+#: includes/Admin/SubmissionsPage.php:444
 #, php-format
 msgid "%d submission restored."
 msgid_plural "%d submissions restored."
 msgstr[0] "%d Einsendung wiederhergestellt."
 msgstr[1] "%d Einsendungen wiederhergestellt."
 
-#: includes/Admin/SubmissionsPage.php:470
+#: includes/Admin/SubmissionsPage.php:474
 msgid "Submission deleted."
 msgstr "Einsendung gelöscht."
 
-#: includes/Admin/SubmissionsPage.php:478
+#: includes/Admin/SubmissionsPage.php:482
 msgid "Submission moved to the trash."
 msgstr "Einsendung in den Papierkorb verschoben."
 
-#: includes/Admin/SubmissionsPage.php:486
+#: includes/Admin/SubmissionsPage.php:490
 msgid "Submission restored."
 msgstr "Einsendung wiederhergestellt."
 
-#: includes/Admin/SubmissionsPage.php:494
+#: includes/Admin/SubmissionsPage.php:498
 msgid "Submission marked as unread."
 msgstr "Einsendung als ungelesen markiert."
 
-#: includes/Admin/Upsell.php:124 includes/Admin/Upsell.php:185
+#: includes/Admin/Upsell.php:124 includes/Admin/Upsell.php:186
 msgid "Flinkform Pro"
 msgstr "Flinkform Pro"
 
-#: includes/Admin/Upsell.php:125 includes/Admin/Upsell.php:155 includes/Admin/Upsell.php:192 src/form-container/upsell.js:62 src/form-container/upsell.js:99
+#: includes/Admin/Upsell.php:125 includes/Admin/Upsell.php:156 includes/Admin/Upsell.php:193 src/form-container/upsell.js:62 src/form-container/upsell.js:99
 msgid "Pro"
 msgstr "Pro"
 
-#: includes/Admin/Upsell.php:154
+#: includes/Admin/Upsell.php:155
 msgid "Export CSV"
 msgstr "CSV exportieren"
 
-#: includes/Admin/Upsell.php:156
+#: includes/Admin/Upsell.php:157
 msgid "(opens flinkform.de in a new tab)"
 msgstr "(öffnet flinkform.de in einem neuen Tab)"
 
-#: includes/Admin/Upsell.php:170
+#: includes/Admin/Upsell.php:171
 msgid "Forms, all 13 field types, multi-step, conditional logic"
 msgstr "Formulare, alle 13 Feldtypen, mehrstufig, Bedingungslogik"
 
-#: includes/Admin/Upsell.php:171
+#: includes/Admin/Upsell.php:172
 msgid "Spam protection without CAPTCHA or third parties"
 msgstr "Spam-Schutz ohne CAPTCHA und ohne Drittanbieter"
 
-#: includes/Admin/Upsell.php:172
+#: includes/Admin/Upsell.php:173
 msgid "Mail notifications, confirmation mail, submissions in the admin"
 msgstr "Mail-Benachrichtigung, Bestätigungsmail, Einsendungen im Backend"
 
-#: includes/Admin/Upsell.php:173
+#: includes/Admin/Upsell.php:174
 msgid "GDPR: consent field, retention, privacy tools"
 msgstr "DSGVO: Einwilligungsfeld, Aufbewahrungsfrist, Datenschutz-Werkzeuge"
 
-#: includes/Admin/Upsell.php:174
+#: includes/Admin/Upsell.php:175
 msgid "Stripe payments (card, SEPA, Apple Pay, Google Pay)"
 msgstr "Stripe-Zahlungen (Karte, SEPA, Apple Pay, Google Pay)"
 
-#: includes/Admin/Upsell.php:175
+#: includes/Admin/Upsell.php:176
 msgid "Calculation fields for prices and totals"
 msgstr "Berechnungsfelder für Preise und Summen"
 
-#: includes/Admin/Upsell.php:176
+#: includes/Admin/Upsell.php:177
 msgid "File uploads, several files per field"
 msgstr "Datei-Uploads, mehrere Dateien pro Feld"
 
-#: includes/Admin/Upsell.php:177
+#: includes/Admin/Upsell.php:178
 msgid "Webhooks to Zapier, Make, n8n, with retries and a log"
 msgstr "Webhooks an Zapier, Make, n8n, mit Wiederholungen und Protokoll"
 
-#: includes/Admin/Upsell.php:178
+#: includes/Admin/Upsell.php:179
 msgid "SMTP sending with a send log"
 msgstr "SMTP-Versand mit Versandprotokoll"
 
-#: includes/Admin/Upsell.php:179
+#: includes/Admin/Upsell.php:180
 msgid "Newsletter sign-ups to Brevo, Mailchimp, CleverReach"
 msgstr "Newsletter-Anmeldungen an Brevo, Mailchimp, CleverReach"
 
-#: includes/Admin/Upsell.php:180
+#: includes/Admin/Upsell.php:181
 msgid "CSV export of submissions"
 msgstr "CSV-Export der Einsendungen"
 
-#: includes/Admin/Upsell.php:181
+#: includes/Admin/Upsell.php:182
 msgid "Custom CSS per form"
 msgstr "Eigenes CSS pro Formular"
 
-#: includes/Admin/Upsell.php:186
+#: includes/Admin/Upsell.php:187
 msgid "Everything you have now stays free. Pro adds the things businesses and agencies ask for: payments, uploads, integrations."
 msgstr "Alles, was Sie jetzt haben, bleibt kostenlos. Pro ergänzt, was Unternehmen und Agenturen brauchen: Zahlungen, Uploads, Anbindungen."
 
-#: includes/Admin/Upsell.php:190
+#: includes/Admin/Upsell.php:191
 msgid "Feature"
 msgstr "Funktion"
 
-#: includes/Admin/Upsell.php:191
+#: includes/Admin/Upsell.php:192
 msgid "Free"
 msgstr "Free"
 
-#: includes/Admin/Upsell.php:199 includes/Admin/Upsell.php:200
+#: includes/Admin/Upsell.php:200 includes/Admin/Upsell.php:201
 msgid "included"
 msgstr "enthalten"
 
-#: includes/Admin/Upsell.php:199
+#: includes/Admin/Upsell.php:200
 msgid "not included"
 msgstr "nicht enthalten"
 
-#: includes/Admin/Upsell.php:206
+#: includes/Admin/Upsell.php:207
 msgid "From 59 € per year for one website. 14-day money-back guarantee."
 msgstr "Ab 59 € pro Jahr für eine Website. 14 Tage Geld-zurück-Garantie."
 
 #. translators: %s: filter name.
-#: includes/Admin/Upsell.php:217
+#: includes/Admin/Upsell.php:218
 #, php-format
 msgid "Building sites for clients? %s hides every Pro hint in the free plugin."
 msgstr "Sie bauen Websites für Kunden? %s blendet jeden Pro-Hinweis im kostenlosen Plugin aus."
@@ -938,11 +938,11 @@ msgstr "In CF7 war „%s“ eingeschaltet (kein Mailversand). Flinkform versende
 msgid "CF7 setting \"%s\" has no equivalent and was left out."
 msgstr "Die CF7-Einstellung „%s“ hat keine Entsprechung und wurde weggelassen."
 
-#: includes/Import/Cf7/Importer.php:121
+#: includes/Import/Cf7/Importer.php:120
 msgid "This Contact Form 7 form no longer exists."
 msgstr "Dieses Contact-Form-7-Formular existiert nicht mehr."
 
-#: includes/Import/Cf7/Importer.php:127
+#: includes/Import/Cf7/Importer.php:126
 msgid "This form was already imported. Undo the import first to import it again."
 msgstr "Dieses Formular wurde bereits importiert. Zum erneuten Import zuerst rückgängig machen."
 
@@ -950,36 +950,36 @@ msgstr "Dieses Formular wurde bereits importiert. Zum erneuten Import zuerst rü
 msgid "Imported form"
 msgstr "Importiertes Formular"
 
-#: includes/Import/Cf7/Importer.php:194
+#: includes/Import/Cf7/Importer.php:195
 msgid "Nothing to undo for this form."
 msgstr "Für dieses Formular gibt es nichts rückgängig zu machen."
 
 #. translators: %s: page title.
-#: includes/Import/Cf7/Importer.php:308
+#: includes/Import/Cf7/Importer.php:337
 #, php-format
 msgid "\"%s\" uses the form inside running text. That spot is left as it is; replace it by hand."
 msgstr "„%s“ nutzt das Formular mitten im Text. Diese Stelle bleibt, wie sie ist; bitte von Hand ersetzen."
 
 #. translators: %s: page title.
-#: includes/Import/Cf7/Importer.php:315
+#: includes/Import/Cf7/Importer.php:344
 #, php-format
 msgid "\"%s\" uses the classic editor. The form shows on the page as usual, but the classic editor displays it as an HTML comment."
 msgstr "„%s“ nutzt den klassischen Editor. Das Formular erscheint auf der Seite wie gewohnt, der klassische Editor zeigt es aber als HTML-Kommentar."
 
 #. translators: %s: where a CF7 form was found (page builder data, widget, …).
-#: includes/Import/Cf7/Importer.php:330
+#: includes/Import/Cf7/Importer.php:359
 #, php-format
 msgid "A Contact Form 7 form is also used in %s. That is not changed automatically; please swap it by hand."
 msgstr "Ein Contact-Form-7-Formular wird auch in %s verwendet. Das wird nicht automatisch geändert; bitte von Hand austauschen."
 
 #. translators: 1: post title, 2: meta key.
-#: includes/Import/Cf7/Importer.php:365
+#: includes/Import/Cf7/Importer.php:394
 #, php-format
 msgid "\"%1$s\" (%2$s, e.g. a page builder)"
 msgstr "„%1$s“ (%2$s, z. B. ein Page Builder)"
 
 #. translators: %s: widget option name.
-#: includes/Import/Cf7/Importer.php:381
+#: includes/Import/Cf7/Importer.php:410
 #, php-format
 msgid "a widget (%s)"
 msgstr "einem Widget (%s)"
@@ -1008,23 +1008,23 @@ msgstr "Neue Anfrage über Ihre Website"
 msgid "You can reply to this email directly — your answer goes straight to the sender."
 msgstr "Sie können direkt auf diese E-Mail antworten, Ihre Antwort geht an die Person, die das Formular ausgefüllt hat."
 
-#: includes/Notifications/Mailer.php:477 src/form-container/edit.js:783
+#: includes/Notifications/Mailer.php:485 src/form-container/edit.js:783
 msgid "New submission: {form:title}"
 msgstr "Neue Einsendung: {form:title}"
 
-#: includes/Notifications/Mailer.php:516 src/form-container/edit.js:841
+#: includes/Notifications/Mailer.php:524 src/form-container/edit.js:841
 msgid "We received your submission"
 msgstr "Wir haben Ihre Einsendung erhalten"
 
-#: includes/Notifications/Mailer.php:545
+#: includes/Notifications/Mailer.php:553
 msgid "A new submission was received:"
 msgstr "Eine neue Einsendung ist eingegangen:"
 
-#: includes/Notifications/Mailer.php:577
+#: includes/Notifications/Mailer.php:585
 msgid "Hi,"
 msgstr "Hallo,"
 
-#: includes/Notifications/Mailer.php:579
+#: includes/Notifications/Mailer.php:587
 msgid "Thanks for your submission. We received the following and will be in touch shortly:"
 msgstr "Vielen Dank für Ihre Einsendung. Wir haben Folgendes erhalten und melden uns in Kürze bei Ihnen:"
 

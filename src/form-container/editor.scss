@@ -109,3 +109,11 @@
 		font-size: 12px;
 	}
 }
+
+/* "Add field" in its own row (1.15.0). WordPress positions the appender
+ * of an unselected parent absolutely at its bottom right, on top of the
+ * last field; with the templates ending in the long consent sentence the
+ * button covered its text. */
+.flinkform-form-editor .block-editor-block-list__layout > .block-list-appender {
+	position: static;
+}

@@ -4,7 +4,7 @@ Tags: contact form, form builder, multi step form, kontaktformular, dsgvo
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.14.4
+Stable tag: 1.15.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,11 +20,12 @@ Multi-step forms, conditional logic, a submissions dashboard and spam protection
 
 = Contact form in two minutes =
 
-Insert the Form block, add the fields you need and publish. Name, email and message are there in a few clicks, and the form looks like part of your site from the start, without extra CSS.
+Insert the Form block, pick one of five templates (contact, callback, three-step project inquiry, appointment, newsletter, each with a GDPR consent field) and publish. Name, email and message are there in a few clicks, and the form looks like part of your site from the start, without extra CSS.
 
 * 14 field types, including email, phone, date, dropdown, address and a dedicated consent checkbox
 * Email notification to you, plus an optional confirmation email to the visitor
-* Submissions are stored in WordPress, with search, filters and read state
+* Submissions are stored in WordPress, with search, filters, read state, an unread count in the menu and a trash
+* Every submission shows whether its notification email went out, and Site Health warns when notifications fail
 * Success message or redirect to your own thank-you page
 
 = Multi-step forms and conditional logic, free =
@@ -147,9 +148,13 @@ In a table in your own WordPress database. You find them under **Flinkform > Sub
 
 No. Forms are built in the standard WordPress Block Editor from native blocks. No page builder, no shortcodes, no separate form builder screen.
 
-= Can I switch from Contact Form 7 or WPForms? =
+= Can I switch from Contact Form 7? =
 
-Yes, but forms need to be rebuilt in the Block Editor, there is no automatic importer. Rebuilding a typical contact form takes a few minutes because the fields are plain blocks.
+Yes, with the built-in importer (Flinkform > Import from CF7). It turns every Contact Form 7 form into a Flinkform form, including its mail settings, and switches the pages that used it. A preview shows what carries over before anything changes, Contact Form 7 itself is left untouched, and every import can be undone. Forms from WPForms or other builders are rebuilt by hand, which takes a few minutes because the fields are plain blocks.
+
+= Contact Form 7 migration: what does not carry over? =
+
+CAPTCHA and quiz fields (Flinkform has its own spam protection), tags from CF7 add-ons such as conditional field groups, and CF7 settings without an equivalent. File upload fields need Flinkform Pro. The preview lists every such point per form.
 
 = Is Flinkform available in German? =
 
@@ -195,6 +200,21 @@ WordPress 6.5 or higher and PHP 8.1 or higher. Flinkform uses modern WordPress A
 6. The form takes colours and fonts from your theme's theme.json
 
 == Changelog ==
+
+= 1.15.0 =
+* New: Contact Form 7 importer. Flinkform > Import from CF7 turns each CF7 form into a Flinkform form (fields, labels, notification and confirmation mail, success message), stores it as a synced pattern and switches every page that used it. Preview with a traffic light first, undo per form, CF7 itself is never changed.
+* New: five starter templates when you insert a form: contact, callback request, three-step project inquiry, appointment request and newsletter sign-up, each with a consent field.
+* New: submissions trash with restore (emptied after 30 days), an unread count in the admin menu, and a mail status per submission. A Site Health check warns when notification emails fail.
+* New: "Mark optional fields" adds "(optional)" to every field that is not required.
+* New: autofill setting for text fields (name, company, address parts …).
+* New: in conditions, choice fields offer their values in a dropdown, and fields with an active condition carry a "Conditional" badge in the editor.
+* New: multi-step forms keep what the visitor typed when the page is reloaded (stored in the browser tab only, never the consent box).
+* Improvement: emails and the submissions screen show the option label a visitor chose instead of its internal value. {field:name} inserts the label, {field:name:value} the stored value.
+* Improvement: error messages under fields are in the site's language instead of the browser's, and fields are checked when the visitor leaves them.
+* Improvement: multi-step forms no longer jump while the page loads.
+* Improvement: error red is the CSS variable --flinkform-color-error and turns lighter on dark backgrounds; the consent text scales with the theme.
+* Improvement: a second quick click on the "please send again" page is held until the form may be sent, instead of asking again.
+* Flinkform Pro features appear, marked as Pro, where they would be used. Nothing is shown once Pro is active, and add_filter( 'flinkform_show_pro_upsell', '__return_false' ) hides all of it.
 
 = 1.14.4 =
 * Improvement: the block names in the inserter are translated now. On German sites every Flinkform block showed its English name ("Text Field" instead of "Textfeld").
@@ -251,6 +271,9 @@ WordPress 6.5 or higher and PHP 8.1 or higher. Flinkform uses modern WordPress A
 The complete release history is in `changelog.txt`, shipped with the plugin and available at https://github.com/dennisbuchwald/Flinkform/blob/main/changelog.txt
 
 == Upgrade Notice ==
+
+= 1.15.0 =
+New: Contact Form 7 importer, starter templates, submissions trash and a mail status per submission. Emails now show option labels instead of internal values.
 
 = 1.14.4 =
 German sites: block names are translated and German ships in both "du" and "Sie". Note that "Deutsch" now uses the informal "du", as WordPress.org does.
