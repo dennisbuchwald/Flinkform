@@ -619,12 +619,22 @@ final class Handler {
 			}
 			$value = $clean[ $name ];
 
-			$payload[] = [
+			$stored = is_array( $value ) ? array_values( array_map( 'strval', $value ) ) : (string) $value;
+			$record = [
 				'name'  => $name,
 				'label' => (string) ( $field['label'] ?? $name ),
 				'type'  => (string) ( $field['type'] ?? 'text' ),
-				'value' => is_array( $value ) ? array_values( array_map( 'strval', $value ) ) : (string) $value,
+				'value' => $stored,
 			];
+			// Snapshot of the option labels the visitor saw, so the admin
+			// keeps showing them after the form is edited. Only written
+			// when it differs; `value` stays the machine value (CSV,
+			// webhooks and calculations read it).
+			$display = \Flinkform\Fields\OptionLabels::for_field( $stored, $field );
+			if ( $display !== $stored ) {
+				$record['display'] = $display;
+			}
+			$payload[] = $record;
 		}
 		return $payload;
 	}

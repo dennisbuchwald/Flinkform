@@ -32,6 +32,8 @@ declare( strict_types = 1 );
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace Flinkform\Notifications;
 
+use Flinkform\Fields\OptionLabels;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -77,7 +79,8 @@ final class BodyBuilder {
 
 			$rows[] = [
 				'label' => (string) ( $field['label'] ?? $name ),
-				'value' => $value,
+				// Choice fields show the option label, not the stored value.
+				'value' => OptionLabels::for_field( $value, $field ),
 				'type'  => (string) ( $field['type'] ?? 'text' ),
 			];
 		}

@@ -23,6 +23,8 @@ declare( strict_types = 1 );
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace Flinkform\Notifications;
 
+use Flinkform\Fields\OptionLabels;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -50,17 +52,20 @@ final class MergeTags {
 		$fields = isset( $form_def['fields'] ) && is_array( $form_def['fields'] ) ? $form_def['fields'] : [];
 
 		$field_values = [];
+		$field_raw    = [];
 		$field_labels = [];
+		$join         = static fn ( $v ): string => is_array( $v ) ? implode( ', ', array_map( 'strval', $v ) ) : (string) $v;
 		foreach ( $fields as $field ) {
 			$name = (string) ( $field['name'] ?? '' );
 			if ( '' === $name ) {
 				continue;
 			}
-			$value                   = $clean[ $name ] ?? '';
-			$field_values[ $name ]   = is_array( $value )
-				? implode( ', ', array_map( 'strval', $value ) )
-				: (string) $value;
-			$field_labels[ $name ]   = (string) ( $field['label'] ?? $name );
+			$value = $clean[ $name ] ?? '';
+			// {field:x} shows what the visitor saw (option label since
+			// 1.15.0), {field:x:value} the stored machine value.
+			$field_values[ $name ] = $join( OptionLabels::for_field( $value, $field ) );
+			$field_raw[ $name ]    = $join( $value );
+			$field_labels[ $name ] = (string) ( $field['label'] ?? $name );
 		}
 
 		// Form title falls back to "Untitled form" when unset. Without
@@ -75,6 +80,7 @@ final class MergeTags {
 			'form_id'       => $form_id,
 			'form_title'    => $form_title,
 			'fields'        => $field_values,
+			'fields_raw'    => $field_raw,
 			'field_labels'  => $field_labels,
 			'field_defs'    => $fields,
 			'site_name'     => (string) get_bloginfo( 'name' ),
@@ -116,9 +122,9 @@ final class MergeTags {
 		}
 
 		$result = preg_replace_callback(
-			'/\{([a-z]+):([A-Za-z0-9_\-]+)\}/',
+			'/\{([a-z]+):([A-Za-z0-9_\-]+)(?::(value))?\}/',
 			static function ( array $m ) use ( $context ): string {
-				return self::resolve_tag( $m[1], $m[2], $context );
+				return self::resolve_tag( $m[1], $m[2], $context, $m[3] ?? '' );
 			},
 			$template
 		);
@@ -136,14 +142,19 @@ final class MergeTags {
 	 * @param string               $namespace
 	 * @param string               $key
 	 * @param array<string, mixed> $context
+	 * @param string               $modifier '' or 'value' ({field:x:value}).
 	 * @return string
 	 */
-	private static function resolve_tag( string $namespace, string $key, array $context ): string {
+	private static function resolve_tag( string $namespace, string $key, array $context, string $modifier = '' ): string {
 		$resolved = null;
 
 		switch ( $namespace ) {
 			case 'field':
-				$fields = $context['fields'] ?? [];
+				// {field:x:value} → stored value. Older contexts (built
+				// by a filter without fields_raw) fall back to fields.
+				$fields = 'value' === $modifier && isset( $context['fields_raw'] )
+					? $context['fields_raw']
+					: ( $context['fields'] ?? [] );
 				if ( is_array( $fields ) && array_key_exists( $key, $fields ) ) {
 					$resolved = (string) $fields[ $key ];
 				}
@@ -186,7 +197,7 @@ final class MergeTags {
 		$resolved = apply_filters( 'flinkform_resolve_merge_tag', $resolved, $namespace, $key, $context );
 
 		if ( null === $resolved ) {
-			return '{' . $namespace . ':' . $key . '}';
+			return '{' . $namespace . ':' . $key . ( '' !== $modifier ? ':' . $modifier : '' ) . '}';
 		}
 
 		return (string) $resolved;

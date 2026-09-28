@@ -778,7 +778,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 							<TextareaControl
 								label={ __( 'Body', 'flinkform' ) }
-								help={ __( 'Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Leave empty for an auto-generated list of all fields.', 'flinkform' ) }
+								help={ __( 'Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated list of all fields.', 'flinkform' ) }
 								value={ adminConfig.body ?? '' }
 								placeholder={ __( 'Auto-generated field list', 'flinkform' ) }
 								onChange={ ( value ) => updateAdminConfig( { body: value } ) }
@@ -836,7 +836,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 							<TextareaControl
 								label={ __( 'Body', 'flinkform' ) }
-								help={ __( 'Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Leave empty for an auto-generated thank-you with the submitted values.', 'flinkform' ) }
+								help={ __( 'Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated thank-you with the submitted values.', 'flinkform' ) }
 								value={ submitterConfig.body ?? '' }
 								placeholder={ __( 'Auto-generated thank-you with submitted values', 'flinkform' ) }
 								onChange={ ( value ) => updateSubmitterConfig( { body: value } ) }

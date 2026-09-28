@@ -15,6 +15,7 @@ declare( strict_types = 1 );
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace Flinkform\Admin;
 
+use Flinkform\Fields\OptionLabels;
 use Flinkform\Forms\Indexer;
 use Flinkform\Submissions\Repository;
 
@@ -297,6 +298,12 @@ final class SubmissionsListTable extends \WP_List_Table {
 				continue;
 			}
 			$value = $field['value'] ?? '';
+			if ( in_array( (string) ( $field['type'] ?? '' ), OptionLabels::CHOICE_TYPES, true ) ) {
+				$definition = array_key_exists( 'display', $field )
+					? null
+					: OptionLabels::live_definition( (string) ( $item['form_id'] ?? '' ), (int) ( $item['data']['_meta']['post_id'] ?? 0 ) );
+				$value      = OptionLabels::display_value( $field, $definition );
+			}
 			$label = isset( $field['label'] ) ? (string) $field['label'] : '';
 
 			if ( is_array( $value ) ) {

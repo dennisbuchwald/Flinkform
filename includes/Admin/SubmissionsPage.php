@@ -24,6 +24,7 @@ declare( strict_types = 1 );
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace Flinkform\Admin;
 
+use Flinkform\Fields\OptionLabels;
 use Flinkform\Forms\Indexer;
 use Flinkform\Submissions\Repository;
 
@@ -247,7 +248,7 @@ final class SubmissionsPage {
 									<br />
 									<small><code><?php echo esc_html( (string) ( $field['name'] ?? '' ) ); ?></code></small>
 								</th>
-								<td><?php echo wp_kses_post( $this->format_value( $field ) ); ?></td>
+								<td><?php echo wp_kses_post( $this->format_value( $field, $this->legacy_definition( $submission, $field ) ) ); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -283,11 +284,13 @@ final class SubmissionsPage {
 	/**
 	 * Format a single field's value for the detail view.
 	 *
-	 * @param array<string, mixed> $field
+	 * @param array<string, mixed>                  $field      Persisted field record.
+	 * @param array<int, array<string, mixed>>|null $definition Live definition for pre-1.15 choice rows.
 	 * @return string Already-escaped HTML.
 	 */
-	private function format_value( array $field ): string {
-		$value = $field['value'] ?? '';
+	private function format_value( array $field, ?array $definition = null ): string {
+		// Choice fields: the option label the visitor saw (1.15.0).
+		$value = OptionLabels::display_value( $field, $definition );
 		$type  = isset( $field['type'] ) ? (string) $field['type'] : 'text';
 
 		/**
@@ -472,6 +475,22 @@ final class SubmissionsPage {
 	 */
 	private function list_url(): string {
 		return add_query_arg( 'page', Menu::PARENT_SLUG, admin_url( 'admin.php' ) );
+	}
+
+	/**
+	 * Live field definitions, only for pre-1.15 rows that lack the
+	 * `display` snapshot of a choice field. Everything else needs no lookup.
+	 *
+	 * @param array<string, mixed> $submission Hydrated row.
+	 * @param array<string, mixed> $field      Persisted field record.
+	 * @return array<int, array<string, mixed>>|null
+	 */
+	private function legacy_definition( array $submission, array $field ): ?array {
+		if ( array_key_exists( 'display', $field ) || ! in_array( (string) ( $field['type'] ?? '' ), OptionLabels::CHOICE_TYPES, true ) ) {
+			return null;
+		}
+		$post_id = (int) ( $submission['data']['_meta']['post_id'] ?? 0 );
+		return OptionLabels::live_definition( (string) $submission['form_id'], $post_id );
 	}
 
 	/**

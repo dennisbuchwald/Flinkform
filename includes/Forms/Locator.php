@@ -505,14 +505,21 @@ final class Locator {
 					'maxDate' => isset( $attrs['maxDate'] ) && is_string( $attrs['maxDate'] ) ? $attrs['maxDate'] : '',
 				];
 			case 'select':
+				$raw_options = $attrs['options'] ?? $this->default_attribute( $block_name, 'options' );
 				return [
-					'multiple' => ! empty( $attrs['multiple'] ),
-					'options'  => $this->normalise_options( $attrs['options'] ?? $this->default_attribute( $block_name, 'options' ) ),
+					'multiple'     => ! empty( $attrs['multiple'] ),
+					'options'      => $this->normalise_options( $raw_options ),
+					// Value → label, for mails and the admin (1.15.0).
+					// `options` stays the plain value list: validation
+					// and add-ons read it.
+					'optionLabels' => \Flinkform\Fields\OptionLabels::map_from_options( $raw_options ),
 				];
 			case 'radio':
 			case 'checkbox':
+				$raw_options = $attrs['options'] ?? $this->default_attribute( $block_name, 'options' );
 				return [
-					'options' => $this->normalise_options( $attrs['options'] ?? $this->default_attribute( $block_name, 'options' ) ),
+					'options'      => $this->normalise_options( $raw_options ),
+					'optionLabels' => \Flinkform\Fields\OptionLabels::map_from_options( $raw_options ),
 				];
 			case 'hidden':
 				return [

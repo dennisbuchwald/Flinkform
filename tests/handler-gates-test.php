@@ -260,6 +260,7 @@ namespace {
 		throw new HandlerExit( [ 'kind' => 'json_error', 'json' => $data, 'status' => $status ] );
 	}
 
+	require_once __DIR__ . '/../includes/Fields/OptionLabels.php';
 	require_once __DIR__ . '/../includes/Database/Schema.php';
 	require_once __DIR__ . '/../includes/Submissions/Repository.php';
 	require_once __DIR__ . '/../includes/Forms/Indexer.php';

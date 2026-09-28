@@ -36,6 +36,7 @@ if ( ! function_exists( 'esc_html' ) ) {
 	}
 }
 
+require_once __DIR__ . '/../includes/Fields/OptionLabels.php';
 require_once __DIR__ . '/../includes/Notifications/BodyBuilder.php';
 
 use Flinkform\Notifications\BodyBuilder;

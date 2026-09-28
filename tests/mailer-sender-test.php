@@ -142,6 +142,7 @@ namespace Flinkform\Notifications {
 }
 
 namespace {
+	require_once __DIR__ . '/../includes/Fields/OptionLabels.php';
 	require_once __DIR__ . '/../includes/Notifications/BodyBuilder.php';
 	require_once __DIR__ . '/../includes/Notifications/Mailer.php';
 
