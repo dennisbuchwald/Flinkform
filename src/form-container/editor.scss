@@ -75,3 +75,37 @@
 		pointer-events: none;
 	}
 }
+
+/* Flinkform Pro hints (1.15.0): quiet, information only. */
+.flinkform-pro-badge {
+	display: inline-block;
+	margin-left: 4px;
+	padding: 0 6px;
+	border-radius: 9999px;
+	background: #f0f0f1;
+	color: #50575e;
+	font-size: 10px;
+	font-weight: 600;
+	line-height: 16px;
+	vertical-align: 1px;
+}
+
+.flinkform-pro-fields {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 8px;
+	margin-top: 8px;
+	font-size: 12px;
+	color: #757575;
+
+	.components-button.flinkform-pro-fields__item {
+		color: #757575;
+		border: 1px dashed #ccc;
+	}
+
+	.components-button.flinkform-pro-fields__hide {
+		color: #757575;
+		font-size: 12px;
+	}
+}

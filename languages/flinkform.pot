@@ -323,7 +323,7 @@ msgstr ""
 msgid "To date"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:490 src/form-container/edit.js:770
+#: includes/Admin/SubmissionsListTable.php:490 src/form-container/edit.js:771
 msgid "To"
 msgstr ""
 
@@ -367,7 +367,7 @@ msgstr ""
 msgid "Form:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:229 src/form-container/edit.js:459
+#: includes/Admin/SubmissionsPage.php:229 src/form-container/edit.js:460
 msgid "Form ID:"
 msgstr ""
 
@@ -461,6 +461,104 @@ msgstr ""
 
 #: includes/Admin/SubmissionsPage.php:494
 msgid "Submission marked as unread."
+msgstr ""
+
+#: includes/Admin/Upsell.php:124 includes/Admin/Upsell.php:185
+msgid "Flinkform Pro"
+msgstr ""
+
+#: includes/Admin/Upsell.php:125 includes/Admin/Upsell.php:155 includes/Admin/Upsell.php:192 src/form-container/upsell.js:62 src/form-container/upsell.js:99
+msgid "Pro"
+msgstr ""
+
+#: includes/Admin/Upsell.php:154
+msgid "Export CSV"
+msgstr ""
+
+#: includes/Admin/Upsell.php:156
+msgid "(opens flinkform.de in a new tab)"
+msgstr ""
+
+#: includes/Admin/Upsell.php:170
+msgid "Forms, all 13 field types, multi-step, conditional logic"
+msgstr ""
+
+#: includes/Admin/Upsell.php:171
+msgid "Spam protection without CAPTCHA or third parties"
+msgstr ""
+
+#: includes/Admin/Upsell.php:172
+msgid "Mail notifications, confirmation mail, submissions in the admin"
+msgstr ""
+
+#: includes/Admin/Upsell.php:173
+msgid "GDPR: consent field, retention, privacy tools"
+msgstr ""
+
+#: includes/Admin/Upsell.php:174
+msgid "Stripe payments (card, SEPA, Apple Pay, Google Pay)"
+msgstr ""
+
+#: includes/Admin/Upsell.php:175
+msgid "Calculation fields for prices and totals"
+msgstr ""
+
+#: includes/Admin/Upsell.php:176
+msgid "File uploads, several files per field"
+msgstr ""
+
+#: includes/Admin/Upsell.php:177
+msgid "Webhooks to Zapier, Make, n8n, with retries and a log"
+msgstr ""
+
+#: includes/Admin/Upsell.php:178
+msgid "SMTP sending with a send log"
+msgstr ""
+
+#: includes/Admin/Upsell.php:179
+msgid "Newsletter sign-ups to Brevo, Mailchimp, CleverReach"
+msgstr ""
+
+#: includes/Admin/Upsell.php:180
+msgid "CSV export of submissions"
+msgstr ""
+
+#: includes/Admin/Upsell.php:181
+msgid "Custom CSS per form"
+msgstr ""
+
+#: includes/Admin/Upsell.php:186
+msgid "Everything you have now stays free. Pro adds the things businesses and agencies ask for: payments, uploads, integrations."
+msgstr ""
+
+#: includes/Admin/Upsell.php:190
+msgid "Feature"
+msgstr ""
+
+#: includes/Admin/Upsell.php:191
+msgid "Free"
+msgstr ""
+
+#: includes/Admin/Upsell.php:199 includes/Admin/Upsell.php:200
+msgid "included"
+msgstr ""
+
+#: includes/Admin/Upsell.php:199
+msgid "not included"
+msgstr ""
+
+#: includes/Admin/Upsell.php:206
+msgid "From 59 € per year for one website. 14-day money-back guarantee."
+msgstr ""
+
+#: includes/Admin/Upsell.php:210 src/form-container/upsell.js:73 src/form-container/upsell.js:104
+msgid "See Flinkform Pro"
+msgstr ""
+
+#. translators: %s: filter name.
+#: includes/Admin/Upsell.php:217
+#, php-format
+msgid "Building sites for clients? %s hides every Pro hint in the free plugin."
 msgstr ""
 
 #: includes/Fields/LabelMarks.php:48 src/shared/required-mark.js:15
@@ -597,11 +695,11 @@ msgstr ""
 msgid "You can reply to this email directly — your answer goes straight to the sender."
 msgstr ""
 
-#: includes/Notifications/Mailer.php:477 src/form-container/edit.js:782
+#: includes/Notifications/Mailer.php:477 src/form-container/edit.js:783
 msgid "New submission: {form:title}"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:516 src/form-container/edit.js:840
+#: includes/Notifications/Mailer.php:516 src/form-container/edit.js:841
 msgid "We received your submission"
 msgstr ""
 
@@ -699,7 +797,7 @@ msgstr ""
 msgid "Sorry, something went wrong saving your message. Please try again."
 msgstr ""
 
-#: includes/Submissions/Handler.php:575 src/form-container/render.php:44 src/form-container/edit.js:103
+#: includes/Submissions/Handler.php:575 src/form-container/render.php:44 src/form-container/edit.js:104
 msgid "Thank you! Your message has been sent successfully."
 msgstr ""
 
@@ -815,12 +913,12 @@ msgstr ""
 msgid "Please choose …"
 msgstr ""
 
-#: src/form-container/render.php:37 src/form-container/edit.js:99 src/form-container/edit.js:1007
+#: src/form-container/render.php:37 src/form-container/edit.js:100 src/form-container/edit.js:1014
 msgid "Send"
 msgstr ""
 
 #. translators: 1: current step number, 2: total step count
-#: src/form-container/render.php:290 src/form-container/render.php:592 src/form-container/edit.js:951
+#: src/form-container/render.php:290 src/form-container/render.php:592 src/form-container/edit.js:955
 #, javascript-format, php-format
 msgid "Step %1$s of %2$s"
 msgstr ""
@@ -1121,409 +1219,409 @@ msgstr ""
 msgid "Conditional"
 msgstr ""
 
-#: src/form-container/edit.js:442
+#: src/form-container/edit.js:443
 msgid "Form Settings"
 msgstr ""
 
-#: src/form-container/edit.js:444
+#: src/form-container/edit.js:445
 msgid "Form Title"
 msgstr ""
 
-#: src/form-container/edit.js:445
+#: src/form-container/edit.js:446
 msgid "Internal name shown in the Forms admin overview. Not visible to visitors."
 msgstr ""
 
-#: src/form-container/edit.js:452
+#: src/form-container/edit.js:453
 msgid "Submit Button Label"
 msgstr ""
 
-#: src/form-container/edit.js:464
+#: src/form-container/edit.js:465
 msgid "After Submit"
 msgstr ""
 
-#: src/form-container/edit.js:468
+#: src/form-container/edit.js:469
 msgid "On successful submission"
 msgstr ""
 
-#: src/form-container/edit.js:475
+#: src/form-container/edit.js:476
 msgid "Show message"
 msgstr ""
 
-#: src/form-container/edit.js:476
+#: src/form-container/edit.js:477
 msgid "Redirect to URL"
 msgstr ""
 
-#: src/form-container/edit.js:481
+#: src/form-container/edit.js:482
 msgid "Success Message"
 msgstr ""
 
-#: src/form-container/edit.js:482
+#: src/form-container/edit.js:483
 msgid "Shown in place of the form after a successful submission."
 msgstr ""
 
-#: src/form-container/edit.js:492
+#: src/form-container/edit.js:493
 msgid "Redirect URL"
 msgstr ""
 
-#: src/form-container/edit.js:493
+#: src/form-container/edit.js:494
 msgid "Same-origin only. Enter a path (/danke) or a full URL on this site. External URLs are silently rejected by the safe-redirect filter — operators who need cross-domain thank-you pages get a site-wide opt-in toggle in a later release."
 msgstr ""
 
-#: src/form-container/edit.js:501
+#: src/form-container/edit.js:502
 msgid "https://example.com/danke"
 msgstr ""
 
-#: src/form-container/edit.js:507
+#: src/form-container/edit.js:508
 msgid "Append submission ID"
 msgstr ""
 
-#: src/form-container/edit.js:508
+#: src/form-container/edit.js:509
 msgid "Adds ?flinkform_submission_id=N to the redirect URL — useful for analytics events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off because submission IDs are PII-adjacent and end up in browser history."
 msgstr ""
 
-#: src/form-container/edit.js:515
+#: src/form-container/edit.js:516
 msgid "Append form ID"
 msgstr ""
 
-#: src/form-container/edit.js:516
+#: src/form-container/edit.js:517
 msgid "Adds ?flinkform_form_id=UUID — lets a shared thank-you page differentiate conversions by source form."
 msgstr ""
 
-#: src/form-container/edit.js:526
+#: src/form-container/edit.js:527
 msgid "Style"
 msgstr ""
 
-#: src/form-container/edit.js:531
+#: src/form-container/edit.js:532
 msgid "Primary color"
 msgstr ""
 
-#: src/form-container/edit.js:532
+#: src/form-container/edit.js:533
 msgid "Used for submit button, focus rings, and accent details. Leave unset to inherit from your theme."
 msgstr ""
 
-#: src/form-container/edit.js:544
+#: src/form-container/edit.js:545
 msgid "Label colour"
 msgstr ""
 
-#: src/form-container/edit.js:545
+#: src/form-container/edit.js:546
 msgid "Field labels and group headings. Leave unset to inherit from your theme."
 msgstr ""
 
-#: src/form-container/edit.js:557
+#: src/form-container/edit.js:558
 msgid "Help & consent text colour"
 msgstr ""
 
-#: src/form-container/edit.js:558
+#: src/form-container/edit.js:559
 msgid "Help texts and the consent sentence — the quiet gray layer. Handy on dark backgrounds."
 msgstr ""
 
-#: src/form-container/edit.js:570
+#: src/form-container/edit.js:571
 msgid "Field style"
 msgstr ""
 
-#: src/form-container/edit.js:571
+#: src/form-container/edit.js:572
 msgid "Bordered: full outline. Soft: light gray border. Underline: bottom border only. Minimal: no border, subtle background."
 msgstr ""
 
-#: src/form-container/edit.js:574
+#: src/form-container/edit.js:575
 msgid "Bordered"
 msgstr ""
 
-#: src/form-container/edit.js:575
+#: src/form-container/edit.js:576
 msgid "Soft"
 msgstr ""
 
-#: src/form-container/edit.js:576
+#: src/form-container/edit.js:577
 msgid "Underline"
 msgstr ""
 
-#: src/form-container/edit.js:577
+#: src/form-container/edit.js:578
 msgid "Minimal"
 msgstr ""
 
-#: src/form-container/edit.js:584
+#: src/form-container/edit.js:585
 msgid "Border radius"
 msgstr ""
 
-#: src/form-container/edit.js:585
+#: src/form-container/edit.js:586
 msgid "Applies to fields and the submit button. Leave at the default to inherit from your theme."
 msgstr ""
 
-#: src/form-container/edit.js:599
+#: src/form-container/edit.js:600
 msgid "Field spacing"
 msgstr ""
 
-#: src/form-container/edit.js:602
+#: src/form-container/edit.js:603
 msgid "Compact"
 msgstr ""
 
-#: src/form-container/edit.js:603
+#: src/form-container/edit.js:604
 msgid "Normal"
 msgstr ""
 
-#: src/form-container/edit.js:604
+#: src/form-container/edit.js:605
 msgid "Relaxed"
 msgstr ""
 
-#: src/form-container/edit.js:611
+#: src/form-container/edit.js:612
 msgid "Label position"
 msgstr ""
 
-#: src/form-container/edit.js:614
+#: src/form-container/edit.js:615
 msgid "Material-style notched label: rests inside the input, then slides onto the top border on focus, cutting a notch through it. Applies to text-style fields."
 msgstr ""
 
-#: src/form-container/edit.js:616
+#: src/form-container/edit.js:617
 msgid "Labels are visually hidden (still accessible to screen readers). The label text is used as placeholder inside the field. Applies to text-style fields only."
 msgstr ""
 
-#: src/form-container/edit.js:617
+#: src/form-container/edit.js:618
 msgid "Beside, Floating and Hidden apply to text-style fields only."
 msgstr ""
 
-#: src/form-container/edit.js:621
+#: src/form-container/edit.js:622
 msgid "Above"
 msgstr ""
 
-#: src/form-container/edit.js:622
+#: src/form-container/edit.js:623
 msgid "Beside"
 msgstr ""
 
-#: src/form-container/edit.js:623
+#: src/form-container/edit.js:624
 msgid "Floating"
 msgstr ""
 
-#: src/form-container/edit.js:624
+#: src/form-container/edit.js:625
 msgid "Hidden"
 msgstr ""
 
-#: src/form-container/edit.js:631
+#: src/form-container/edit.js:632
 msgid "Mark optional fields"
 msgstr ""
 
-#: src/form-container/edit.js:632
+#: src/form-container/edit.js:633
 msgid "Adds \"(optional)\" to every field that is not required. Useful when most fields are required anyway."
 msgstr ""
 
-#: src/form-container/edit.js:638
+#: src/form-container/edit.js:639
 msgid "Columns"
 msgstr ""
 
-#: src/form-container/edit.js:639
+#: src/form-container/edit.js:640
 msgid "Two-column layout collapses to a single column on mobile. Individual fields can be set to span both columns via their own inspector."
 msgstr ""
 
-#: src/form-container/edit.js:646
+#: src/form-container/edit.js:647
 msgid "1 column"
 msgstr ""
 
-#: src/form-container/edit.js:647
+#: src/form-container/edit.js:648
 msgid "2 columns"
 msgstr ""
 
-#: src/form-container/edit.js:650
+#: src/form-container/edit.js:651
 msgid "Submit button style"
 msgstr ""
 
-#: src/form-container/edit.js:653
+#: src/form-container/edit.js:654
 msgid "Fill"
 msgstr ""
 
-#: src/form-container/edit.js:654
+#: src/form-container/edit.js:655
 msgid "Outline"
 msgstr ""
 
-#: src/form-container/edit.js:655
+#: src/form-container/edit.js:656
 msgid "Ghost"
 msgstr ""
 
-#: src/form-container/edit.js:662
+#: src/form-container/edit.js:663
 msgid "Button background"
 msgstr ""
 
-#: src/form-container/edit.js:663
+#: src/form-container/edit.js:664
 msgid "Leave unset to use the primary colour."
 msgstr ""
 
-#: src/form-container/edit.js:675
+#: src/form-container/edit.js:676
 msgid "Button text colour"
 msgstr ""
 
-#: src/form-container/edit.js:676
+#: src/form-container/edit.js:677
 msgid "Leave unset for automatic contrast."
 msgstr ""
 
-#: src/form-container/edit.js:688
+#: src/form-container/edit.js:689
 msgid "Button border colour"
 msgstr ""
 
-#: src/form-container/edit.js:689
+#: src/form-container/edit.js:690
 msgid "Only visible when button style is \"Outline\". Leave unset to match the background colour."
 msgstr ""
 
-#: src/form-container/edit.js:701
+#: src/form-container/edit.js:702
 msgid "Progress indicator"
 msgstr ""
 
-#: src/form-container/edit.js:702
+#: src/form-container/edit.js:703
 msgid "Shown on multi-step forms only. Bar fills as the user advances; Dots marks each step; Numbers reads \"Step X of Y\"."
 msgstr ""
 
-#: src/form-container/edit.js:705
+#: src/form-container/edit.js:706
 msgid "Bar"
 msgstr ""
 
-#: src/form-container/edit.js:706
+#: src/form-container/edit.js:707
 msgid "Dots"
 msgstr ""
 
-#: src/form-container/edit.js:707
+#: src/form-container/edit.js:708
 msgid "Numbers"
 msgstr ""
 
-#: src/form-container/edit.js:708
+#: src/form-container/edit.js:709
 msgid "None"
 msgstr ""
 
-#: src/form-container/edit.js:716
+#: src/form-container/edit.js:717
 msgid "Show step labels"
 msgstr ""
 
-#: src/form-container/edit.js:717
+#: src/form-container/edit.js:718
 msgid "Display the current step’s label (from the Page Break block) beneath the indicator. Only shows when at least one Page Break has a label."
 msgstr ""
 
-#: src/form-container/edit.js:726
+#: src/form-container/edit.js:727
 msgid "Notifications"
 msgstr ""
 
-#: src/form-container/edit.js:730
+#: src/form-container/edit.js:731
 msgid "Send from (name)"
 msgstr ""
 
-#: src/form-container/edit.js:731
+#: src/form-container/edit.js:732
 msgid "Shown as the sender of both emails below. Leave empty to keep what WordPress or your SMTP plugin uses."
 msgstr ""
 
-#: src/form-container/edit.js:738
+#: src/form-container/edit.js:739
 msgid "Send from (address)"
 msgstr ""
 
-#: src/form-container/edit.js:739
+#: src/form-container/edit.js:740
 msgid "Use an address on this website’s own domain. Leave empty to keep the site default."
 msgstr ""
 
 #. translators: 1: domain of the sender address, 2: the website's own domain.
-#: src/form-container/edit.js:751
+#: src/form-container/edit.js:752
 #, javascript-format
 msgid "The sender address is on %1$s, but this website is %2$s. Your server is not authorised to send as %1$s, so these emails will likely fail SPF and land in spam. Send from your own domain and put the other address in a Reply-To field instead."
 msgstr ""
 
-#: src/form-container/edit.js:761
+#: src/form-container/edit.js:762
 msgid "Send admin notification"
 msgstr ""
 
-#: src/form-container/edit.js:762
+#: src/form-container/edit.js:763
 msgid "Email the site admin when a submission is received."
 msgstr ""
 
-#: src/form-container/edit.js:771
+#: src/form-container/edit.js:772
 msgid "Comma-separated. Leave empty to use the site admin email. Supports merge tags like {field:email}."
 msgstr ""
 
-#: src/form-container/edit.js:773
+#: src/form-container/edit.js:774
 msgid "Site admin email"
 msgstr ""
 
-#: src/form-container/edit.js:779 src/form-container/edit.js:837
+#: src/form-container/edit.js:780 src/form-container/edit.js:838
 msgid "Subject"
 msgstr ""
 
-#: src/form-container/edit.js:780 src/form-container/edit.js:838
+#: src/form-container/edit.js:781 src/form-container/edit.js:839
 msgid "Supports merge tags. Leave empty for the default."
 msgstr ""
 
-#: src/form-container/edit.js:788 src/form-container/edit.js:846
+#: src/form-container/edit.js:789 src/form-container/edit.js:847
 msgid "Body"
 msgstr ""
 
-#: src/form-container/edit.js:789
+#: src/form-container/edit.js:790
 msgid "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated list of all fields."
 msgstr ""
 
-#: src/form-container/edit.js:791
+#: src/form-container/edit.js:792
 msgid "Auto-generated field list"
 msgstr ""
 
-#: src/form-container/edit.js:797 src/form-container/edit.js:855
+#: src/form-container/edit.js:798 src/form-container/edit.js:856
 msgid "Reply-To"
 msgstr ""
 
-#: src/form-container/edit.js:798
+#: src/form-container/edit.js:799
 msgid "Often set to {field:<emailFieldName>} so replies go to the submitter. Leave empty to use the site default."
 msgstr ""
 
-#: src/form-container/edit.js:811
+#: src/form-container/edit.js:812
 msgid "Send confirmation to submitter"
 msgstr ""
 
-#: src/form-container/edit.js:812
+#: src/form-container/edit.js:813
 msgid "Email a copy of the submission back to the person who filled out the form."
 msgstr ""
 
-#: src/form-container/edit.js:819
+#: src/form-container/edit.js:820
 msgid "Add an email field to this form to enable submitter confirmations."
 msgstr ""
 
-#: src/form-container/edit.js:825
+#: src/form-container/edit.js:826
 msgid "Email field"
 msgstr ""
 
-#: src/form-container/edit.js:826
+#: src/form-container/edit.js:827
 msgid "Which field contains the submitter’s email address."
 msgstr ""
 
-#: src/form-container/edit.js:829 src/shared/conditional-logic-panel.js:162
+#: src/form-container/edit.js:830 src/shared/conditional-logic-panel.js:162
 msgid "— Select a field —"
 msgstr ""
 
-#: src/form-container/edit.js:847
+#: src/form-container/edit.js:848
 msgid "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated thank-you with the submitted values."
 msgstr ""
 
-#: src/form-container/edit.js:849
+#: src/form-container/edit.js:850
 msgid "Auto-generated thank-you with submitted values"
 msgstr ""
 
-#: src/form-container/edit.js:856
+#: src/form-container/edit.js:857
 msgid "Where a reply from the submitter should go. Useful when the form sends from the website address but you read your mail somewhere else. Leave empty to reply to the sender address."
 msgstr ""
 
-#: src/form-container/edit.js:873
+#: src/form-container/edit.js:874
 msgid "Submit Condition"
 msgstr ""
 
-#: src/form-container/edit.js:874
+#: src/form-container/edit.js:875
 msgid "Gate the submit button"
 msgstr ""
 
-#: src/form-container/edit.js:875
+#: src/form-container/edit.js:876
 msgid "Disable the submit button until the rules below match. Useful for \"I agree to terms\" checkboxes."
 msgstr ""
 
-#: src/form-container/edit.js:897
+#: src/form-container/edit.js:901
 msgid "Data Retention"
 msgstr ""
 
-#: src/form-container/edit.js:901
+#: src/form-container/edit.js:905
 msgid "Auto-delete submissions after (days)"
 msgstr ""
 
-#: src/form-container/edit.js:903
+#: src/form-container/edit.js:907
 msgid "GDPR storage limitation: automatically delete this form’s submissions older than the chosen number of days. 0 = keep forever. Purges run daily and also remove any linked Flinkform Pro webhook delivery records."
 msgstr ""
 
-#: src/form-container/edit.js:990
+#: src/form-container/edit.js:995
 msgid "Add field"
 msgstr ""
 
@@ -1705,6 +1803,74 @@ msgstr ""
 
 #: src/form-container/templates.js:132
 msgid "Yes, I would like to receive the newsletter. I can unsubscribe at any time. Details in the {privacy_policy}."
+msgstr ""
+
+#: src/form-container/upsell.js:26
+msgid "Payment"
+msgstr ""
+
+#: src/form-container/upsell.js:27
+msgid "Take payments right in the form with Stripe: card, SEPA direct debit, Apple Pay and Google Pay. Fixed amounts or totals from a calculation field."
+msgstr ""
+
+#: src/form-container/upsell.js:31
+msgid "File upload"
+msgstr ""
+
+#: src/form-container/upsell.js:32
+msgid "Let people attach photos, PDFs or documents, several files per field, with type and size limits. Files are stored protected and attached to the mail."
+msgstr ""
+
+#: src/form-container/upsell.js:36
+msgid "Calculation"
+msgstr ""
+
+#: src/form-container/upsell.js:37
+msgid "Show live prices and totals calculated from other fields, for quotes, price calculators and order forms."
+msgstr ""
+
+#: src/form-container/upsell.js:59
+msgid "More fields with Pro:"
+msgstr ""
+
+#: src/form-container/upsell.js:66
+msgid "Hide"
+msgstr ""
+
+#: src/form-container/upsell.js:71
+msgid "This field comes with the Flinkform Pro add-on. Your free forms keep working exactly as they are."
+msgstr ""
+
+#: src/form-container/upsell.js:90
+msgid "Send every submission to Zapier, Make, n8n or your own endpoint, with automatic retries and a delivery log."
+msgstr ""
+
+#: src/form-container/upsell.js:90
+msgid "Webhooks"
+msgstr ""
+
+#: src/form-container/upsell.js:91
+msgid "Add people who tick the consent box straight to Brevo, Mailchimp or CleverReach."
+msgstr ""
+
+#: src/form-container/upsell.js:91
+msgid "Newsletter"
+msgstr ""
+
+#: src/form-container/upsell.js:92
+msgid "SMTP sending"
+msgstr ""
+
+#: src/form-container/upsell.js:92
+msgid "Send notifications through a real mailbox (SMTP) so they reach the inbox, with a send log. A site-wide setting."
+msgstr ""
+
+#: src/form-container/upsell.js:93
+msgid "Custom CSS"
+msgstr ""
+
+#: src/form-container/upsell.js:93
+msgid "Style this one form with your own CSS, scoped to it."
 msgstr ""
 
 #: src/notice/edit.js:33 src/notice/block.json

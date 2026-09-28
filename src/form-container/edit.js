@@ -33,6 +33,7 @@ import {
 import ConditionalLogicPanel from '../shared/conditional-logic-panel';
 import resolveSurfaceColour from '../shared/surface-colour';
 import StartPicker from './start-picker';
+import { ProFieldsRow, ProPanels } from './upsell';
 
 // Inline plus glyph for the "Add field" appender button. Inline (not
 // @wordpress/icons) to avoid pulling in an extra dependency; the white
@@ -892,6 +893,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ panel }
 					</Fragment>
 				) ) }
+				{ /* Pro hints (1.15.0): collapsed, information only, gone when
+				     Pro is active. See Admin\Upsell. */ }
+				<ProPanels />
 
 				<PanelBody
 					title={ __( 'Data Retention', 'flinkform' ) }
@@ -969,6 +973,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					allowedBlocks={ getAllowedBlocks() }
 					templateLock={ false }
 					renderAppender={ showStartPicker ? false : () => (
+						<>
 						<Inserter
 							rootClientId={ clientId }
 							isAppender
@@ -991,6 +996,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								</Button>
 							) }
 						/>
+						<ProFieldsRow />
+						</>
 					) }
 				/>
 				{ /* Submit-button preview — mirrors the frontend's actions

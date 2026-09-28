@@ -138,7 +138,7 @@ final class Menu {
 	public function enqueue_submissions_styles(): void {
 		wp_register_style( 'flinkform-admin-submissions', false, [], FLINKFORM_VERSION );
 		wp_enqueue_style( 'flinkform-admin-submissions' );
-		wp_add_inline_style( 'flinkform-admin-submissions', SubmissionsPage::inline_css() );
+		wp_add_inline_style( 'flinkform-admin-submissions', SubmissionsPage::inline_css() . Upsell::inline_css() );
 	}
 
 	/**

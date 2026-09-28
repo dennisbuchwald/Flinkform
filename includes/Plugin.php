@@ -117,6 +117,9 @@ final class Plugin {
 			( new Admin\CacheHealth() )->register();
 			// Site Health: notification mails that never went out (1.15.0).
 			( new Admin\MailHealthCheck() )->register();
+			// Pro hints where the feature would be used (1.15.0); switches
+			// itself off when Pro is active or the filter says so.
+			( new Admin\Upsell() )->register();
 		}
 
 		/**

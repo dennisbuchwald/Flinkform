@@ -428,5 +428,169 @@
   "no longer an option": [
     "keine Option mehr",
     "keine Option mehr"
+  ],
+  "Flinkform Pro": [
+    "Flinkform Pro",
+    "Flinkform Pro"
+  ],
+  "Pro": [
+    "Pro",
+    "Pro"
+  ],
+  "Export CSV": [
+    "CSV exportieren",
+    "CSV exportieren"
+  ],
+  "(opens flinkform.de in a new tab)": [
+    "(öffnet flinkform.de in einem neuen Tab)",
+    "(öffnet flinkform.de in einem neuen Tab)"
+  ],
+  "Forms, all 13 field types, multi-step, conditional logic": [
+    "Formulare, alle 13 Feldtypen, mehrstufig, Bedingungslogik",
+    "Formulare, alle 13 Feldtypen, mehrstufig, Bedingungslogik"
+  ],
+  "Spam protection without CAPTCHA or third parties": [
+    "Spam-Schutz ohne CAPTCHA und ohne Drittanbieter",
+    "Spam-Schutz ohne CAPTCHA und ohne Drittanbieter"
+  ],
+  "Mail notifications, confirmation mail, submissions in the admin": [
+    "Mail-Benachrichtigung, Bestätigungsmail, Einsendungen im Backend",
+    "Mail-Benachrichtigung, Bestätigungsmail, Einsendungen im Backend"
+  ],
+  "GDPR: consent field, retention, privacy tools": [
+    "DSGVO: Einwilligungsfeld, Aufbewahrungsfrist, Datenschutz-Werkzeuge",
+    "DSGVO: Einwilligungsfeld, Aufbewahrungsfrist, Datenschutz-Werkzeuge"
+  ],
+  "Stripe payments (card, SEPA, Apple Pay, Google Pay)": [
+    "Stripe-Zahlungen (Karte, SEPA, Apple Pay, Google Pay)",
+    "Stripe-Zahlungen (Karte, SEPA, Apple Pay, Google Pay)"
+  ],
+  "Calculation fields for prices and totals": [
+    "Berechnungsfelder für Preise und Summen",
+    "Berechnungsfelder für Preise und Summen"
+  ],
+  "File uploads, several files per field": [
+    "Datei-Uploads, mehrere Dateien pro Feld",
+    "Datei-Uploads, mehrere Dateien pro Feld"
+  ],
+  "Webhooks to Zapier, Make, n8n, with retries and a log": [
+    "Webhooks an Zapier, Make, n8n, mit Wiederholungen und Protokoll",
+    "Webhooks an Zapier, Make, n8n, mit Wiederholungen und Protokoll"
+  ],
+  "SMTP sending with a send log": [
+    "SMTP-Versand mit Versandprotokoll",
+    "SMTP-Versand mit Versandprotokoll"
+  ],
+  "Newsletter sign-ups to Brevo, Mailchimp, CleverReach": [
+    "Newsletter-Anmeldungen an Brevo, Mailchimp, CleverReach",
+    "Newsletter-Anmeldungen an Brevo, Mailchimp, CleverReach"
+  ],
+  "CSV export of submissions": [
+    "CSV-Export der Einsendungen",
+    "CSV-Export der Einsendungen"
+  ],
+  "Custom CSS per form": [
+    "Eigenes CSS pro Formular",
+    "Eigenes CSS pro Formular"
+  ],
+  "Everything you have now stays free. Pro adds the things businesses and agencies ask for: payments, uploads, integrations.": [
+    "Alles, was du jetzt hast, bleibt kostenlos. Pro ergänzt, was Unternehmen und Agenturen brauchen: Zahlungen, Uploads, Anbindungen.",
+    "Alles, was Sie jetzt haben, bleibt kostenlos. Pro ergänzt, was Unternehmen und Agenturen brauchen: Zahlungen, Uploads, Anbindungen."
+  ],
+  "Feature": [
+    "Funktion",
+    "Funktion"
+  ],
+  "Free": [
+    "Free",
+    "Free"
+  ],
+  "included": [
+    "enthalten",
+    "enthalten"
+  ],
+  "not included": [
+    "nicht enthalten",
+    "nicht enthalten"
+  ],
+  "From 59 € per year for one website. 14-day money-back guarantee.": [
+    "Ab 59 € pro Jahr für eine Website. 14 Tage Geld-zurück-Garantie.",
+    "Ab 59 € pro Jahr für eine Website. 14 Tage Geld-zurück-Garantie."
+  ],
+  "See Flinkform Pro": [
+    "Flinkform Pro ansehen",
+    "Flinkform Pro ansehen"
+  ],
+  "Building sites for clients? %s hides every Pro hint in the free plugin.": [
+    "Du baust Websites für Kunden? %s blendet jeden Pro-Hinweis im kostenlosen Plugin aus.",
+    "Sie bauen Websites für Kunden? %s blendet jeden Pro-Hinweis im kostenlosen Plugin aus."
+  ],
+  "Payment": [
+    "Zahlung",
+    "Zahlung"
+  ],
+  "Take payments right in the form with Stripe: card, SEPA direct debit, Apple Pay and Google Pay. Fixed amounts or totals from a calculation field.": [
+    "Zahlungen direkt im Formular mit Stripe: Karte, SEPA-Lastschrift, Apple Pay und Google Pay. Feste Beträge oder Summen aus einem Berechnungsfeld.",
+    "Zahlungen direkt im Formular mit Stripe: Karte, SEPA-Lastschrift, Apple Pay und Google Pay. Feste Beträge oder Summen aus einem Berechnungsfeld."
+  ],
+  "File upload": [
+    "Datei-Upload",
+    "Datei-Upload"
+  ],
+  "Let people attach photos, PDFs or documents, several files per field, with type and size limits. Files are stored protected and attached to the mail.": [
+    "Fotos, PDFs oder Dokumente anhängen lassen, mehrere Dateien pro Feld, mit Typ- und Größengrenzen. Dateien werden geschützt gespeichert und an die Mail gehängt.",
+    "Fotos, PDFs oder Dokumente anhängen lassen, mehrere Dateien pro Feld, mit Typ- und Größengrenzen. Dateien werden geschützt gespeichert und an die Mail gehängt."
+  ],
+  "Calculation": [
+    "Berechnung",
+    "Berechnung"
+  ],
+  "Show live prices and totals calculated from other fields, for quotes, price calculators and order forms.": [
+    "Live-Preise und Summen aus anderen Feldern berechnen, für Angebote, Preisrechner und Bestellformulare.",
+    "Live-Preise und Summen aus anderen Feldern berechnen, für Angebote, Preisrechner und Bestellformulare."
+  ],
+  "More fields with Pro:": [
+    "Weitere Felder mit Pro:",
+    "Weitere Felder mit Pro:"
+  ],
+  "Hide": [
+    "Ausblenden",
+    "Ausblenden"
+  ],
+  "This field comes with the Flinkform Pro add-on. Your free forms keep working exactly as they are.": [
+    "Dieses Feld kommt mit der Erweiterung Flinkform Pro. Deine kostenlosen Formulare laufen unverändert weiter.",
+    "Dieses Feld kommt mit der Erweiterung Flinkform Pro. Ihre kostenlosen Formulare laufen unverändert weiter."
+  ],
+  "Send every submission to Zapier, Make, n8n or your own endpoint, with automatic retries and a delivery log.": [
+    "Jede Einsendung an Zapier, Make, n8n oder einen eigenen Endpunkt senden, mit automatischen Wiederholungen und Zustellprotokoll.",
+    "Jede Einsendung an Zapier, Make, n8n oder einen eigenen Endpunkt senden, mit automatischen Wiederholungen und Zustellprotokoll."
+  ],
+  "Webhooks": [
+    "Webhooks",
+    "Webhooks"
+  ],
+  "Newsletter": [
+    "Newsletter",
+    "Newsletter"
+  ],
+  "Add people who tick the consent box straight to Brevo, Mailchimp or CleverReach.": [
+    "Wer die Einwilligung anhakt, landet direkt bei Brevo, Mailchimp oder CleverReach.",
+    "Wer die Einwilligung anhakt, landet direkt bei Brevo, Mailchimp oder CleverReach."
+  ],
+  "SMTP sending": [
+    "SMTP-Versand",
+    "SMTP-Versand"
+  ],
+  "Send notifications through a real mailbox (SMTP) so they reach the inbox, with a send log. A site-wide setting.": [
+    "Benachrichtigungen über ein echtes Postfach (SMTP) senden, damit sie im Posteingang ankommen, mit Versandprotokoll. Eine Einstellung für die ganze Website.",
+    "Benachrichtigungen über ein echtes Postfach (SMTP) senden, damit sie im Posteingang ankommen, mit Versandprotokoll. Eine Einstellung für die ganze Website."
+  ],
+  "Custom CSS": [
+    "Eigenes CSS",
+    "Eigenes CSS"
+  ],
+  "Style this one form with your own CSS, scoped to it.": [
+    "Dieses eine Formular mit eigenem CSS gestalten, nur für dieses Formular.",
+    "Dieses eine Formular mit eigenem CSS gestalten, nur für dieses Formular."
   ]
 }
