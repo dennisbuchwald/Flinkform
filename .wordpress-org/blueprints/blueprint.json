@@ -1,0 +1,43 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "Flinkform: multi-step contact form demo",
+		"description": "Installs Flinkform and opens a page with a three-step form using conditional logic.",
+		"author": "dbwmediadennis",
+		"categories": [
+			"Forms"
+		]
+	},
+	"landingPage": "/?pagename=flinkform-demo",
+	"preferredVersions": {
+		"php": "8.3",
+		"wp": "latest"
+	},
+	"steps": [
+		{
+			"step": "login",
+			"username": "admin",
+			"password": "password"
+		},
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "wordpress.org/plugins",
+				"slug": "flinkform"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "setSiteOptions",
+			"options": {
+				"permalink_structure": "/%postname%/"
+			}
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php\nrequire_once '/wordpress/wp-load.php';\nkses_remove_filters();\n$content = <<<'FLINKFORM'\n<!-- wp:paragraph -->\n<p>A three-step form built with Flinkform: progress bar, per-step validation and conditional logic. Pick \"Online shop\" in step 1 and watch step 2 change. No CAPTCHA, the spam protection runs in the background.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:flinkform/form {\"formId\":\"playground-demo\",\"title\":\"Project request\",\"submitLabel\":\"Send request\",\"successMessage\":\"Thank you! Your request has been stored. Open Flinkform \\u003e Submissions in the admin to see it.\",\"appearance\":{\"progressIndicator\":\"bar\",\"columns\":2}} -->\n<!-- wp:flinkform/section-heading {\"title\":\"What do you need?\",\"description\":\"Your answer decides which questions come in the next step.\"} /-->\n<!-- wp:flinkform/field-radio {\"label\":\"Type of project\",\"fieldName\":\"project\",\"required\":true,\"fullWidth\":true,\"display\":\"buttons\",\"buttonShape\":\"rounded\",\"options\":[{\"label\":\"Website\",\"value\":\"Website\"},{\"label\":\"Online shop\",\"value\":\"Online shop\"},{\"label\":\"Landing page\",\"value\":\"Landing page\"}]} /-->\n<!-- wp:flinkform/page-break {\"label\":\"Details\"} /-->\n<!-- wp:flinkform/notice {\"message\":\"Online shops usually start with a short call. Leave your phone number in the next step.\",\"conditionalLogic\":{\"enabled\":true,\"logic\":\"all\",\"rules\":[{\"field\":\"project\",\"operator\":\"is\",\"value\":\"Online shop\"}]}} /-->\n<!-- wp:flinkform/field-number {\"label\":\"How many pages, roughly?\",\"fieldName\":\"pages\",\"min\":\"1\",\"max\":\"200\",\"conditionalLogic\":{\"enabled\":true,\"logic\":\"all\",\"rules\":[{\"field\":\"project\",\"operator\":\"is\",\"value\":\"Website\"}]}} /-->\n<!-- wp:flinkform/field-number {\"label\":\"How many products?\",\"fieldName\":\"products\",\"min\":\"1\",\"max\":\"100000\",\"conditionalLogic\":{\"enabled\":true,\"logic\":\"all\",\"rules\":[{\"field\":\"project\",\"operator\":\"is\",\"value\":\"Online shop\"}]}} /-->\n<!-- wp:flinkform/field-select {\"label\":\"Goal of the landing page\",\"fieldName\":\"goal\",\"placeholder\":\"Please choose\",\"conditionalLogic\":{\"enabled\":true,\"logic\":\"all\",\"rules\":[{\"field\":\"project\",\"operator\":\"is\",\"value\":\"Landing page\"}]},\"options\":[{\"label\":\"Collect enquiries\",\"value\":\"Collect enquiries\"},{\"label\":\"Collect job applications\",\"value\":\"Collect job applications\"},{\"label\":\"Sell a product\",\"value\":\"Sell a product\"}]} /-->\n<!-- wp:flinkform/field-select {\"label\":\"When should it go live?\",\"fieldName\":\"timeframe\",\"required\":true,\"placeholder\":\"Please choose\",\"options\":[{\"label\":\"As soon as possible\",\"value\":\"As soon as possible\"},{\"label\":\"In 1 to 3 months\",\"value\":\"In 1 to 3 months\"},{\"label\":\"Not decided yet\",\"value\":\"Not decided yet\"}]} /-->\n<!-- wp:flinkform/page-break {\"label\":\"Contact\"} /-->\n<!-- wp:flinkform/field-text {\"label\":\"Name\",\"fieldName\":\"name\",\"required\":true} /-->\n<!-- wp:flinkform/field-email {\"label\":\"Email\",\"fieldName\":\"email\",\"required\":true} /-->\n<!-- wp:flinkform/field-phone {\"label\":\"Phone\",\"fieldName\":\"phone\",\"placeholder\":\"optional\"} /-->\n<!-- wp:flinkform/field-textarea {\"label\":\"Anything else we should know?\",\"fieldName\":\"message\",\"fullWidth\":true} /-->\n<!-- wp:flinkform/field-consent {\"fieldName\":\"consent\"} /-->\n<!-- /wp:flinkform/form -->\nFLINKFORM;\nwp_insert_post( array(\n\t'post_type'    => 'page',\n\t'post_status'  => 'publish',\n\t'post_title'   => 'Multi-step form demo',\n\t'post_name'    => 'flinkform-demo',\n\t'post_content' => $content,\n) );\n"
+		}
+	]
+}

@@ -1,0 +1,245 @@
+Flinkform changelog
+===================
+
+Full release history of the free Flinkform plugin. The readme.txt shown on
+WordPress.org lists only the most recent releases.
+
+= 1.14.3 =
+* Fix (important): a submission sent very quickly after the first click into the form was dropped silently and the visitor landed on the homepage. Since 1.14.0 the anti-bot timer starts at the first contact with the form, so clicking into a field, picking an autofill entry and pressing Send within two seconds looked like a bot. The browser now waits out the remaining moment before sending, and should a submission still arrive too early, the visitor gets their filled-in form back with a request to send again.
+* Fix (important): after a successful submission, going back, changing the message and sending again showed the success message without storing the second message. A resend with different content is now always treated as a new submission.
+* Fix: logged-in visitors who kept a form open for more than about 20 minutes could get a "security check failed" page on submit. The automatic token renewal now runs as the logged-in user.
+* Fix: forms on drafts, private pages and old revisions no longer accept submissions from visitors who cannot see those pages. Previewing a draft as its author still works.
+* Fix: moving a form to a different page or into a template part could leave submissions pointing at the old place for a few minutes. The form index now notices removals and rebuilds itself once when a form cannot be found.
+* Fix: the personal-data exporter and eraser (Tools → Export/Erase Personal Data) could stop early and miss submissions of a person who had sent more than 50.
+* Fix: conditional rules now compare text the same way in the browser and on the server, including umlauts and trailing spaces from autofill.
+* Fix: the notification email replies to the visitor's email address by default, also for forms that were never opened in the editor.
+* Fix: German translation of the reply hint in the notification email no longer assumes the sender is a woman.
+* Improvement: a field's error message disappears as soon as the field is corrected, the browser's duplicate error tooltip is gone, and error messages of two forms on the same page no longer get mixed up for screen readers.
+* Improvement: on phones, form fields use at least 16px text, so iOS no longer zooms into the page when a field is tapped.
+
+= 1.14.2 =
+* Fix (important): a submission could still be lost in one specific case introduced by 1.14.0. Leave a filled-in form in a background tab for twenty minutes and come back: the automatic token renewal also renewed the signed timestamp, and a submit within the next two seconds — exactly what returning to a finished form looks like — was treated as a bot and dropped silently. The timestamp is now written once, when the visitor reaches the form, and never moved again. The token keeps renewing as before.
+* Fix: the German translation now covers the messages added in 1.14.0. On German sites, the "please send again" message and the no-JavaScript route showed English text. The new Site Health check is translated too.
+
+= 1.14.1 =
+* Fix: restores the plugin name, author and description in the plugin header. 1.14.0 shipped with a shortened name and a changed author by mistake, which is what your Plugins screen showed. No functional change.
+
+= 1.14.0 =
+* Performance: pages with a form can be cached again. Until now every page holding a Flinkform form told caching plugins not to cache it, because the form carried a spam token, a security nonce and a signed render time that are only valid for one request. On a site measured for this release that cost about 0.7 seconds of extra server time on every view of a form page - and those are usually the pages that matter most. Flinkform now loads those values in the background the moment a visitor first touches the form, so the page itself is plain, cacheable HTML.
+* Spam protection is unchanged in strength. The same proof-of-work, the same signed single-use token, the same honeypot. The minimum-fill-time check actually gets more accurate: it now starts counting when the visitor reaches the form instead of when the page was rendered.
+* Without JavaScript the form still works. Those visitors are offered a one-click link to an uncached version of the same page, which behaves exactly as before with the arithmetic question.
+* Submissions that arrive before the background load finished are no longer lost. Everything typed is kept and the form comes back asking to send it again, instead of the request being dropped.
+* New: Tools > Site Health reports whether your form pages are actually being cached, so this cannot quietly break again.
+* Forms with a payment field (Pro) keep the previous behaviour and stay uncached, because the payment field brings request-specific data of its own.
+* For developers: the old behaviour is one filter away - `add_filter( 'flinkform_render_challenge_inline', '__return_true' );`.
+
+= 1.13.3 =
+* Fix: with the "Floating" label position, the resting label sat at the bottom edge of the field or slipped below it instead of sitting in the middle. It showed up wherever a field wrapper was taller than the input itself - a field with help text underneath, or a two-column row stretched to match a taller neighbour - because the label was centred on the whole field, not on the input. It is now anchored to the input, whatever else the field carries. The lifted state, the notch on the border, textareas, selects and date fields are unchanged.
+
+= 1.13.2 =
+* Fix: the Style panel cut its own option labels short. "Bordered / Soft / Underline / Minimal" and "Above / Beside / Floating / Hidden" were squeezed into a ~250px sidebar as segmented buttons and came out as "Borde… / Unde… / Minim…", so the setting could only be guessed at. Every setting with more than a couple of options is a dropdown now and reads in full, in every language. Nothing changes on the front end: the same values, the same defaults, existing forms render exactly as before.
+* Reported by Eric Saner — thank you!
+
+= 1.13.1 =
+* Fix: closes a tiny timing gap in the 1.13.0 token refresh. For a fraction of a second right after the token renewed itself, the form briefly held a fresh token with no solution yet, and a submit landing in that window could still be dropped. The refresh now solves the new challenge before swapping it in, so the token and its solution are always written together and that window no longer exists.
+
+= 1.13.0 =
+* Fix (important): a submission could be lost without a trace. The anti-spam token is valid for 30 minutes; if a form sat open longer than that (a long multi-step form, a tab left open, an HTML cache serving an older page), submitting sent the visitor silently to the home page with no message and no email, and their entries were gone. A form that came from our own server is never a bot, so an expired or already-used token no longer drops the submission: the form re-renders with the entries kept and a clear "your session has expired, please send again" message, and the second attempt goes through. The no-JavaScript path is covered too.
+* New: the token now refreshes itself in the browser before it can expire, so the situation above rarely arises in the first place. A small, cache-safe endpoint mints a fresh challenge; the form renews roughly ten minutes before expiry, when a tab regains focus, and when restored from the back/forward cache. Forms in a popup repair an expired token automatically and resend once, without the visitor retyping anything. The page itself may now be cached without breaking submissions.
+* Fix: a double-click or a back-button resend no longer lands on the home page. The first submission is saved once, and a repeat shows the success page instead of being rejected.
+
+= 1.12.2 =
+* Fix: a form could refuse to submit because of a required checkbox group the visitor could not see. In an either/or form — pick A and one branch appears, pick B and the other does — a required group belonging to the branch you did not choose stayed hidden, was still counted as unanswered, and blocked the submit. Its error message rendered inside the hidden wrapper, so the button appeared to do nothing at all. Every other field type was already exempt (hidden fields are disabled, and the browser never validates a disabled control); the group check is ours rather than the browser's and did not apply that rule. It does now. The server had always accepted these submissions, so the two sides finally agree again.
+* Note: this could only surface on the last step, which is why it appeared with 1.11.0 — that release introduced client-side validation of the final step. Verified against WordPress 7.0.3.
+
+= 1.12.1 =
+* Fix: an unexplained gap could sit between the last field and the submit button. Once the browser has solved the built-in spam challenge, its wrapper holds nothing but hidden inputs — but the empty wrapper still claimed a row in the form layout, and with it the spacing above and below that row. Most visible on two-column forms with floating labels, where row spacing is largest. The wrapper now leaves the layout entirely while the challenge is on track, and returns together with the visible fallback question if the browser cannot solve it. Spam protection itself is unchanged.
+
+= 1.12.0 =
+* Verified against WordPress 7.0.2.
+* New: colours without CSS. The Section Heading block gets WordPress's native text-colour option (block sidebar, theme palette included) — headings in your highlight colour, two clicks. The form's Style panel gains two colour fields: one for field labels and group headings, one for help texts and the consent sentence. Unset means inherit from the theme, exactly as before — existing forms render unchanged.
+
+= 1.11.1 =
+* Fix: the consent (and any checkbox/radio) box could shrink to a tiny dot on phones — a long label in the same flex row squeezed the native box down (13px and below). Boxes now hold a fixed 20px, never shrink, align with the first line of a wrapping label, and pick up the form's primary colour when checked.
+* Fix: the open dropdown list of a select could be unreadable in Edge on Windows — the popup surface follows the page's (light) color scheme while the option text inherits the site's colour, so a light-on-dark site produced white text on a white list. Options now carry explicit colours; browsers that paint the popup natively ignore them, everything else becomes readable on light and dark sites alike.
+
+= 1.11.0 =
+* This release exists because of a wonderfully detailed user report — thank you, Daniel!
+* Fix: pressing Enter on a middle step could permanently grey out every button. The loading-state listener armed its timer before the step guard cancelled the submission, so the page stayed put while the timer disabled Next and Submit on a form that was never going anywhere. The timer now re-checks whether the submission was cancelled — and Enter on a middle step behaves like clicking Next, validation included.
+* Fix: the last step was never validated in the browser. Every step got checked when you clicked Next, but clicking Submit sent the form straight to the server — a required consent on the final step looked like it was ignored until the answer came back. The final step (and single-step forms) now get the same inline check, with the same persistent messages.
+* Improvement: phone fields now reject letters in the browser, matching what the server has always stripped. Address sub-fields carry proper autocomplete attributes (street, postal code, city, country), so browsers fill them in one tap.
+* New: radio, checkbox group and select can be switched into each other from the block toolbar. Options, field name and any conditional logic pointing at the field all survive the switch — no more rebuilding the field to change how it answers.
+* Fix: a single select without a placeholder silently preselected its first option — a required select could never fail validation, and conditions watching the field fired without the visitor ever choosing. Single selects now lead with an empty "Please choose …" option unless the author configured their own placeholder.
+* Improvement: the consent field now reads "Consent: Yes" in the admin detail view and the notification email instead of its internal name and a bare "1"; dates in the detail view show as DD.MM.YYYY like the email already did.
+* Improvement: submission timestamps in the admin now follow the site's own date and time format and timezone setting instead of a fixed technical format. If times look shifted, check Settings → General → Timezone — the plugin stores UTC and displays whatever WordPress is configured for.
+
+= 1.10.0 =
+* Fix: a conditionally hidden field no longer influences conditions. Its value was still being read, so switching a choice could leave a notice on screen or the submit button locked over an answer nobody could see or change — while the server had already dropped the field, meaning browser and server disagreed about the same form. A hidden field now counts as empty on both sides. Visibility is resolved to a fixed point first, so a cascade (hiding one field makes the next one's rule true) settles correctly, and a contradictory setup stops deterministically instead of looping.
+* New: the notification email to the form owner is properly laid out. It now goes out as multipart — readable HTML with a plain-text alternative for clients that will not render it. Field labels instead of internal names, room between entries, dates as DD.MM.YYYY, multi-line messages with their line breaks, email and phone as tappable links, and only fields that were actually filled in. A custom body you have written is kept word for word and only gains the same shell.
+
+= 1.9.0 =
+* New: condition groups. A condition could only ever be one flat list of rules under a single ALL/ANY, which cannot express "(A or B or C) and D". You can now add a group inside a condition, give it its own ALL/ANY, and it counts as a single rule in the level above. The case it was built for: allow submitting only when the due date is empty, before a holiday, or after it — and the postcode is not an excluded one.
+* Existing conditions are untouched. A rule set without groups behaves exactly as before, and a saved condition never needs migrating.
+
+= 1.8.4 =
+* Fix: style and script updates actually reach the browser. Every asset URL carried `?ver=0.1.0`, taken from a field in the block manifest that had not changed since the very first commit — so across more than thirty releases the stylesheet was served from an identical URL and browsers, CDNs and page caches all kept the copy they first downloaded. A fix could be deployed, be correct on the server, and remain invisible to anyone who had loaded a form before. Asset URLs now carry the plugin version, so every future release busts the cache on its own. This one still needs a single hard reload, because the old URL is what is cached.
+
+= 1.8.3 =
+* Fix: dropdowns rendered wrong in Safari. WebKit ignores vertical padding on a select with its native appearance and sizes the control from the font alone, which left the box shorter than its own text — Safari clipped the selected option along the top edge and the floating label landed on top of it, while Chrome looked fine. Flinkform now draws the control itself, so a dropdown is exactly as tall as every other field in every browser.
+* Fix: a freshly inserted field is labelled in your site language. Block defaults live in a JSON file and never passed through the translation layer, so a new Date Field read "Date" and a dropdown read "Choose one" even on a fully German site. Labels the author has typed are untouched, including one that deliberately uses the English wording.
+
+= 1.8.2 =
+* Fix: a submit button held back by a Submit Condition now looks unavailable. It already carried the disabled attribute, so clicking did nothing — but it kept its full colour, its hover effect and the normal pointer, so the only clue was a line of grey text below it. It is now faded, desaturated and shows a not-allowed cursor, in all three button styles. The submitting state keeps its own look: a spinner on a greyed-out button reads as broken rather than busy.
+* Fix: the hint under a gated submit button lines up with the button instead of being centred across the form.
+
+= 1.8.1 =
+* Fix: the block editor is finally translated. Flinkform ships German language files for the editor, but WordPress never read them: register_block_type() wires up script translations without a path, which makes WordPress look only in wp-content/languages/plugins — a folder filled by translate.wordpress.org, where Flinkform has no translations. So every inspector panel stayed English even on sites where the frontend and the admin screens were translated correctly. The block registry now points at the plugin's own languages folder.
+
+= 1.8.0 =
+* New: sender name and address per form, under Notifications. Both emails then come from your own address instead of "wordpress@yourdomain". No SMTP plugin needed — the sender is a wp_mail setting and applies however your site delivers mail. The editor warns when the address is on a different domain than the website, because your server is not authorised to send for someone else's domain and those emails fail SPF.
+* New: Reply-To for the confirmation email to the submitter. Previously only the admin notification had one, so a visitor replying to their confirmation wrote to whatever address the site sends from — usually a mailbox nobody reads. Now the form can send from the website address and collect replies wherever you actually read them.
+
+= 1.7.2 =
+* Fix: the spam question ("What is 2 + 2?") no longer appears and disappears on a hard reload. It is the no-JavaScript fallback and used to stay on screen until the proof-of-work finished solving. It is now hidden from the first paint wherever scripting is available, and comes back on every path the solver cannot finish: no Web Crypto, an aborted computation, or a device slow enough to still be working after four seconds. Visitors without JavaScript are unaffected — the decision is made in the browser, so a cached page still serves them the question.
+* Fix: even vertical rhythm with floating labels. The room a lifted label needs was added as a margin on text-flavoured fields only, so rows alternated between two spacings depending on whether the next block was a text field or something else — a notice, the address group, the consent row. The spacing now lives on the form's row gap and every row shares it.
+* Fix: no more layout shift when the floating-label notch resolves. That room also changed size between the two notch states, which reflowed the whole form the moment the surface colour was worked out. It is now constant.
+
+= 1.7.1 =
+* Fix: conditional blocks no longer flash into view on page load. Everything with conditional logic was rendered visible and only hidden once the frontend module ran, which for a text field was a blip but for a Notice block meant a coloured box that appeared and then vanished. The server now works out the initial state itself — it knows the values the browser will evaluate against, either none on a fresh page or the submitted ones when a failed submission is re-rendered — and renders the block hidden straight away when it does not apply.
+
+= 1.7.0 =
+* New: Notice block — a highlighted note placed between fields, in four types (info, success, warning, important) with a matching icon. It submits nothing, so it never appears in your submissions or CSV export. Its real strength is conditional logic: show a note only when it applies, for example a delivery surcharge that kicks in from a certain distance, or an explanation attached to one particular answer. Text supports bold, italic and links; the colours follow your theme where it provides them.
+
+= 1.6.4 =
+* Fix: the floating-label notch no longer paints a mismatched box behind the label. It used to fall back to white whenever the surface colour was unknown, which on a tinted page produced a white rectangle around every lifted label. The notch is now opt-in: it only appears once the surface colour has been positively resolved, and otherwise the label simply rests clear of the border line, which needs no colour at all.
+* Improvement: surface detection is far more capable. It starts at the form itself, composites semi-transparent layers onto whatever opaque colour lies beneath them, falls back to the browser canvas when nothing paints a colour, and deliberately declines gradients and background images instead of guessing. It also re-runs on load, on resize and when the colour-scheme changes, so a dark-mode toggle no longer leaves a light notch behind.
+* Fix: the editor preview shares the same detection code as the frontend, so the notch can no longer differ between editing and the published page.
+* Docs: the feature list said 13 field types and counted Section Heading as one of them, while omitting Address and Consent. It now lists the actual 14.
+
+= 1.6.3 =
+* Fix: restored the German (de_DE) translation. Version 1.6.1 rebuilt the language files from an incomplete template and silently dropped 243 already-translated strings, so German sites fell back to English for most of the admin UI, the block inspector and the default success message. All strings are translated again, including the address field and the date comparison operators.
+* Fix: address field no longer prints its label and its placeholder on top of each other when the form uses floating labels. The sub-fields now follow the form's label position setting the same way every other text field does (no placeholder in floating mode, required marker moved into the placeholder in placeholder mode).
+* Fix: the red error outline on invalid inputs never actually rendered. A nested SCSS selector expanded into an unmatchable compound (`.flinkform-field--has-error .flinkform-form.flinkform-form .flinkform-field__input`); same bug disabled the toggle field's label layout.
+* Fix: conditional logic can now target address fields. The rule builder offered the composite field under its base name, which no input ever submits under, so such rules could never match. It now lists the individual sub-fields (street, postal code, city and any enabled optional lines).
+* Fix: the address group heading showed the untranslated default "Address" on non-English sites. Block attribute defaults do not pass through the translation layer, so the untouched default is now translated explicitly.
+* Fix: the address block editor preview matches the frontend again - correct label/placeholder split, required markers on the sub-fields and the "Full width" setting honoured.
+* Fix: floating labels on address sub-fields keep their top spacing; the grid layout reset was overriding it.
+* Fix: `date_before` / `date_on_or_after` used a PHP pattern that also accepted a trailing newline, where the identical client-side check did not. Server and browser now agree on every input.
+
+= 1.6.2 =
+* Enhancement: address field sub-inputs now render as full `.flinkform-field--text` wrappers, so they automatically inherit ALL form styles — floating labels, bordered/soft/underline/minimal field styles, beside/placeholder label modes, compact/relaxed spacing. The group heading is a subtle uppercase legend instead of a bold label.
+
+= 1.6.1 =
+* i18n: German (de_DE) translation for the address field and the date comparison operators. Note: this release also removed a large number of existing translations by mistake - see 1.6.3, which restores them.
+
+= 1.6.0 =
+* New: Address Field — a composite field with street, postal code and city in a compact grid layout. Optional address line 2 and country sub-fields. When set to required, all visible sub-fields except line 2 are enforced. Each sub-field stores separately for clean CSV export columns.
+
+= 1.5.3 =
+* Fix: conditional logic now correctly hides fields. The `.flinkform-field { display: flex }` rule (specificity 0,3,0) was overriding the browser's native `[hidden] { display: none }` (0,1,0), so conditionally hidden fields remained visible despite the JS correctly setting the `hidden` attribute. The rule now carries an explicit `[hidden] { display: none }` override at matching specificity.
+
+= 1.5.2 =
+* New: conditional logic operators "is before (date)" and "is on or after (date)" for comparing a date field against a fixed YYYY-MM-DD cutoff. Useful for gating form submission based on a deadline (e.g. show a notice and lock the submit button when a due date is too early).
+* Fix: floating labels now automatically detect the nearest ancestor's background colour. The label notch matches the container background on any surface — no manual colour setting needed.
+
+= 1.5.1 =
+* Fix: radio buttons in "Buttons" display mode now lay out horizontally (side by side) instead of stacking vertically. The base field layout was overriding the flex direction due to higher CSS specificity.
+* New: configurable button shape — choose "Pill" (fully rounded, default), "Rounded" (matches form field radius) or "Square" (no rounding) in the block inspector when display is set to "Buttons".
+
+= 1.5.0 =
+* New: the Radio field can now display its choices as selectable buttons ("pills") instead of a plain list — set "Display: Buttons" in the block inspector. The active choice fills with your form's primary colour. Keyboard, screen-reader and no-JavaScript support are unchanged (the buttons are real radio inputs, only styled).
+
+= 1.4.4 =
+* Fix: forms embedded outside the current page's own content — in a footer or header template part, a synced pattern, a theme-builder element or a site-wide popup — were silently rejected on submit, because the submission was matched only against the current page's content. Submissions now resolve the form wherever it actually lives, so popup and footer forms save correctly.
+
+= 1.4.3 =
+* Critical fix: a variable-ordering error introduced in 1.4.0 aborted the whole frontend module on load — the proof-of-work spam solver never ran, so EVERY submission (popup or not) was silently rejected as spam and nothing was stored. If you are on 1.4.0-1.4.2, update immediately.
+
+= 1.4.2 =
+* Fix: popup submissions now actually use the fetch path — the hidden admin-post "action" input shadowed the form's action property in JavaScript, so every fetch went to a broken URL and silently fell back to the classic page-reload submit
+* Change: the spam-challenge token lifetime is now 30 minutes (was 5) — visitors who read a long page or open a popup form some minutes after page load were silently rejected with no feedback and no stored submission
+
+= 1.4.1 =
+* Fix: the spam-challenge token is now consumed when a submission is accepted instead of when it is checked — a popup submission that failed validation can be corrected and resubmitted without hitting the replay guard (the popup flow never re-renders the page, so no fresh token is minted between attempts)
+
+= 1.4.0 =
+* New: forms inside popups/modals now submit via fetch() without a page reload — the success card and validation errors render inline, so the popup stays open and the visitor sees the outcome
+* Applies automatically when a form sits inside a modal container (`[role="dialog"]`, a native `<dialog>` element, or the dbw popup block); forms in the normal page flow keep the exact same behaviour as before
+* All server-side protections (nonce, honeypot, time-check, spam challenge, duplicate-submission guard) run unchanged; redirect-after-submit still works from popups and network errors fall back to the classic submission
+
+= 1.3.1 =
+* Update: plugin homepage now points to the dedicated product site at flinkform.de
+
+= 1.3.0 =
+* New: duplicate-submission protection — a double-click, back-button resubmit or parallel request no longer creates a second entry, duplicate notification emails or repeated side effects (webhooks, payment verification in Pro)
+* New: `flinkform_admin_format_value` filter — add-ons can format field values on the submission detail view (Flinkform Pro uses it to render uploaded files as download links)
+
+= 1.2.1 =
+* Fix: pages with a Flinkform are now excluded from full-page caching (DONOTCACHEPAGE) — prevents stale spam-challenge tokens from silently rejecting submissions on cached pages
+
+= 1.2.0 =
+* UX: redesigned error messages with inline icon, subtle background on global errors, and a gentle shake animation on invalid fields
+* UX: consent field shows a clear "Please agree to continue" error instead of the internal field name
+* UX: removed the thick left-border error indicator in favour of a cleaner full-border highlight
+
+= 1.1.1 =
+* UX: consent field error message fix (included in 1.2.0)
+
+= 1.1.0 =
+* Fix: consent checkbox is now correctly enforced as required during server-side validation (previously the required attribute was lost because Gutenberg does not serialise defaults)
+* GDPR: new default consent text with inline privacy-policy link (replaces the old appended link)
+* GDPR: consent text supports a `{privacy_policy}` placeholder that renders as an inline link to the site's privacy-policy page
+* UX: updated default success message to "Thank you! Your message has been sent successfully."
+* Backwards-compatible: forms saved with the old consent text or success message automatically use the new defaults
+
+= 1.0.4 =
+* i18n: regenerate German (de_DE) translation files (.mo + .json) to ensure all editor strings are up to date
+
+= 1.0.3 =
+* Style: reduce consent checkbox label to 12px for a cleaner visual hierarchy
+
+= 1.0.0 =
+* Floating labels now work on all text-input field types (URL, phone, date, select) - previously only text, email, textarea and number were supported
+* Date and select fields start with the label in the lifted/notched position since they always show native browser UI
+* Beside and hidden label positions now also apply to URL, phone, date and select fields
+* Fix: style toggle buttons (field style, label position) no longer overflow in the editor sidebar, especially with longer translated labels
+* First stable release
+
+= 0.4.2 =
+* i18n: block attribute defaults (success message, submit label, consent text) are now translated at render time - existing forms on non-English sites display the correct language without manual editing
+* i18n: complete German (de_DE) translation - all frontend text, editor UI, admin screens and validation messages
+* i18n: load bundled translations via load_plugin_textdomain() so they work without waiting for translate.wordpress.org
+* Fix: the "Add field" editor button no longer inherits a 62 px font-size when the form block is placed inside a Spectra/UAGB container
+
+= 0.4.0 =
+* Renamed the plugin to Flinkform (new slug, text domain, prefixes `flinkform_`/`FLINKFORM_`, block namespace `flinkform/*`)
+* Security: the spam time-check timestamp is now HMAC-signed and form-bound, so it can no longer be forged
+* Security: additional sanitisation on the notification Reply-To header
+* Reliability: the daily retention purge is now guarded against overlapping cron runs
+* Corrected the FAQ: multi-step forms are part of the free core (and always were since 0.2.7)
+* Fixed the plugin and author URIs to use a resolvable host (www.dennisbuchwald.de)
+* Documented the public source repository and build steps in the readme (Source Code section)
+* Output escaping: conditional-logic data attributes are now escaped late at render time (esc_attr), and submission detail values are output via wp_kses_post()
+
+= 0.3.0 =
+* Renamed all WordPress-global prefixes to satisfy WordPress.org naming requirements
+* Revised readme description to remove promotional language
+
+= 0.2.9 =
+* WordPress.org Plugin Check pass: documented the safe direct custom-table queries, fixed admin sort-order input handling, sanitised spam/honeypot inputs — no functional change
+* Resolved all Plugin Check errors and warnings (output escaping is handled internally; queries are prepared)
+
+= 0.2.8 =
+* Added a dedicated Consent field (GDPR), per-form retention auto-purge, and a GPLv2 LICENSE file
+* Accessibility: explicit focus rings for checkboxes/radios/toggles, High-Contrast-Mode-safe focus on the soft field style, aria-invalid on group/consent errors, improved contrast
+* Hardening: mail subject + Reply-To stripped of CR/LF; privacy-policy strings escaped; webhook header REST input sanitised
+* Privacy text now documents the retention period and the strictly-necessary flash cookie
+
+= 0.2.7 =
+* Architecture refactor: the core stays fully free (incl. multi-step + conditional logic); integration features (webhooks, SMTP, CSV export) were factored out of the core
+* Privacy: full WordPress privacy-tools integration (exporter + eraser); accurate disclosure of the single strictly-necessary flash cookie
+* Accessibility: broader `prefers-reduced-motion` coverage; required spam-math fallback for no-JS visitors
+* Hardening: defence-in-depth against mail-header injection; open-redirect-safe thank-you redirects
+
+= 0.1.0 =
+* Initial build
