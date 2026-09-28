@@ -1,10 +1,3 @@
-# #-#-#-#-#  php.pot (PACKAGE VERSION)  #-#-#-#-#
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-# #-#-#-#-#  js.pot (PACKAGE VERSION)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
@@ -13,333 +6,75 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Flinkform 1.12.0\n"
+"Project-Id-Version: Flinkform\n"
 "Report-Msgid-Bugs-To: https://flinkform.de/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: flinkform\n"
 
-#: includes/Privacy.php:57
-msgid "Flinkform — Form Submissions"
+#: includes/Admin/CacheHealth.php:77 includes/Admin/CacheHealth.php:93
+msgid "Flinkform form pages can be cached"
 msgstr ""
 
-#: includes/Privacy.php:59
-msgid ""
-"When a visitor submits a form built with Flinkform, the plugin stores the "
-"submitted field values (name, email, message, etc.) in a dedicated database "
-"table on this website. No IP addresses or browser user-agent strings are "
-"collected."
+#: includes/Admin/CacheHealth.php:96
+msgid "Performance"
 msgstr ""
 
-#: includes/Privacy.php:61
-msgid ""
-"Submissions are retained until a site administrator deletes them "
-"(individually or in bulk), until the plugin is uninstalled, or — when a per-"
-"form retention period is configured — until they are older than that period,"
-" after which a daily routine deletes them automatically."
+#: includes/Admin/CacheHealth.php:107
+msgid "No published form pages to check"
 msgstr ""
 
-#: includes/Privacy.php:63
-msgid ""
-"Flinkform does not send any submission data to external services. (Add-ons "
-"such as Flinkform Pro may add integrations — e.g. webhooks or SMTP delivery "
-"— that transmit data to third parties; those add their own privacy "
-"disclosures when active.)"
+#: includes/Admin/CacheHealth.php:108
+msgid "Flinkform did not find a published page containing a form, so there is nothing to measure yet."
 msgstr ""
 
-#: includes/Privacy.php:65
-msgid ""
-"The built-in spam protection (proof-of-work challenge) runs entirely in the "
-"visitor's browser and on this server — no data is sent to any external anti-"
-"spam service."
+#: includes/Admin/CacheHealth.php:116
+msgid "Could not check whether form pages are cached"
 msgstr ""
 
-#: includes/Privacy.php:67
-msgid ""
-"Flinkform sets one short-lived, strictly necessary cookie "
-"(\"flinkform_flash\", lifetime ~60 seconds, httpOnly) — and only when a "
-"submission fails validation, to carry the error message across the page "
-"reload. No tracking, analytics or marketing cookies are ever set."
-msgstr ""
-
-#: includes/Privacy.php:80 includes/Privacy.php:95 includes/Privacy.php:147
-msgid "Flinkform Submissions"
-msgstr ""
-
-#: includes/Privacy.php:133
-msgid "Submitted at"
-msgstr ""
-
-#: includes/Privacy.php:140 includes/Admin/SubmissionsListTable.php:74
-msgid "Form"
-msgstr ""
-
-#: includes/Privacy.php:148
-msgid "Form submissions stored by the Flinkform plugin."
-msgstr ""
-
-#: includes/Blocks/Registry.php:78 includes/Admin/Menu.php:56
-#: includes/Admin/Menu.php:57
-msgid "Flinkform"
-msgstr ""
-
-#: includes/Spam/Renderer.php:121
-msgid "Spam protection — answer the question above to submit the form."
-msgstr ""
-
-#. translators: 1: first integer 2-9, 2: second integer 2-9
-#: includes/Spam/Challenge.php:163
+#. translators: %s: error message from the loopback request.
+#: includes/Admin/CacheHealth.php:119
 #, php-format
-msgid "What is %1$d + %2$d?"
+msgid "Flinkform could not fetch one of its own form pages: %s. This says nothing about your caching — only that this check could not run."
 msgstr ""
 
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. title of the block flinkform/field-consent
-#: includes/Forms/Locator.php:363 src/field-consent/block.json
-msgid "Consent"
+#: includes/Admin/CacheHealth.php:127
+msgid "Form pages are excluded from the page cache"
 msgstr ""
 
-#: includes/Forms/Locator.php:386 src/field-address/render.php:58
-#: src/field-address/edit.js:36 src/shared/conditional-logic-panel.js:75
-msgid "Street"
-msgstr ""
-
-#: includes/Forms/Locator.php:387 src/field-address/render.php:60
-#: src/field-address/edit.js:38 src/shared/conditional-logic-panel.js:81
-msgid "Postal code"
-msgstr ""
-
-#: includes/Forms/Locator.php:388 src/field-address/render.php:61
-#: src/field-address/edit.js:39 src/shared/conditional-logic-panel.js:82
-msgid "City"
-msgstr ""
-
-#: includes/Forms/Locator.php:393 src/field-address/render.php:59
-#: src/field-address/edit.js:37 src/shared/conditional-logic-panel.js:78
-msgid "Address line 2"
-msgstr ""
-
-#: includes/Forms/Locator.php:397 src/field-address/render.php:62
-#: src/field-address/edit.js:40 src/shared/conditional-logic-panel.js:85
-msgid "Country"
-msgstr ""
-
-#. translators: %s: source post title
-#: includes/Forms/Indexer.php:327
+#. translators: %s: URL of the checked page.
+#: includes/Admin/CacheHealth.php:130
 #, php-format
-msgid "Form on \"%s\""
+msgid "The page %s tells caching plugins not to cache it. Every visit to it therefore runs the full WordPress stack, which typically costs a few hundred milliseconds of extra server time."
 msgstr ""
 
-#: includes/Forms/Indexer.php:331 includes/Admin/FormsListTable.php:177
-msgid "(Untitled form)"
+#: includes/Admin/CacheHealth.php:132
+msgid "Since version 1.14.0 Flinkform itself does not do this any more. Something else on the page does: another plugin, a snippet, or the flinkform_render_challenge_inline filter set to true."
 msgstr ""
 
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-date
-#: includes/Admin/SubmissionsListTable.php:73 src/shared/default-label.js:42
-#: src/field-date/block.json
-msgid "Date"
+#: includes/Admin/CacheHealth.php:137
+msgid "Form pages are being cached"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:75
-msgid "Preview"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:76
-msgid "Status"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:100
-msgid "Mark as read"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:101
-#: includes/Admin/SubmissionsPage.php:273
-msgid "Mark as unread"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:102
-#: includes/Admin/SubmissionsListTable.php:221
-msgid "Delete"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:142
-msgid "No submissions yet."
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:216
-msgid "View"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:220
-#: includes/Admin/SubmissionsPage.php:275
-msgid "Delete this submission permanently?"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:241
-#: includes/Admin/FormsListTable.php:230
-msgid "unknown"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:318
-#: includes/Admin/SubmissionsPage.php:315
-#: includes/Admin/SubmissionsPage.php:331
-msgid "empty"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:329
-#: includes/Admin/SubmissionsListTable.php:366
-msgid "Read"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:329
-#: includes/Admin/SubmissionsListTable.php:365
-msgid "Unread"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:352
-msgid "Filter by form"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:354
-msgid "All forms"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:362
-msgid "Filter by status"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:364
-msgid "All statuses"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:373
-msgid "From date"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:374
-msgid "From"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:380
-msgid "To date"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:381 src/form-container/edit.js:762
-msgid "To"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:384
-msgid "Filter"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:427
-msgid "(deleted)"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:99
-msgid "You do not have permission to view Flinkform submissions."
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:122 includes/Admin/Menu.php:67
-#: includes/Admin/Menu.php:68 includes/Admin/FormsListTable.php:59
-msgid "Submissions"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:130
-msgid "Search submissions"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:149
-msgid "Submission not found"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:149
-msgid "← Back to submissions"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:202
-msgid "Submission"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:205
-msgid "← Back"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:211
-msgid "Received:"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:216
-msgid "Form:"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:221 src/form-container/edit.js:458
-msgid "Form ID:"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:226
-msgid "Source page:"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:234
-msgid "Fields"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:236
-msgid "This submission has no fields."
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:276
-msgid "Delete submission"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:326
-#: includes/Notifications/BodyBuilder.php:298
-msgid "Yes"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:327
-#: includes/Notifications/BodyBuilder.php:298
-msgid "No"
-msgstr ""
-
-#. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:377
+#. translators: 1: URL of the checked page, 2: name of the response header that proved it.
+#: includes/Admin/CacheHealth.php:140
 #, php-format
-msgid "%d submission marked as read."
-msgid_plural "%d submissions marked as read."
-msgstr[0] ""
-msgstr[1] ""
-
-#. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:385
-#, php-format
-msgid "%d submission marked as unread."
-msgid_plural "%d submissions marked as unread."
-msgstr[0] ""
-msgstr[1] ""
-
-#. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:393
-#, php-format
-msgid "%d submission deleted."
-msgid_plural "%d submissions deleted."
-msgstr[0] ""
-msgstr[1] ""
-
-#: includes/Admin/SubmissionsPage.php:423
-msgid "Submission deleted."
+msgid "The page %1$s was served from a page cache (%2$s). Flinkform loads its spam challenge after the page, so caching and spam protection both work."
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:431
-msgid "Submission marked as unread."
+#: includes/Admin/CacheHealth.php:150
+msgid "No page cache detected on form pages"
 msgstr ""
 
-#: includes/Admin/Menu.php:76 includes/Admin/Menu.php:77
-#: includes/Admin/FormsPage.php:83
-msgid "Forms"
+#. translators: %s: URL of the checked page.
+#: includes/Admin/CacheHealth.php:153
+#, php-format
+msgid "Flinkform found nothing blocking the cache on %s, and no sign that a cache answered either. Either no page caching is active, or your cache skips requests that come from the server itself."
+msgstr ""
+
+#: includes/Admin/CacheHealth.php:155
+msgid "To check for certain, open a form page in a private browser window twice and look at the end of the page source for your caching plugin's comment."
 msgstr ""
 
 #: includes/Admin/FormsListTable.php:56
@@ -354,12 +89,20 @@ msgstr ""
 msgid "Source page"
 msgstr ""
 
+#: includes/Admin/FormsListTable.php:59 includes/Admin/Menu.php:67 includes/Admin/Menu.php:68 includes/Admin/SubmissionsPage.php:123
+msgid "Submissions"
+msgstr ""
+
 #: includes/Admin/FormsListTable.php:60
 msgid "Last submission"
 msgstr ""
 
 #: includes/Admin/FormsListTable.php:152
 msgid "No forms found. Add a Flinkform Form block to a page to get started."
+msgstr ""
+
+#: includes/Admin/FormsListTable.php:177 includes/Forms/Indexer.php:357
+msgid "(Untitled form)"
 msgstr ""
 
 #: includes/Admin/FormsListTable.php:179
@@ -386,6 +129,10 @@ msgstr ""
 msgid "View on site"
 msgstr ""
 
+#: includes/Admin/FormsListTable.php:230 includes/Admin/SubmissionsListTable.php:242
+msgid "unknown"
+msgstr ""
+
 #: includes/Admin/FormsListTable.php:248
 msgid "no live page"
 msgstr ""
@@ -406,6 +153,10 @@ msgstr ""
 msgid "You do not have permission to view Flinkform forms."
 msgstr ""
 
+#: includes/Admin/FormsPage.php:83 includes/Admin/Menu.php:76 includes/Admin/Menu.php:77
+msgid "Forms"
+msgstr ""
+
 #: includes/Admin/FormsPage.php:85
 msgid "Refresh index"
 msgstr ""
@@ -414,101 +165,298 @@ msgstr ""
 msgid "Search forms"
 msgstr ""
 
-#: includes/Submissions/Handler.php:104
-msgid "Security check failed. Please go back and try again."
+#: includes/Admin/Menu.php:56 includes/Admin/Menu.php:57 includes/Blocks/Registry.php:78
+msgid "Flinkform"
 msgstr ""
 
-#: includes/Submissions/Handler.php:105
-msgid "Submission rejected"
+#: includes/Admin/SubmissionsListTable.php:74 src/shared/default-label.js:42
+msgid "Date"
 msgstr ""
 
-#: includes/Submissions/Handler.php:199
-msgid "Please complete the required selection before submitting."
+#: includes/Admin/SubmissionsListTable.php:75 includes/Privacy.php:141
+msgid "Form"
 msgstr ""
 
-#: includes/Submissions/Handler.php:317
-msgid "Sorry, something went wrong saving your message. Please try again."
+#: includes/Admin/SubmissionsListTable.php:76
+msgid "Preview"
 msgstr ""
 
-#: includes/Submissions/Handler.php:396 src/form-container/render.php:44
-#: src/form-container/edit.js:108
-msgid "Thank you! Your message has been sent successfully."
+#: includes/Admin/SubmissionsListTable.php:77
+msgid "Status"
 msgstr ""
 
-#: includes/Submissions/Handler.php:556
-msgid "Please agree to continue."
+#: includes/Admin/SubmissionsListTable.php:101
+msgid "Mark as read"
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:560
+#: includes/Admin/SubmissionsListTable.php:102 includes/Admin/SubmissionsPage.php:274
+msgid "Mark as unread"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:103 includes/Admin/SubmissionsListTable.php:222
+msgid "Delete"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:143
+msgid "No submissions yet."
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:217
+msgid "View"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:221 includes/Admin/SubmissionsPage.php:276
+msgid "Delete this submission permanently?"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:325 includes/Admin/SubmissionsPage.php:318 includes/Admin/SubmissionsPage.php:334
+msgid "empty"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:336 includes/Admin/SubmissionsListTable.php:373
+msgid "Read"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:336 includes/Admin/SubmissionsListTable.php:372
+msgid "Unread"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:359
+msgid "Filter by form"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:361
+msgid "All forms"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:369
+msgid "Filter by status"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:371
+msgid "All statuses"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:380
+msgid "From date"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:381
+msgid "From"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:387
+msgid "To date"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:388 src/form-container/edit.js:762
+msgid "To"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:391
+msgid "Filter"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:434
+msgid "(deleted)"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:100
+msgid "You do not have permission to view Flinkform submissions."
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:131
+msgid "Search submissions"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:150
+msgid "Submission not found"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:150
+msgid "← Back to submissions"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:203
+msgid "Submission"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:206
+msgid "← Back"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:212
+msgid "Received:"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:217
+msgid "Form:"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:222 src/form-container/edit.js:458
+msgid "Form ID:"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:227
+msgid "Source page:"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:235
+msgid "Fields"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:237
+msgid "This submission has no fields."
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:277
+msgid "Delete submission"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:329 includes/Notifications/BodyBuilder.php:301
+msgid "Yes"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:330 includes/Notifications/BodyBuilder.php:301
+msgid "No"
+msgstr ""
+
+#. translators: %d: number of submissions affected
+#: includes/Admin/SubmissionsPage.php:380
 #, php-format
-msgid "%s must be checked."
+msgid "%d submission marked as read."
+msgid_plural "%d submissions marked as read."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of submissions affected
+#: includes/Admin/SubmissionsPage.php:388
+#, php-format
+msgid "%d submission marked as unread."
+msgid_plural "%d submissions marked as unread."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of submissions affected
+#: includes/Admin/SubmissionsPage.php:396
+#, php-format
+msgid "%d submission deleted."
+msgid_plural "%d submissions deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/SubmissionsPage.php:426
+msgid "Submission deleted."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:566
-#, php-format
-msgid "%s is required."
+#: includes/Admin/SubmissionsPage.php:434
+msgid "Submission marked as unread."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:677
-#, php-format
-msgid "%s must be a valid email address."
+#: includes/Forms/ClientMessages.php:34 src/form-container/render.php:473
+msgid "Please check this field."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:688
-#, php-format
-msgid "%s must be a valid web address (https://…)."
+#: includes/Forms/ClientMessages.php:35
+msgid "Please fill in this field."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:698
-#, php-format
-msgid "%s must be a valid date."
+#: includes/Forms/ClientMessages.php:36
+msgid "Please choose an option."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:705
-#, php-format
-msgid "%s is before the earliest allowed date."
+#: includes/Forms/ClientMessages.php:37
+msgid "Please tick this box to continue."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:709
-#, php-format
-msgid "%s is after the latest allowed date."
+#: includes/Forms/ClientMessages.php:38
+msgid "Please enter a valid email address."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:720
-#, php-format
-msgid "%s must be a valid phone number."
+#: includes/Forms/ClientMessages.php:39
+msgid "Please enter a valid web address (https://…)."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:730
-#, php-format
-msgid "%s must be a number."
+#: includes/Forms/ClientMessages.php:40
+msgid "Please enter a valid phone number."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:737
-#, php-format
-msgid "%s is below the minimum."
+#: includes/Forms/ClientMessages.php:41
+msgid "Please enter a number."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:741
-#, php-format
-msgid "%s is above the maximum."
+#: includes/Forms/ClientMessages.php:42
+msgid "Please enter a valid date."
 msgstr ""
 
-#. translators: %s: field label
-#: includes/Submissions/Handler.php:755
+#. translators: %s: smallest allowed number.
+#: includes/Forms/ClientMessages.php:44
 #, php-format
-msgid "%s contains an invalid choice."
+msgid "Please enter a value of at least %s."
+msgstr ""
+
+#. translators: %s: largest allowed number.
+#: includes/Forms/ClientMessages.php:46
+#, php-format
+msgid "Please enter a value of at most %s."
+msgstr ""
+
+#. translators: %s: earliest allowed date, already formatted.
+#: includes/Forms/ClientMessages.php:48
+#, php-format
+msgid "Please choose a date on or after %s."
+msgstr ""
+
+#. translators: %s: latest allowed date, already formatted.
+#: includes/Forms/ClientMessages.php:50
+#, php-format
+msgid "Please choose a date on or before %s."
+msgstr ""
+
+#. translators: %s: minimum number of characters.
+#: includes/Forms/ClientMessages.php:52
+#, php-format
+msgid "Please use at least %s characters."
+msgstr ""
+
+#. translators: %s: maximum number of characters.
+#: includes/Forms/ClientMessages.php:54
+#, php-format
+msgid "Please use at most %s characters."
+msgstr ""
+
+#: includes/Forms/ClientMessages.php:55
+msgid "Please enter a valid value."
+msgstr ""
+
+#. translators: %s: source post title
+#: includes/Forms/Indexer.php:353
+#, php-format
+msgid "Form on \"%s\""
+msgstr ""
+
+#: includes/Forms/Locator.php:442 src/field-consent/block.json
+msgid "Consent"
+msgstr ""
+
+#: includes/Forms/Locator.php:465 src/field-address/render.php:58 src/field-address/edit.js:36 src/shared/conditional-logic-panel.js:75
+msgid "Street"
+msgstr ""
+
+#: includes/Forms/Locator.php:466 src/field-address/render.php:60 src/field-address/edit.js:38 src/shared/conditional-logic-panel.js:81
+msgid "Postal code"
+msgstr ""
+
+#: includes/Forms/Locator.php:467 src/field-address/render.php:61 src/field-address/edit.js:39 src/shared/conditional-logic-panel.js:82
+msgid "City"
+msgstr ""
+
+#: includes/Forms/Locator.php:472 src/field-address/render.php:59 src/field-address/edit.js:37 src/shared/conditional-logic-panel.js:78
+msgid "Address line 2"
+msgstr ""
+
+#: includes/Forms/Locator.php:476 src/field-address/render.php:62 src/field-address/edit.js:40 src/shared/conditional-logic-panel.js:85
+msgid "Country"
 msgstr ""
 
 #. translators: %1$s: site name, %2$s: site URL.
@@ -528,56 +476,192 @@ msgid "New enquiry via your website"
 msgstr ""
 
 #: includes/Notifications/Mailer.php:182
-msgid ""
-"You can reply to this email directly — your answer goes straight to the "
-"sender."
+msgid "You can reply to this email directly — your answer goes straight to the sender."
 msgstr ""
 
-#: includes/Notifications/Mailer.php:433 src/form-container/edit.js:774
+#: includes/Notifications/Mailer.php:449 src/form-container/edit.js:774
 msgid "New submission: {form:title}"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:467 src/form-container/edit.js:832
+#: includes/Notifications/Mailer.php:488 src/form-container/edit.js:832
 msgid "We received your submission"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:496
+#: includes/Notifications/Mailer.php:517
 msgid "A new submission was received:"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:528
+#: includes/Notifications/Mailer.php:549
 msgid "Hi,"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:530
-msgid ""
-"Thanks for your submission. We received the following and will be in touch "
-"shortly:"
+#: includes/Notifications/Mailer.php:551
+msgid "Thanks for your submission. We received the following and will be in touch shortly:"
 msgstr ""
 
-#: includes/Notifications/MergeTags.php:71
+#: includes/Notifications/MergeTags.php:76
 msgid "Untitled form"
 msgstr ""
 
-#: src/field-consent/render.php:37 src/field-consent/edit.js:29
-msgid ""
-"I agree to the processing of my personal data for the purpose of contact in "
-"accordance with the {privacy_policy}."
+#: includes/Privacy.php:57
+msgid "Flinkform — Form Submissions"
 msgstr ""
 
-#: src/field-consent/render.php:62 src/field-consent/edit.js:66
-msgid "privacy policy"
+#: includes/Privacy.php:59
+msgid "When a visitor submits a form built with Flinkform, the plugin stores the submitted field values (name, email, message, etc.) in a dedicated database table on this website. No IP addresses or browser user-agent strings are collected."
 msgstr ""
 
-#: src/field-consent/render.php:69
-msgid "(opens in a new tab)"
+#: includes/Privacy.php:61
+msgid "Submissions are retained until a site administrator deletes them (individually or in bulk), until the plugin is uninstalled, or — when a per-form retention period is configured — until they are older than that period, after which a daily routine deletes them automatically."
 msgstr ""
 
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-address
-#: src/field-address/render.php:45 src/field-address/edit.js:55
-#: src/shared/default-label.js:39 src/shared/conditional-logic-panel.js:88
-#: src/field-address/block.json
+#: includes/Privacy.php:63
+msgid "Flinkform does not send any submission data to external services. (Add-ons such as Flinkform Pro may add integrations — e.g. webhooks or SMTP delivery — that transmit data to third parties; those add their own privacy disclosures when active.)"
+msgstr ""
+
+#: includes/Privacy.php:65
+msgid "The built-in spam protection (proof-of-work challenge) runs entirely in the visitor's browser and on this server — no data is sent to any external anti-spam service."
+msgstr ""
+
+#: includes/Privacy.php:67
+msgid "Flinkform sets one short-lived, strictly necessary cookie (\"flinkform_flash\", lifetime ~60 seconds, httpOnly) — and only when a submission fails validation, to carry the error message across the page reload. No tracking, analytics or marketing cookies are ever set."
+msgstr ""
+
+#: includes/Privacy.php:80 includes/Privacy.php:95 includes/Privacy.php:148
+msgid "Flinkform Submissions"
+msgstr ""
+
+#: includes/Privacy.php:134
+msgid "Submitted at"
+msgstr ""
+
+#: includes/Privacy.php:149
+msgid "Form submissions stored by the Flinkform plugin."
+msgstr ""
+
+#. translators: 1: first integer 2-9, 2: second integer 2-9
+#: includes/Spam/Challenge.php:176
+#, php-format
+msgid "What is %1$d + %2$d?"
+msgstr ""
+
+#: includes/Spam/Renderer.php:170
+msgid "Spam protection — answer the question above to submit the form."
+msgstr ""
+
+#: includes/Submissions/Handler.php:160 includes/Submissions/Handler.php:183 includes/Submissions/Handler.php:227 includes/Submissions/Handler.php:294
+msgid "Your form was not ready to send yet. Please check your entries and send your message again."
+msgstr ""
+
+#: includes/Submissions/Handler.php:192
+msgid "Security check failed. Please go back and try again."
+msgstr ""
+
+#: includes/Submissions/Handler.php:193
+msgid "Submission rejected"
+msgstr ""
+
+#: includes/Submissions/Handler.php:331
+msgid "The spam-check answer was not correct. Please try again."
+msgstr ""
+
+#: includes/Submissions/Handler.php:335
+msgid "Your session has expired. Please reload the page and send your message again."
+msgstr ""
+
+#: includes/Submissions/Handler.php:337
+msgid "Your session has expired. Please check your entries and send your message again."
+msgstr ""
+
+#: includes/Submissions/Handler.php:410
+msgid "Please complete the required selection before submitting."
+msgstr ""
+
+#: includes/Submissions/Handler.php:496
+msgid "Sorry, something went wrong saving your message. Please try again."
+msgstr ""
+
+#: includes/Submissions/Handler.php:575 src/form-container/render.php:44 src/form-container/edit.js:108
+msgid "Thank you! Your message has been sent successfully."
+msgstr ""
+
+#: includes/Submissions/Handler.php:745
+msgid "Please agree to continue."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:749
+#, php-format
+msgid "%s must be checked."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:755
+#, php-format
+msgid "%s is required."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:866
+#, php-format
+msgid "%s must be a valid email address."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:877
+#, php-format
+msgid "%s must be a valid web address (https://…)."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:887
+#, php-format
+msgid "%s must be a valid date."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:894
+#, php-format
+msgid "%s is before the earliest allowed date."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:898
+#, php-format
+msgid "%s is after the latest allowed date."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:909
+#, php-format
+msgid "%s must be a valid phone number."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:919
+#, php-format
+msgid "%s must be a number."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:926
+#, php-format
+msgid "%s is below the minimum."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:930
+#, php-format
+msgid "%s is above the maximum."
+msgstr ""
+
+#. translators: %s: field label
+#: includes/Submissions/Handler.php:944
+#, php-format
+msgid "%s contains an invalid choice."
+msgstr ""
+
+#: src/field-address/render.php:45 src/field-address/edit.js:55 src/shared/conditional-logic-panel.js:88 src/shared/default-label.js:39
 msgid "Address"
 msgstr ""
 
@@ -589,60 +673,166 @@ msgstr ""
 msgid "Apartment, suite, floor etc."
 msgstr ""
 
-#: src/field-phone/render.php:67
-msgid "Digits and + - / ( ) . only"
-msgstr ""
-
 #: src/field-checkbox/render.php:41 src/field-checkbox/edit.js:46
 msgid "Please select at least one option."
 msgstr ""
 
-#: src/form-container/render.php:37 src/form-container/edit.js:104
-#: src/form-container/edit.js:993
+#: src/field-consent/render.php:37 src/field-consent/edit.js:29
+msgid "I agree to the processing of my personal data for the purpose of contact in accordance with the {privacy_policy}."
+msgstr ""
+
+#: src/field-consent/render.php:62 src/field-consent/edit.js:66
+msgid "privacy policy"
+msgstr ""
+
+#: src/field-consent/render.php:69
+msgid "(opens in a new tab)"
+msgstr ""
+
+#: src/field-phone/render.php:67
+msgid "Digits and + - / ( ) . only"
+msgstr ""
+
+#: src/field-select/render.php:34
+msgid "Please choose …"
+msgstr ""
+
+#: src/form-container/render.php:37 src/form-container/edit.js:104 src/form-container/edit.js:993
 msgid "Send"
 msgstr ""
 
 #. translators: 1: current step number, 2: total step count
-#: src/form-container/render.php:271 src/form-container/render.php:511
-#: src/form-container/edit.js:943
+#: src/form-container/render.php:290 src/form-container/render.php:568 src/form-container/edit.js:943
 #, javascript-format, php-format
 msgid "Step %1$s of %2$s"
 msgstr ""
 
 #. translators: 1: step number, 2: author-supplied step label
-#: src/form-container/render.php:416 src/page-break/edit.js:58
+#: src/form-container/render.php:435 src/page-break/edit.js:58
 #, javascript-format, php-format
 msgid "Step %1$d — %2$s"
 msgstr ""
 
 #. translators: %d: step number
-#: src/form-container/render.php:419 src/page-break/edit.js:64
+#: src/form-container/render.php:438 src/page-break/edit.js:64
 #, javascript-format, php-format
 msgid "Step %d"
 msgstr ""
 
-#: src/form-container/render.php:449
-msgid "Please check this field."
-msgstr ""
-
-#: src/form-container/render.php:463
+#: src/form-container/render.php:520
 msgid "Leave this field empty"
 msgstr ""
 
-#: src/form-container/render.php:612
+#: src/form-container/render.php:676
 msgid "Back"
 msgstr ""
 
-#: src/form-container/render.php:620
+#: src/form-container/render.php:684
 msgid "Next"
 msgstr ""
 
-#: src/form-container/render.php:655
+#: src/form-container/render.php:719
 msgid "Please complete the required selection above to enable submission."
 msgstr ""
 
-#: src/field-select/render.php:34
-msgid "Please choose …"
+#: src/form-container/render.php:755
+msgid "This form needs one more step without JavaScript."
+msgstr ""
+
+#: src/form-container/render.php:762
+msgid "Open the form"
+msgstr ""
+
+#: src/field-address/edit.js:60 src/field-checkbox/edit.js:28 src/field-date/edit.js:28 src/field-email/edit.js:28 src/field-number/edit.js:25 src/field-phone/edit.js:28 src/field-radio/edit.js:32 src/field-select/edit.js:28 src/field-text/edit.js:28 src/field-textarea/edit.js:33 src/field-toggle/edit.js:25 src/field-url/edit.js:28
+msgid "Field Settings"
+msgstr ""
+
+#: src/field-address/edit.js:62 src/field-checkbox/edit.js:30 src/field-date/edit.js:30 src/field-email/edit.js:30 src/field-number/edit.js:27 src/field-phone/edit.js:30 src/field-radio/edit.js:34 src/field-select/edit.js:30 src/field-text/edit.js:30 src/field-textarea/edit.js:35 src/field-toggle/edit.js:27 src/field-url/edit.js:30 src/shared/options-editor.js:79
+msgid "Label"
+msgstr ""
+
+#: src/field-address/edit.js:69 src/field-date/edit.js:37 src/field-email/edit.js:44 src/field-number/edit.js:41 src/field-phone/edit.js:44 src/field-radio/edit.js:41 src/field-select/edit.js:44 src/field-text/edit.js:44 src/field-textarea/edit.js:49 src/field-url/edit.js:44
+msgid "Required"
+msgstr ""
+
+#: src/field-address/edit.js:70
+msgid "When enabled, street, postal code and city are all required."
+msgstr ""
+
+#: src/field-address/edit.js:76
+msgid "Show address line 2"
+msgstr ""
+
+#: src/field-address/edit.js:77
+msgid "Additional line for apartment, suite, floor etc."
+msgstr ""
+
+#: src/field-address/edit.js:83
+msgid "Show country"
+msgstr ""
+
+#: src/field-address/edit.js:90
+msgid "Default country"
+msgstr ""
+
+#: src/field-address/edit.js:91
+msgid "Pre-filled value, e.g. \"Deutschland\". Leave empty for no default."
+msgstr ""
+
+#: src/field-address/edit.js:99 src/field-checkbox/edit.js:54 src/field-date/edit.js:59 src/field-email/edit.js:50 src/field-number/edit.js:69 src/field-phone/edit.js:50 src/field-radio/edit.js:47 src/field-select/edit.js:56 src/field-text/edit.js:50 src/field-textarea/edit.js:64 src/field-toggle/edit.js:40 src/field-url/edit.js:50
+msgid "Help Text"
+msgstr ""
+
+#: src/field-address/edit.js:106 src/field-checkbox/edit.js:61 src/field-consent/edit.js:48 src/field-date/edit.js:66 src/field-email/edit.js:57 src/field-hidden/edit.js:66 src/field-number/edit.js:76 src/field-phone/edit.js:57 src/field-radio/edit.js:54 src/field-select/edit.js:63 src/field-text/edit.js:57 src/field-textarea/edit.js:71 src/field-toggle/edit.js:47 src/field-url/edit.js:57
+msgid "Field Name"
+msgstr ""
+
+#: src/field-address/edit.js:107
+msgid "Prefix for sub-field keys (e.g. address → address_street, address_zip, address_city). Auto-generated; change with care."
+msgstr ""
+
+#: src/field-checkbox/edit.js:37
+msgid "Required (at least one)"
+msgstr ""
+
+#: src/field-checkbox/edit.js:44
+msgid "Required Message"
+msgstr ""
+
+#: src/field-checkbox/edit.js:45
+msgid "Shown when the visitor submits without selecting an option. Leave empty for the default."
+msgstr ""
+
+#: src/field-checkbox/edit.js:68 src/field-radio/edit.js:87 src/field-select/edit.js:70
+msgid "Options"
+msgstr ""
+
+#: src/field-consent/edit.js:39
+msgid "Consent Settings"
+msgstr ""
+
+#: src/field-consent/edit.js:41
+msgid "Consent text"
+msgstr ""
+
+#: src/field-consent/edit.js:42
+msgid "Use {privacy_policy} as placeholder — it will be replaced with a link to your privacy policy page (Settings → Privacy)."
+msgstr ""
+
+#: src/field-date/edit.js:43
+msgid "Earliest Date"
+msgstr ""
+
+#: src/field-date/edit.js:51
+msgid "Latest Date"
+msgstr ""
+
+#: src/field-date/edit.js:67 src/field-email/edit.js:58 src/field-number/edit.js:77 src/field-phone/edit.js:58 src/field-text/edit.js:58 src/field-textarea/edit.js:72 src/field-toggle/edit.js:48 src/field-url/edit.js:58
+msgid "Key used in submission data. Auto-generated; change with care."
+msgstr ""
+
+#: src/field-email/edit.js:37 src/field-number/edit.js:34 src/field-phone/edit.js:37 src/field-text/edit.js:37 src/field-textarea/edit.js:42 src/field-url/edit.js:37
+msgid "Placeholder"
 msgstr ""
 
 #: src/field-hidden/edit.js:9 src/field-hidden/edit.js:53
@@ -669,10 +859,7 @@ msgstr ""
 msgid "Current date + time (ISO)"
 msgstr ""
 
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. title of the block flinkform/field-hidden
-#: src/field-hidden/edit.js:34 src/shared/default-label.js:44
-#: src/field-hidden/block.json
+#: src/field-hidden/edit.js:34 src/shared/default-label.js:44 src/field-hidden/block.json
 msgid "Hidden Field"
 msgstr ""
 
@@ -689,19 +876,7 @@ msgid "Value source"
 msgstr ""
 
 #: src/field-hidden/edit.js:62
-msgid ""
-"The value is computed on the server when the form is rendered — POST values "
-"from visitors are ignored."
-msgstr ""
-
-#: src/field-hidden/edit.js:66 src/field-radio/edit.js:54
-#: src/field-textarea/edit.js:71 src/field-consent/edit.js:48
-#: src/field-address/edit.js:106 src/field-text/edit.js:57
-#: src/field-url/edit.js:57 src/field-phone/edit.js:57
-#: src/field-toggle/edit.js:47 src/field-number/edit.js:76
-#: src/field-checkbox/edit.js:61 src/field-email/edit.js:57
-#: src/field-date/edit.js:66 src/field-select/edit.js:63
-msgid "Field Name"
+msgid "The value is computed on the server when the form is rendered — POST values from visitors are ignored."
 msgstr ""
 
 #: src/field-hidden/edit.js:67
@@ -712,40 +887,20 @@ msgstr ""
 msgid "Hidden:"
 msgstr ""
 
-#: src/field-radio/edit.js:32 src/field-textarea/edit.js:33
-#: src/field-address/edit.js:60 src/field-text/edit.js:28
-#: src/field-url/edit.js:28 src/field-phone/edit.js:28
-#: src/field-toggle/edit.js:25 src/field-number/edit.js:25
-#: src/field-checkbox/edit.js:28 src/field-email/edit.js:28
-#: src/field-date/edit.js:28 src/field-select/edit.js:28
-msgid "Field Settings"
+#: src/field-number/edit.js:47
+msgid "Min"
 msgstr ""
 
-#: src/field-radio/edit.js:34 src/field-textarea/edit.js:35
-#: src/field-address/edit.js:62 src/shared/options-editor.js:79
-#: src/field-text/edit.js:30 src/field-url/edit.js:30
-#: src/field-phone/edit.js:30 src/field-toggle/edit.js:27
-#: src/field-number/edit.js:27 src/field-checkbox/edit.js:30
-#: src/field-email/edit.js:30 src/field-date/edit.js:30
-#: src/field-select/edit.js:30
-msgid "Label"
+#: src/field-number/edit.js:54
+msgid "Max"
 msgstr ""
 
-#: src/field-radio/edit.js:41 src/field-textarea/edit.js:49
-#: src/field-address/edit.js:69 src/field-text/edit.js:44
-#: src/field-url/edit.js:44 src/field-phone/edit.js:44
-#: src/field-number/edit.js:41 src/field-email/edit.js:44
-#: src/field-date/edit.js:37 src/field-select/edit.js:44
-msgid "Required"
+#: src/field-number/edit.js:61
+msgid "Step"
 msgstr ""
 
-#: src/field-radio/edit.js:47 src/field-textarea/edit.js:64
-#: src/field-address/edit.js:99 src/field-text/edit.js:50
-#: src/field-url/edit.js:50 src/field-phone/edit.js:50
-#: src/field-toggle/edit.js:40 src/field-number/edit.js:69
-#: src/field-checkbox/edit.js:54 src/field-email/edit.js:50
-#: src/field-date/edit.js:59 src/field-select/edit.js:56
-msgid "Help Text"
+#: src/field-number/edit.js:62
+msgid "Decimal step, e.g. 0.01 for currency. Leave empty for whole numbers."
 msgstr ""
 
 #: src/field-radio/edit.js:61
@@ -780,44 +935,476 @@ msgstr ""
 msgid "Square"
 msgstr ""
 
-#: src/field-radio/edit.js:87 src/field-checkbox/edit.js:68
-#: src/field-select/edit.js:70
-msgid "Options"
+#: src/field-select/edit.js:37
+msgid "Placeholder (single select only)"
 msgstr ""
 
-#: src/field-textarea/edit.js:42 src/field-text/edit.js:37
-#: src/field-url/edit.js:37 src/field-phone/edit.js:37
-#: src/field-number/edit.js:34 src/field-email/edit.js:37
-msgid "Placeholder"
+#: src/field-select/edit.js:50
+msgid "Allow multiple selections"
 msgstr ""
 
 #: src/field-textarea/edit.js:55
 msgid "Rows"
 msgstr ""
 
-#: src/field-textarea/edit.js:72 src/field-text/edit.js:58
-#: src/field-url/edit.js:58 src/field-phone/edit.js:58
-#: src/field-toggle/edit.js:48 src/field-number/edit.js:77
-#: src/field-email/edit.js:58 src/field-date/edit.js:67
-msgid "Key used in submission data. Auto-generated; change with care."
+#: src/field-toggle/edit.js:28
+msgid "Shown next to the checkbox. Plain HTML allowed."
 msgstr ""
 
-#: src/field-consent/edit.js:39
-msgid "Consent Settings"
+#: src/field-toggle/edit.js:34
+msgid "Required (must be checked)"
 msgstr ""
 
-#: src/field-consent/edit.js:41
-msgid "Consent text"
+#: src/form-container/edit.js:74
+msgid "Name"
 msgstr ""
 
-#: src/field-consent/edit.js:42
-msgid ""
-"Use {privacy_policy} as placeholder — it will be replaced with a link to "
-"your privacy policy page (Settings → Privacy)."
+#: src/form-container/edit.js:75 src/shared/default-label.js:43
+msgid "Email"
 msgstr ""
 
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. title of the block flinkform/page-break
+#: src/form-container/edit.js:76 src/shared/default-label.js:46
+msgid "Message"
+msgstr ""
+
+#: src/form-container/edit.js:441
+msgid "Form Settings"
+msgstr ""
+
+#: src/form-container/edit.js:443
+msgid "Form Title"
+msgstr ""
+
+#: src/form-container/edit.js:444
+msgid "Internal name shown in the Forms admin overview. Not visible to visitors."
+msgstr ""
+
+#: src/form-container/edit.js:451
+msgid "Submit Button Label"
+msgstr ""
+
+#: src/form-container/edit.js:463
+msgid "After Submit"
+msgstr ""
+
+#: src/form-container/edit.js:467
+msgid "On successful submission"
+msgstr ""
+
+#: src/form-container/edit.js:474
+msgid "Show message"
+msgstr ""
+
+#: src/form-container/edit.js:475
+msgid "Redirect to URL"
+msgstr ""
+
+#: src/form-container/edit.js:480
+msgid "Success Message"
+msgstr ""
+
+#: src/form-container/edit.js:481
+msgid "Shown in place of the form after a successful submission."
+msgstr ""
+
+#: src/form-container/edit.js:491
+msgid "Redirect URL"
+msgstr ""
+
+#: src/form-container/edit.js:492
+msgid "Same-origin only. Enter a path (/danke) or a full URL on this site. External URLs are silently rejected by the safe-redirect filter — operators who need cross-domain thank-you pages get a site-wide opt-in toggle in a later release."
+msgstr ""
+
+#: src/form-container/edit.js:500
+msgid "https://example.com/danke"
+msgstr ""
+
+#: src/form-container/edit.js:506
+msgid "Append submission ID"
+msgstr ""
+
+#: src/form-container/edit.js:507
+msgid "Adds ?flinkform_submission_id=N to the redirect URL — useful for analytics events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off because submission IDs are PII-adjacent and end up in browser history."
+msgstr ""
+
+#: src/form-container/edit.js:514
+msgid "Append form ID"
+msgstr ""
+
+#: src/form-container/edit.js:515
+msgid "Adds ?flinkform_form_id=UUID — lets a shared thank-you page differentiate conversions by source form."
+msgstr ""
+
+#: src/form-container/edit.js:525
+msgid "Style"
+msgstr ""
+
+#: src/form-container/edit.js:530
+msgid "Primary color"
+msgstr ""
+
+#: src/form-container/edit.js:531
+msgid "Used for submit button, focus rings, and accent details. Leave unset to inherit from your theme."
+msgstr ""
+
+#: src/form-container/edit.js:543
+msgid "Label colour"
+msgstr ""
+
+#: src/form-container/edit.js:544
+msgid "Field labels and group headings. Leave unset to inherit from your theme."
+msgstr ""
+
+#: src/form-container/edit.js:556
+msgid "Help & consent text colour"
+msgstr ""
+
+#: src/form-container/edit.js:557
+msgid "Help texts and the consent sentence — the quiet gray layer. Handy on dark backgrounds."
+msgstr ""
+
+#: src/form-container/edit.js:569
+msgid "Field style"
+msgstr ""
+
+#: src/form-container/edit.js:570
+msgid "Bordered: full outline. Soft: light gray border. Underline: bottom border only. Minimal: no border, subtle background."
+msgstr ""
+
+#: src/form-container/edit.js:573
+msgid "Bordered"
+msgstr ""
+
+#: src/form-container/edit.js:574
+msgid "Soft"
+msgstr ""
+
+#: src/form-container/edit.js:575
+msgid "Underline"
+msgstr ""
+
+#: src/form-container/edit.js:576
+msgid "Minimal"
+msgstr ""
+
+#: src/form-container/edit.js:583
+msgid "Border radius"
+msgstr ""
+
+#: src/form-container/edit.js:584
+msgid "Applies to fields and the submit button. Leave at the default to inherit from your theme."
+msgstr ""
+
+#: src/form-container/edit.js:598
+msgid "Field spacing"
+msgstr ""
+
+#: src/form-container/edit.js:601
+msgid "Compact"
+msgstr ""
+
+#: src/form-container/edit.js:602
+msgid "Normal"
+msgstr ""
+
+#: src/form-container/edit.js:603
+msgid "Relaxed"
+msgstr ""
+
+#: src/form-container/edit.js:610
+msgid "Label position"
+msgstr ""
+
+#: src/form-container/edit.js:613
+msgid "Material-style notched label: rests inside the input, then slides onto the top border on focus, cutting a notch through it. Applies to text-style fields."
+msgstr ""
+
+#: src/form-container/edit.js:615
+msgid "Labels are visually hidden (still accessible to screen readers). The label text is used as placeholder inside the field. Applies to text-style fields only."
+msgstr ""
+
+#: src/form-container/edit.js:616
+msgid "Beside, Floating and Hidden apply to text-style fields only."
+msgstr ""
+
+#: src/form-container/edit.js:620
+msgid "Above"
+msgstr ""
+
+#: src/form-container/edit.js:621
+msgid "Beside"
+msgstr ""
+
+#: src/form-container/edit.js:622
+msgid "Floating"
+msgstr ""
+
+#: src/form-container/edit.js:623
+msgid "Hidden"
+msgstr ""
+
+#: src/form-container/edit.js:630
+msgid "Columns"
+msgstr ""
+
+#: src/form-container/edit.js:631
+msgid "Two-column layout collapses to a single column on mobile. Individual fields can be set to span both columns via their own inspector."
+msgstr ""
+
+#: src/form-container/edit.js:638
+msgid "1 column"
+msgstr ""
+
+#: src/form-container/edit.js:639
+msgid "2 columns"
+msgstr ""
+
+#: src/form-container/edit.js:642
+msgid "Submit button style"
+msgstr ""
+
+#: src/form-container/edit.js:645
+msgid "Fill"
+msgstr ""
+
+#: src/form-container/edit.js:646
+msgid "Outline"
+msgstr ""
+
+#: src/form-container/edit.js:647
+msgid "Ghost"
+msgstr ""
+
+#: src/form-container/edit.js:654
+msgid "Button background"
+msgstr ""
+
+#: src/form-container/edit.js:655
+msgid "Leave unset to use the primary colour."
+msgstr ""
+
+#: src/form-container/edit.js:667
+msgid "Button text colour"
+msgstr ""
+
+#: src/form-container/edit.js:668
+msgid "Leave unset for automatic contrast."
+msgstr ""
+
+#: src/form-container/edit.js:680
+msgid "Button border colour"
+msgstr ""
+
+#: src/form-container/edit.js:681
+msgid "Only visible when button style is \"Outline\". Leave unset to match the background colour."
+msgstr ""
+
+#: src/form-container/edit.js:693
+msgid "Progress indicator"
+msgstr ""
+
+#: src/form-container/edit.js:694
+msgid "Shown on multi-step forms only. Bar fills as the user advances; Dots marks each step; Numbers reads \"Step X of Y\"."
+msgstr ""
+
+#: src/form-container/edit.js:697
+msgid "Bar"
+msgstr ""
+
+#: src/form-container/edit.js:698
+msgid "Dots"
+msgstr ""
+
+#: src/form-container/edit.js:699
+msgid "Numbers"
+msgstr ""
+
+#: src/form-container/edit.js:700
+msgid "None"
+msgstr ""
+
+#: src/form-container/edit.js:708
+msgid "Show step labels"
+msgstr ""
+
+#: src/form-container/edit.js:709
+msgid "Display the current step’s label (from the Page Break block) beneath the indicator. Only shows when at least one Page Break has a label."
+msgstr ""
+
+#: src/form-container/edit.js:718
+msgid "Notifications"
+msgstr ""
+
+#: src/form-container/edit.js:722
+msgid "Send from (name)"
+msgstr ""
+
+#: src/form-container/edit.js:723
+msgid "Shown as the sender of both emails below. Leave empty to keep what WordPress or your SMTP plugin uses."
+msgstr ""
+
+#: src/form-container/edit.js:730
+msgid "Send from (address)"
+msgstr ""
+
+#: src/form-container/edit.js:731
+msgid "Use an address on this website’s own domain. Leave empty to keep the site default."
+msgstr ""
+
+#. translators: 1: domain of the sender address, 2: the website's own domain.
+#: src/form-container/edit.js:743
+#, javascript-format
+msgid "The sender address is on %1$s, but this website is %2$s. Your server is not authorised to send as %1$s, so these emails will likely fail SPF and land in spam. Send from your own domain and put the other address in a Reply-To field instead."
+msgstr ""
+
+#: src/form-container/edit.js:753
+msgid "Send admin notification"
+msgstr ""
+
+#: src/form-container/edit.js:754
+msgid "Email the site admin when a submission is received."
+msgstr ""
+
+#: src/form-container/edit.js:763
+msgid "Comma-separated. Leave empty to use the site admin email. Supports merge tags like {field:email}."
+msgstr ""
+
+#: src/form-container/edit.js:765
+msgid "Site admin email"
+msgstr ""
+
+#: src/form-container/edit.js:771 src/form-container/edit.js:829
+msgid "Subject"
+msgstr ""
+
+#: src/form-container/edit.js:772 src/form-container/edit.js:830
+msgid "Supports merge tags. Leave empty for the default."
+msgstr ""
+
+#: src/form-container/edit.js:780 src/form-container/edit.js:838
+msgid "Body"
+msgstr ""
+
+#: src/form-container/edit.js:781
+msgid "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated list of all fields."
+msgstr ""
+
+#: src/form-container/edit.js:783
+msgid "Auto-generated field list"
+msgstr ""
+
+#: src/form-container/edit.js:789 src/form-container/edit.js:847
+msgid "Reply-To"
+msgstr ""
+
+#: src/form-container/edit.js:790
+msgid "Often set to {field:<emailFieldName>} so replies go to the submitter. Leave empty to use the site default."
+msgstr ""
+
+#: src/form-container/edit.js:803
+msgid "Send confirmation to submitter"
+msgstr ""
+
+#: src/form-container/edit.js:804
+msgid "Email a copy of the submission back to the person who filled out the form."
+msgstr ""
+
+#: src/form-container/edit.js:811
+msgid "Add an email field to this form to enable submitter confirmations."
+msgstr ""
+
+#: src/form-container/edit.js:817
+msgid "Email field"
+msgstr ""
+
+#: src/form-container/edit.js:818
+msgid "Which field contains the submitter’s email address."
+msgstr ""
+
+#: src/form-container/edit.js:821 src/shared/conditional-logic-panel.js:161
+msgid "— Select a field —"
+msgstr ""
+
+#: src/form-container/edit.js:839
+msgid "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated thank-you with the submitted values."
+msgstr ""
+
+#: src/form-container/edit.js:841
+msgid "Auto-generated thank-you with submitted values"
+msgstr ""
+
+#: src/form-container/edit.js:848
+msgid "Where a reply from the submitter should go. Useful when the form sends from the website address but you read your mail somewhere else. Leave empty to reply to the sender address."
+msgstr ""
+
+#: src/form-container/edit.js:865
+msgid "Submit Condition"
+msgstr ""
+
+#: src/form-container/edit.js:866
+msgid "Gate the submit button"
+msgstr ""
+
+#: src/form-container/edit.js:867
+msgid "Disable the submit button until the rules below match. Useful for \"I agree to terms\" checkboxes."
+msgstr ""
+
+#: src/form-container/edit.js:889
+msgid "Data Retention"
+msgstr ""
+
+#: src/form-container/edit.js:893
+msgid "Auto-delete submissions after (days)"
+msgstr ""
+
+#: src/form-container/edit.js:895
+msgid "GDPR storage limitation: automatically delete this form’s submissions older than the chosen number of days. 0 = keep forever. Purges run daily and also remove any linked Flinkform Pro webhook delivery records."
+msgstr ""
+
+#: src/form-container/edit.js:976
+msgid "Add field"
+msgstr ""
+
+#: src/notice/edit.js:33 src/notice/block.json
+msgid "Notice"
+msgstr ""
+
+#: src/notice/edit.js:35
+msgid "Type"
+msgstr ""
+
+#: src/notice/edit.js:36
+msgid "Sets the colour and icon. Pick by meaning, not by colour — that keeps notices consistent across your forms."
+msgstr ""
+
+#: src/notice/edit.js:39
+msgid "Info"
+msgstr ""
+
+#: src/notice/edit.js:40
+msgid "Success"
+msgstr ""
+
+#: src/notice/edit.js:41
+msgid "Warning"
+msgstr ""
+
+#: src/notice/edit.js:42
+msgid "Important"
+msgstr ""
+
+#: src/notice/edit.js:49
+msgid "Show icon"
+msgstr ""
+
+#: src/notice/edit.js:60
+msgid "Show this notice only when the rules below match — for example a delivery surcharge that applies from a certain distance."
+msgstr ""
+
+#: src/notice/edit.js:71
+msgid "Write your note…"
+msgstr ""
+
 #: src/page-break/edit.js:71 src/page-break/block.json
 msgid "Page Break"
 msgstr ""
@@ -827,118 +1414,27 @@ msgid "Step label"
 msgstr ""
 
 #: src/page-break/edit.js:74
-msgid ""
-"Optional. Shown on the progress indicator on the frontend (Phase 5c). Leave "
-"empty to fall back to \"Step N\"."
+msgid "Optional. Shown on the progress indicator on the frontend (Phase 5c). Leave empty to fall back to \"Step N\"."
 msgstr ""
 
-#: src/field-address/edit.js:70
-msgid "When enabled, street, postal code and city are all required."
-msgstr ""
-
-#: src/field-address/edit.js:76
-msgid "Show address line 2"
-msgstr ""
-
-#: src/field-address/edit.js:77
-msgid "Additional line for apartment, suite, floor etc."
-msgstr ""
-
-#: src/field-address/edit.js:83
-msgid "Show country"
-msgstr ""
-
-#: src/field-address/edit.js:90
-msgid "Default country"
-msgstr ""
-
-#: src/field-address/edit.js:91
-msgid "Pre-filled value, e.g. \"Deutschland\". Leave empty for no default."
-msgstr ""
-
-#: src/field-address/edit.js:107
-msgid ""
-"Prefix for sub-field keys (e.g. address → address_street, address_zip, "
-"address_city). Auto-generated; change with care."
-msgstr ""
-
-#: src/shared/full-width-panel.js:21
-msgid "Layout"
-msgstr ""
-
-#: src/shared/full-width-panel.js:23
-msgid "Full width"
-msgstr ""
-
-#: src/shared/full-width-panel.js:24
-msgid "Make this field span both columns of the form."
-msgstr ""
-
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-checkbox
-#: src/shared/default-label.js:40 src/field-checkbox/block.json
-msgid "Choose any"
-msgstr ""
-
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-radio
-#: src/shared/default-label.js:41 src/field-radio/block.json
-msgid "Choose one"
-msgstr ""
-
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-email
-#: src/shared/default-label.js:43 src/form-container/edit.js:75
-#: src/field-email/block.json
-msgid "Email"
-msgstr ""
-
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-toggle
-#: src/shared/default-label.js:45 src/field-toggle/block.json
-msgid "I agree"
-msgstr ""
-
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-textarea
-#: src/shared/default-label.js:46 src/form-container/edit.js:76
-#: src/field-textarea/block.json
-msgid "Message"
-msgstr ""
-
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-number
-#: src/shared/default-label.js:47 src/field-number/block.json
-msgid "Number"
-msgstr ""
-
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-phone
-#: src/shared/default-label.js:48 src/field-phone/block.json
-msgid "Phone"
-msgstr ""
-
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default title of the block flinkform/section-heading
-#: src/shared/default-label.js:49 src/section-heading/edit.js:16
-#: src/section-heading/block.json
+#: src/section-heading/edit.js:16 src/shared/default-label.js:49
 msgid "Section"
 msgstr ""
 
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-text
-#: src/shared/default-label.js:50 src/field-text/block.json
-msgid "Text"
+#: src/section-heading/edit.js:18
+msgid "Heading level"
 msgstr ""
 
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. default label of the block flinkform/field-url
-#: src/shared/default-label.js:51 src/field-url/block.json
-msgid "Website"
+#: src/section-heading/edit.js:19
+msgid "Pick the level that keeps your page’s heading order correct (H1 belongs to the page)."
 msgstr ""
 
-#: src/shared/conditional-logic-panel.js:161 src/form-container/edit.js:821
-msgid "— Select a field —"
+#: src/section-heading/edit.js:33
+msgid "Description"
+msgstr ""
+
+#: src/section-heading/edit.js:48
+msgid "Section title…"
 msgstr ""
 
 #: src/shared/conditional-logic-panel.js:239
@@ -950,27 +1446,22 @@ msgid "Enable conditional logic"
 msgstr ""
 
 #: src/shared/conditional-logic-panel.js:244
-msgid ""
-"Show this only when the rules below match. Hidden fields are excluded from "
-"the submission, both client- and server-side."
+msgid "Show this only when the rules below match. Hidden fields are excluded from the submission, both client- and server-side."
 msgstr ""
 
 #: src/shared/conditional-logic-panel.js:254
-msgid ""
-"Add at least one other field block to the form to use conditional logic."
+msgid "Add at least one other field block to the form to use conditional logic."
 msgstr ""
 
 #: src/shared/conditional-logic-panel.js:259
 msgid "Match"
 msgstr ""
 
-#: src/shared/conditional-logic-panel.js:266
-#: src/shared/conditional-logic-panel.js:375
+#: src/shared/conditional-logic-panel.js:266 src/shared/conditional-logic-panel.js:375
 msgid "ALL"
 msgstr ""
 
-#: src/shared/conditional-logic-panel.js:267
-#: src/shared/conditional-logic-panel.js:376
+#: src/shared/conditional-logic-panel.js:267 src/shared/conditional-logic-panel.js:376
 msgid "ANY"
 msgstr ""
 
@@ -983,9 +1474,7 @@ msgid "+ Add group"
 msgstr ""
 
 #: src/shared/conditional-logic-panel.js:311
-msgid ""
-"A group is evaluated on its own ALL/ANY and then counts as a single rule "
-"here — that is how you express “(A or B) and C”."
+msgid "A group is evaluated on its own ALL/ANY and then counts as a single rule here — that is how you express “(A or B) and C”."
 msgstr ""
 
 #: src/shared/conditional-logic-panel.js:368
@@ -1060,6 +1549,46 @@ msgstr ""
 msgid "Remove rule"
 msgstr ""
 
+#: src/shared/default-label.js:40
+msgid "Choose any"
+msgstr ""
+
+#: src/shared/default-label.js:41
+msgid "Choose one"
+msgstr ""
+
+#: src/shared/default-label.js:45
+msgid "I agree"
+msgstr ""
+
+#: src/shared/default-label.js:47
+msgid "Number"
+msgstr ""
+
+#: src/shared/default-label.js:48
+msgid "Phone"
+msgstr ""
+
+#: src/shared/default-label.js:50
+msgid "Text"
+msgstr ""
+
+#: src/shared/default-label.js:51
+msgid "Website"
+msgstr ""
+
+#: src/shared/full-width-panel.js:21
+msgid "Layout"
+msgstr ""
+
+#: src/shared/full-width-panel.js:23
+msgid "Full width"
+msgstr ""
+
+#: src/shared/full-width-panel.js:24
+msgid "Make this field span both columns of the form."
+msgstr ""
+
 #: src/shared/options-editor.js:63
 msgid "No options yet — add the first one below."
 msgstr ""
@@ -1080,582 +1609,6 @@ msgstr ""
 msgid "+ Add option"
 msgstr ""
 
-#. #-#-#-#-#  extra.pot  #-#-#-#-#
-#. title of the block flinkform/notice
-#: src/notice/edit.js:33 src/notice/block.json
-msgid "Notice"
-msgstr ""
-
-#: src/notice/edit.js:35
-msgid "Type"
-msgstr ""
-
-#: src/notice/edit.js:36
-msgid ""
-"Sets the colour and icon. Pick by meaning, not by colour — that keeps "
-"notices consistent across your forms."
-msgstr ""
-
-#: src/notice/edit.js:39
-msgid "Info"
-msgstr ""
-
-#: src/notice/edit.js:40
-msgid "Success"
-msgstr ""
-
-#: src/notice/edit.js:41
-msgid "Warning"
-msgstr ""
-
-#: src/notice/edit.js:42
-msgid "Important"
-msgstr ""
-
-#: src/notice/edit.js:49
-msgid "Show icon"
-msgstr ""
-
-#: src/notice/edit.js:60
-msgid ""
-"Show this notice only when the rules below match — for example a delivery "
-"surcharge that applies from a certain distance."
-msgstr ""
-
-#: src/notice/edit.js:71
-msgid "Write your note…"
-msgstr ""
-
-#: src/section-heading/edit.js:18
-msgid "Heading level"
-msgstr ""
-
-#: src/section-heading/edit.js:19
-msgid ""
-"Pick the level that keeps your page’s heading order correct (H1 belongs to "
-"the page)."
-msgstr ""
-
-#: src/section-heading/edit.js:33
-msgid "Description"
-msgstr ""
-
-#: src/section-heading/edit.js:48
-msgid "Section title…"
-msgstr ""
-
-#: src/field-toggle/edit.js:28
-msgid "Shown next to the checkbox. Plain HTML allowed."
-msgstr ""
-
-#: src/field-toggle/edit.js:34
-msgid "Required (must be checked)"
-msgstr ""
-
-#: src/field-number/edit.js:47
-msgid "Min"
-msgstr ""
-
-#: src/field-number/edit.js:54
-msgid "Max"
-msgstr ""
-
-#: src/field-number/edit.js:61
-msgid "Step"
-msgstr ""
-
-#: src/field-number/edit.js:62
-msgid "Decimal step, e.g. 0.01 for currency. Leave empty for whole numbers."
-msgstr ""
-
-#: src/field-checkbox/edit.js:37
-msgid "Required (at least one)"
-msgstr ""
-
-#: src/field-checkbox/edit.js:44
-msgid "Required Message"
-msgstr ""
-
-#: src/field-checkbox/edit.js:45
-msgid ""
-"Shown when the visitor submits without selecting an option. Leave empty for "
-"the default."
-msgstr ""
-
-#: src/form-container/edit.js:74
-msgid "Name"
-msgstr ""
-
-#: src/form-container/edit.js:441
-msgid "Form Settings"
-msgstr ""
-
-#: src/form-container/edit.js:443
-msgid "Form Title"
-msgstr ""
-
-#: src/form-container/edit.js:444
-msgid ""
-"Internal name shown in the Forms admin overview. Not visible to visitors."
-msgstr ""
-
-#: src/form-container/edit.js:451
-msgid "Submit Button Label"
-msgstr ""
-
-#: src/form-container/edit.js:463
-msgid "After Submit"
-msgstr ""
-
-#: src/form-container/edit.js:467
-msgid "On successful submission"
-msgstr ""
-
-#: src/form-container/edit.js:474
-msgid "Show message"
-msgstr ""
-
-#: src/form-container/edit.js:475
-msgid "Redirect to URL"
-msgstr ""
-
-#: src/form-container/edit.js:480
-msgid "Success Message"
-msgstr ""
-
-#: src/form-container/edit.js:481
-msgid "Shown in place of the form after a successful submission."
-msgstr ""
-
-#: src/form-container/edit.js:491
-msgid "Redirect URL"
-msgstr ""
-
-#: src/form-container/edit.js:492
-msgid ""
-"Same-origin only. Enter a path (/danke) or a full URL on this site. External"
-" URLs are silently rejected by the safe-redirect filter — operators who need"
-" cross-domain thank-you pages get a site-wide opt-in toggle in a later "
-"release."
-msgstr ""
-
-#: src/form-container/edit.js:500
-msgid "https://example.com/danke"
-msgstr ""
-
-#: src/form-container/edit.js:506
-msgid "Append submission ID"
-msgstr ""
-
-#: src/form-container/edit.js:507
-msgid ""
-"Adds ?flinkform_submission_id=N to the redirect URL — useful for analytics "
-"events on the thank-you page (gtag, GA4, Plausible, Matomo). Default off "
-"because submission IDs are PII-adjacent and end up in browser history."
-msgstr ""
-
-#: src/form-container/edit.js:514
-msgid "Append form ID"
-msgstr ""
-
-#: src/form-container/edit.js:515
-msgid ""
-"Adds ?flinkform_form_id=UUID — lets a shared thank-you page differentiate "
-"conversions by source form."
-msgstr ""
-
-#: src/form-container/edit.js:525
-msgid "Style"
-msgstr ""
-
-#: src/form-container/edit.js:530
-msgid "Primary color"
-msgstr ""
-
-#: src/form-container/edit.js:531
-msgid ""
-"Used for submit button, focus rings, and accent details. Leave unset to "
-"inherit from your theme."
-msgstr ""
-
-#: src/form-container/edit.js:543
-msgid "Label colour"
-msgstr ""
-
-#: src/form-container/edit.js:544
-msgid ""
-"Field labels and group headings. Leave unset to inherit from your theme."
-msgstr ""
-
-#: src/form-container/edit.js:556
-msgid "Help & consent text colour"
-msgstr ""
-
-#: src/form-container/edit.js:557
-msgid ""
-"Help texts and the consent sentence — the quiet gray layer. Handy on dark "
-"backgrounds."
-msgstr ""
-
-#: src/form-container/edit.js:569
-msgid "Field style"
-msgstr ""
-
-#: src/form-container/edit.js:570
-msgid ""
-"Bordered: full outline. Soft: light gray border. Underline: bottom border "
-"only. Minimal: no border, subtle background."
-msgstr ""
-
-#: src/form-container/edit.js:577
-msgid "Bordered"
-msgstr ""
-
-#: src/form-container/edit.js:578
-msgid "Soft"
-msgstr ""
-
-#: src/form-container/edit.js:579
-msgid "Underline"
-msgstr ""
-
-#: src/form-container/edit.js:580
-msgid "Minimal"
-msgstr ""
-
-#: src/form-container/edit.js:583
-msgid "Border radius"
-msgstr ""
-
-#: src/form-container/edit.js:584
-msgid ""
-"Applies to fields and the submit button. Leave at the default to inherit "
-"from your theme."
-msgstr ""
-
-#: src/form-container/edit.js:598
-msgid "Field spacing"
-msgstr ""
-
-#: src/form-container/edit.js:605
-msgid "Compact"
-msgstr ""
-
-#: src/form-container/edit.js:606
-msgid "Normal"
-msgstr ""
-
-#: src/form-container/edit.js:607
-msgid "Relaxed"
-msgstr ""
-
-#: src/form-container/edit.js:610
-msgid "Label position"
-msgstr ""
-
-#: src/form-container/edit.js:613
-msgid ""
-"Material-style notched label: rests inside the input, then slides onto the "
-"top border on focus, cutting a notch through it. Applies to text-style "
-"fields."
-msgstr ""
-
-#: src/form-container/edit.js:615
-msgid ""
-"Labels are visually hidden (still accessible to screen readers). The label "
-"text is used as placeholder inside the field. Applies to text-style fields "
-"only."
-msgstr ""
-
-#: src/form-container/edit.js:616
-msgid "Beside, Floating and Hidden apply to text-style fields only."
-msgstr ""
-
-#: src/form-container/edit.js:624
-msgid "Above"
-msgstr ""
-
-#: src/form-container/edit.js:625
-msgid "Beside"
-msgstr ""
-
-#: src/form-container/edit.js:626
-msgid "Floating"
-msgstr ""
-
-#: src/form-container/edit.js:627
-msgid "Hidden"
-msgstr ""
-
-#: src/form-container/edit.js:630
-msgid "Columns"
-msgstr ""
-
-#: src/form-container/edit.js:631
-msgid ""
-"Two-column layout collapses to a single column on mobile. Individual fields "
-"can be set to span both columns via their own inspector."
-msgstr ""
-
-#: src/form-container/edit.js:638
-msgid "1 column"
-msgstr ""
-
-#: src/form-container/edit.js:639
-msgid "2 columns"
-msgstr ""
-
-#: src/form-container/edit.js:642
-msgid "Submit button style"
-msgstr ""
-
-#: src/form-container/edit.js:649
-msgid "Fill"
-msgstr ""
-
-#: src/form-container/edit.js:650
-msgid "Outline"
-msgstr ""
-
-#: src/form-container/edit.js:651
-msgid "Ghost"
-msgstr ""
-
-#: src/form-container/edit.js:654
-msgid "Button background"
-msgstr ""
-
-#: src/form-container/edit.js:655
-msgid "Leave unset to use the primary colour."
-msgstr ""
-
-#: src/form-container/edit.js:667
-msgid "Button text colour"
-msgstr ""
-
-#: src/form-container/edit.js:668
-msgid "Leave unset for automatic contrast."
-msgstr ""
-
-#: src/form-container/edit.js:680
-msgid "Button border colour"
-msgstr ""
-
-#: src/form-container/edit.js:681
-msgid ""
-"Only visible when button style is \"Outline\". Leave unset to match the "
-"background colour."
-msgstr ""
-
-#: src/form-container/edit.js:693
-msgid "Progress indicator"
-msgstr ""
-
-#: src/form-container/edit.js:694
-msgid ""
-"Shown on multi-step forms only. Bar fills as the user advances; Dots marks "
-"each step; Numbers reads \"Step X of Y\"."
-msgstr ""
-
-#: src/form-container/edit.js:701
-msgid "Bar"
-msgstr ""
-
-#: src/form-container/edit.js:702
-msgid "Dots"
-msgstr ""
-
-#: src/form-container/edit.js:703
-msgid "Numbers"
-msgstr ""
-
-#: src/form-container/edit.js:704
-msgid "None"
-msgstr ""
-
-#: src/form-container/edit.js:708
-msgid "Show step labels"
-msgstr ""
-
-#: src/form-container/edit.js:709
-msgid ""
-"Display the current step’s label (from the Page Break block) beneath the "
-"indicator. Only shows when at least one Page Break has a label."
-msgstr ""
-
-#: src/form-container/edit.js:718
-msgid "Notifications"
-msgstr ""
-
-#: src/form-container/edit.js:722
-msgid "Send from (name)"
-msgstr ""
-
-#: src/form-container/edit.js:723
-msgid ""
-"Shown as the sender of both emails below. Leave empty to keep what WordPress"
-" or your SMTP plugin uses."
-msgstr ""
-
-#: src/form-container/edit.js:730
-msgid "Send from (address)"
-msgstr ""
-
-#: src/form-container/edit.js:731
-msgid ""
-"Use an address on this website’s own domain. Leave empty to keep the site "
-"default."
-msgstr ""
-
-#. translators: 1: domain of the sender address, 2: the website's own domain.
-#: src/form-container/edit.js:743
-#, javascript-format
-msgid ""
-"The sender address is on %1$s, but this website is %2$s. Your server is not "
-"authorised to send as %1$s, so these emails will likely fail SPF and land in"
-" spam. Send from your own domain and put the other address in a Reply-To "
-"field instead."
-msgstr ""
-
-#: src/form-container/edit.js:753
-msgid "Send admin notification"
-msgstr ""
-
-#: src/form-container/edit.js:754
-msgid "Email the site admin when a submission is received."
-msgstr ""
-
-#: src/form-container/edit.js:763
-msgid ""
-"Comma-separated. Leave empty to use the site admin email. Supports merge "
-"tags like {field:email}."
-msgstr ""
-
-#: src/form-container/edit.js:765
-msgid "Site admin email"
-msgstr ""
-
-#: src/form-container/edit.js:771 src/form-container/edit.js:829
-msgid "Subject"
-msgstr ""
-
-#: src/form-container/edit.js:772 src/form-container/edit.js:830
-msgid "Supports merge tags. Leave empty for the default."
-msgstr ""
-
-#: src/form-container/edit.js:780 src/form-container/edit.js:838
-msgid "Body"
-msgstr ""
-
-#: src/form-container/edit.js:781
-msgid ""
-"Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, "
-"{submission:date}, {field:<fieldName>}. Leave empty for an auto-generated "
-"list of all fields."
-msgstr ""
-
-#: src/form-container/edit.js:783
-msgid "Auto-generated field list"
-msgstr ""
-
-#: src/form-container/edit.js:789 src/form-container/edit.js:847
-msgid "Reply-To"
-msgstr ""
-
-#: src/form-container/edit.js:790
-msgid ""
-"Often set to {field:<emailFieldName>} so replies go to the submitter. Leave "
-"empty to use the site default."
-msgstr ""
-
-#: src/form-container/edit.js:803
-msgid "Send confirmation to submitter"
-msgstr ""
-
-#: src/form-container/edit.js:804
-msgid ""
-"Email a copy of the submission back to the person who filled out the form."
-msgstr ""
-
-#: src/form-container/edit.js:811
-msgid "Add an email field to this form to enable submitter confirmations."
-msgstr ""
-
-#: src/form-container/edit.js:817
-msgid "Email field"
-msgstr ""
-
-#: src/form-container/edit.js:818
-msgid "Which field contains the submitter’s email address."
-msgstr ""
-
-#: src/form-container/edit.js:839
-msgid ""
-"Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, "
-"{submission:date}, {field:<fieldName>}. Leave empty for an auto-generated "
-"thank-you with the submitted values."
-msgstr ""
-
-#: src/form-container/edit.js:841
-msgid "Auto-generated thank-you with submitted values"
-msgstr ""
-
-#: src/form-container/edit.js:848
-msgid ""
-"Where a reply from the submitter should go. Useful when the form sends from "
-"the website address but you read your mail somewhere else. Leave empty to "
-"reply to the sender address."
-msgstr ""
-
-#: src/form-container/edit.js:865
-msgid "Submit Condition"
-msgstr ""
-
-#: src/form-container/edit.js:866
-msgid "Gate the submit button"
-msgstr ""
-
-#: src/form-container/edit.js:867
-msgid ""
-"Disable the submit button until the rules below match. Useful for \"I agree "
-"to terms\" checkboxes."
-msgstr ""
-
-#: src/form-container/edit.js:889
-msgid "Data Retention"
-msgstr ""
-
-#: src/form-container/edit.js:893
-msgid "Auto-delete submissions after (days)"
-msgstr ""
-
-#: src/form-container/edit.js:895
-msgid ""
-"GDPR storage limitation: automatically delete this form’s submissions older "
-"than the chosen number of days. 0 = keep forever. Purges run daily and also "
-"remove any linked Flinkform Pro webhook delivery records."
-msgstr ""
-
-#: src/form-container/edit.js:976
-msgid "Add field"
-msgstr ""
-
-#: src/field-date/edit.js:43
-msgid "Earliest Date"
-msgstr ""
-
-#: src/field-date/edit.js:51
-msgid "Latest Date"
-msgstr ""
-
-#: src/field-select/edit.js:37
-msgid "Placeholder (single select only)"
-msgstr ""
-
-#: src/field-select/edit.js:50
-msgid "Allow multiple selections"
-msgstr ""
-
 #. Plugin Name of the plugin
 #: flinkform.php
 msgid "Flinkform - GDPR Contact Form Builder for the Block Editor"
@@ -1668,9 +1621,7 @@ msgstr ""
 
 #. Description of the plugin
 #: flinkform.php
-msgid ""
-"Block-native form builder for the WordPress Block Editor — theme.json "
-"styling, conditional logic, Interactivity API."
+msgid "Block-native form builder for the WordPress Block Editor — theme.json styling, conditional logic, Interactivity API."
 msgstr ""
 
 #. Author of the plugin
@@ -1683,535 +1634,805 @@ msgstr ""
 msgid "https://www.dennisbuchwald.de"
 msgstr ""
 
-#. title of the block flinkform/field-address
+#: src/field-address/block.json
+msgctxt "block title"
+msgid "Address Field"
+msgstr ""
+
 #: src/field-address/block.json
 msgid "Address Field"
 msgstr ""
 
-#. description of the block flinkform/field-address
 #: src/field-address/block.json
-msgid ""
-"A composite address field with street, postal code, city and optional "
-"country."
+msgctxt "block description"
+msgid "A composite address field with street, postal code, city and optional country."
 msgstr ""
 
-#. keyword of the block flinkform/field-address
+#: src/field-address/block.json
+msgid "A composite address field with street, postal code, city and optional country."
+msgstr ""
+
+#: src/field-address/block.json
+msgctxt "block keyword"
+msgid "address"
+msgstr ""
+
 #: src/field-address/block.json
 msgid "address"
 msgstr ""
 
-#. keyword of the block flinkform/field-address
+#: src/field-address/block.json
+msgctxt "block keyword"
+msgid "street"
+msgstr ""
+
 #: src/field-address/block.json
 msgid "street"
 msgstr ""
 
-#. keyword of the block flinkform/field-address
+#: src/field-address/block.json
+msgctxt "block keyword"
+msgid "city"
+msgstr ""
+
 #: src/field-address/block.json
 msgid "city"
 msgstr ""
 
-#. keyword of the block flinkform/field-address
+#: src/field-address/block.json
+msgctxt "block keyword"
+msgid "postal"
+msgstr ""
+
 #: src/field-address/block.json
 msgid "postal"
 msgstr ""
 
-#. keyword of the block flinkform/field-address
+#: src/field-address/block.json
+msgctxt "block keyword"
+msgid "zip"
+msgstr ""
+
 #: src/field-address/block.json
 msgid "zip"
 msgstr ""
 
-#. keyword of the block flinkform/field-address
+#: src/field-address/block.json
+msgctxt "block keyword"
+msgid "location"
+msgstr ""
+
 #: src/field-address/block.json
 msgid "location"
 msgstr ""
 
-#. title of the block flinkform/field-checkbox
+#: src/field-checkbox/block.json
+msgctxt "block title"
+msgid "Checkbox Group"
+msgstr ""
+
 #: src/field-checkbox/block.json
 msgid "Checkbox Group"
 msgstr ""
 
-#. description of the block flinkform/field-checkbox
+#: src/field-checkbox/block.json
+msgctxt "block description"
+msgid "Multiple choices from a list of options."
+msgstr ""
+
 #: src/field-checkbox/block.json
 msgid "Multiple choices from a list of options."
 msgstr ""
 
-#. keyword of the block flinkform/field-checkbox
-#: src/field-checkbox/block.json
+#: src/field-checkbox/block.json src/field-toggle/block.json
+msgctxt "block keyword"
 msgid "checkbox"
 msgstr ""
 
-#. keyword of the block flinkform/field-checkbox
+#: src/field-checkbox/block.json src/field-toggle/block.json
+msgid "checkbox"
+msgstr ""
+
+#: src/field-checkbox/block.json
+msgctxt "block keyword"
+msgid "multi"
+msgstr ""
+
 #: src/field-checkbox/block.json
 msgid "multi"
 msgstr ""
 
-#. keyword of the block flinkform/field-checkbox
-#: src/field-checkbox/block.json
+#: src/field-checkbox/block.json src/field-consent/block.json src/field-date/block.json src/field-email/block.json src/field-number/block.json src/field-phone/block.json src/field-radio/block.json src/field-select/block.json src/field-text/block.json src/field-textarea/block.json src/field-url/block.json
+msgctxt "block keyword"
 msgid "field"
 msgstr ""
 
-#. description of the block flinkform/field-consent
-#: src/field-consent/block.json
-msgid ""
-"A required consent checkbox (e.g. a GDPR data-processing agreement) with an "
-"optional link to your privacy policy."
+#: src/field-checkbox/block.json src/field-consent/block.json src/field-date/block.json src/field-email/block.json src/field-number/block.json src/field-phone/block.json src/field-radio/block.json src/field-select/block.json src/field-text/block.json src/field-textarea/block.json src/field-url/block.json
+msgid "field"
 msgstr ""
 
-#. keyword of the block flinkform/field-consent
 #: src/field-consent/block.json
+msgctxt "block title"
+msgid "Consent"
+msgstr ""
+
+#: src/field-consent/block.json
+msgctxt "block description"
+msgid "A required consent checkbox (e.g. a GDPR data-processing agreement) with an optional link to your privacy policy."
+msgstr ""
+
+#: src/field-consent/block.json
+msgid "A required consent checkbox (e.g. a GDPR data-processing agreement) with an optional link to your privacy policy."
+msgstr ""
+
+#: src/field-consent/block.json src/field-toggle/block.json
+msgctxt "block keyword"
 msgid "consent"
 msgstr ""
 
-#. keyword of the block flinkform/field-consent
+#: src/field-consent/block.json src/field-toggle/block.json
+msgid "consent"
+msgstr ""
+
+#: src/field-consent/block.json
+msgctxt "block keyword"
+msgid "gdpr"
+msgstr ""
+
 #: src/field-consent/block.json
 msgid "gdpr"
 msgstr ""
 
-#. keyword of the block flinkform/field-consent
+#: src/field-consent/block.json
+msgctxt "block keyword"
+msgid "privacy"
+msgstr ""
+
 #: src/field-consent/block.json
 msgid "privacy"
 msgstr ""
 
-#. keyword of the block flinkform/field-consent
-#: src/field-consent/block.json
+#: src/field-consent/block.json src/field-toggle/block.json
+msgctxt "block keyword"
 msgid "agree"
 msgstr ""
 
-#. title of the block flinkform/field-date
+#: src/field-consent/block.json src/field-toggle/block.json
+msgid "agree"
+msgstr ""
+
+#: src/field-date/block.json
+msgctxt "block title"
+msgid "Date Field"
+msgstr ""
+
 #: src/field-date/block.json
 msgid "Date Field"
 msgstr ""
 
-#. description of the block flinkform/field-date
+#: src/field-date/block.json
+msgctxt "block description"
+msgid "A date picker input."
+msgstr ""
+
 #: src/field-date/block.json
 msgid "A date picker input."
 msgstr ""
 
-#. keyword of the block flinkform/field-date
+#: src/field-date/block.json
+msgctxt "block keyword"
+msgid "date"
+msgstr ""
+
 #: src/field-date/block.json
 msgid "date"
 msgstr ""
 
-#. keyword of the block flinkform/field-date
+#: src/field-date/block.json
+msgctxt "block keyword"
+msgid "datum"
+msgstr ""
+
 #: src/field-date/block.json
 msgid "datum"
 msgstr ""
 
-#. keyword of the block flinkform/field-date
+#: src/field-date/block.json
+msgctxt "block keyword"
+msgid "calendar"
+msgstr ""
+
 #: src/field-date/block.json
 msgid "calendar"
 msgstr ""
 
-#. keyword of the block flinkform/field-date
-#: src/field-date/block.json
+#: src/field-date/block.json src/field-email/block.json src/field-phone/block.json src/field-text/block.json src/field-url/block.json
+msgctxt "block keyword"
 msgid "input"
 msgstr ""
 
-#. title of the block flinkform/field-email
+#: src/field-date/block.json src/field-email/block.json src/field-phone/block.json src/field-text/block.json src/field-url/block.json
+msgid "input"
+msgstr ""
+
+#: src/field-email/block.json
+msgctxt "block title"
+msgid "Email Field"
+msgstr ""
+
 #: src/field-email/block.json
 msgid "Email Field"
 msgstr ""
 
-#. description of the block flinkform/field-email
+#: src/field-email/block.json
+msgctxt "block description"
+msgid "An email input with format validation."
+msgstr ""
+
 #: src/field-email/block.json
 msgid "An email input with format validation."
 msgstr ""
 
-#. keyword of the block flinkform/field-email
+#: src/field-email/block.json
+msgctxt "block keyword"
+msgid "email"
+msgstr ""
+
 #: src/field-email/block.json
 msgid "email"
 msgstr ""
 
-#. description of the block flinkform/field-hidden
 #: src/field-hidden/block.json
-msgid ""
-"An invisible field that records context with the submission (page URL, user,"
-" date, or a static value)."
+msgctxt "block title"
+msgid "Hidden Field"
 msgstr ""
 
-#. keyword of the block flinkform/field-hidden
+#: src/field-hidden/block.json
+msgctxt "block description"
+msgid "An invisible field that records context with the submission (page URL, user, date, or a static value)."
+msgstr ""
+
+#: src/field-hidden/block.json
+msgid "An invisible field that records context with the submission (page URL, user, date, or a static value)."
+msgstr ""
+
+#: src/field-hidden/block.json
+msgctxt "block keyword"
+msgid "hidden"
+msgstr ""
+
 #: src/field-hidden/block.json
 msgid "hidden"
 msgstr ""
 
-#. keyword of the block flinkform/field-hidden
+#: src/field-hidden/block.json
+msgctxt "block keyword"
+msgid "meta"
+msgstr ""
+
 #: src/field-hidden/block.json
 msgid "meta"
 msgstr ""
 
-#. keyword of the block flinkform/field-hidden
+#: src/field-hidden/block.json
+msgctxt "block keyword"
+msgid "context"
+msgstr ""
+
 #: src/field-hidden/block.json
 msgid "context"
 msgstr ""
 
-#. title of the block flinkform/field-number
+#: src/field-number/block.json
+msgctxt "block title"
+msgid "Number Field"
+msgstr ""
+
 #: src/field-number/block.json
 msgid "Number Field"
 msgstr ""
 
-#. description of the block flinkform/field-number
+#: src/field-number/block.json
+msgctxt "block description"
+msgid "A numeric input with optional min, max and step."
+msgstr ""
+
 #: src/field-number/block.json
 msgid "A numeric input with optional min, max and step."
 msgstr ""
 
-#. keyword of the block flinkform/field-number
+#: src/field-number/block.json
+msgctxt "block keyword"
+msgid "number"
+msgstr ""
+
 #: src/field-number/block.json
 msgid "number"
 msgstr ""
 
-#. keyword of the block flinkform/field-number
+#: src/field-number/block.json
+msgctxt "block keyword"
+msgid "numeric"
+msgstr ""
+
 #: src/field-number/block.json
 msgid "numeric"
 msgstr ""
 
-#. title of the block flinkform/field-phone
+#: src/field-phone/block.json
+msgctxt "block title"
+msgid "Phone Field"
+msgstr ""
+
 #: src/field-phone/block.json
 msgid "Phone Field"
 msgstr ""
 
-#. description of the block flinkform/field-phone
+#: src/field-phone/block.json
+msgctxt "block description"
+msgid "A phone number input."
+msgstr ""
+
 #: src/field-phone/block.json
 msgid "A phone number input."
 msgstr ""
 
-#. keyword of the block flinkform/field-phone
+#: src/field-phone/block.json
+msgctxt "block keyword"
+msgid "phone"
+msgstr ""
+
 #: src/field-phone/block.json
 msgid "phone"
 msgstr ""
 
-#. keyword of the block flinkform/field-phone
+#: src/field-phone/block.json
+msgctxt "block keyword"
+msgid "tel"
+msgstr ""
+
 #: src/field-phone/block.json
 msgid "tel"
 msgstr ""
 
-#. keyword of the block flinkform/field-phone
+#: src/field-phone/block.json
+msgctxt "block keyword"
+msgid "telefon"
+msgstr ""
+
 #: src/field-phone/block.json
 msgid "telefon"
 msgstr ""
 
-#. title of the block flinkform/field-radio
+#: src/field-radio/block.json
+msgctxt "block title"
+msgid "Radio Group"
+msgstr ""
+
 #: src/field-radio/block.json
 msgid "Radio Group"
 msgstr ""
 
-#. description of the block flinkform/field-radio
+#: src/field-radio/block.json
+msgctxt "block description"
+msgid "A single choice from a list of options."
+msgstr ""
+
 #: src/field-radio/block.json
 msgid "A single choice from a list of options."
 msgstr ""
 
-#. keyword of the block flinkform/field-radio
+#: src/field-radio/block.json
+msgctxt "block keyword"
+msgid "radio"
+msgstr ""
+
 #: src/field-radio/block.json
 msgid "radio"
 msgstr ""
 
-#. keyword of the block flinkform/field-radio
+#: src/field-radio/block.json
+msgctxt "block keyword"
+msgid "choice"
+msgstr ""
+
 #: src/field-radio/block.json
 msgid "choice"
 msgstr ""
 
-#. title of the block flinkform/field-select
+#: src/field-select/block.json
+msgctxt "block title"
+msgid "Dropdown"
+msgstr ""
+
 #: src/field-select/block.json
 msgid "Dropdown"
 msgstr ""
 
-#. description of the block flinkform/field-select
+#: src/field-select/block.json
+msgctxt "block description"
+msgid "A dropdown — single or multi-select."
+msgstr ""
+
 #: src/field-select/block.json
 msgid "A dropdown — single or multi-select."
 msgstr ""
 
-#. keyword of the block flinkform/field-select
+#: src/field-select/block.json
+msgctxt "block keyword"
+msgid "select"
+msgstr ""
+
 #: src/field-select/block.json
 msgid "select"
 msgstr ""
 
-#. keyword of the block flinkform/field-select
+#: src/field-select/block.json
+msgctxt "block keyword"
+msgid "dropdown"
+msgstr ""
+
 #: src/field-select/block.json
 msgid "dropdown"
 msgstr ""
 
-#. title of the block flinkform/field-text
+#: src/field-text/block.json
+msgctxt "block title"
+msgid "Text Field"
+msgstr ""
+
 #: src/field-text/block.json
 msgid "Text Field"
 msgstr ""
 
-#. description of the block flinkform/field-text
+#: src/field-text/block.json
+msgctxt "block description"
+msgid "A single-line text input."
+msgstr ""
+
 #: src/field-text/block.json
 msgid "A single-line text input."
 msgstr ""
 
-#. keyword of the block flinkform/field-text
+#: src/field-text/block.json
+msgctxt "block keyword"
+msgid "text"
+msgstr ""
+
 #: src/field-text/block.json
 msgid "text"
 msgstr ""
 
-#. title of the block flinkform/field-textarea
+#: src/field-textarea/block.json
+msgctxt "block title"
+msgid "Textarea Field"
+msgstr ""
+
 #: src/field-textarea/block.json
 msgid "Textarea Field"
 msgstr ""
 
-#. description of the block flinkform/field-textarea
+#: src/field-textarea/block.json
+msgctxt "block description"
+msgid "A multi-line text input."
+msgstr ""
+
 #: src/field-textarea/block.json
 msgid "A multi-line text input."
 msgstr ""
 
-#. keyword of the block flinkform/field-textarea
+#: src/field-textarea/block.json
+msgctxt "block keyword"
+msgid "textarea"
+msgstr ""
+
 #: src/field-textarea/block.json
 msgid "textarea"
 msgstr ""
 
-#. keyword of the block flinkform/field-textarea
+#: src/field-textarea/block.json
+msgctxt "block keyword"
+msgid "message"
+msgstr ""
+
 #: src/field-textarea/block.json
 msgid "message"
 msgstr ""
 
-#. title of the block flinkform/field-toggle
+#: src/field-toggle/block.json
+msgctxt "block title"
+msgid "Toggle / Checkbox"
+msgstr ""
+
 #: src/field-toggle/block.json
 msgid "Toggle / Checkbox"
 msgstr ""
 
-#. description of the block flinkform/field-toggle
+#: src/field-toggle/block.json
+msgctxt "block description"
+msgid "A single checkbox — great for terms-of-service style consents."
+msgstr ""
+
 #: src/field-toggle/block.json
 msgid "A single checkbox — great for terms-of-service style consents."
 msgstr ""
 
-#. keyword of the block flinkform/field-toggle
+#: src/field-toggle/block.json
+msgctxt "block keyword"
+msgid "toggle"
+msgstr ""
+
 #: src/field-toggle/block.json
 msgid "toggle"
 msgstr ""
 
-#. title of the block flinkform/field-url
+#: src/field-url/block.json
+msgctxt "block title"
+msgid "URL Field"
+msgstr ""
+
 #: src/field-url/block.json
 msgid "URL Field"
 msgstr ""
 
-#. description of the block flinkform/field-url
+#: src/field-url/block.json
+msgctxt "block description"
+msgid "A website URL input with format validation."
+msgstr ""
+
 #: src/field-url/block.json
 msgid "A website URL input with format validation."
 msgstr ""
 
-#. keyword of the block flinkform/field-url
+#: src/field-url/block.json
+msgctxt "block keyword"
+msgid "url"
+msgstr ""
+
 #: src/field-url/block.json
 msgid "url"
 msgstr ""
 
-#. keyword of the block flinkform/field-url
+#: src/field-url/block.json
+msgctxt "block keyword"
+msgid "website"
+msgstr ""
+
 #: src/field-url/block.json
 msgid "website"
 msgstr ""
 
-#. keyword of the block flinkform/field-url
+#: src/field-url/block.json
+msgctxt "block keyword"
+msgid "link"
+msgstr ""
+
 #: src/field-url/block.json
 msgid "link"
 msgstr ""
 
-#. title of the block flinkform/form
+#: src/form-container/block.json
+msgctxt "block title"
+msgid "Flinkform Form"
+msgstr ""
+
 #: src/form-container/block.json
 msgid "Flinkform Form"
 msgstr ""
 
-#. description of the block flinkform/form
+#: src/form-container/block.json
+msgctxt "block description"
+msgid "A form container. Add field blocks inside to build your form."
+msgstr ""
+
 #: src/form-container/block.json
 msgid "A form container. Add field blocks inside to build your form."
 msgstr ""
 
-#. keyword of the block flinkform/form
+#: src/form-container/block.json
+msgctxt "block keyword"
+msgid "form"
+msgstr ""
+
 #: src/form-container/block.json
 msgid "form"
 msgstr ""
 
-#. keyword of the block flinkform/form
+#: src/form-container/block.json
+msgctxt "block keyword"
+msgid "contact"
+msgstr ""
+
 #: src/form-container/block.json
 msgid "contact"
 msgstr ""
 
-#. keyword of the block flinkform/form
+#: src/form-container/block.json
+msgctxt "block keyword"
+msgid "formular"
+msgstr ""
+
 #: src/form-container/block.json
 msgid "formular"
 msgstr ""
 
-#. keyword of the block flinkform/form
+#: src/form-container/block.json
+msgctxt "block keyword"
+msgid "flinkform"
+msgstr ""
+
 #: src/form-container/block.json
 msgid "flinkform"
 msgstr ""
 
-#. description of the block flinkform/notice
 #: src/notice/block.json
-msgid ""
-"A highlighted note inside the form. Not a field — nothing is submitted. "
-"Combine it with conditional logic to surface guidance only when it applies."
+msgctxt "block title"
+msgid "Notice"
 msgstr ""
 
-#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgctxt "block description"
+msgid "A highlighted note inside the form. Not a field — nothing is submitted. Combine it with conditional logic to surface guidance only when it applies."
+msgstr ""
+
+#: src/notice/block.json
+msgid "A highlighted note inside the form. Not a field — nothing is submitted. Combine it with conditional logic to surface guidance only when it applies."
+msgstr ""
+
+#: src/notice/block.json
+msgctxt "block keyword"
+msgid "notice"
+msgstr ""
+
 #: src/notice/block.json
 msgid "notice"
 msgstr ""
 
-#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgctxt "block keyword"
+msgid "note"
+msgstr ""
+
 #: src/notice/block.json
 msgid "note"
 msgstr ""
 
-#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgctxt "block keyword"
+msgid "hint"
+msgstr ""
+
 #: src/notice/block.json
 msgid "hint"
 msgstr ""
 
-#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgctxt "block keyword"
+msgid "callout"
+msgstr ""
+
 #: src/notice/block.json
 msgid "callout"
 msgstr ""
 
-#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgctxt "block keyword"
+msgid "warning"
+msgstr ""
+
 #: src/notice/block.json
 msgid "warning"
 msgstr ""
 
-#. keyword of the block flinkform/notice
+#: src/notice/block.json
+msgctxt "block keyword"
+msgid "hinweis"
+msgstr ""
+
 #: src/notice/block.json
 msgid "hinweis"
 msgstr ""
 
-#. description of the block flinkform/page-break
 #: src/page-break/block.json
-msgid ""
-"Splits the form into steps. Place between field blocks to start a new step "
-"in a multi-step form."
+msgctxt "block title"
+msgid "Page Break"
 msgstr ""
 
-#. keyword of the block flinkform/page-break
+#: src/page-break/block.json
+msgctxt "block description"
+msgid "Splits the form into steps. Place between field blocks to start a new step in a multi-step form."
+msgstr ""
+
+#: src/page-break/block.json
+msgid "Splits the form into steps. Place between field blocks to start a new step in a multi-step form."
+msgstr ""
+
+#: src/page-break/block.json
+msgctxt "block keyword"
+msgid "page break"
+msgstr ""
+
 #: src/page-break/block.json
 msgid "page break"
 msgstr ""
 
-#. keyword of the block flinkform/page-break
+#: src/page-break/block.json
+msgctxt "block keyword"
+msgid "step"
+msgstr ""
+
 #: src/page-break/block.json
 msgid "step"
 msgstr ""
 
-#. keyword of the block flinkform/page-break
+#: src/page-break/block.json
+msgctxt "block keyword"
+msgid "multi-step"
+msgstr ""
+
 #: src/page-break/block.json
 msgid "multi-step"
 msgstr ""
 
-#. keyword of the block flinkform/page-break
+#: src/page-break/block.json
+msgctxt "block keyword"
+msgid "wizard"
+msgstr ""
+
 #: src/page-break/block.json
 msgid "wizard"
 msgstr ""
 
-#. keyword of the block flinkform/page-break
+#: src/page-break/block.json
+msgctxt "block keyword"
+msgid "funnel"
+msgstr ""
+
 #: src/page-break/block.json
 msgid "funnel"
 msgstr ""
 
-#. title of the block flinkform/section-heading
+#: src/section-heading/block.json
+msgctxt "block title"
+msgid "Section Heading"
+msgstr ""
+
 #: src/section-heading/block.json
 msgid "Section Heading"
 msgstr ""
 
-#. description of the block flinkform/section-heading
 #: src/section-heading/block.json
-msgid ""
-"A visual divider with an optional title and description. Not a field — "
-"nothing is submitted."
+msgctxt "block description"
+msgid "A visual divider with an optional title and description. Not a field — nothing is submitted."
 msgstr ""
 
-#. keyword of the block flinkform/section-heading
+#: src/section-heading/block.json
+msgid "A visual divider with an optional title and description. Not a field — nothing is submitted."
+msgstr ""
+
+#: src/section-heading/block.json
+msgctxt "block keyword"
+msgid "heading"
+msgstr ""
+
 #: src/section-heading/block.json
 msgid "heading"
 msgstr ""
 
-#. keyword of the block flinkform/section-heading
+#: src/section-heading/block.json
+msgctxt "block keyword"
+msgid "divider"
+msgstr ""
+
 #: src/section-heading/block.json
 msgid "divider"
 msgstr ""
 
-#. keyword of the block flinkform/section-heading
 #: src/section-heading/block.json
+msgctxt "block keyword"
 msgid "section"
 msgstr ""
 
-#: includes/Submissions/Handler.php:207
-msgid "The spam-check answer was not correct. Please try again."
-msgstr ""
-
-#: includes/Submissions/Handler.php:211
-msgid ""
-"Your session has expired. Please reload the page and send your message "
-"again."
-msgstr ""
-
-#: includes/Submissions/Handler.php:213
-msgid ""
-"Your session has expired. Please check your entries and send your message "
-"again."
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "Flinkform form pages can be cached"
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "Performance"
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "No published form pages to check"
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "Flinkform did not find a published page containing a form, so there is nothing to measure yet."
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "Could not check whether form pages are cached"
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "Flinkform could not fetch one of its own form pages: %s. This says nothing about your caching — only that this check could not run."
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "Form pages are excluded from the page cache"
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "The page %s tells caching plugins not to cache it. Every visit to it therefore runs the full WordPress stack, which typically costs a few hundred milliseconds of extra server time."
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "Since version 1.14.0 Flinkform itself does not do this any more. Something else on the page does: another plugin, a snippet, or the flinkform_render_challenge_inline filter set to true."
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "Form pages are being cached"
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "The page %1$s was served from a page cache (%2$s). Flinkform loads its spam challenge after the page, so caching and spam protection both work."
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "No page cache detected on form pages"
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "Flinkform found nothing blocking the cache on %s, and no sign that a cache answered either. Either no page caching is active, or your cache skips requests that come from the server itself."
-msgstr ""
-
-#: includes/Admin/CacheHealth.php
-msgid "To check for certain, open a form page in a private browser window twice and look at the end of the page source for your caching plugin's comment."
-msgstr ""
-
-#: includes/Submissions/Handler.php
-msgid "Your form was not ready to send yet. Please check your entries and send your message again."
-msgstr ""
-
-
-
-#: src/form-container/render.php
-msgid "This form needs one more step without JavaScript."
-msgstr ""
-
-#: src/form-container/render.php
-msgid "Open the form"
+#: src/section-heading/block.json
+msgid "section"
 msgstr ""

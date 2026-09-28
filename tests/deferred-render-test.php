@@ -180,6 +180,7 @@ namespace {
 	require_once __DIR__ . '/../includes/Conditions/Wrapper.php';
 	require_once __DIR__ . '/../includes/Submissions/Handler.php';
 	require_once __DIR__ . '/../includes/Spam/RenderMode.php';
+	require_once __DIR__ . '/../includes/Forms/ClientMessages.php';
 
 	use Flinkform\Spam\RenderMode;
 
@@ -238,6 +239,11 @@ namespace {
 	check(
 		'deferred: renders a form at all',
 		str_contains( $deferred_html, '<form' ) && str_contains( $deferred_html, 'flinkform_submit' )
+	);
+	check(
+		'deferred: validation texts ship with the form (site language, not browser)',
+		(bool) preg_match( '/data-flinkform-messages="\{[^"]*&quot;required&quot;/', $deferred_html ),
+		'without the catalogue the browser text in the browser language comes back'
 	);
 	check(
 		'deferred: the nonce field is empty',

@@ -471,6 +471,7 @@ $timestamp_token = $is_deferred ? '' : \Flinkform\Spam\Challenge::mint_timestamp
 		enctype="multipart/form-data"
 		novalidate
 		data-flinkform-invalid-message="<?php echo esc_attr__( 'Please check this field.', 'flinkform' ); ?>"
+		data-flinkform-messages="<?php echo esc_attr( \Flinkform\Forms\ClientMessages::json() ); ?>"
 		<?php if ( $is_multi_step ) : ?>
 			data-wp-on--submit="actions.submitGuard"
 		<?php endif; ?>

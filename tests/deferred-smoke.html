@@ -162,6 +162,21 @@
 	</form>
 </div>
 
+<!-- A fourth form, rendered INLINE the way the retry page after a soft
+     reject is (1.15.0): the server minted the timestamp while rendering, so
+     a Send right after the page loads beats the two seconds. It must be
+     held until then and go out once, and it must never fetch a challenge. -->
+<div class="flinkform-form" id="flinkform-form-smoke-form-4" data-flinkform-id="smoke-form-4">
+	<form class="flinkform-form__form" method="post" action="/wp-admin/admin-post.php" novalidate>
+		<input type="hidden" name="_flinkform_nonce" value="inline-nonce">
+		<input type="hidden" name="action" value="flinkform_submit">
+		<input type="hidden" name="flinkform_form_id" value="smoke-form-4">
+		<input type="hidden" name="flinkform_ts" value="MTc4ODc5MTM2Mw.inline-signature">
+		<label>Name <input type="text" name="flinkform_field_name" value="kept"></label>
+		<button type="submit" class="flinkform-form__submit">Send</button>
+	</form>
+</div>
+
 <script type="module">
 	const log      = document.getElementById( 'log' );
 	const smoke    = { passed: 0, failed: 0, loaded: false, error: null };
@@ -190,13 +205,14 @@
 	const form  = forms[ 0 ];
 	const cold  = forms[ 1 ];
 	const fast  = forms[ 2 ];
+	const retry = forms[ 3 ];
 	const val   = ( target, name ) => target.querySelector( `[name="${ name }"]` ).value;
 	const sleep = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) );
 
 	// Intercept the submits so the page does not navigate away mid-test.
 	// Bubble phase, so the plugin's capture-phase gate still runs first —
 	// exactly the ordering it has on a real page.
-	const submits = new Map( [ [ form, 0 ], [ cold, 0 ], [ fast, 0 ] ] );
+	const submits = new Map( [ [ form, 0 ], [ cold, 0 ], [ fast, 0 ], [ retry, 0 ] ] );
 	forms.forEach( ( f ) => {
 		f.addEventListener( 'submit', ( event ) => {
 			event.preventDefault();
@@ -215,6 +231,13 @@
 	if ( smoke.loaded ) {
 		check( 'module loads without a runtime error', true );
 
+		// --- 0. Inline retry page: Send right after load (1.15.0) --------
+		const retryButton = retry.querySelector( 'button[type="submit"]' );
+		retryButton.click();
+		await sleep( 300 );
+		check( 'inline retry page: an immediate Send is held', submits.get( retry ) === 1, `${ submits.get( retry ) } submit event(s) — expected only the held one` );
+		check( 'inline retry page: button shows it is working', retryButton.classList.contains( 'is-loading' ) && ! retryButton.disabled );
+
 		// --- 1. An untouched page must stay silent -----------------------
 		await sleep( 1200 );
 		check(
@@ -224,6 +247,14 @@
 		);
 		check( 'nonce still empty before contact', val( form, '_flinkform_nonce' ) === '' );
 		check( 'timestamp still empty before contact', val( form, 'flinkform_ts' ) === '' );
+
+		// --- 0b. ...and goes out once the fill time is over ---------------
+		await sleep( 1200 );
+		check( 'inline retry page: sent exactly once after the fill time', submits.get( retry ) === 2, `${ submits.get( retry ) } submit event(s)` );
+		check( 'inline retry page: never fetches a challenge', fetches === 0, `${ fetches } request(s)` );
+		retryButton.click();
+		await sleep( 100 );
+		check( 'inline retry page: later sends go straight through', submits.get( retry ) === 3, `${ submits.get( retry ) } submit event(s)` );
 
 		// --- 2. First contact arms the form ------------------------------
 		// pointerdown, not focus(): a browser tab that does not have the

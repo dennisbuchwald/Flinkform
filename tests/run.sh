@@ -2,9 +2,9 @@
 #
 # Run every standalone test in this folder. Exits non-zero if any fails.
 #
-# The browser smoke tests (module-smoke.html, deferred-smoke.html) are not
-# part of this: they need a browser and a local web server, see their
-# headers. Run them by hand after every `npm run build`.
+# The browser smoke tests (module-smoke.html, deferred-smoke.html) run
+# headless through tests/browser-smoke.mjs (Playwright, falls back to the
+# installed Chrome). They test build/, so `npm run build` first.
 #
 # Usage:  tests/run.sh
 

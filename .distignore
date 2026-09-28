@@ -48,3 +48,4 @@ includes/Bridge/README.md
 Thumbs.db
 .gitkeep
 /tests
+/tools

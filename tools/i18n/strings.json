@@ -1,0 +1,25 @@
+{
+  "Please fill in this field.": ["Bitte fülle dieses Feld aus.", "Bitte füllen Sie dieses Feld aus."],
+  "Please choose an option.": ["Bitte wähle eine Option.", "Bitte wählen Sie eine Option."],
+  "Please tick this box to continue.": ["Bitte setze das Häkchen, um fortzufahren.", "Bitte setzen Sie das Häkchen, um fortzufahren."],
+  "Please enter a valid email address.": ["Bitte gib eine gültige E-Mail-Adresse ein.", "Bitte geben Sie eine gültige E-Mail-Adresse ein."],
+  "Please enter a valid web address (https://…).": ["Bitte gib eine gültige Webadresse ein (https://…).", "Bitte geben Sie eine gültige Webadresse ein (https://…)."],
+  "Please enter a valid phone number.": ["Bitte gib eine gültige Telefonnummer ein.", "Bitte geben Sie eine gültige Telefonnummer ein."],
+  "Please enter a number.": ["Bitte gib eine Zahl ein.", "Bitte geben Sie eine Zahl ein."],
+  "Please enter a valid date.": ["Bitte gib ein gültiges Datum ein.", "Bitte geben Sie ein gültiges Datum ein."],
+  "Please enter a value of at least %s.": ["Bitte gib mindestens %s ein.", "Bitte geben Sie mindestens %s ein."],
+  "Please enter a value of at most %s.": ["Bitte gib höchstens %s ein.", "Bitte geben Sie höchstens %s ein."],
+  "Please choose a date on or after %s.": ["Bitte wähle ein Datum ab dem %s.", "Bitte wählen Sie ein Datum ab dem %s."],
+  "Please choose a date on or before %s.": ["Bitte wähle ein Datum bis zum %s.", "Bitte wählen Sie ein Datum bis zum %s."],
+  "Please use at least %s characters.": ["Bitte verwende mindestens %s Zeichen.", "Bitte verwenden Sie mindestens %s Zeichen."],
+  "Please use at most %s characters.": ["Bitte verwende höchstens %s Zeichen.", "Bitte verwenden Sie höchstens %s Zeichen."],
+  "Please enter a valid value.": ["Bitte gib einen gültigen Wert ein.", "Bitte geben Sie einen gültigen Wert ein."],
+  "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated list of all fields.": [
+    "Verfügbare Tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Auswahlfelder fügen die Beschriftung der Option ein, {field:<fieldName>:value} den gespeicherten Wert. Leer lassen für eine automatisch generierte Liste aller Felder.",
+    "Verfügbare Tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Auswahlfelder fügen die Beschriftung der Option ein, {field:<fieldName>:value} den gespeicherten Wert. Leer lassen für eine automatisch generierte Liste aller Felder."
+  ],
+  "Available tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Choice fields insert the option label, {field:<fieldName>:value} the stored value. Leave empty for an auto-generated thank-you with the submitted values.": [
+    "Verfügbare Tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Auswahlfelder fügen die Beschriftung der Option ein, {field:<fieldName>:value} den gespeicherten Wert. Leer lassen für eine automatisch generierte Danksagung mit den eingereichten Werten.",
+    "Verfügbare Tags: {form:title}, {site:name}, {site:url}, {submission:id}, {submission:date}, {field:<fieldName>}. Auswahlfelder fügen die Beschriftung der Option ein, {field:<fieldName>:value} den gespeicherten Wert. Leer lassen für eine automatisch generierte Danksagung mit den eingereichten Werten."
+  ]
+}

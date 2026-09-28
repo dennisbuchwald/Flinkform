@@ -19,8 +19,9 @@
  * Validation: the standard HTML5 constraint API (`required`, `type`,
  * `pattern`, etc.) is the source of truth for per-step validation.
  * `step.querySelectorAll(':invalid')` enumerates the failing fields,
- * `reportValidity()` raises the browser's native error UI on the first
- * one, and `aria-invalid="true"` is added so assistive technology
+ * each gets a persistent message in the site's language
+ * (shared/validation-messages.js), the first one gets focus, and
+ * `aria-invalid="true"` is added so assistive technology
  * picks up the state. Server-side validation continues to run on the
  * final submit — the client check is UX, not security.
  *
@@ -33,6 +34,7 @@ import resolveSurfaceColour from '../shared/surface-colour';
 import evaluateRuleSet, { resolveHiddenFields, applyHidden } from '../shared/rule-evaluator';
 import { shouldDeferRefresh, applyChallengeData, applyFormChallenge, challengeExpiry } from '../shared/challenge-refresh';
 import { requiredCheckboxGroupsMissing } from '../shared/group-validation';
+import { readMessages, messageFor } from '../shared/validation-messages';
 
 const NAMESPACE = 'flinkform/form';
 
@@ -1033,11 +1035,14 @@ function validateScope( scopeEl ) {
 	}
 
 	// Persistent messages on every field — not just the browser's
-	// transient native tooltip. validationMessage is already localised
-	// by the browser; group messages come from a server-translated
-	// data attribute.
+	// transient native tooltip. Texts come from the server in the site's
+	// language (1.15.0); the browser's validationMessage is in the
+	// browser's language and is never shown.
+	const form = scopeEl.closest( 'form' ) || scopeEl.querySelector( 'form' );
+	const messages = readMessages( form );
+	const lang = document.documentElement.lang || '';
 	invalid.forEach( ( field ) => {
-		showFieldError( field, field.validationMessage );
+		showFieldError( field, messageFor( field, messages, lang ) );
 	} );
 	missingGroups.forEach( ( group ) => markGroupError( group ) );
 
@@ -1154,18 +1159,16 @@ function clearStepErrors( stepEl ) {
  * aria-describedby/aria-invalid so assistive tech announces it.
  *
  * @param {HTMLElement} field   The invalid control.
- * @param {string}      message Localised message (browser validationMessage).
+ * @param {string}      message Message in the site's language (see validation-messages.js).
  */
 function showFieldError( field, message ) {
 	const wrapper = field.closest( '.flinkform-field' );
 	if ( ! wrapper ) {
 		return;
 	}
-	// validationMessage is usually localised by the browser, but some
-	// embedded/webview engines return an empty string even though the
-	// control is invalid — and an empty message renders nothing at all.
-	// Fall back to the server-translated text the form ships for exactly
-	// this purpose.
+	// An empty message renders nothing at all. Fall back to the generic
+	// server-translated text (older cached HTML without the catalogue,
+	// or a validity flag the catalogue does not cover).
 	if ( ! message ) {
 		const form = field.closest( 'form' );
 		message = ( form && form.getAttribute( 'data-flinkform-invalid-message' ) ) || '';
@@ -1467,6 +1470,7 @@ function initSpamChallenge() {
 	// After the blocks, never before: a deferred form hands its fetched
 	// challenge to the block's controls, which have to exist by then.
 	initDeferredChallenges();
+	initInlineFillHold();
 }
 
 function setupSpamChallengeBlock( block ) {
@@ -1854,6 +1858,161 @@ async function fetchChallenge( urls ) {
 	return null;
 }
 
+/**
+ * Hold a submit until the form may be sent, then replay it exactly once.
+ *
+ * Shared by deferred forms (wait for the challenge, then for the minimum
+ * fill time after it arrived) and, since 1.15.0, inline forms that carry
+ * a server-minted timestamp (just the fill time since page load). The
+ * inline case is the retry page after a soft reject: it renders a fresh
+ * timestamp, and a visitor who clicks Send again straight away used to
+ * earn a second "please send again" round-trip.
+ *
+ * @param {HTMLFormElement} form
+ * @param {{isReady: function(): boolean, ensure: function(): Promise<boolean>, fillWait: function(): number}} gate
+ */
+function installSubmitHold( form, { isReady, ensure, fillWait } ) {
+	// Set for the moment we re-dispatch a submit we had held back, so the
+	// gate below lets that one through instead of holding it again.
+	let bypass = false;
+	// The submit currently being held back, if any. A second click while
+	// one is waiting only updates the submitter; it never queues another.
+	let held   = null;
+
+	/** The step element currently on screen (null on single-step forms). */
+	const visibleStep = () => form.querySelector( '.flinkform-form__step:not([hidden])' );
+
+	/** Show that the click registered while the submit is held back. */
+	const setHolding = ( holding ) => {
+		// Real submit buttons only. The multi-step Next button shares the
+		// class but must stay what it is.
+		form.querySelectorAll( 'button[type="submit"].flinkform-form__submit' ).forEach( ( btn ) => {
+			// Visual only, never `disabled`: the held submit is replayed
+			// with this very button as its submitter.
+			btn.classList.toggle( 'is-loading', holding );
+			if ( holding ) {
+				btn.setAttribute( 'aria-busy', 'true' );
+			} else {
+				btn.removeAttribute( 'aria-busy' );
+			}
+		} );
+	};
+
+	// The safety net: a submit that beats the arming listeners (password
+	// manager autofill followed by Enter, a script-driven submit) is held
+	// back, armed, and sent again. So is one that arrives armed but inside
+	// the minimum fill time — see MIN_FILL_MS.
+	//
+	// Capture phase, registered last, so the guards that can cancel a
+	// submit outright — field validation and the submit-condition gate —
+	// have already had their say and we never fetch a challenge for a
+	// submission that was never going to leave the page.
+	form.addEventListener(
+		'submit',
+		( event ) => {
+			if ( event.defaultPrevented || bypass ) {
+				return;
+			}
+			if ( isReady() && fillWait() === 0 ) {
+				return;
+			}
+
+			const submitter = event.submitter && event.submitter.form === form
+				&& event.submitter.type === 'submit'
+				? event.submitter
+				: undefined;
+
+			if ( submitter && submitter.hidden ) {
+				// Enter on a middle step of a multi-step form: the implicit
+				// submitter is the hidden final button, and the step guard turns
+				// this into "Next". Nothing is being sent, so nothing to hold —
+				// holding it would only produce a delayed, unasked-for Next.
+				return;
+			}
+
+			event.preventDefault();
+
+			if ( held ) {
+				held.submitter = submitter || held.submitter;
+				return;
+			}
+			held = { submitter, step: visibleStep() };
+			setHolding( true );
+
+			// Whether or not arming worked, the submission goes out. A
+			// failed fetch must not leave the visitor with a button that
+			// does nothing — the server knows what a deferred submission
+			// without a challenge means and answers with "please send it
+			// again", input intact. ensure() never rejects; the catch is
+			// belt and braces so the replay below can never be skipped.
+			Promise.race( [
+				Promise.resolve().then( ensure ).catch( () => false ),
+				new Promise( ( resolve ) => setTimeout( resolve, MAX_HOLD_MS ) ),
+			] )
+				.then( () => new Promise( ( resolve ) => setTimeout( resolve, fillWait() ) ) )
+				.then( () => {
+					const replayWith = held ? held.submitter : submitter;
+					const heldStep   = held ? held.step : null;
+					held = null;
+					setHolding( false );
+
+					// The visitor moved to another step while we waited. Sending
+					// now would submit a multi-step form before its later steps
+					// are filled in; they will press Send again when they get there.
+					if ( heldStep !== visibleStep() ) {
+						return;
+					}
+
+					bypass = true;
+					try {
+						if ( typeof form.requestSubmit === 'function' ) {
+							// Replays the full listener chain, so the popup
+							// fetch-submit path still gets its turn.
+							form.requestSubmit( replayWith );
+						} else if ( form.closest( POPUP_SELECTOR ) ) {
+							submitViaFetch( form );
+						} else {
+							// Prototype call: the form has an input named
+							// "action", which shadows form.submit().
+							HTMLFormElement.prototype.submit.call( form );
+						}
+					} finally {
+						// requestSubmit dispatches synchronously, so the flag
+						// has done its job by the time we get here.
+						bypass = false;
+					}
+				} );
+		},
+		true
+	);
+}
+
+/**
+ * Inline renders carry a timestamp the server minted while rendering, so
+ * the minimum fill time runs from (roughly) page load. The retry page
+ * after a soft reject is the case that matters: someone who just saw
+ * "please send again" clicks Send at once. Holding that click until the
+ * server will accept it replaces a second round-trip with a short spinner.
+ * Page load is later than the server's mint time, so this errs long.
+ */
+function initInlineFillHold() {
+	const loadedAt = Date.now();
+	document.querySelectorAll( '.flinkform-form__form' ).forEach( ( form ) => {
+		if ( form.getAttribute( 'data-flinkform-challenge' ) === 'deferred' ) {
+			return;
+		}
+		const ts = form.querySelector( 'input[name="flinkform_ts"]' );
+		if ( ! ts || ts.value === '' ) {
+			return;
+		}
+		installSubmitHold( form, {
+			isReady: () => true,
+			ensure: () => Promise.resolve( true ),
+			fillWait: () => Math.max( 0, loadedAt + MIN_FILL_MS - Date.now() ),
+		} );
+	} );
+}
+
 function setupDeferredForm( form ) {
 	const urls = [
 		form.getAttribute( 'data-flinkform-challenge-url' ) || '',
@@ -1864,15 +2023,9 @@ function setupDeferredForm( form ) {
 
 	let ready   = false;
 	let pending = null;
-	// Set for the moment we re-dispatch a submit we had held back, so the
-	// gate below lets that one through instead of holding it again.
-	let bypass  = false;
 	// When this browser received the signed timestamp (0 = not yet). The
 	// timestamp is write-once, so this is set once and never moves.
 	let armedAt = 0;
-	// The submit currently being held back, if any. A second click while
-	// one is waiting only updates the submitter; it never queues another.
-	let held    = null;
 
 	const tsInput = form.querySelector( 'input[name="flinkform_ts"]' );
 
@@ -1945,115 +2098,14 @@ function setupDeferredForm( form ) {
 		form.addEventListener( type, arm, { once: true, passive: true } );
 	} );
 
-	/** The step element currently on screen (null on single-step forms). */
-	const visibleStep = () => form.querySelector( '.flinkform-form__step:not([hidden])' );
-
 	/** Milliseconds until the server accepts this form's timestamp. */
 	const fillWait = () => ( armedAt > 0 ? Math.max( 0, armedAt + MIN_FILL_MS - Date.now() ) : 0 );
 
-	/** Show that the click registered while the submit is held back. */
-	const setHolding = ( holding ) => {
-		// Real submit buttons only. The multi-step Next button shares the
-		// class but must stay what it is.
-		form.querySelectorAll( 'button[type="submit"].flinkform-form__submit' ).forEach( ( btn ) => {
-			// Visual only, never `disabled`: the held submit is replayed
-			// with this very button as its submitter.
-			btn.classList.toggle( 'is-loading', holding );
-			if ( holding ) {
-				btn.setAttribute( 'aria-busy', 'true' );
-			} else {
-				btn.removeAttribute( 'aria-busy' );
-			}
-		} );
-	};
-
-	// The safety net: a submit that beats the arming listeners (password
-	// manager autofill followed by Enter, a script-driven submit) is held
-	// back, armed, and sent again. So is one that arrives armed but inside
-	// the minimum fill time — see MIN_FILL_MS.
-	//
-	// Capture phase, registered last, so the guards that can cancel a
-	// submit outright — field validation and the submit-condition gate —
-	// have already had their say and we never fetch a challenge for a
-	// submission that was never going to leave the page.
-	form.addEventListener(
-		'submit',
-		( event ) => {
-			if ( event.defaultPrevented || bypass ) {
-				return;
-			}
-			if ( ready && fillWait() === 0 ) {
-				return;
-			}
-
-			const submitter = event.submitter && event.submitter.form === form
-				&& event.submitter.type === 'submit'
-				? event.submitter
-				: undefined;
-
-			if ( submitter && submitter.hidden ) {
-				// Enter on a middle step of a multi-step form: the implicit
-				// submitter is the hidden final button, and the step guard turns
-				// this into "Next". Nothing is being sent, so nothing to hold —
-				// holding it would only produce a delayed, unasked-for Next.
-				return;
-			}
-
-			event.preventDefault();
-
-			if ( held ) {
-				held.submitter = submitter || held.submitter;
-				return;
-			}
-			held = { submitter, step: visibleStep() };
-			setHolding( true );
-
-			// Whether or not arming worked, the submission goes out. A
-			// failed fetch must not leave the visitor with a button that
-			// does nothing — the server knows what a deferred submission
-			// without a challenge means and answers with "please send it
-			// again", input intact. ensure() never rejects; the catch is
-			// belt and braces so the replay below can never be skipped.
-			Promise.race( [
-				ensure( false ).catch( () => false ),
-				new Promise( ( resolve ) => setTimeout( resolve, MAX_HOLD_MS ) ),
-			] )
-				.then( () => new Promise( ( resolve ) => setTimeout( resolve, fillWait() ) ) )
-				.then( () => {
-					const replayWith = held ? held.submitter : submitter;
-					const heldStep   = held ? held.step : null;
-					held = null;
-					setHolding( false );
-
-					// The visitor moved to another step while we waited. Sending
-					// now would submit a multi-step form before its later steps
-					// are filled in; they will press Send again when they get there.
-					if ( heldStep !== visibleStep() ) {
-						return;
-					}
-
-					bypass = true;
-					try {
-						if ( typeof form.requestSubmit === 'function' ) {
-							// Replays the full listener chain, so the popup
-							// fetch-submit path still gets its turn.
-							form.requestSubmit( replayWith );
-						} else if ( form.closest( POPUP_SELECTOR ) ) {
-							submitViaFetch( form );
-						} else {
-							// Prototype call: the form has an input named
-							// "action", which shadows form.submit().
-							HTMLFormElement.prototype.submit.call( form );
-						}
-					} finally {
-						// requestSubmit dispatches synchronously, so the flag
-						// has done its job by the time we get here.
-						bypass = false;
-					}
-				} );
-		},
-		true
-	);
+	installSubmitHold( form, {
+		isReady: () => ready,
+		ensure: () => ensure( false ),
+		fillWait,
+	} );
 
 	formChallengeControls.set( form, {
 		ensure,
