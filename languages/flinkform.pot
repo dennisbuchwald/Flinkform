@@ -1658,7 +1658,7 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: flinkform.php
-msgid "Flinkform - Forms for the Block Editor"
+msgid "Flinkform - GDPR Contact Form Builder for the Block Editor"
 msgstr ""
 
 #. Plugin URI of the plugin

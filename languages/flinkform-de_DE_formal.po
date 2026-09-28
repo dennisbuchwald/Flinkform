@@ -1457,8 +1457,8 @@ msgstr "Mehrfachauswahl erlauben"
 
 #. Plugin Name of the plugin
 #: flinkform.php
-msgid "Flinkform - Forms for the Block Editor"
-msgstr "Flinkform - Formulare für den Block Editor"
+msgid "Flinkform - GDPR Contact Form Builder for the Block Editor"
+msgstr "Flinkform - DSGVO-Kontaktformular-Builder für den Block-Editor"
 
 #. Plugin URI of the plugin
 #: flinkform.php
