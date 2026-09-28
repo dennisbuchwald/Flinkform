@@ -6,6 +6,9 @@
 /.git
 /.github
 /.claude
+# Editor configs. .vscode/sftp.json holds FTP credentials: never ship it.
+/.vscode
+/.idea
 /.dev
 /.wordpress-org
 /_wporg-svn
