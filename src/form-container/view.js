@@ -168,9 +168,17 @@ function initDrafts() {
 		// applyDraft only fills empty controls, so those always win.
 		try {
 			const draft = JSON.parse( storage.getItem( key ) || 'null' );
-			applyDraft( form, draft ).forEach( ( el ) => {
-				el.dispatchEvent( new Event( 'change', { bubbles: true } ) );
-			} );
+			// Several passes: a field shown by a condition is still disabled
+			// until the change events of the pass before have run.
+			for ( let pass = 0; pass < 5; pass++ ) {
+				const changed = applyDraft( form, draft );
+				if ( changed.length === 0 ) {
+					break;
+				}
+				changed.forEach( ( el ) => {
+					el.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				} );
+			}
 		} catch {
 			storage.removeItem( key );
 		}
@@ -195,12 +203,16 @@ function initDrafts() {
 		// renders the values again anyway, and a success may redirect to a
 		// page this form is not on, where nothing would ever clear it.
 		form.addEventListener( 'submit', ( event ) => {
-			queueMicrotask( () => {
+			// A task, not a microtask: for a real user submit the microtask
+			// checkpoint runs after EACH listener, before the step guard
+			// (registered at hydration, later) turned Enter on a middle
+			// step into "Next". Same reasoning as initSubmitFeedback.
+			setTimeout( () => {
 				if ( ! event.defaultPrevented ) {
 					clearTimeout( timer );
 					storage.removeItem( key );
 				}
-			} );
+			}, 0 );
 		} );
 	} );
 }
@@ -285,6 +297,7 @@ async function submitViaFetch( form ) {
 
 	if ( data && data.success && data.data ) {
 		if ( data.data.behaviour === 'redirect' && data.data.redirect_url ) {
+			clearDraft( form );
 			window.location.assign( data.data.redirect_url );
 			return;
 		}

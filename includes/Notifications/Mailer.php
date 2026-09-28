@@ -321,7 +321,8 @@ final class Mailer {
 			$email,
 			$recipients,
 			$this->resolve_sender( $form_def, $context ),
-			(string) ( $email['text_alternative'] ?? '' )
+			(string) ( $email['text_alternative'] ?? '' ),
+			false
 		);
 	}
 
@@ -340,9 +341,11 @@ final class Mailer {
 	 * @param array<string, mixed>                  $email      Composed email.
 	 * @param array<int, string>                    $recipients Resolved To list.
 	 * @param array{email: string, name: string}    $sender     Empty strings mean "leave WordPress alone".
+	 * @param string                                $text_alternative Plain-text part.
+	 * @param bool                                  $record     Count the outcome for Site Health (admin mails only).
 	 * @return bool What wp_mail() said: accepted for delivery, not delivered.
 	 */
-	private function send( array $email, array $recipients, array $sender, string $text_alternative = '' ): bool {
+	private function send( array $email, array $recipients, array $sender, string $text_alternative = '', bool $record = true ): bool {
 		$from_email = static fn () => $sender['email'];
 		$from_name  = static fn () => $sender['name'];
 
@@ -402,7 +405,12 @@ final class Mailer {
 			}
 		}
 
-		MailHealth::record( $ok, $error );
+		// Site Health judges the notifications to the site owner; a
+		// visitor's confirmation bouncing off a typo'd address is not a
+		// broken mail setup.
+		if ( $record ) {
+			MailHealth::record( $ok, $error );
+		}
 		return $ok;
 	}
 

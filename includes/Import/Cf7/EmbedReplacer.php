@@ -59,9 +59,9 @@ final class EmbedReplacer {
 		$classic = false === strpos( $content, '<!-- wp:' );
 		$parts   = [
 			// 1. CF7 block (static: its saved HTML holds the shortcode).
-			'(?<cf7><!-- wp:contact-form-7/contact-form-selector(?:\s+(?<cf7attrs>\{.*?\}))?\s*(?:/-->|-->.*?<!-- /wp:contact-form-7/contact-form-selector -->))',
+			'(?<cf7><!-- wp:contact-form-7/contact-form-selector(?:\s+(?<cf7attrs>\{(?:(?!-->).)*?\}))?\s*(?:/-->|-->.*?<!-- /wp:contact-form-7/contact-form-selector -->))',
 			// 2. core/shortcode or core/paragraph holding only the shortcode.
-			'(?<blk><!-- wp:(?<bname>shortcode|paragraph)(?:\s+\{.*?\})?\s*-->\s*(?:<p[^>]*>)?\s*\[(?<btag>contact-form-7|contact-form)(?<batts>\s[^\]]*)?\]\s*(?:</p>)?\s*<!-- /wp:(?P=bname) -->)',
+			'(?<blk><!-- wp:(?<bname>shortcode|paragraph)(?:\s+\{(?:(?!-->).)*?\})?\s*-->\s*(?:<p[^>]*>)?\s*\[(?<btag>contact-form-7|contact-form)(?<batts>\s[^\]]*)?\]\s*(?:</p>)?\s*<!-- /wp:(?P=bname) -->)',
 		];
 		if ( $classic ) {
 			// 3. Classic content: a shortcode alone on its line or in a <p>.
@@ -83,6 +83,12 @@ final class EmbedReplacer {
 					$ref = self::parse_atts( $m['btag'], $m['batts'] ?? '' );
 				} else {
 					$ref = self::parse_atts( $m['ctag'] ?? '', $m['catts'] ?? '' );
+				}
+				// Belt and braces: a match spanning more than one block
+				// opener has run across block boundaries. Never replace
+				// that, it would delete everything in between.
+				if ( substr_count( $m[0], '<!-- wp:' ) > 1 ) {
+					return $m[0];
 				}
 				if ( self::matches( $form, $ref ) ) {
 					$replacements[] = [ $m[0], $pattern_block ];

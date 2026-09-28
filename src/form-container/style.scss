@@ -401,7 +401,10 @@
 	// before the form, so this holds from the first paint and nothing
 	// jumps. Without scripting the class never appears and every step
 	// stays on screen, as before.
-	html.flinkform-js &--multi-step:not([data-flinkform-enhanced]) {
+	// Only until the footer boot script ran (it adds flinkform-booted): a
+	// multi-step form injected later (a popup plugin loading content over
+	// AJAX) never gets enhanced and must stay usable as a plain form.
+	html.flinkform-js:not(.flinkform-booted) &--multi-step:not([data-flinkform-enhanced]) {
 		.flinkform-form__step:not([data-step-index="0"]),
 		.flinkform-form__step-separator,
 		.flinkform-form__nav--back,
@@ -410,7 +413,7 @@
 		}
 	}
 
-	html.flinkform-js &--multi-step &__actions,
+	html.flinkform-js:not(.flinkform-booted) &--multi-step &__actions,
 	&[data-flinkform-enhanced] &__actions {
 		display: flex;
 		justify-content: flex-end;

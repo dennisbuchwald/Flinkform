@@ -58,6 +58,15 @@
 		f.setAttribute( 'data-flinkform-enhanced', '' );
 		check( 'after boot: CSS no longer hides later steps', shown( '[data-step-index="1"]' ) );
 
+		// A multi-step form injected after the boot script ran (popup
+		// plugin loading over AJAX) is never enhanced: it must stay a
+		// plain, usable form instead of hiding its later steps forever.
+		f.removeAttribute( 'data-flinkform-enhanced' );
+		document.documentElement.classList.add( 'flinkform-booted' );
+		check( 'injected after boot: every step visible', shown( '[data-step-index="1"]' ) && shown( '[data-step-index="2"]' ) );
+		check( 'injected after boot: Submit visible', shown( 'button[type="submit"]' ) );
+		document.documentElement.classList.remove( 'flinkform-booted' );
+
 		// Without scripting the marker class never appears.
 		f.removeAttribute( 'data-flinkform-enhanced' );
 		document.documentElement.classList.remove( 'flinkform-js' );

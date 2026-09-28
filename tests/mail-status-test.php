@@ -94,6 +94,8 @@ namespace {
 	$state = MailHealth::get();
 	check( 'window capped at 20', 20 === count( $state['recent'] ) );
 	check( 'last error kept', 'SMTP connect() failed.' === $state['last_error'] );
+	MailHealth::record( false, 'SMTP Error: The following recipients failed: visitor@example.org' );
+	check( 'addresses in error texts are masked', ! str_contains( MailHealth::get()['last_error'], 'visitor@' ) && str_contains( MailHealth::get()['last_error'], 'recipients failed' ) );
 	check( 'stored state holds no mail addresses', ! str_contains( serialize( $GLOBALS['options'][ MailHealth::OPTION ] ), '@' ) );
 
 	// --- Repository: mail status ------------------------------------------

@@ -61,10 +61,11 @@
 		var importBtn = box.querySelector( '[data-action="import"]' );
 		var undoBtn = box.querySelector( '[data-action="undo"]' );
 		var result = box.querySelector( '.flinkform-cf7__result' );
+		var batch = importBtn.disabled; // Already locked by "import all".
 		importBtn.disabled = true;
 		result.textContent = cfg.i18n.importing;
 		return post( 'flinkform_cf7_import', id ).then( function ( res ) {
-			importBtn.disabled = false;
+			importBtn.disabled = batch;
 			if ( ! res || ! res.success ) {
 				result.textContent = cfg.i18n.failed + ': ' + ( res && res.data && res.data.message ? res.data.message : '' );
 				return false;
@@ -108,14 +109,21 @@
 
 		var all = e.target.closest( '[data-flinkform-cf7-all]' );
 		if ( all ) {
-			all.disabled = true;
+			// Lock every button while the batch runs: a single import
+			// started in between would race the batch for the import log.
+			var buttons = Array.prototype.slice.call( document.querySelectorAll( '.flinkform-cf7 button' ) );
+			buttons.forEach( function ( b ) {
+				b.disabled = true;
+			} );
 			var boxes = Array.prototype.slice.call( document.querySelectorAll( '[data-flinkform-cf7][data-imported="0"]' ) );
 			boxes.reduce( function ( chain, box ) {
 				return chain.then( function () {
 					return run( box );
 				} );
 			}, Promise.resolve() ).then( function () {
-				all.disabled = false;
+				buttons.forEach( function ( b ) {
+					b.disabled = false;
+				} );
 				all.insertAdjacentElement( 'afterend', el( 'p', { role: 'status' }, cfg.i18n.done ) );
 			} );
 		}

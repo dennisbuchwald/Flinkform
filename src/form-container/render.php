@@ -785,7 +785,7 @@ if ( $is_multi_step ) {
 	wp_enqueue_script( 'flinkform-boot' );
 	wp_add_inline_script(
 		'flinkform-boot',
-		'(function(){var h=function(e){if(e)e.setAttribute("hidden","")};document.querySelectorAll(".flinkform-form--multi-step:not([data-flinkform-enhanced])").forEach(function(f){f.setAttribute("data-flinkform-enhanced","");f.querySelectorAll(".flinkform-form__step").forEach(function(s){if(s.getAttribute("data-step-index")!=="0")h(s)});f.querySelectorAll(".flinkform-form__step-separator").forEach(function(s){h(s)});h(f.querySelector(".flinkform-form__nav--back"));f.querySelectorAll(".flinkform-form__submit:not(.flinkform-form__nav--next)").forEach(function(s){h(s)})})})();'
+		'(function(){document.documentElement.classList.add("flinkform-booted");var h=function(e){if(e)e.setAttribute("hidden","")};document.querySelectorAll(".flinkform-form--multi-step:not([data-flinkform-enhanced])").forEach(function(f){f.setAttribute("data-flinkform-enhanced","");f.querySelectorAll(".flinkform-form__step").forEach(function(s){if(s.getAttribute("data-step-index")!=="0")h(s)});f.querySelectorAll(".flinkform-form__step-separator").forEach(function(s){h(s)});h(f.querySelector(".flinkform-form__nav--back"));f.querySelectorAll(".flinkform-form__submit:not(.flinkform-form__nav--next)").forEach(function(s){h(s)})})})();'
 	);
 }
 ?>

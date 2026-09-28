@@ -144,8 +144,9 @@ final class Upsell {
 	 *
 	 * @return void
 	 */
-	public function render_export_hint(): void {
-		if ( ! self::enabled() ) {
+	public function render_export_hint( $current = [] ): void {
+		// Not in the trash view: exporting the trash is not a thing.
+		if ( ! self::enabled() || ! empty( $current['trashed'] ) ) {
 			return;
 		}
 		printf(

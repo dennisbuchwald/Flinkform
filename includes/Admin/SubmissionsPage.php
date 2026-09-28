@@ -134,6 +134,10 @@ final class SubmissionsPage {
 				<?php if ( ! empty( $_GET['trashed'] ) ) : ?>
 					<input type="hidden" name="trashed" value="1" />
 				<?php endif; ?>
+				<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only view switch, carried through the filter form. ?>
+				<?php if ( ! empty( $_GET['mail_status'] ) ) : ?>
+					<input type="hidden" name="mail_status" value="<?php echo esc_attr( sanitize_key( wp_unslash( $_GET['mail_status'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>" />
+				<?php endif; ?>
 				<?php
 				$table->search_box( __( 'Search submissions', 'flinkform' ), 'flinkform-submissions-search' );
 				$table->display();

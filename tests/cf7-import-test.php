@@ -164,6 +164,16 @@ namespace {
 	$gone = EmbedReplacer::revert( str_replace( '<!-- wp:block {"ref":777} /-->', '', $r['content'] ), $r['replacements'] );
 	check( 'undo counts replacements deleted since', 2 === $gone['missing'] );
 
+	// Review find (critical): a paragraph with attributes BEFORE the
+	// target paragraph must not be swallowed by the match.
+	$greedy = "<!-- wp:paragraph {\"align\":\"center\"} -->\n<p>Willkommen</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>Kontakt</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph {\"className\":\"x\"} -->\n<p>[contact-form-7 id=\"42\"]</p>\n<!-- /wp:paragraph -->";
+	$rg = EmbedReplacer::replace( $greedy, $form, 9 );
+	check( 'match never crosses block boundaries (content kept)', str_contains( $rg['content'], '<p>Willkommen</p>' ) && str_contains( $rg['content'], '<h2>Kontakt</h2>' ) && 1 === count( $rg['replacements'] ), $rg['content'] );
+	check( 'only the target paragraph replaced', 1 === substr_count( $rg['replacements'][0][0] ?? '', '<!-- wp:' ) );
+	$cf7greedy = "<!-- wp:group {\"layout\":{\"type\":\"constrained\"}} -->\n<div>x</div>\n<!-- /wp:group -->\n<!-- wp:contact-form-7/contact-form-selector {\"id\":42} -->\n<div class=\"wp-block-contact-form-7-contact-form-selector\">[contact-form-7 id=\"42\"]</div>\n<!-- /wp:contact-form-7/contact-form-selector -->";
+	$rc7 = EmbedReplacer::replace( $cf7greedy, $form, 9 );
+	check( 'CF7 block match stays inside its block', str_contains( $rc7['content'], '<!-- wp:group' ) && 1 === count( $rc7['replacements'] ) );
+
 	$classic = "Hallo\n\n[contact-form-7 id=\"abc1234\" title=\"Kontakt\"]\n\nTschüss";
 	$rc = EmbedReplacer::replace( $classic, $form, 5 );
 	check( 'classic content: shortcode on its own line replaced', "Hallo\n\n<!-- wp:block {\"ref\":5} /-->\n\nTschüss" === $rc['content'], $rc['content'] );

@@ -145,14 +145,16 @@ final class Importer {
 		}
 		$tree['innerContent'][] = "\n";
 
-		$pattern_id = wp_insert_post(
-			[
-				'post_type'    => 'wp_block',
-				'post_status'  => 'publish',
-				'post_title'   => '' !== $form['title'] ? $form['title'] : __( 'Imported form', 'flinkform' ),
-				'post_content' => wp_slash( serialize_blocks( [ $tree ] ) ),
-			],
-			true
+		$pattern_id = self::write(
+			static fn () => wp_insert_post(
+				[
+					'post_type'    => 'wp_block',
+					'post_status'  => 'publish',
+					'post_title'   => '' !== $form['title'] ? $form['title'] : __( 'Imported form', 'flinkform' ),
+					'post_content' => wp_slash( serialize_blocks( [ $tree ] ) ),
+				],
+				true
+			)
 		);
 		if ( is_wp_error( $pattern_id ) ) {
 			return $pattern_id;
@@ -205,7 +207,7 @@ final class Importer {
 			$back     = EmbedReplacer::revert( $post->post_content, (array) $replacements );
 			$missing += $back['missing'];
 			if ( $back['content'] !== $post->post_content ) {
-				wp_update_post( [ 'ID' => $post->ID, 'post_content' => wp_slash( $back['content'] ) ] );
+				self::write( static fn () => wp_update_post( [ 'ID' => $post->ID, 'post_content' => wp_slash( $back['content'] ) ] ) );
 				$pages[] = $this->page_ref( $post );
 			}
 		}
@@ -217,6 +219,34 @@ final class Importer {
 		( new \Flinkform\Forms\Indexer() )->invalidate();
 
 		return [ 'id' => $cf7_id, 'pages' => $pages, 'missing' => $missing ];
+	}
+
+	/**
+	 * Run a post write without kses content filtering.
+	 *
+	 * For an admin without unfiltered_html (multisite site admin,
+	 * DISALLOW_UNFILTERED_HTML) WordPress would run the WHOLE page through
+	 * kses on save and silently strip embeds or scripts a super admin put
+	 * there. The import only swaps one shortcode for a pattern reference
+	 * and writes the rest back as it was stored, so filtering it again
+	 * could only lose content, never add safety. Filters are restored
+	 * straight after.
+	 *
+	 * @param callable $write
+	 * @return mixed What $write returned.
+	 */
+	private static function write( callable $write ) {
+		$filtered = false !== has_filter( 'content_save_pre', 'wp_filter_post_kses' );
+		if ( $filtered ) {
+			kses_remove_filters();
+		}
+		try {
+			return $write();
+		} finally {
+			if ( $filtered ) {
+				kses_init_filters();
+			}
+		}
 	}
 
 	/**
@@ -317,7 +347,7 @@ final class Importer {
 				) ];
 			}
 			if ( $write && ! empty( $result['replacements'] ) ) {
-				$updated = wp_update_post( [ 'ID' => $post->ID, 'post_content' => wp_slash( $result['content'] ) ], true );
+				$updated = self::write( static fn () => wp_update_post( [ 'ID' => $post->ID, 'post_content' => wp_slash( $result['content'] ) ], true ) );
 				if ( ! is_wp_error( $updated ) ) {
 					$changed[ $post->ID ] = $result['replacements'];
 				}

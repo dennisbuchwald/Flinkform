@@ -52,6 +52,9 @@ final class MailHealth {
 			$state['last_ok'] = $now;
 		} else {
 			$state['last_failed'] = $now;
+			// PHPMailer names the failing recipient ("…recipients failed:
+			// visitor@…"). Keep the reason, never the address.
+			$error                = (string) preg_replace( '/[^\s<>"\'(),;:]+@[^\s<>"\'(),;:]+/', '[…]', $error );
 			$state['last_error']  = function_exists( 'mb_substr' ) ? mb_substr( $error, 0, 300 ) : substr( $error, 0, 300 );
 		}
 
