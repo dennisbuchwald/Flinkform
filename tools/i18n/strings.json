@@ -408,5 +408,25 @@
   "No valid recipient address.": [
     "Keine gültige Empfängeradresse.",
     "Keine gültige Empfängeradresse."
+  ],
+  "Step shown conditionally": [
+    "Schritt mit Bedingung",
+    "Schritt mit Bedingung"
+  ],
+  "Conditional": [
+    "Bedingt",
+    "Bedingt"
+  ],
+  "checked": [
+    "angehakt",
+    "angehakt"
+  ],
+  "— Select a value —": [
+    "— Wert wählen —",
+    "— Wert wählen —"
+  ],
+  "no longer an option": [
+    "keine Option mehr",
+    "keine Option mehr"
   ]
 }

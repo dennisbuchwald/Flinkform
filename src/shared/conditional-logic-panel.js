@@ -34,6 +34,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
+import { choicesFor, CHOICE_OPERATORS } from './condition-choices';
 import { useMemo } from '@wordpress/element';
 import {
 	Button,
@@ -149,7 +150,7 @@ export default function ConditionalLogicPanel( {
 						return addressSubFields( name, label, b.attributes );
 					}
 
-					return [ { name, label } ];
+					return [ { name, label, choices: choicesFor( b.name, b.attributes, __ ) } ];
 				} );
 		},
 		[ clientId, fieldSource ]
@@ -164,6 +165,12 @@ export default function ConditionalLogicPanel( {
 				label: f.label ? `${ f.label } (${ f.name })` : f.name,
 			} ) ),
 		],
+		[ siblingFields ]
+	);
+
+	// fieldName → choices (or null for free-text fields), for RuleRow.
+	const choicesByField = useMemo(
+		() => Object.fromEntries( siblingFields.map( ( f ) => [ f.name, f.choices ?? null ] ) ),
 		[ siblingFields ]
 	);
 
@@ -273,6 +280,7 @@ export default function ConditionalLogicPanel( {
 								key={ index }
 								group={ entry }
 								fieldOptions={ fieldOptions }
+								choicesByField={ choicesByField }
 								defaultField={ siblingFields[ 0 ]?.name ?? '' }
 								onChange={ ( patch ) => updateRule( index, patch ) }
 								onRemove={ () => removeRule( index ) }
@@ -282,6 +290,7 @@ export default function ConditionalLogicPanel( {
 								key={ index }
 								rule={ entry }
 								fieldOptions={ fieldOptions }
+								choicesByField={ choicesByField }
 								onChange={ ( patch ) => updateRule( index, patch ) }
 								onRemove={ () => removeRule( index ) }
 							/>
@@ -336,7 +345,7 @@ function isRuleGroup( entry ) {
  * more in comprehensibility than it returns. The evaluators recurse
  * regardless, so a deeper set hand-written into the attribute still works.
  */
-function RuleGroup( { group, fieldOptions, defaultField, onChange, onRemove } ) {
+function RuleGroup( { group, fieldOptions, choicesByField, defaultField, onChange, onRemove } ) {
 	const rules = Array.isArray( group.rules ) ? group.rules : [];
 
 	const updateInner = ( index, patch ) => {
@@ -381,6 +390,7 @@ function RuleGroup( { group, fieldOptions, defaultField, onChange, onRemove } ) 
 					key={ index }
 					rule={ rule }
 					fieldOptions={ fieldOptions }
+					choicesByField={ choicesByField }
 					onChange={ ( patch ) => updateInner( index, patch ) }
 					onRemove={ () => removeInner( index ) }
 				/>
@@ -409,7 +419,7 @@ function RuleGroup( { group, fieldOptions, defaultField, onChange, onRemove } ) 
  * (when the operator takes a value) a value input. Also a remove
  * button so empty rules don't pile up.
  */
-function RuleRow( { rule, fieldOptions, onChange, onRemove } ) {
+function RuleRow( { rule, fieldOptions, choicesByField = {}, onChange, onRemove } ) {
 	const operatorOptions = [
 		{ value: 'is', label: __( 'is', 'flinkform' ) },
 		{ value: 'is_not', label: __( 'is not', 'flinkform' ) },
@@ -424,6 +434,7 @@ function RuleRow( { rule, fieldOptions, onChange, onRemove } ) {
 	];
 
 	const usesValue = ! EMPTY_STATE_OPERATORS.has( rule.operator );
+	const choices = rule.field ? choicesByField[ rule.field ] ?? null : null;
 
 	return (
 		<div
@@ -461,7 +472,26 @@ function RuleRow( { rule, fieldOptions, onChange, onRemove } ) {
 				__next40pxDefaultSize
 			/>
 
-			{ usesValue && (
+			{ usesValue && choices && CHOICE_OPERATORS.has( rule.operator ?? 'is' ) && (
+				<SelectControl
+					label={ __( 'Value', 'flinkform' ) }
+					value={ rule.value ?? '' }
+					options={ [
+						{ value: '', label: __( '— Select a value —', 'flinkform' ) },
+						...choices,
+						// Keep a value that no longer exists visible instead
+						// of silently showing the first option.
+						...( rule.value && ! choices.some( ( c ) => c.value === rule.value )
+							? [ { value: rule.value, label: `${ rule.value } (${ __( 'no longer an option', 'flinkform' ) })` } ]
+							: [] ),
+					] }
+					onChange={ ( value ) => onChange( { value } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
+
+			{ usesValue && ! ( choices && CHOICE_OPERATORS.has( rule.operator ?? 'is' ) ) && (
 				<TextControl
 					label={ __( 'Value', 'flinkform' ) }
 					value={ rule.value ?? '' }

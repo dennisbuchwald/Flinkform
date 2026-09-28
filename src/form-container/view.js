@@ -35,6 +35,7 @@ import evaluateRuleSet, { resolveHiddenFields, applyHidden } from '../shared/rul
 import { shouldDeferRefresh, applyChallengeData, applyFormChallenge, challengeExpiry } from '../shared/challenge-refresh';
 import { requiredCheckboxGroupsMissing } from '../shared/group-validation';
 import { readMessages, messageFor } from '../shared/validation-messages';
+import { draftKey, collectDraft, applyDraft } from '../shared/draft-storage';
 
 const NAMESPACE = 'flinkform/form';
 
@@ -124,13 +125,95 @@ if ( typeof document !== 'undefined' ) {
 		document.addEventListener( 'DOMContentLoaded', initSubmitFeedback );
 		document.addEventListener( 'DOMContentLoaded', initFetchSubmit );
 		document.addEventListener( 'DOMContentLoaded', initFloatingLabelBackground );
+		document.addEventListener( 'DOMContentLoaded', initDrafts );
 	} else {
 		initFinalValidation();
 		initConditionalLogic();
 		initSubmitFeedback();
 		initFetchSubmit();
 		initFloatingLabelBackground();
+		initDrafts();
 	}
+}
+
+// ---------------------------------------------------------------------
+// Multi-step drafts (1.15.0), see shared/draft-storage.js for what is kept
+// and why. Last in the init chain: restoring fires change events, and the
+// conditional-logic listeners must already be there to hear them.
+// ---------------------------------------------------------------------
+function initDrafts() {
+	let storage = null;
+	try {
+		storage = window.sessionStorage;
+		storage.getItem( 'flinkform-probe' );
+	} catch {
+		return; // Storage blocked (privacy mode, sandboxed iframe).
+	}
+	const params = new URLSearchParams( window.location.search );
+
+	document.querySelectorAll( '.flinkform-form--multi-step form.flinkform-form__form' ).forEach( ( form ) => {
+		const idInput = form.querySelector( 'input[name="flinkform_form_id"]' );
+		if ( ! idInput || ! idInput.value ) {
+			return;
+		}
+		const key = draftKey( idInput.value );
+
+		// Sent: the draft has done its job.
+		if ( params.get( 'flinkform_status' ) === 'success' && params.get( 'flinkform_form' ) === idInput.value ) {
+			storage.removeItem( key );
+			return;
+		}
+
+		// A server-rendered retry page carries the submitted values itself;
+		// applyDraft only fills empty controls, so those always win.
+		try {
+			const draft = JSON.parse( storage.getItem( key ) || 'null' );
+			applyDraft( form, draft ).forEach( ( el ) => {
+				el.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+			} );
+		} catch {
+			storage.removeItem( key );
+		}
+
+		let timer = 0;
+		const save = () => {
+			clearTimeout( timer );
+			timer = setTimeout( () => {
+				try {
+					storage.setItem( key, JSON.stringify( collectDraft( form ) ) );
+				} catch {
+					// Quota or storage revoked mid-session: drafts are a comfort.
+				}
+			}, 300 );
+		};
+		form.addEventListener( 'input', save );
+		form.addEventListener( 'change', save );
+
+		// The submission really leaves the page: drop the draft. Checked
+		// after dispatch, because a held or invalid submit is cancelled by
+		// listeners that may run after this one. A server-side rejection
+		// renders the values again anyway, and a success may redirect to a
+		// page this form is not on, where nothing would ever clear it.
+		form.addEventListener( 'submit', ( event ) => {
+			queueMicrotask( () => {
+				if ( ! event.defaultPrevented ) {
+					clearTimeout( timer );
+					storage.removeItem( key );
+				}
+			} );
+		} );
+	} );
+}
+
+// Popup/fetch success replaces the form without a page load; the draft
+// has to go right there.
+function clearDraft( form ) {
+	const idInput = form && form.querySelector( 'input[name="flinkform_form_id"]' );
+	try {
+		if ( idInput && idInput.value ) {
+			window.sessionStorage.removeItem( draftKey( idInput.value ) );
+		}
+	} catch {}
 }
 
 // ---------------------------------------------------------------------
@@ -205,6 +288,7 @@ async function submitViaFetch( form ) {
 			window.location.assign( data.data.redirect_url );
 			return;
 		}
+		clearDraft( form );
 		showFetchSuccess( form, data.data.message || '' );
 		return;
 	}

@@ -550,23 +550,23 @@ msgstr "Formular auf \"%s\""
 msgid "Consent"
 msgstr "Einwilligung"
 
-#: includes/Forms/Locator.php:465 src/field-address/render.php:58 src/field-address/edit.js:37 src/shared/conditional-logic-panel.js:75
+#: includes/Forms/Locator.php:465 src/field-address/render.php:58 src/field-address/edit.js:37 src/shared/conditional-logic-panel.js:76
 msgid "Street"
 msgstr "Straße"
 
-#: includes/Forms/Locator.php:466 src/field-address/render.php:60 src/field-address/edit.js:39 src/field-text/edit.js:69 src/shared/conditional-logic-panel.js:81
+#: includes/Forms/Locator.php:466 src/field-address/render.php:60 src/field-address/edit.js:39 src/field-text/edit.js:69 src/shared/conditional-logic-panel.js:82
 msgid "Postal code"
 msgstr "PLZ"
 
-#: includes/Forms/Locator.php:467 src/field-address/render.php:61 src/field-address/edit.js:40 src/field-text/edit.js:70 src/shared/conditional-logic-panel.js:82
+#: includes/Forms/Locator.php:467 src/field-address/render.php:61 src/field-address/edit.js:40 src/field-text/edit.js:70 src/shared/conditional-logic-panel.js:83
 msgid "City"
 msgstr "Ort"
 
-#: includes/Forms/Locator.php:472 src/field-address/render.php:59 src/field-address/edit.js:38 src/shared/conditional-logic-panel.js:78
+#: includes/Forms/Locator.php:472 src/field-address/render.php:59 src/field-address/edit.js:38 src/shared/conditional-logic-panel.js:79
 msgid "Address line 2"
 msgstr "Adresszusatz"
 
-#: includes/Forms/Locator.php:476 src/field-address/render.php:62 src/field-address/edit.js:41 src/field-text/edit.js:71 src/shared/conditional-logic-panel.js:85
+#: includes/Forms/Locator.php:476 src/field-address/render.php:62 src/field-address/edit.js:41 src/field-text/edit.js:71 src/shared/conditional-logic-panel.js:86
 msgid "Country"
 msgstr "Land"
 
@@ -776,7 +776,7 @@ msgstr "%s liegt über dem Höchstwert."
 msgid "%s contains an invalid choice."
 msgstr "%s enthält eine ungültige Auswahl."
 
-#: src/field-address/render.php:45 src/field-address/edit.js:56 src/shared/conditional-logic-panel.js:88 src/shared/default-label.js:39
+#: src/field-address/render.php:45 src/field-address/edit.js:56 src/shared/conditional-logic-panel.js:89 src/shared/default-label.js:39
 msgid "Address"
 msgstr "Adresse"
 
@@ -1109,6 +1109,14 @@ msgstr "Wird neben der Checkbox angezeigt. Einfaches HTML ist erlaubt."
 #: src/field-toggle/edit.js:35
 msgid "Required (must be checked)"
 msgstr "Pflichtfeld (muss angehakt sein)"
+
+#: src/form-container/conditional-badge.js:22
+msgid "Step shown conditionally"
+msgstr "Schritt mit Bedingung"
+
+#: src/form-container/conditional-badge.js:23
+msgid "Conditional"
+msgstr "Bedingt"
 
 #: src/form-container/edit.js:442
 msgid "Form Settings"
@@ -1472,7 +1480,7 @@ msgstr "E-Mail-Feld"
 msgid "Which field contains the submitter’s email address."
 msgstr "Welches Feld die E-Mail-Adresse des Absenders enthält."
 
-#: src/form-container/edit.js:829 src/shared/conditional-logic-panel.js:161
+#: src/form-container/edit.js:829 src/shared/conditional-logic-panel.js:162
 msgid "— Select a field —"
 msgstr "- Feld auswählen -"
 
@@ -1768,115 +1776,127 @@ msgstr "Beschreibung"
 msgid "Section title…"
 msgstr "Abschnittstitel..."
 
-#: src/shared/conditional-logic-panel.js:239
+#: src/shared/condition-choices.js:22
+msgid "checked"
+msgstr "angehakt"
+
+#: src/shared/conditional-logic-panel.js:246
 msgid "Conditional Logic"
 msgstr "Bedingte Logik"
 
-#: src/shared/conditional-logic-panel.js:243
+#: src/shared/conditional-logic-panel.js:250
 msgid "Enable conditional logic"
 msgstr "Bedingte Logik aktivieren"
 
-#: src/shared/conditional-logic-panel.js:244
+#: src/shared/conditional-logic-panel.js:251
 msgid "Show this only when the rules below match. Hidden fields are excluded from the submission, both client- and server-side."
 msgstr "Nur anzeigen, wenn die unten stehenden Regeln zutreffen. Ausgeblendete Felder werden aus der Einsendung ausgeschlossen, sowohl client- als auch serverseitig."
 
-#: src/shared/conditional-logic-panel.js:254
+#: src/shared/conditional-logic-panel.js:261
 msgid "Add at least one other field block to the form to use conditional logic."
 msgstr "Füge dem Formular mindestens einen weiteren Feldblock hinzu, um die bedingte Logik zu nutzen."
 
-#: src/shared/conditional-logic-panel.js:259
+#: src/shared/conditional-logic-panel.js:266
 msgid "Match"
 msgstr "Treffer"
 
-#: src/shared/conditional-logic-panel.js:266 src/shared/conditional-logic-panel.js:375
+#: src/shared/conditional-logic-panel.js:273 src/shared/conditional-logic-panel.js:384
 msgid "ALL"
 msgstr "ALLE"
 
-#: src/shared/conditional-logic-panel.js:267 src/shared/conditional-logic-panel.js:376
+#: src/shared/conditional-logic-panel.js:274 src/shared/conditional-logic-panel.js:385
 msgid "ANY"
 msgstr "BELIEBIGE"
 
-#: src/shared/conditional-logic-panel.js:298
+#: src/shared/conditional-logic-panel.js:307
 msgid "+ Add rule"
 msgstr "+ Regel hinzufügen"
 
-#: src/shared/conditional-logic-panel.js:306
+#: src/shared/conditional-logic-panel.js:315
 msgid "+ Add group"
 msgstr "+ Gruppe hinzufügen"
 
-#: src/shared/conditional-logic-panel.js:311
+#: src/shared/conditional-logic-panel.js:320
 msgid "A group is evaluated on its own ALL/ANY and then counts as a single rule here — that is how you express “(A or B) and C”."
 msgstr "Eine Gruppe wird nach ihrer eigenen Verknüpfung ausgewertet und zählt hier dann wie eine einzelne Regel. So drückst du „(A oder B) und C\" aus."
 
-#: src/shared/conditional-logic-panel.js:368
+#: src/shared/conditional-logic-panel.js:377
 msgid "Match within group"
 msgstr "Verknüpfung innerhalb der Gruppe"
 
-#: src/shared/conditional-logic-panel.js:391
+#: src/shared/conditional-logic-panel.js:401
 msgid "An empty group is ignored — it has no effect on the condition."
 msgstr "Eine leere Gruppe wird ignoriert und wirkt sich nicht auf die Bedingung aus."
 
-#: src/shared/conditional-logic-panel.js:397
+#: src/shared/conditional-logic-panel.js:407
 msgid "+ Add rule to group"
 msgstr "+ Regel zur Gruppe"
 
-#: src/shared/conditional-logic-panel.js:400
+#: src/shared/conditional-logic-panel.js:410
 msgid "Remove group"
 msgstr "Gruppe entfernen"
 
-#: src/shared/conditional-logic-panel.js:414
+#: src/shared/conditional-logic-panel.js:424
 msgid "is"
 msgstr "ist"
 
-#: src/shared/conditional-logic-panel.js:415
+#: src/shared/conditional-logic-panel.js:425
 msgid "is not"
 msgstr "ist nicht"
 
-#: src/shared/conditional-logic-panel.js:416
+#: src/shared/conditional-logic-panel.js:426
 msgid "contains"
 msgstr "enthält"
 
-#: src/shared/conditional-logic-panel.js:417
+#: src/shared/conditional-logic-panel.js:427
 msgid "does not contain"
 msgstr "enthält nicht"
 
-#: src/shared/conditional-logic-panel.js:418
+#: src/shared/conditional-logic-panel.js:428
 msgid "is empty"
 msgstr "ist leer"
 
-#: src/shared/conditional-logic-panel.js:419
+#: src/shared/conditional-logic-panel.js:429
 msgid "is not empty"
 msgstr "ist nicht leer"
 
-#: src/shared/conditional-logic-panel.js:420
+#: src/shared/conditional-logic-panel.js:430
 msgid "greater than"
 msgstr "größer als"
 
-#: src/shared/conditional-logic-panel.js:421
+#: src/shared/conditional-logic-panel.js:431
 msgid "less than"
 msgstr "kleiner als"
 
-#: src/shared/conditional-logic-panel.js:422
+#: src/shared/conditional-logic-panel.js:432
 msgid "is before (date)"
 msgstr "ist vor (Datum)"
 
-#: src/shared/conditional-logic-panel.js:423
+#: src/shared/conditional-logic-panel.js:433
 msgid "is on or after (date)"
 msgstr "ist am oder nach (Datum)"
 
-#: src/shared/conditional-logic-panel.js:438
+#: src/shared/conditional-logic-panel.js:449
 msgid "Field"
 msgstr "Feld"
 
-#: src/shared/conditional-logic-panel.js:447
+#: src/shared/conditional-logic-panel.js:458
 msgid "Operator"
 msgstr "Operator"
 
-#: src/shared/conditional-logic-panel.js:466 src/shared/options-editor.js:86
+#: src/shared/conditional-logic-panel.js:477 src/shared/conditional-logic-panel.js:496 src/shared/options-editor.js:86
 msgid "Value"
 msgstr "Wert"
 
-#: src/shared/conditional-logic-panel.js:481
+#: src/shared/conditional-logic-panel.js:480
+msgid "— Select a value —"
+msgstr "— Wert wählen —"
+
+#: src/shared/conditional-logic-panel.js:485
+msgid "no longer an option"
+msgstr "keine Option mehr"
+
+#: src/shared/conditional-logic-panel.js:511
 msgid "Remove rule"
 msgstr "Regel entfernen"
 
