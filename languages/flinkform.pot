@@ -89,7 +89,7 @@ msgstr ""
 msgid "Source page"
 msgstr ""
 
-#: includes/Admin/FormsListTable.php:59 includes/Admin/Menu.php:67 includes/Admin/Menu.php:68 includes/Admin/SubmissionsPage.php:123
+#: includes/Admin/FormsListTable.php:59 includes/Admin/Menu.php:71 includes/Admin/Menu.php:72 includes/Admin/SubmissionsPage.php:124
 msgid "Submissions"
 msgstr ""
 
@@ -129,7 +129,7 @@ msgstr ""
 msgid "View on site"
 msgstr ""
 
-#: includes/Admin/FormsListTable.php:230 includes/Admin/SubmissionsListTable.php:242
+#: includes/Admin/FormsListTable.php:230 includes/Admin/SubmissionsListTable.php:338
 msgid "unknown"
 msgstr ""
 
@@ -153,7 +153,7 @@ msgstr ""
 msgid "You do not have permission to view Flinkform forms."
 msgstr ""
 
-#: includes/Admin/FormsPage.php:83 includes/Admin/Menu.php:76 includes/Admin/Menu.php:77
+#: includes/Admin/FormsPage.php:83 includes/Admin/Menu.php:80 includes/Admin/Menu.php:81
 msgid "Forms"
 msgstr ""
 
@@ -165,164 +165,250 @@ msgstr ""
 msgid "Search forms"
 msgstr ""
 
-#: includes/Admin/Menu.php:56 includes/Admin/Menu.php:57 includes/Blocks/Registry.php:78
+#: includes/Admin/MailHealthCheck.php:45
+msgid "Flinkform notification mails"
+msgstr ""
+
+#: includes/Admin/MailHealthCheck.php:57
+msgid "WordPress can only tell whether a mail was handed over for sending, not whether it arrived. Send one test submission and look in the inbox (and the spam folder) once."
+msgstr ""
+
+#: includes/Admin/MailHealthCheck.php:60
+msgid "Flinkform notification mails are being sent"
+msgstr ""
+
+#: includes/Admin/MailHealthCheck.php:63 includes/Admin/Menu.php:60 includes/Admin/Menu.php:61 includes/Blocks/Registry.php:78
 msgid "Flinkform"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:74 src/shared/default-label.js:42
+#: includes/Admin/MailHealthCheck.php:72
+msgid "Flinkform has not sent a notification mail yet"
+msgstr ""
+
+#: includes/Admin/MailHealthCheck.php:73
+msgid "Nothing to judge until the first submission comes in."
+msgstr ""
+
+#. translators: %s: error message reported by WordPress when sending failed.
+#: includes/Admin/MailHealthCheck.php:84
+#, php-format
+msgid "Last error: %s"
+msgstr ""
+
+#: includes/Admin/MailHealthCheck.php:88
+msgid "Submissions are still saved and listed under Flinkform → Submissions, so nothing is lost. The usual cause is a host without a working mail setup; an SMTP plugin (or Flinkform Pro's SMTP setting) sending through a real mailbox fixes it."
+msgstr ""
+
+#: includes/Admin/MailHealthCheck.php:92
+msgid "Flinkform notification mails are failing"
+msgstr ""
+
+#: includes/Admin/MailHealthCheck.php:96
+msgid "Some Flinkform notification mails failed recently"
+msgstr ""
+
+#: includes/Admin/MailHealthCheck.php:103
+msgid "Show submissions whose mail failed"
+msgstr ""
+
+#. translators: %s: number of unread submissions.
+#: includes/Admin/Menu.php:126
+#, php-format
+msgid "%s unread submission"
+msgid_plural "%s unread submissions"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/SubmissionsListTable.php:75 src/shared/default-label.js:42
 msgid "Date"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:75 includes/Privacy.php:141
+#: includes/Admin/SubmissionsListTable.php:76 includes/Privacy.php:141
 msgid "Form"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:76
+#: includes/Admin/SubmissionsListTable.php:77
 msgid "Preview"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:77
+#: includes/Admin/SubmissionsListTable.php:78
 msgid "Status"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:101
+#: includes/Admin/SubmissionsListTable.php:103 includes/Admin/SubmissionsListTable.php:115
 msgid "Mark as read"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:102 includes/Admin/SubmissionsPage.php:274
+#: includes/Admin/SubmissionsListTable.php:104 includes/Admin/SubmissionsListTable.php:116 includes/Admin/SubmissionsPage.php:296
 msgid "Mark as unread"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:103 includes/Admin/SubmissionsListTable.php:222
-msgid "Delete"
+#: includes/Admin/SubmissionsListTable.php:105 includes/Admin/SubmissionsListTable.php:111 includes/Admin/SubmissionsListTable.php:301 includes/Admin/SubmissionsPage.php:304
+msgid "Delete permanently"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:143
-msgid "No submissions yet."
+#: includes/Admin/SubmissionsListTable.php:110 includes/Admin/SubmissionsListTable.php:312
+msgid "Restore"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:217
-msgid "View"
+#: includes/Admin/SubmissionsListTable.php:117 includes/Admin/SubmissionsPage.php:300
+msgid "Move to trash"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:221 includes/Admin/SubmissionsPage.php:276
-msgid "Delete this submission permanently?"
+#: includes/Admin/SubmissionsListTable.php:151
+msgid "All"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:325 includes/Admin/SubmissionsPage.php:318 includes/Admin/SubmissionsPage.php:334
-msgid "empty"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:336 includes/Admin/SubmissionsListTable.php:373
-msgid "Read"
-msgstr ""
-
-#: includes/Admin/SubmissionsListTable.php:336 includes/Admin/SubmissionsListTable.php:372
+#: includes/Admin/SubmissionsListTable.php:152 includes/Admin/SubmissionsListTable.php:432 includes/Admin/SubmissionsListTable.php:474
 msgid "Unread"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:359
+#: includes/Admin/SubmissionsListTable.php:156 includes/Admin/SubmissionsListTable.php:441
+msgid "Mail failed"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:160 includes/Admin/SubmissionsListTable.php:318
+msgid "Trash"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:232
+msgid "The trash is empty."
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:235
+msgid "No submissions yet."
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:300 includes/Admin/SubmissionsPage.php:303
+msgid "Delete this submission permanently?"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:306 includes/Admin/SubmissionsListTable.php:317
+msgid "View"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:421 includes/Admin/SubmissionsPage.php:346 includes/Admin/SubmissionsPage.php:362
+msgid "empty"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:432 includes/Admin/SubmissionsListTable.php:475
+msgid "Read"
+msgstr ""
+
+#: includes/Admin/SubmissionsListTable.php:461
 msgid "Filter by form"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:361
+#: includes/Admin/SubmissionsListTable.php:463
 msgid "All forms"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:369
+#: includes/Admin/SubmissionsListTable.php:471
 msgid "Filter by status"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:371
+#: includes/Admin/SubmissionsListTable.php:473
 msgid "All statuses"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:380
+#: includes/Admin/SubmissionsListTable.php:482
 msgid "From date"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:381
+#: includes/Admin/SubmissionsListTable.php:483
 msgid "From"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:387
+#: includes/Admin/SubmissionsListTable.php:489
 msgid "To date"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:388 src/form-container/edit.js:770
+#: includes/Admin/SubmissionsListTable.php:490 src/form-container/edit.js:770
 msgid "To"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:391
+#: includes/Admin/SubmissionsListTable.php:493
 msgid "Filter"
 msgstr ""
 
-#: includes/Admin/SubmissionsListTable.php:434
+#: includes/Admin/SubmissionsListTable.php:536
 msgid "(deleted)"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:100
+#: includes/Admin/SubmissionsPage.php:101
 msgid "You do not have permission to view Flinkform submissions."
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:131
+#: includes/Admin/SubmissionsPage.php:138
 msgid "Search submissions"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:150
+#: includes/Admin/SubmissionsPage.php:157
 msgid "Submission not found"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:150
+#: includes/Admin/SubmissionsPage.php:157
 msgid "← Back to submissions"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:203
+#: includes/Admin/SubmissionsPage.php:210
 msgid "Submission"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:206
+#: includes/Admin/SubmissionsPage.php:213
 msgid "← Back"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:212
+#: includes/Admin/SubmissionsPage.php:219
 msgid "Received:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:217
+#: includes/Admin/SubmissionsPage.php:224
 msgid "Form:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:222 src/form-container/edit.js:459
+#: includes/Admin/SubmissionsPage.php:229 src/form-container/edit.js:459
 msgid "Form ID:"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:227
-msgid "Source page:"
+#: includes/Admin/SubmissionsPage.php:235
+msgid "Sent"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:235
-msgid "Fields"
+#: includes/Admin/SubmissionsPage.php:236
+msgid "Failed. The submission is saved here, but nobody was notified."
 msgstr ""
 
 #: includes/Admin/SubmissionsPage.php:237
+msgid "Off for this form"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:243
+msgid "Notification mail:"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:249
+msgid "Source page:"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:257
+msgid "Fields"
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:259
 msgid "This submission has no fields."
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:277
-msgid "Delete submission"
-msgstr ""
-
-#: includes/Admin/SubmissionsPage.php:329 includes/Notifications/BodyBuilder.php:301
+#: includes/Admin/SubmissionsPage.php:357 includes/Notifications/BodyBuilder.php:301
 msgid "Yes"
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:330 includes/Notifications/BodyBuilder.php:301
+#: includes/Admin/SubmissionsPage.php:358 includes/Notifications/BodyBuilder.php:301
 msgid "No"
 msgstr ""
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:380
+#: includes/Admin/SubmissionsPage.php:408
 #, php-format
 msgid "%d submission marked as read."
 msgid_plural "%d submissions marked as read."
@@ -330,7 +416,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:388
+#: includes/Admin/SubmissionsPage.php:416
 #, php-format
 msgid "%d submission marked as unread."
 msgid_plural "%d submissions marked as unread."
@@ -338,18 +424,42 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions affected
-#: includes/Admin/SubmissionsPage.php:396
+#: includes/Admin/SubmissionsPage.php:424
 #, php-format
 msgid "%d submission deleted."
 msgid_plural "%d submissions deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin/SubmissionsPage.php:426
+#. translators: %d: number of submissions affected
+#: includes/Admin/SubmissionsPage.php:432
+#, php-format
+msgid "%d submission moved to the trash."
+msgid_plural "%d submissions moved to the trash."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of submissions affected
+#: includes/Admin/SubmissionsPage.php:440
+#, php-format
+msgid "%d submission restored."
+msgid_plural "%d submissions restored."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/SubmissionsPage.php:470
 msgid "Submission deleted."
 msgstr ""
 
-#: includes/Admin/SubmissionsPage.php:434
+#: includes/Admin/SubmissionsPage.php:478
+msgid "Submission moved to the trash."
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:486
+msgid "Submission restored."
+msgstr ""
+
+#: includes/Admin/SubmissionsPage.php:494
 msgid "Submission marked as unread."
 msgstr ""
 
@@ -463,43 +573,47 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
+#: includes/Notifications/Mailer.php:136
+msgid "No valid recipient address."
+msgstr ""
+
 #. translators: %1$s: site name, %2$s: site URL.
-#: includes/Notifications/Mailer.php:159 includes/Notifications/Mailer.php:276
+#: includes/Notifications/Mailer.php:174 includes/Notifications/Mailer.php:291
 #, php-format
 msgid "Sent by %1$s (%2$s)"
 msgstr ""
 
 #. translators: %s: the name the visitor entered.
-#: includes/Notifications/Mailer.php:176
+#: includes/Notifications/Mailer.php:191
 #, php-format
 msgid "New enquiry from %s via your website"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:177
+#: includes/Notifications/Mailer.php:192
 msgid "New enquiry via your website"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:182
+#: includes/Notifications/Mailer.php:197
 msgid "You can reply to this email directly — your answer goes straight to the sender."
 msgstr ""
 
-#: includes/Notifications/Mailer.php:449 src/form-container/edit.js:782
+#: includes/Notifications/Mailer.php:477 src/form-container/edit.js:782
 msgid "New submission: {form:title}"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:488 src/form-container/edit.js:840
+#: includes/Notifications/Mailer.php:516 src/form-container/edit.js:840
 msgid "We received your submission"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:517
+#: includes/Notifications/Mailer.php:545
 msgid "A new submission was received:"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:549
+#: includes/Notifications/Mailer.php:577
 msgid "Hi,"
 msgstr ""
 
-#: includes/Notifications/Mailer.php:551
+#: includes/Notifications/Mailer.php:579
 msgid "Thanks for your submission. We received the following and will be in touch shortly:"
 msgstr ""
 

@@ -102,5 +102,16 @@ final class Retention {
 				$repo->delete_many( $ids );
 			}
 		}
+
+		// Empty the trash (1.15.0): same rule as WordPress's own trash,
+		// EMPTY_TRASH_DAYS (30 by default). 0 there means WordPress deletes
+		// immediately; submissions then just stay until someone empties it.
+		$trash_days = defined( 'EMPTY_TRASH_DAYS' ) ? (int) EMPTY_TRASH_DAYS : 30;
+		if ( $trash_days > 0 ) {
+			$ids = $repo->find_trashed_before( gmdate( 'Y-m-d H:i:s', time() - ( $trash_days * DAY_IN_SECONDS ) ), self::PER_FORM_CAP );
+			if ( ! empty( $ids ) ) {
+				$repo->delete_many( $ids );
+			}
+		}
 	}
 }

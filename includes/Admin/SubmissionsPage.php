@@ -24,6 +24,7 @@ declare( strict_types = 1 );
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace Flinkform\Admin;
 
+use Flinkform\Database\Schema;
 use Flinkform\Fields\OptionLabels;
 use Flinkform\Forms\Indexer;
 use Flinkform\Submissions\Repository;
@@ -87,7 +88,7 @@ final class SubmissionsPage {
 		}
 		// phpcs:enable
 
-		return in_array( $action, [ 'mark_read', 'mark_unread', 'delete' ], true ) ? $action : '';
+		return in_array( $action, [ 'mark_read', 'mark_unread', 'delete', 'trash', 'restore' ], true ) ? $action : '';
 	}
 
 	/**
@@ -125,8 +126,14 @@ final class SubmissionsPage {
 
 			<?php $this->maybe_print_notice(); ?>
 
+			<?php $table->views(); ?>
+
 			<form method="get">
 				<input type="hidden" name="page" value="<?php echo esc_attr( Menu::PARENT_SLUG ); ?>" />
+				<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only view switch, carried through the filter form. ?>
+				<?php if ( ! empty( $_GET['trashed'] ) ) : ?>
+					<input type="hidden" name="trashed" value="1" />
+				<?php endif; ?>
 				<?php
 				$table->search_box( __( 'Search submissions', 'flinkform' ), 'flinkform-submissions-search' );
 				$table->display();
@@ -222,6 +229,21 @@ final class SubmissionsPage {
 					<strong><?php esc_html_e( 'Form ID:', 'flinkform' ); ?></strong>
 					<code><?php echo esc_html( $submission['form_id'] ); ?></code>
 				</p>
+				<?php
+				// Mail status (1.15.0). Rows from before 1.15 carry none.
+				$mail_labels = [
+					'sent'   => __( 'Sent', 'flinkform' ),
+					'failed' => __( 'Failed. The submission is saved here, but nobody was notified.', 'flinkform' ),
+					'off'    => __( 'Off for this form', 'flinkform' ),
+				];
+				$mail_status = (string) ( $submission['mail_status'] ?? '' );
+				?>
+				<?php if ( isset( $mail_labels[ $mail_status ] ) ) : ?>
+					<p<?php echo 'failed' === $mail_status ? ' class="flinkform-detail__mail-failed"' : ''; ?>>
+						<strong><?php esc_html_e( 'Notification mail:', 'flinkform' ); ?></strong>
+						<?php echo esc_html( $mail_labels[ $mail_status ] ); ?>
+					</p>
+				<?php endif; ?>
 				<?php if ( '' !== $source_url ) : ?>
 					<p>
 						<strong><?php esc_html_e( 'Source page:', 'flinkform' ); ?></strong>
@@ -273,9 +295,15 @@ final class SubmissionsPage {
 				<a href="<?php echo esc_url( $toggle_url ); ?>" class="button">
 					<?php esc_html_e( 'Mark as unread', 'flinkform' ); ?>
 				</a>
-				<a href="<?php echo esc_url( $delete_url ); ?>" class="button button-link-delete" onclick="return confirm(<?php echo esc_attr( wp_json_encode( __( 'Delete this submission permanently?', 'flinkform' ) ) ); ?>)">
-					<?php esc_html_e( 'Delete submission', 'flinkform' ); ?>
-				</a>
+				<?php if ( Schema::has_v3() && '' === (string) ( $submission['trashed_at'] ?? '' ) ) : ?>
+					<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( [ 'page' => Menu::PARENT_SLUG, 'flinkform_action' => 'trash', 'id' => $id ], admin_url( 'admin.php' ) ), 'flinkform_trash_' . $id ) ); ?>" class="button button-link-delete">
+						<?php esc_html_e( 'Move to trash', 'flinkform' ); ?>
+					</a>
+				<?php else : ?>
+					<a href="<?php echo esc_url( $delete_url ); ?>" class="button button-link-delete" onclick="return confirm(<?php echo esc_attr( wp_json_encode( __( 'Delete this submission permanently?', 'flinkform' ) ) ); ?>)">
+						<?php esc_html_e( 'Delete permanently', 'flinkform' ); ?>
+					</a>
+				<?php endif; ?>
 			</p>
 		</div>
 		<?php
@@ -397,9 +425,25 @@ final class SubmissionsPage {
 					$count
 				);
 				break;
+			case 'trash':
+				$count  = $this->repository->trash_many( $ids );
+				$notice = sprintf(
+					/* translators: %d: number of submissions affected */
+					_n( '%d submission moved to the trash.', '%d submissions moved to the trash.', $count, 'flinkform' ),
+					$count
+				);
+				break;
+			case 'restore':
+				$count  = $this->repository->restore_many( $ids );
+				$notice = sprintf(
+					/* translators: %d: number of submissions affected */
+					_n( '%d submission restored.', '%d submissions restored.', $count, 'flinkform' ),
+					$count
+				);
+				break;
 		}
 
-		$this->redirect_with_notice( $notice );
+		$this->redirect_with_notice( $notice, in_array( $action, [ 'restore', 'delete' ], true ) && $this->came_from_trash() );
 	}
 
 	/**
@@ -423,7 +467,23 @@ final class SubmissionsPage {
 				}
 				check_admin_referer( 'flinkform_delete_' . $id );
 				$this->repository->delete( $id );
-				$this->redirect_with_notice( __( 'Submission deleted.', 'flinkform' ) );
+				$this->redirect_with_notice( __( 'Submission deleted.', 'flinkform' ), $this->came_from_trash() );
+				break;
+			case 'trash':
+				if ( 0 === $id ) {
+					return;
+				}
+				check_admin_referer( 'flinkform_trash_' . $id );
+				$this->repository->trash_many( [ $id ] );
+				$this->redirect_with_notice( __( 'Submission moved to the trash.', 'flinkform' ) );
+				break;
+			case 'restore':
+				if ( 0 === $id ) {
+					return;
+				}
+				check_admin_referer( 'flinkform_restore_' . $id );
+				$this->repository->restore_many( [ $id ] );
+				$this->redirect_with_notice( __( 'Submission restored.', 'flinkform' ), true );
 				break;
 			case 'mark_unread':
 				if ( 0 === $id ) {
@@ -457,15 +517,30 @@ final class SubmissionsPage {
 	 * Redirect back to the list view, optionally with a one-shot notice.
 	 *
 	 * @param string $notice
+	 * @param bool   $to_trash Return to the trash view while it still has rows.
 	 * @return never
 	 */
-	private function redirect_with_notice( string $notice ): void {
+	private function redirect_with_notice( string $notice, bool $to_trash = false ): void {
 		$url = $this->list_url();
+		if ( $to_trash && $this->repository->count( [ 'trashed' => 'only' ] ) > 0 ) {
+			$url = add_query_arg( 'trashed', '1', $url );
+		}
 		if ( '' !== $notice ) {
 			$url = add_query_arg( 'flinkform_notice', rawurlencode( $notice ), $url );
 		}
 		wp_safe_redirect( $url );
 		exit;
+	}
+
+	/**
+	 * Whether the request came from the trash view (referer check, display
+	 * routing only).
+	 *
+	 * @return bool
+	 */
+	private function came_from_trash(): bool {
+		$referer = wp_get_referer();
+		return is_string( $referer ) && str_contains( $referer, 'trashed=1' );
 	}
 
 	/**
@@ -510,6 +585,8 @@ final class SubmissionsPage {
 .flinkform-detail__meta p { margin: 4px 0; }
 .flinkform-detail__fields th { vertical-align: top; }
 .flinkform-detail__actions { margin-top: 24px; display: flex; gap: 12px; }
+.flinkform-status--mail-failed { background: #fcf0f1; color: #b32d2e; font-weight: 600; }
+.flinkform-detail__mail-failed { color: #b32d2e; }
 CSS;
 	}
 }

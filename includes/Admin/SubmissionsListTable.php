@@ -16,6 +16,7 @@ declare( strict_types = 1 );
 namespace Flinkform\Admin;
 
 use Flinkform\Fields\OptionLabels;
+use Flinkform\Database\Schema;
 use Flinkform\Forms\Indexer;
 use Flinkform\Submissions\Repository;
 
@@ -97,11 +98,98 @@ final class SubmissionsListTable extends \WP_List_Table {
 	 * @return array<string, string>
 	 */
 	protected function get_bulk_actions(): array {
+		if ( ! Schema::has_v3() ) {
+			return [
+				'mark_read'   => __( 'Mark as read', 'flinkform' ),
+				'mark_unread' => __( 'Mark as unread', 'flinkform' ),
+				'delete'      => __( 'Delete permanently', 'flinkform' ),
+			];
+		}
+		if ( $this->in_trash() ) {
+			return [
+				'restore' => __( 'Restore', 'flinkform' ),
+				'delete'  => __( 'Delete permanently', 'flinkform' ),
+			];
+		}
 		return [
 			'mark_read'   => __( 'Mark as read', 'flinkform' ),
 			'mark_unread' => __( 'Mark as unread', 'flinkform' ),
-			'delete'      => __( 'Delete', 'flinkform' ),
+			'trash'       => __( 'Move to trash', 'flinkform' ),
 		];
+	}
+
+	/**
+	 * Whether the trash is being listed.
+	 *
+	 * @return bool
+	 */
+	private function in_trash(): bool {
+		return 'only' === ( $this->filters['trashed'] ?? '' );
+	}
+
+	/**
+	 * All | Unread | Mail failed | Trash, WordPress-style (1.15.0).
+	 *
+	 * @return array<string, string>
+	 */
+	protected function get_views(): array {
+		if ( ! Schema::has_v3() ) {
+			return [];
+		}
+		$base    = add_query_arg( 'page', Menu::PARENT_SLUG, admin_url( 'admin.php' ) );
+		if ( $this->in_trash() ) {
+			$current = 'trash';
+		} elseif ( 'failed' === ( $this->filters['mail_status'] ?? '' ) ) {
+			$current = 'mail_failed';
+		} elseif ( 'unread' === ( $this->filters['status'] ?? '' ) ) {
+			$current = 'unread';
+		} else {
+			$current = 'all';
+		}
+
+		$views = [
+			'all'    => [ $base, __( 'All', 'flinkform' ), $this->repository->count( [] ) ],
+			'unread' => [ add_query_arg( 'status', 'unread', $base ), __( 'Unread', 'flinkform' ), $this->repository->count( [ 'status' => 'unread' ] ) ],
+		];
+		$failed = $this->repository->count( [ 'mail_status' => 'failed' ] );
+		if ( $failed > 0 ) {
+			$views['mail_failed'] = [ add_query_arg( 'mail_status', 'failed', $base ), __( 'Mail failed', 'flinkform' ), $failed ];
+		}
+		$trash = $this->repository->count( [ 'trashed' => 'only' ] );
+		if ( $trash > 0 || 'trash' === $current ) {
+			$views['trash'] = [ add_query_arg( 'trashed', '1', $base ), __( 'Trash', 'flinkform' ), $trash ];
+		}
+
+		$out = [];
+		foreach ( $views as $key => [ $url, $label, $count ] ) {
+			$out[ $key ] = sprintf(
+				'<a href="%s"%s>%s <span class="count">(%s)</span></a>',
+				esc_url( $url ),
+				$key === $current ? ' class="current" aria-current="page"' : '',
+				esc_html( $label ),
+				esc_html( number_format_i18n( $count ) )
+			);
+		}
+		return $out;
+	}
+
+	/**
+	 * Nonce-protected single-row action link target.
+	 *
+	 * @param string $action trash|restore|delete.
+	 * @param int    $id
+	 * @return string
+	 */
+	private function row_action_url( string $action, int $id ): string {
+		return add_query_arg(
+			[
+				'page'             => Menu::PARENT_SLUG,
+				'flinkform_action' => $action,
+				'id'               => $id,
+				'_wpnonce'         => wp_create_nonce( 'flinkform_' . $action . '_' . $id ),
+			],
+			admin_url( 'admin.php' )
+		);
 	}
 
 	/**
@@ -140,6 +228,10 @@ final class SubmissionsListTable extends \WP_List_Table {
 	 * @return void
 	 */
 	public function no_items(): void {
+		if ( $this->in_trash() ) {
+			esc_html_e( 'The trash is empty.', 'flinkform' );
+			return;
+		}
 		esc_html_e( 'No submissions yet.', 'flinkform' );
 	}
 
@@ -193,17 +285,6 @@ final class SubmissionsListTable extends \WP_List_Table {
 			],
 			admin_url( 'admin.php' )
 		);
-		$delete_nonce = wp_create_nonce( 'flinkform_delete_' . $id );
-		$delete_url   = add_query_arg(
-			[
-				'page'           => Menu::PARENT_SLUG,
-				'flinkform_action' => 'delete',
-				'id'             => $id,
-				'_wpnonce'       => $delete_nonce,
-			],
-			admin_url( 'admin.php' )
-		);
-
 		$label = sprintf(
 			'<strong><a href="%s">%s</a></strong>',
 			esc_url( $view_url ),
@@ -213,15 +294,30 @@ final class SubmissionsListTable extends \WP_List_Table {
 			$label = '<span class="flinkform-unread-dot" aria-hidden="true">●</span> ' . $label;
 		}
 
-		$actions = [
-			'view'   => sprintf( '<a href="%s">%s</a>', esc_url( $view_url ), esc_html__( 'View', 'flinkform' ) ),
-			'delete' => sprintf(
-				'<a href="%s" class="submitdelete" onclick="return confirm(%s)">%s</a>',
-				esc_url( $delete_url ),
-				esc_js( wp_json_encode( __( 'Delete this submission permanently?', 'flinkform' ) ) ),
-				esc_html__( 'Delete', 'flinkform' )
-			),
-		];
+		$delete_link = sprintf(
+			'<a href="%s" class="submitdelete" onclick="return confirm(%s)">%s</a>',
+			esc_url( $this->row_action_url( 'delete', $id ) ),
+			esc_js( wp_json_encode( __( 'Delete this submission permanently?', 'flinkform' ) ) ),
+			esc_html__( 'Delete permanently', 'flinkform' )
+		);
+
+		if ( ! Schema::has_v3() ) {
+			$actions = [
+				'view'   => sprintf( '<a href="%s">%s</a>', esc_url( $view_url ), esc_html__( 'View', 'flinkform' ) ),
+				'delete' => $delete_link,
+			];
+		} elseif ( $this->in_trash() ) {
+			// No confirm on trash/restore: both are one click to undo.
+			$actions = [
+				'untrash' => sprintf( '<a href="%s">%s</a>', esc_url( $this->row_action_url( 'restore', $id ) ), esc_html__( 'Restore', 'flinkform' ) ),
+				'delete'  => $delete_link,
+			];
+		} else {
+			$actions = [
+				'view'  => sprintf( '<a href="%s">%s</a>', esc_url( $view_url ), esc_html__( 'View', 'flinkform' ) ),
+				'trash' => sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $this->row_action_url( 'trash', $id ) ), esc_html__( 'Trash', 'flinkform' ) ),
+			];
+		}
 
 		return $label . $this->row_actions( $actions );
 	}
@@ -334,11 +430,17 @@ final class SubmissionsListTable extends \WP_List_Table {
 	public function column_status( $item ): string {
 		$status = isset( $item['status'] ) ? (string) $item['status'] : 'unread';
 		$label  = 'read' === $status ? __( 'Read', 'flinkform' ) : __( 'Unread', 'flinkform' );
-		return sprintf(
+		$html   = sprintf(
 			'<span class="flinkform-status flinkform-status--%s">%s</span>',
 			esc_attr( $status ),
 			esc_html( $label )
 		);
+		// Only the case that needs attention gets a badge (1.15.0): the
+		// notification for this inquiry never went out.
+		if ( 'failed' === ( $item['mail_status'] ?? '' ) ) {
+			$html .= ' <span class="flinkform-status flinkform-status--mail-failed">' . esc_html__( 'Mail failed', 'flinkform' ) . '</span>';
+		}
+		return $html;
 	}
 
 	/**
@@ -470,6 +572,12 @@ final class SubmissionsListTable extends \WP_List_Table {
 		}
 		if ( ! empty( $_GET['s'] ) ) {
 			$filters['search'] = sanitize_text_field( wp_unslash( $_GET['s'] ) );
+		}
+		if ( ! empty( $_GET['trashed'] ) ) {
+			$filters['trashed'] = 'only';
+		}
+		if ( ! empty( $_GET['mail_status'] ) ) {
+			$filters['mail_status'] = sanitize_key( wp_unslash( $_GET['mail_status'] ) );
 		}
 		// phpcs:enable
 

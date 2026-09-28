@@ -56,7 +56,7 @@ final class Plugin {
 		// option-version check keeps the actual SQL off the hot
 		// path once the install is current.
 		$installed_version = (string) get_option( Database\Schema::OPTION_DB_VERSION, '0' );
-		if ( $installed_version !== Database\Schema::DB_VERSION ) {
+		if ( $installed_version !== Database\Schema::DB_VERSION && ! get_transient( 'flinkform_schema_retry' ) ) {
 			Database\Schema::create();
 		}
 
@@ -115,6 +115,8 @@ final class Plugin {
 			// Site Health: keeps the 1.14.0 caching fix from quietly
 			// regressing — the exclusion was invisible from the admin.
 			( new Admin\CacheHealth() )->register();
+			// Site Health: notification mails that never went out (1.15.0).
+			( new Admin\MailHealthCheck() )->register();
 		}
 
 		/**

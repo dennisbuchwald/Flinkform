@@ -22,6 +22,8 @@ declare( strict_types = 1 );
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace Flinkform\Notifications;
 
+use Flinkform\Submissions\Repository;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -55,6 +57,7 @@ final class Mailer {
 	public function send_admin_notification( int $submission_id, string $form_id, array $clean, array $form_def ): void {
 		$config = $this->resolve_admin_config( $form_def );
 		if ( ! $config['enabled'] ) {
+			( new Repository() )->set_mail_status( $submission_id, 'off' );
 			return;
 		}
 
@@ -125,15 +128,27 @@ final class Mailer {
 
 		$recipients = isset( $email['to'] ) && is_array( $email['to'] ) ? $email['to'] : [];
 		if ( empty( $recipients ) || empty( $email['subject'] ) ) {
+			// Our own recipients were already empty: a configuration error
+			// the admin must hear about. Emptied by a filter: an add-on
+			// chose not to send, which is not a failure.
+			if ( empty( $to ) ) {
+				( new Repository() )->set_mail_status( $submission_id, 'failed' );
+				MailHealth::record( false, __( 'No valid recipient address.', 'flinkform' ) );
+			} else {
+				( new Repository() )->set_mail_status( $submission_id, 'off' );
+			}
 			return;
 		}
 
-		$this->send(
+		$sent = $this->send(
 			$email,
 			$recipients,
 			$this->resolve_sender( $form_def, $context ),
 			(string) ( $email['text_alternative'] ?? '' )
 		);
+		// Per submission, so the admin can see which inquiry never reached
+		// the inbox (1.15.0). "sent" means wp_mail() accepted it.
+		( new Repository() )->set_mail_status( $submission_id, $sent ? 'sent' : 'failed' );
 	}
 
 	/**
@@ -325,9 +340,9 @@ final class Mailer {
 	 * @param array<string, mixed>                  $email      Composed email.
 	 * @param array<int, string>                    $recipients Resolved To list.
 	 * @param array{email: string, name: string}    $sender     Empty strings mean "leave WordPress alone".
-	 * @return void
+	 * @return bool What wp_mail() said: accepted for delivery, not delivered.
 	 */
-	private function send( array $email, array $recipients, array $sender, string $text_alternative = '' ): void {
+	private function send( array $email, array $recipients, array $sender, string $text_alternative = '' ): bool {
 		$from_email = static fn () => $sender['email'];
 		$from_name  = static fn () => $sender['name'];
 
@@ -354,8 +369,17 @@ final class Mailer {
 			add_action( 'phpmailer_init', $alt_body, PHP_INT_MAX );
 		}
 
+		$error    = '';
+		$on_error = static function ( $wp_error ) use ( &$error ) {
+			if ( is_object( $wp_error ) && method_exists( $wp_error, 'get_error_message' ) ) {
+				$error = (string) $wp_error->get_error_message();
+			}
+		};
+		add_action( 'wp_mail_failed', $on_error );
+
+		$ok = false;
 		try {
-			wp_mail(
+			$ok = (bool) wp_mail(
 				$recipients,
 				(string) $email['subject'],
 				(string) ( $email['body'] ?? '' ),
@@ -363,6 +387,7 @@ final class Mailer {
 				isset( $email['attachments'] ) && is_array( $email['attachments'] ) ? $email['attachments'] : []
 			);
 		} finally {
+			remove_action( 'wp_mail_failed', $on_error );
 			// `finally` because a mail plugin throwing mid-send must not
 			// leave our sender or our AltBody bolted onto every later
 			// wp_mail() call.
@@ -376,6 +401,9 @@ final class Mailer {
 				remove_action( 'phpmailer_init', $alt_body, PHP_INT_MAX );
 			}
 		}
+
+		MailHealth::record( $ok, $error );
+		return $ok;
 	}
 
 	/**

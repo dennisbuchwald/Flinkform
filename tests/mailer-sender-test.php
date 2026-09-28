@@ -111,6 +111,10 @@ namespace {
 	function get_option( $name, $default = '' ) {
 		return 'admin' === $name ? '' : $default;
 	}
+	function update_option( $name, $value, $autoload = null ) {
+		$GLOBALS['options'][ $name ] = $value;
+		return true;
+	}
 	function get_bloginfo( $what = '' ) {
 		return 'Test Site';
 	}
@@ -143,6 +147,9 @@ namespace Flinkform\Notifications {
 
 namespace {
 	require_once __DIR__ . '/../includes/Fields/OptionLabels.php';
+	require_once __DIR__ . '/../includes/Database/Schema.php';
+	require_once __DIR__ . '/../includes/Submissions/Repository.php';
+	require_once __DIR__ . '/../includes/Notifications/MailHealth.php';
 	require_once __DIR__ . '/../includes/Notifications/BodyBuilder.php';
 	require_once __DIR__ . '/../includes/Notifications/Mailer.php';
 

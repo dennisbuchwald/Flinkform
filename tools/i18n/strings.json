@@ -282,5 +282,131 @@
   "Yes, I would like to receive the newsletter. I can unsubscribe at any time. Details in the {privacy_policy}.": [
     "Ja, ich möchte den Newsletter erhalten. Ich kann mich jederzeit abmelden. Details in der {privacy_policy}.",
     "Ja, ich möchte den Newsletter erhalten. Ich kann mich jederzeit abmelden. Details in der {privacy_policy}."
+  ],
+  "Flinkform notification mails": [
+    "Flinkform-Benachrichtigungsmails",
+    "Flinkform-Benachrichtigungsmails"
+  ],
+  "WordPress can only tell whether a mail was handed over for sending, not whether it arrived. Send one test submission and look in the inbox (and the spam folder) once.": [
+    "WordPress kann nur sagen, ob eine Mail zum Versand übergeben wurde, nicht ob sie ankam. Schick einmal eine Testeinsendung ab und schau ins Postfach (und in den Spam-Ordner).",
+    "WordPress kann nur sagen, ob eine Mail zum Versand übergeben wurde, nicht ob sie ankam. Senden Sie einmal eine Testeinsendung ab und schauen Sie ins Postfach (und in den Spam-Ordner)."
+  ],
+  "Flinkform notification mails are being sent": [
+    "Flinkform-Benachrichtigungsmails werden versendet",
+    "Flinkform-Benachrichtigungsmails werden versendet"
+  ],
+  "Flinkform has not sent a notification mail yet": [
+    "Flinkform hat noch keine Benachrichtigungsmail versendet",
+    "Flinkform hat noch keine Benachrichtigungsmail versendet"
+  ],
+  "Nothing to judge until the first submission comes in.": [
+    "Bis zur ersten Einsendung gibt es nichts zu beurteilen.",
+    "Bis zur ersten Einsendung gibt es nichts zu beurteilen."
+  ],
+  "Last error: %s": [
+    "Letzter Fehler: %s",
+    "Letzter Fehler: %s"
+  ],
+  "Submissions are still saved and listed under Flinkform → Submissions, so nothing is lost. The usual cause is a host without a working mail setup; an SMTP plugin (or Flinkform Pro's SMTP setting) sending through a real mailbox fixes it.": [
+    "Einsendungen werden weiterhin gespeichert und unter Flinkform → Einsendungen aufgelistet, es geht also nichts verloren. Meist fehlt beim Hoster ein funktionierender Mailversand. Ein SMTP-Plugin (oder die SMTP-Einstellung von Flinkform Pro), das über ein echtes Postfach sendet, behebt das.",
+    "Einsendungen werden weiterhin gespeichert und unter Flinkform → Einsendungen aufgelistet, es geht also nichts verloren. Meist fehlt beim Hoster ein funktionierender Mailversand. Ein SMTP-Plugin (oder die SMTP-Einstellung von Flinkform Pro), das über ein echtes Postfach sendet, behebt das."
+  ],
+  "Flinkform notification mails are failing": [
+    "Flinkform-Benachrichtigungsmails schlagen fehl",
+    "Flinkform-Benachrichtigungsmails schlagen fehl"
+  ],
+  "Some Flinkform notification mails failed recently": [
+    "Einige Flinkform-Benachrichtigungsmails sind zuletzt fehlgeschlagen",
+    "Einige Flinkform-Benachrichtigungsmails sind zuletzt fehlgeschlagen"
+  ],
+  "Show submissions whose mail failed": [
+    "Einsendungen mit fehlgeschlagener Mail anzeigen",
+    "Einsendungen mit fehlgeschlagener Mail anzeigen"
+  ],
+  "%s unread submission": [
+    [
+      "%s ungelesene Einsendung",
+      "%s ungelesene Einsendungen"
+    ],
+    [
+      "%s ungelesene Einsendung",
+      "%s ungelesene Einsendungen"
+    ]
+  ],
+  "Delete permanently": [
+    "Endgültig löschen",
+    "Endgültig löschen"
+  ],
+  "Restore": [
+    "Wiederherstellen",
+    "Wiederherstellen"
+  ],
+  "Move to trash": [
+    "In den Papierkorb",
+    "In den Papierkorb"
+  ],
+  "All": [
+    "Alle",
+    "Alle"
+  ],
+  "Mail failed": [
+    "Mail fehlgeschlagen",
+    "Mail fehlgeschlagen"
+  ],
+  "Trash": [
+    "Papierkorb",
+    "Papierkorb"
+  ],
+  "The trash is empty.": [
+    "Der Papierkorb ist leer.",
+    "Der Papierkorb ist leer."
+  ],
+  "Sent": [
+    "Versendet",
+    "Versendet"
+  ],
+  "Failed. The submission is saved here, but nobody was notified.": [
+    "Fehlgeschlagen. Die Einsendung ist hier gespeichert, aber niemand wurde benachrichtigt.",
+    "Fehlgeschlagen. Die Einsendung ist hier gespeichert, aber niemand wurde benachrichtigt."
+  ],
+  "Off for this form": [
+    "Für dieses Formular ausgeschaltet",
+    "Für dieses Formular ausgeschaltet"
+  ],
+  "Notification mail:": [
+    "Benachrichtigungsmail:",
+    "Benachrichtigungsmail:"
+  ],
+  "%d submission moved to the trash.": [
+    [
+      "%d Einsendung in den Papierkorb verschoben.",
+      "%d Einsendungen in den Papierkorb verschoben."
+    ],
+    [
+      "%d Einsendung in den Papierkorb verschoben.",
+      "%d Einsendungen in den Papierkorb verschoben."
+    ]
+  ],
+  "%d submission restored.": [
+    [
+      "%d Einsendung wiederhergestellt.",
+      "%d Einsendungen wiederhergestellt."
+    ],
+    [
+      "%d Einsendung wiederhergestellt.",
+      "%d Einsendungen wiederhergestellt."
+    ]
+  ],
+  "Submission moved to the trash.": [
+    "Einsendung in den Papierkorb verschoben.",
+    "Einsendung in den Papierkorb verschoben."
+  ],
+  "Submission restored.": [
+    "Einsendung wiederhergestellt.",
+    "Einsendung wiederhergestellt."
+  ],
+  "No valid recipient address.": [
+    "Keine gültige Empfängeradresse.",
+    "Keine gültige Empfängeradresse."
   ]
 }

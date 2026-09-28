@@ -38,6 +38,12 @@ final class Repository {
 	private const SORTABLE_COLUMNS = [ 'id', 'form_id', 'created_at', 'status' ];
 
 	/**
+	 * Values of the mail_status column (1.15.0). '' = unknown (older rows,
+	 * or the notification was switched off before 1.15.0).
+	 */
+	public const MAIL_STATUSES = [ 'sent', 'failed', 'off' ];
+
+	/**
 	 * Insert a new submission row.
 	 *
 	 * @param string               $form_id UUID of the form.
@@ -68,6 +74,8 @@ final class Repository {
 			return false;
 		}
 
+		// The admin menu's unread bubble counts from a one-minute cache.
+		delete_transient( 'flinkform_unread_count' );
 		return (int) $wpdb->insert_id;
 	}
 
@@ -82,7 +90,7 @@ final class Repository {
 
 		$table = Schema::table_name();
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name from controlled source.
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT id, form_id, data, created_at, status FROM {$table} WHERE id = %d", $id ), ARRAY_A );
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT {$this->columns()} FROM {$table} WHERE id = %d", $id ), ARRAY_A );
 
 		if ( ! is_array( $row ) ) {
 			return null;
@@ -94,7 +102,7 @@ final class Repository {
 	/**
 	 * Page through submissions, applying filters and sort order.
 	 *
-	 * @param array{form_id?: string, status?: string, date_from?: string, date_to?: string, search?: string} $filters
+	 * @param array{form_id?: string, status?: string, date_from?: string, date_to?: string, search?: string, trashed?: string} $filters
 	 * @param int                                                                                              $page Page number (1-based).
 	 * @param int                                                                                              $per_page Items per page.
 	 * @param string                                                                                           $orderby Column to sort by.
@@ -114,7 +122,7 @@ final class Repository {
 		$args[] = $offset;
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name and ORDER BY validated above; values prepared.
-		$sql  = "SELECT id, form_id, data, created_at, status FROM {$table} {$where} ORDER BY {$orderby_sql} {$order_sql} LIMIT %d OFFSET %d";
+		$sql  = "SELECT {$this->columns()} FROM {$table} {$where} ORDER BY {$orderby_sql} {$order_sql} LIMIT %d OFFSET %d";
 		$rows = $wpdb->get_results( $wpdb->prepare( $sql, $args ), ARRAY_A );
 		// phpcs:enable
 
@@ -128,7 +136,7 @@ final class Repository {
 	/**
 	 * Count submissions matching the given filters. Used for pagination.
 	 *
-	 * @param array{form_id?: string, status?: string, date_from?: string, date_to?: string, search?: string} $filters
+	 * @param array{form_id?: string, status?: string, date_from?: string, date_to?: string, search?: string, trashed?: string} $filters
 	 * @return int
 	 */
 	public function count( array $filters = [] ): int {
@@ -207,6 +215,7 @@ final class Repository {
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name controlled; placeholders prepared.
 		$deleted = $wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE id IN ({$placeholders})", $ids ) );
 		$count   = false === $deleted ? 0 : (int) $deleted;
+		delete_transient( 'flinkform_unread_count' );
 
 		if ( $count > 0 ) {
 			/**
@@ -282,6 +291,7 @@ final class Repository {
 			[ '%d' ]
 		);
 
+		delete_transient( 'flinkform_unread_count' );
 		return false !== $updated;
 	}
 
@@ -310,6 +320,7 @@ final class Repository {
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name controlled; placeholders prepared.
 		$updated = $wpdb->query( $wpdb->prepare( "UPDATE {$table} SET status = %s WHERE id IN ({$placeholders})", $args ) );
+		delete_transient( 'flinkform_unread_count' );
 
 		return false === $updated ? 0 : (int) $updated;
 	}
@@ -333,16 +344,34 @@ final class Repository {
 	/**
 	 * Compose a WHERE clause + prepared args from the filter set.
 	 *
-	 * @param array{form_id?: string, status?: string, date_from?: string, date_to?: string, search?: string} $filters
+	 * @param array{form_id?: string, status?: string, date_from?: string, date_to?: string, search?: string, trashed?: string} $filters
 	 * @return array{0: string, 1: array<int, mixed>}
 	 */
 	private function build_where( array $filters ): array {
 		$clauses = [];
 		$args    = [];
 
+		// Trash (1.15.0): left out unless asked for. `trashed` = 'only'
+		// lists the trash, 'any' includes it. Every existing caller (the
+		// list, counts, Pro's CSV export) passes no key and so keeps
+		// seeing exactly the submissions that are not in the trash.
+		if ( Schema::has_v3() ) {
+			$trashed = isset( $filters['trashed'] ) && is_string( $filters['trashed'] ) ? $filters['trashed'] : '';
+			if ( 'only' === $trashed ) {
+				$clauses[] = 'trashed_at IS NOT NULL';
+			} elseif ( 'any' !== $trashed ) {
+				$clauses[] = 'trashed_at IS NULL';
+			}
+		}
+
 		if ( ! empty( $filters['form_id'] ) && is_string( $filters['form_id'] ) ) {
 			$clauses[] = 'form_id = %s';
 			$args[]    = $filters['form_id'];
+		}
+
+		if ( ! empty( $filters['mail_status'] ) && in_array( $filters['mail_status'], self::MAIL_STATUSES, true ) && Schema::has_v3() ) {
+			$clauses[] = 'mail_status = %s';
+			$args[]    = $filters['mail_status'];
 		}
 
 		if ( ! empty( $filters['status'] ) && in_array( $filters['status'], self::STATUSES, true ) ) {
@@ -400,11 +429,106 @@ final class Repository {
 		}
 
 		return [
-			'id'         => (int) ( $row['id'] ?? 0 ),
-			'form_id'    => (string) ( $row['form_id'] ?? '' ),
-			'data'       => $decoded,
-			'created_at' => (string) ( $row['created_at'] ?? '' ),
-			'status'     => (string) ( $row['status'] ?? 'unread' ),
+			'id'          => (int) ( $row['id'] ?? 0 ),
+			'form_id'     => (string) ( $row['form_id'] ?? '' ),
+			'data'        => $decoded,
+			'created_at'  => (string) ( $row['created_at'] ?? '' ),
+			'status'      => (string) ( $row['status'] ?? 'unread' ),
+			'mail_status' => (string) ( $row['mail_status'] ?? '' ),
+			'trashed_at'  => isset( $row['trashed_at'] ) ? (string) $row['trashed_at'] : '',
 		];
+	}
+
+	/**
+	 * Column list for SELECTs. The version-3 columns only once the schema
+	 * upgrade has really added them (see Schema::has_v3()).
+	 *
+	 * @return string
+	 */
+	private function columns(): string {
+		return 'id, form_id, data, created_at, status' . ( Schema::has_v3() ? ', mail_status, trashed_at' : '' );
+	}
+
+	/**
+	 * Move submissions to the trash (1.15.0). Read/unread is kept, so a
+	 * restore brings a row back exactly as it was.
+	 *
+	 * @param array<int, int> $ids
+	 * @return int Rows moved.
+	 */
+	public function trash_many( array $ids ): int {
+		return $this->set_trashed( $ids, true );
+	}
+
+	/**
+	 * Take submissions back out of the trash.
+	 *
+	 * @param array<int, int> $ids
+	 * @return int Rows restored.
+	 */
+	public function restore_many( array $ids ): int {
+		return $this->set_trashed( $ids, false );
+	}
+
+	/**
+	 * @param array<int, int> $ids
+	 * @param bool            $trash
+	 * @return int
+	 */
+	private function set_trashed( array $ids, bool $trash ): int {
+		$ids = array_values( array_filter( array_map( 'intval', $ids ) ) );
+		if ( empty( $ids ) || ! Schema::has_v3() ) {
+			return 0;
+		}
+
+		global $wpdb;
+		$table        = Schema::table_name();
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Table name controlled; placeholders prepared.
+		if ( $trash ) {
+			$updated = $wpdb->query( $wpdb->prepare( "UPDATE {$table} SET trashed_at = %s WHERE trashed_at IS NULL AND id IN ({$placeholders})", array_merge( [ gmdate( 'Y-m-d H:i:s' ) ], $ids ) ) );
+		} else {
+			$updated = $wpdb->query( $wpdb->prepare( "UPDATE {$table} SET trashed_at = NULL WHERE id IN ({$placeholders})", $ids ) );
+		}
+		// phpcs:enable
+
+		delete_transient( 'flinkform_unread_count' );
+		return false === $updated ? 0 : (int) $updated;
+	}
+
+	/**
+	 * Ids of submissions that have been in the trash since before a cutoff.
+	 *
+	 * @param string $before_gmt 'Y-m-d H:i:s' (GMT).
+	 * @param int    $limit
+	 * @return array<int, int>
+	 */
+	public function find_trashed_before( string $before_gmt, int $limit = 1000 ): array {
+		if ( ! Schema::has_v3() ) {
+			return [];
+		}
+		global $wpdb;
+		$table = Schema::table_name();
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Controlled table name, values prepared.
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM {$table} WHERE trashed_at IS NOT NULL AND trashed_at < %s ORDER BY id ASC LIMIT %d", $before_gmt, $limit ) );
+		return is_array( $ids ) ? array_map( 'intval', $ids ) : [];
+	}
+
+	/**
+	 * Record how the admin notification for a submission went (1.15.0).
+	 *
+	 * @param int    $id
+	 * @param string $mail_status One of self::MAIL_STATUSES.
+	 * @return bool
+	 */
+	public function set_mail_status( int $id, string $mail_status ): bool {
+		if ( ! in_array( $mail_status, self::MAIL_STATUSES, true ) || ! Schema::has_v3() ) {
+			return false;
+		}
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom submissions table; a write that nothing caches.
+		$updated = $wpdb->update( Schema::table_name(), [ 'mail_status' => $mail_status ], [ 'id' => $id ], [ '%s' ], [ '%d' ] );
+		return false !== $updated;
 	}
 }

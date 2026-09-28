@@ -24,6 +24,8 @@ defined( 'ABSPATH' ) || exit;
  * Schema-version history:
  *   1 — initial submissions table (Phase 1)
  *   2 — webhooks + webhook_deliveries tables (Phase 6a)
+ *   3 — submissions: mail_status, trashed_at, KEY (form_id, created_at)
+ *       (1.15.0; dbDelta adds the columns and keys to existing tables)
  *
  * As of M-c-d-2 the webhook tables moved to Flinkform Pro (FlinkformPro\Database\
  * Schema), which owns their creation + lifecycle. The free core keeps DB_VERSION
@@ -36,7 +38,7 @@ final class Schema {
 	 * Bumped whenever the schema changes — read by the activator to decide
 	 * whether dbDelta() needs to run.
 	 */
-	public const DB_VERSION = '2';
+	public const DB_VERSION = '3';
 
 	/**
 	 * Option key holding the currently installed schema version.
@@ -66,7 +68,41 @@ final class Schema {
 
 		self::create_submissions_table();
 
-		update_option( self::OPTION_DB_VERSION, self::DB_VERSION, false );
+		// Only claim version 3 once its columns really exist. A database
+		// user without ALTER rights would otherwise leave the option at 3
+		// and every query naming the new columns would fail; this way the
+		// Repository keeps using the version-2 shape and the upgrade is
+		// retried (at most hourly, see Plugin::init()).
+		if ( self::has_column( 'trashed_at' ) && self::has_column( 'mail_status' ) ) {
+			update_option( self::OPTION_DB_VERSION, self::DB_VERSION, false );
+		} else {
+			update_option( self::OPTION_DB_VERSION, '2', false );
+			set_transient( 'flinkform_schema_retry', 1, HOUR_IN_SECONDS );
+		}
+	}
+
+	/**
+	 * Whether the version-3 columns (mail status, trash) are available.
+	 * Cheap: reads the version option WordPress already cached.
+	 *
+	 * @return bool
+	 */
+	public static function has_v3(): bool {
+		return version_compare( (string) get_option( self::OPTION_DB_VERSION, '0' ), '3', '>=' );
+	}
+
+	/**
+	 * Does the submissions table have this column?
+	 *
+	 * @param string $column Column name (trusted, from this class).
+	 * @return bool
+	 */
+	private static function has_column( string $column ): bool {
+		global $wpdb;
+		$table = self::table_name();
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Controlled table name, schema check at upgrade time only.
+		$found = $wpdb->get_var( $wpdb->prepare( "SHOW COLUMNS FROM {$table} LIKE %s", $column ) );
+		return null !== $found;
 	}
 
 	/**
@@ -89,10 +125,14 @@ final class Schema {
 			data longtext NOT NULL,
 			created_at datetime NOT NULL,
 			status varchar(20) NOT NULL DEFAULT 'unread',
+			mail_status varchar(20) NOT NULL DEFAULT '',
+			trashed_at datetime DEFAULT NULL,
 			PRIMARY KEY  (id),
 			KEY form_id (form_id),
 			KEY created_at (created_at),
-			KEY status (status)
+			KEY status (status),
+			KEY form_created (form_id,created_at),
+			KEY trashed_at (trashed_at)
 		) {$charset};";
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- dbDelta() is the WordPress-sanctioned way to create/upgrade a custom table.

@@ -52,9 +52,13 @@ final class Menu {
 	 * @return void
 	 */
 	public function register_pages(): void {
+		// Unread badge (1.15.0), the same bubble WordPress uses for pending
+		// comments. Only for people who can open the list anyway.
+		$badge = current_user_can( self::CAPABILITY ) ? self::unread_badge() : '';
+
 		$submissions_hook = add_menu_page(
 			__( 'Flinkform', 'flinkform' ),
-			__( 'Flinkform', 'flinkform' ),
+			__( 'Flinkform', 'flinkform' ) . $badge,
 			self::CAPABILITY,
 			self::PARENT_SLUG,
 			[ $this, 'render_submissions_page' ],
@@ -65,7 +69,7 @@ final class Menu {
 		add_submenu_page(
 			self::PARENT_SLUG,
 			__( 'Submissions', 'flinkform' ),
-			__( 'Submissions', 'flinkform' ),
+			__( 'Submissions', 'flinkform' ) . $badge,
 			self::CAPABILITY,
 			self::PARENT_SLUG,
 			[ $this, 'render_submissions_page' ]
@@ -91,6 +95,39 @@ final class Menu {
 		if ( $forms_hook ) {
 			add_action( "admin_print_styles-{$forms_hook}", [ $this, 'enqueue_forms_styles' ] );
 		}
+	}
+
+	/**
+	 * Menu bubble with the number of unread submissions ('' for none).
+	 *
+	 * One COUNT on an indexed column per admin page load, cached for a
+	 * minute so a busy admin does not pay for it on every click; marking
+	 * something read shows up at the latest a minute later.
+	 *
+	 * @return string Pre-escaped HTML.
+	 */
+	public static function unread_badge(): string {
+		$count = get_transient( 'flinkform_unread_count' );
+		if ( false === $count ) {
+			$count = ( new \Flinkform\Submissions\Repository() )->count( [ 'status' => 'unread' ] );
+			set_transient( 'flinkform_unread_count', $count, MINUTE_IN_SECONDS );
+		}
+		$count = (int) $count;
+		if ( $count < 1 ) {
+			return '';
+		}
+		return sprintf(
+			' <span class="awaiting-mod count-%1$d"><span class="pending-count" aria-hidden="true">%2$s</span><span class="screen-reader-text">%3$s</span></span>',
+			$count,
+			esc_html( number_format_i18n( $count ) ),
+			esc_html(
+				sprintf(
+					/* translators: %s: number of unread submissions. */
+					_n( '%s unread submission', '%s unread submissions', $count, 'flinkform' ),
+					number_format_i18n( $count )
+				)
+			)
+		);
 	}
 
 	/**
