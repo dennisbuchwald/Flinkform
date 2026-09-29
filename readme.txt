@@ -1,6 +1,6 @@
 === Flinkform - GDPR Contact Form Builder for the Block Editor ===
 Contributors: dbwmediadennis
-Tags: contact form, form builder, multi step form, kontaktformular, dsgvo
+Tags: contact form, kontaktformular, dsgvo, block editor, multi step form
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
