@@ -1,0 +1,35 @@
+{
+ "landingPage": "/wp-admin/",
+ "preferredVersions": {
+  "php": "8.3",
+  "wp": "latest"
+ },
+ "steps": [
+  {
+   "step": "defineWpConfigConsts",
+   "consts": {
+    "WP_DEBUG": true,
+    "WP_DEBUG_DISPLAY": false,
+    "WP_DEBUG_LOG": "/pglogs/debug.log"
+   }
+  },
+  {
+   "step": "login",
+   "username": "admin"
+  },
+  {
+   "step": "setSiteOptions",
+   "options": {
+    "permalink_structure": "/%postname%/"
+   }
+  },
+  {
+   "step": "activatePlugin",
+   "pluginPath": "flinkform/flinkform.php"
+  },
+  {
+   "step": "runPHP",
+   "code": "<?php\nrequire_once '/wordpress/wp-load.php';\nkses_remove_filters();\nupdate_option('blogname','Studio Nordlicht');\nupdate_option('blogdescription','Web design from Hamburg');\n$c = <<<'FFC'\n<!-- wp:paragraph -->\n<p>Tell us about your project. We usually reply within one business day.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:flinkform/form {\"formId\":\"contact\",\"title\":\"Contact form\",\"submitLabel\":\"Send message\",\"successMessage\":\"Thank you, Jana! We got your message and will reply within one business day.\",\"appearance\":{\"columns\":2}} -->\n<!-- wp:flinkform/field-text {\"label\":\"Name\",\"fieldName\":\"name\",\"required\":true,\"autocomplete\":\"name\"} /-->\n<!-- wp:flinkform/field-email {\"label\":\"Email\",\"fieldName\":\"email\",\"required\":true} /-->\n<!-- wp:flinkform/field-phone {\"label\":\"Phone\",\"fieldName\":\"phone\",\"placeholder\":\"optional\"} /-->\n<!-- wp:flinkform/field-select {\"label\":\"Topic\",\"fieldName\":\"topic\",\"placeholder\":\"Please choose\",\"options\":[{\"label\":\"New website\",\"value\":\"New website\"},{\"label\":\"Support\",\"value\":\"Support\"},{\"label\":\"Something else\",\"value\":\"Something else\"}]} /-->\n<!-- wp:flinkform/field-textarea {\"label\":\"Message\",\"fieldName\":\"message\",\"required\":true,\"fullWidth\":true} /-->\n<!-- wp:flinkform/field-consent {\"fieldName\":\"consent\"} /-->\n<!-- /wp:flinkform/form -->\nFFC;\n$m = <<<'FFM'\n<!-- wp:paragraph -->\n<p>Three short steps. Your answer in step 1 decides what we ask next.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:flinkform/form {\"formId\":\"playground-demo\",\"title\":\"Project request\",\"submitLabel\":\"Send request\",\"successMessage\":\"Thank you! Your request has been stored. Open Flinkform \\u003e Submissions in the admin to see it.\",\"appearance\":{\"progressIndicator\":\"bar\",\"columns\":2}} -->\n<!-- wp:flinkform/section-heading {\"title\":\"What do you need?\",\"description\":\"Your answer decides which questions come in the next step.\"} /-->\n<!-- wp:flinkform/field-radio {\"label\":\"Type of project\",\"fieldName\":\"project\",\"required\":true,\"fullWidth\":true,\"display\":\"buttons\",\"buttonShape\":\"rounded\",\"options\":[{\"label\":\"Website\",\"value\":\"Website\"},{\"label\":\"Online shop\",\"value\":\"Online shop\"},{\"label\":\"Landing page\",\"value\":\"Landing page\"}]} /-->\n<!-- wp:flinkform/page-break {\"label\":\"Details\"} /-->\n<!-- wp:flinkform/notice {\"message\":\"Online shops usually start with a short call. Leave your phone number in the next step.\",\"conditionalLogic\":{\"enabled\":true,\"logic\":\"all\",\"rules\":[{\"field\":\"project\",\"operator\":\"is\",\"value\":\"Online shop\"}]}} /-->\n<!-- wp:flinkform/field-number {\"label\":\"How many pages, roughly?\",\"fieldName\":\"pages\",\"min\":\"1\",\"max\":\"200\",\"conditionalLogic\":{\"enabled\":true,\"logic\":\"all\",\"rules\":[{\"field\":\"project\",\"operator\":\"is\",\"value\":\"Website\"}]}} /-->\n<!-- wp:flinkform/field-number {\"label\":\"How many products?\",\"fieldName\":\"products\",\"min\":\"1\",\"max\":\"100000\",\"conditionalLogic\":{\"enabled\":true,\"logic\":\"all\",\"rules\":[{\"field\":\"project\",\"operator\":\"is\",\"value\":\"Online shop\"}]}} /-->\n<!-- wp:flinkform/field-select {\"label\":\"Goal of the landing page\",\"fieldName\":\"goal\",\"placeholder\":\"Please choose\",\"conditionalLogic\":{\"enabled\":true,\"logic\":\"all\",\"rules\":[{\"field\":\"project\",\"operator\":\"is\",\"value\":\"Landing page\"}]},\"options\":[{\"label\":\"Collect enquiries\",\"value\":\"Collect enquiries\"},{\"label\":\"Collect job applications\",\"value\":\"Collect job applications\"},{\"label\":\"Sell a product\",\"value\":\"Sell a product\"}]} /-->\n<!-- wp:flinkform/field-select {\"label\":\"When should it go live?\",\"fieldName\":\"timeframe\",\"required\":true,\"placeholder\":\"Please choose\",\"options\":[{\"label\":\"As soon as possible\",\"value\":\"As soon as possible\"},{\"label\":\"In 1 to 3 months\",\"value\":\"In 1 to 3 months\"},{\"label\":\"Not decided yet\",\"value\":\"Not decided yet\"}]} /-->\n<!-- wp:flinkform/page-break {\"label\":\"Contact\"} /-->\n<!-- wp:flinkform/field-text {\"label\":\"Name\",\"fieldName\":\"name\",\"required\":true} /-->\n<!-- wp:flinkform/field-email {\"label\":\"Email\",\"fieldName\":\"email\",\"required\":true} /-->\n<!-- wp:flinkform/field-phone {\"label\":\"Phone\",\"fieldName\":\"phone\",\"placeholder\":\"optional\"} /-->\n<!-- wp:flinkform/field-textarea {\"label\":\"Anything else we should know?\",\"fieldName\":\"message\",\"fullWidth\":true} /-->\n<!-- wp:flinkform/field-consent {\"fieldName\":\"consent\"} /-->\n<!-- /wp:flinkform/form -->\nFFM;\nwp_insert_post(array('post_type'=>'page','post_status'=>'publish','post_title'=>'Contact','post_name'=>'contact','post_content'=>$c));\nwp_insert_post(array('post_type'=>'page','post_status'=>'publish','post_title'=>'Start your project','post_name'=>'project','post_content'=>$m));\nupdate_option('timezone_string','Europe/Berlin');\n"
+  }
+ ]
+}

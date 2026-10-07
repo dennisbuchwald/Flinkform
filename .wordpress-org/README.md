@@ -22,8 +22,8 @@ unter `assets/blueprints/blueprint.json`.
 | `screenshot-6.png` | frei | Dasselbe Formular in zwei Themes (Farben aus theme.json) |
 | `blueprints/blueprint.json` | - | Live-Vorschau (WordPress Playground), siehe unten |
 
-Stand heute vorhanden: Icons und Banner. **Die Screenshots fehlen komplett** und
-sind der Punkt mit dem größten Hebel im Listing.
+Stand 07.10.2026: Icons, Banner und alle 6 Screenshots (1440 × 900) sind da. Neu aufnehmen:
+`tools/wporg-screenshots/README.md`.
 
 ## Regeln
 
