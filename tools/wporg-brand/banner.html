@@ -1,0 +1,103 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:GTW;src:url(GT-Walsheim-Pro-Bold.ttf);font-weight:400 900}
+:root{
+  --red:#ea2b1f;--pink:#ff3c6f;--magenta:#ff4fdd;--violet:#7e56ff;--blue:#00b2ff;
+  --grad:linear-gradient(100deg,var(--red),var(--pink) 28%,var(--magenta) 52%,var(--violet) 76%,var(--blue));
+  --ink:#0d0c12;
+}
+*{box-sizing:border-box;margin:0}
+html,body{width:772px;height:250px;overflow:hidden}
+body{background:var(--ink);font-family:-apple-system,"SF Pro Text",system-ui,sans-serif;color:#fff;position:relative;
+  -webkit-font-smoothing:antialiased}
+/* background light */
+.glow{position:absolute;inset:0;
+  background:
+   radial-gradient(420px 260px at 640px 210px, rgba(126,86,255,.42), transparent 70%),
+   radial-gradient(360px 220px at 470px 10px, rgba(255,60,111,.28), transparent 70%),
+   radial-gradient(300px 200px at 40px 260px, rgba(234,43,31,.12), transparent 70%)}
+.grid{position:absolute;inset:0;opacity:.06;
+  background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
+  background-size:22px 22px;mask-image:radial-gradient(500px 260px at 600px 125px,#000,transparent 75%)}
+
+/* left */
+.left{position:absolute;left:44px;top:0;bottom:0;width:400px;display:flex;flex-direction:column;justify-content:center}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{width:46px;height:46px;flex:none}
+.word{font-family:GTW;font-weight:700;font-size:46px;letter-spacing:-1.4px;line-height:1;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:4px}
+h1{font-family:GTW;font-weight:700;font-size:25px;line-height:1.12;letter-spacing:-.4px;margin-top:18px}
+.chips{display:flex;gap:5px;margin-top:15px;flex-wrap:nowrap}
+.chip{white-space:nowrap;font-size:10px;font-weight:600;letter-spacing:.1px;color:#d9d6e6;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.04);border-radius:99px;padding:4px 9px 4px 8px;display:flex;align-items:center;gap:5px}
+.chip i{width:6px;height:6px;border-radius:50%;background:var(--grad);display:block}
+
+/* right: the form */
+.stage{position:absolute;left:432px;top:-6px;width:320px;height:270px;perspective:900px}
+.card{position:absolute;left:30px;top:24px;width:280px;background:#fff;color:#16141d;border-radius:16px;padding:16px 16px 14px;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.08);
+  transform:rotateY(-11deg) rotateX(4deg) rotateZ(1.2deg) scale(.86);transform-origin:50% 0}
+.steps{display:flex;justify-content:space-between;align-items:center;font-size:9px;font-weight:600;color:#7a7686;margin-bottom:6px}
+.bar{height:4px;border-radius:4px;background:#ecebf1;overflow:hidden;margin-bottom:12px}
+.bar b{display:block;width:34%;height:100%;background:var(--grad)}
+.row{display:flex;gap:8px}
+.f{margin-bottom:8px;flex:1}
+.f label{display:block;font-size:9px;font-weight:650;color:#3a3744;margin-bottom:3px}
+.f .in{height:25px;border:1.5px solid #dedce6;border-radius:7px;font-size:10.5px;padding:0 8px;display:flex;align-items:center;color:#16141d}
+.f .in.focus{border-color:#7e56ff;box-shadow:0 0 0 3px rgba(126,86,255,.16)}
+.caret{width:1.5px;height:12px;background:#16141d;margin-left:1px}
+.f .ta{height:30px;align-items:flex-start;padding-top:6px;color:#9b98a6}
+.consent{display:flex;align-items:center;gap:6px;font-size:8.5px;color:#55525f;margin:2px 0 11px}
+.box{width:13px;height:13px;border-radius:4px;background:var(--grad);display:grid;place-items:center;flex:none}
+.box svg{width:9px;height:9px}
+.btn{height:30px;border-radius:8px;background:var(--grad);color:#fff;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;gap:6px}
+
+/* floating notes around the card */
+.note{position:absolute;background:#17151f;border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;
+  font-size:10px;font-weight:600;padding:7px 10px;display:flex;align-items:center;gap:7px;box-shadow:0 14px 30px -10px rgba(0,0,0,.7)}
+.n1{left:-30px;top:196px}
+.n1 .ok{width:16px;height:16px;border-radius:50%;background:#fff;display:grid;place-items:center}
+.n2{right:-4px;top:12px;padding:5px 7px;gap:4px}
+.n2 span{font-size:9px;color:#b8b4c6;font-weight:600;margin-right:2px}
+.blk{width:20px;height:20px;border-radius:5px;background:rgba(255,255,255,.07);display:grid;place-items:center}
+.blk svg{width:12px;height:12px}
+</style></head>
+<body>
+<div class="glow"></div><div class="grid"></div>
+
+<div class="left">
+  <div class="brand">
+    <svg viewBox="0 0 256 256"><defs><linearGradient id="g" x1="48" y1="60" x2="208" y2="150" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ea2b1f"/><stop offset=".25" stop-color="#ff3c6f"/><stop offset=".5" stop-color="#ff4fdd"/><stop offset=".75" stop-color="#7e56ff"/><stop offset="1" stop-color="#00b2ff"/></linearGradient></defs>
+      <rect width="256" height="256" rx="58" fill="#1a1822"/><rect x="48" y="52" width="160" height="44" rx="15" fill="url(#g)"/><rect x="48" y="108" width="100" height="44" rx="15" fill="url(#g)"/><rect x="48" y="164" width="44" height="44" rx="15" fill="url(#g)"/><circle cx="180" cy="180" r="30" fill="#fff"/><path d="M168 181 L176.5 189.5 L193 172" fill="none" stroke="#0d0c12" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="word">Flinkform</div>
+  </div>
+  <h1>Contact forms, built<br>from blocks in two minutes.</h1>
+  <div class="chips">
+    <div class="chip"><i></i>No CAPTCHA</div>
+    <div class="chip"><i></i>Multi-step forms</div>
+    <div class="chip"><i></i>Data stays on your server</div>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="card">
+    <div class="steps"><span>Step 1 of 3 · Your details</span></div>
+    <div class="bar"><b></b></div>
+    <div class="row">
+      <div class="f"><label>Name</label><div class="in">Alex Weber</div></div>
+      <div class="f"><label>Company</label><div class="in">Studio North</div></div>
+    </div>
+    <div class="f"><label>Email</label><div class="in focus">alex@studio-north.com<span class="caret"></span></div></div>
+    <div class="f"><label>Your message</label><div class="in ta">Hi! We'd like a quote for…</div></div>
+    <div class="consent"><span class="box"><svg viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-4.8" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>I agree to the privacy policy.</div>
+    <div class="btn">Next step <svg width="11" height="11" viewBox="0 0 12 12"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </div>
+
+  <div class="note n2"><span>Blocks</span>
+    <div class="blk"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></div>
+    <div class="blk"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.5" stroke="#fff" stroke-width="2" fill="none"/><path d="M4 7l8 6 8-6" stroke="#fff" stroke-width="2" fill="none"/></svg></div>
+    <div class="blk"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" stroke="#fff" stroke-width="2" fill="none"/><path d="M8 12l3 3 5-6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
+  </div>
+</div>
+</body></html>

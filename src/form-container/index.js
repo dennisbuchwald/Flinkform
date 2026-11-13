@@ -24,29 +24,68 @@ import './editor.scss';
  * gradient; the field blocks keep their plain currentColor dashicons so
  * the in-form inserter stays calm and theme-adaptive.
  *
- * The form rows are punched out with a <mask> (true transparency) rather
- * than painted, so the icon reads correctly on both the light inserter
- * and the dark list view. The gradient + mask IDs are namespaced to avoid
+ * The glyph is the Flinkform mark (2026-11): an "F" built from a form, two
+ * input fields plus a consent checkbox, with the submit button sitting in
+ * the F's empty corner. No background tile, so it reads on both the light
+ * inserter and the dark list view. The gradient ID is namespaced to avoid
  * colliding with any other inline SVG on the page.
  */
 const icon = (
-	<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+	<svg
+		viewBox="0 0 24 24"
+		xmlns="http://www.w3.org/2000/svg"
+		aria-hidden="true"
+		focusable="false"
+	>
 		<defs>
-			<linearGradient id="flinkform-icon-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+			<linearGradient
+				id="flinkform-icon-grad"
+				x1="2"
+				y1="4"
+				x2="21"
+				y2="14"
+				gradientUnits="userSpaceOnUse"
+			>
 				<stop offset="0" stopColor="#ea2b1f" />
 				<stop offset="0.25" stopColor="#ff3c6f" />
 				<stop offset="0.5" stopColor="#ff4fdd" />
 				<stop offset="0.75" stopColor="#7e56ff" />
 				<stop offset="1" stopColor="#00b2ff" />
 			</linearGradient>
-			<mask id="flinkform-icon-mask">
-				<rect x="3.5" y="3" width="17" height="18" rx="3" fill="#fff" />
-				<rect x="6.5" y="7" width="7" height="1.8" rx="0.9" fill="#000" />
-				<rect x="6.5" y="11.1" width="11" height="1.8" rx="0.9" fill="#000" />
-				<rect x="6.5" y="15.2" width="9" height="1.8" rx="0.9" fill="#000" />
-			</mask>
 		</defs>
-		<rect x="3.5" y="3" width="17" height="18" rx="3" fill="url(#flinkform-icon-grad)" mask="url(#flinkform-icon-mask)" />
+		<rect
+			x="2"
+			y="2.5"
+			width="19"
+			height="5"
+			rx="2"
+			fill="url(#flinkform-icon-grad)"
+		/>
+		<rect
+			x="2"
+			y="9.5"
+			width="12"
+			height="5"
+			rx="2"
+			fill="url(#flinkform-icon-grad)"
+		/>
+		<rect
+			x="2"
+			y="16.5"
+			width="5"
+			height="5"
+			rx="2"
+			fill="url(#flinkform-icon-grad)"
+		/>
+		<circle cx="17.5" cy="17.5" r="4.5" fill="url(#flinkform-icon-grad)" />
+		<path
+			d="M15.6 17.6l1.3 1.3 2.6-2.7"
+			fill="none"
+			stroke="#fff"
+			strokeWidth="1.6"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
 	</svg>
 );
 

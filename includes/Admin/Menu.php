@@ -62,7 +62,7 @@ final class Menu {
 			self::CAPABILITY,
 			self::PARENT_SLUG,
 			[ $this, 'render_submissions_page' ],
-			'dashicons-feedback',
+			self::menu_icon(),
 			26
 		);
 
@@ -95,6 +95,24 @@ final class Menu {
 		if ( $forms_hook ) {
 			add_action( "admin_print_styles-{$forms_hook}", [ $this, 'enqueue_forms_styles' ] );
 		}
+	}
+
+	/**
+	 * Admin menu icon: the Flinkform mark (an "F" built from two fields and a
+	 * checkbox, plus the submit button) as a single-colour SVG. WordPress
+	 * repaints the fill to match the admin colour scheme, which is why the
+	 * tick is cut out (evenodd) instead of drawn in a second colour.
+	 *
+	 * @return string data: URI for add_menu_page().
+	 */
+	public static function menu_icon(): string {
+		$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">'
+			. '<path fill="#000" d="M3.5 2h11a1.5 1.5 0 0 1 0 4h-11a1.5 1.5 0 0 1 0-4zM3.5 8h5a1.5 1.5 0 0 1 0 4h-5a1.5 1.5 0 0 1 0-4zM3.5 14h1a1.5 1.5 0 0 1 0 4h-1a1.5 1.5 0 0 1 0-4z"/>'
+			. '<path fill="#000" fill-rule="evenodd" d="M15 10.4a4.6 4.6 0 1 1 0 9.2a4.6 4.6 0 1 1 0-9.2zM12.9 15.1l1-1 .7.7 1.7-1.7 1 1-2.7 2.7z"/>'
+			. '</svg>';
+
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- a data: URI is the documented way to pass an SVG menu icon.
+		return 'data:image/svg+xml;base64,' . base64_encode( $svg );
 	}
 
 	/**

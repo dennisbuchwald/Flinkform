@@ -1,0 +1,121 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;background:transparent}
+  body{width:256px;height:256px}
+  svg{display:block}
+</style></head>
+<body>
+<!--
+  Flinkform mark: an "F" built from a form.
+  Row 1 + row 2 = two input fields, the short block below = consent checkbox,
+  the circle in the F's empty corner = the submit button.
+  Animation = the form fills itself and gets sent. Every frame is render(t).
+-->
+<svg id="ic" width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="48" y1="60" x2="208" y2="150" gradientUnits="userSpaceOnUse">
+      <stop id="s0" offset="0" stop-color="#ea2b1f"/>
+      <stop id="s1" offset="0.25" stop-color="#ff3c6f"/>
+      <stop id="s2" offset="0.5" stop-color="#ff4fdd"/>
+      <stop id="s3" offset="0.75" stop-color="#7e56ff"/>
+      <stop id="s4" offset="1" stop-color="#00b2ff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.8" r="0.7">
+      <stop offset="0" stop-color="#7e56ff" stop-opacity=".55"/>
+      <stop offset=".55" stop-color="#ff3c6f" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#ff3c6f" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="c1"><rect id="c1r" x="48" y="52" width="160" height="44" rx="15"/></clipPath>
+    <clipPath id="c2"><rect id="c2r" x="48" y="108" width="100" height="44" rx="15"/></clipPath>
+    <clipPath id="bg"><rect x="0" y="0" width="256" height="256" rx="58"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#bg)">
+    <rect width="256" height="256" fill="#0d0c12"/>
+    <rect id="glowR" width="256" height="256" fill="url(#glow)"/>
+  </g>
+
+  <!-- empty field tracks -->
+  <rect x="48" y="52" width="160" height="44" rx="15" fill="#1d1b26"/>
+  <rect x="48" y="108" width="100" height="44" rx="15" fill="#1d1b26"/>
+  <rect id="boxT" x="48" y="164" width="44" height="44" rx="15" fill="#1d1b26"/>
+
+  <!-- filled parts (width animated) -->
+  <g clip-path="url(#c1)"><rect id="f1" x="48" y="52" width="160" height="44" fill="url(#g)"/></g>
+  <g clip-path="url(#c2)"><rect id="f2" x="48" y="108" width="100" height="44" fill="url(#g)"/></g>
+  <rect id="box" x="48" y="164" width="44" height="44" rx="15" fill="url(#g)"/>
+
+  <!-- typing caret -->
+  <rect id="caret" x="0" y="62" width="5" height="24" rx="2.5" fill="#fff" opacity="0"/>
+
+  <!-- submit button -->
+  <g id="btn" transform="translate(180 180)">
+    <circle id="btnC" r="30" fill="#fff"/>
+    <path id="tick" d="M-12 1 L-3.5 9.5 L13 -8" fill="none" stroke="#0d0c12" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const seg = (t,a,b)=>clamp((t-a)/(b-a));
+const easeOut = x=>1-Math.pow(1-x,3);
+const easeInOut = x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const backOut = (x,s=1.7)=>{const c3=s+1;return 1+c3*Math.pow(x-1,3)+s*Math.pow(x-1,2);};
+const TICK_LEN = 8.5*Math.SQRT2 + Math.hypot(16.5,17.5);
+$('tick').setAttribute('stroke-dasharray', TICK_LEN);
+
+// total loop 4.0 s
+window.DURATION = 4.0;
+window.render = function(t){
+  // field 1: typing 0.25 .. 1.0
+  const p1 = easeInOut(seg(t,0.25,1.0));
+  // field 2: 0.95 .. 1.55
+  const p2 = easeInOut(seg(t,0.95,1.55));
+  // checkbox pop 1.55 .. 1.9
+  const pb = seg(t,1.55,1.9);
+  // button 1.85 .. 2.3, tick draw 2.05 .. 2.4
+  const pbt = seg(t,1.85,2.3);
+  const pt = easeOut(seg(t,2.05,2.4));
+  // reset 3.55 .. 3.95
+  const out = easeInOut(seg(t,3.5,3.9));
+
+  const w1 = 160*p1, w2 = 100*p2;
+  // outro: the filled form whooshes out to the right (= sent)
+  $('f1').setAttribute('x', 48+160*out); $('f1').setAttribute('opacity',1-out*0.5); $('f2').setAttribute('opacity',1-easeInOut(seg(t,3.6,4.0))*0.5); $('f1').setAttribute('width', Math.max(0,w1*(1-out)));
+  const out2=easeInOut(seg(t,3.6,4.0));
+  $('f2').setAttribute('x', 48+100*out2); $('f2').setAttribute('width', Math.max(0,w2*(1-out2)));
+
+  // caret rides the fill front of the active field
+  let cx=null, cy=62;
+  if(t>=0.15 && t<0.98){ cx = 48+Math.max(14,w1)-12; cy=62; }
+  else if(t>=0.98 && t<1.6){ cx = 48+Math.max(14,w2)-12; cy=118; }
+  const caret=$('caret');
+  if(cx!==null){
+    const blink = (t<0.25)? (Math.floor(t*8)%2===0?1:0.25) : 1;
+    caret.setAttribute('x',cx); caret.setAttribute('y',cy);
+    caret.setAttribute('opacity', blink*0.95);
+  } else caret.setAttribute('opacity',0);
+
+  const bs = pb>0 ? backOut(pb,2.2) : 0;
+  const box=$('box');
+  const bsc = Math.max(0,bs)*(1-out);
+  box.setAttribute('transform', `translate(70 186) scale(${bsc}) translate(-70 -186)`);
+
+  // button: pop in + a press after the tick, then out
+  let s = pbt>0 ? backOut(pbt,1.9) : 0;
+  const press = seg(t,2.45,2.62);
+  if(press>0 && press<1) s *= 1 - 0.08*Math.sin(press*Math.PI);
+  s *= 1 - out;
+  $('btn').setAttribute('transform', `translate(180 180) scale(${Math.max(0,s)})`);
+  $('tick').setAttribute('stroke-dashoffset', TICK_LEN*(1-pt));
+
+  // gradient breathes slowly while holding (nothing fully stops)
+  const sh = Math.sin(t/window.DURATION*Math.PI*2)*10;
+  const g=$('g'); g.setAttribute('x1',44+sh); g.setAttribute('x2',212+sh);
+  $('glowR').setAttribute('opacity', 0.75+0.25*Math.sin(t/window.DURATION*Math.PI*2+1));
+};
+// static default = final hold frame
+window.render(3.0);
+</script>
+</body></html>
