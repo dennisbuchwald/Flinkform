@@ -4,7 +4,7 @@ Tags: contact form, kontaktformular, dsgvo, block editor, multi step form
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.15.0
+Stable tag: 1.15.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -201,6 +201,11 @@ WordPress 6.5 or higher and PHP 8.1 or higher. Flinkform uses modern WordPress A
 
 == Changelog ==
 
+= 1.15.1 =
+* New: the new Flinkform mark as block icon and admin menu icon.
+* New: a notice for the Flinkform Pro Black Week offer (until 30 November 2026, admins only, can be dismissed for good, never shown when Pro is active or `flinkform_show_pro_upsell` is false).
+* Fix: clearer German wording in the Contact Form 7 importer's note about the confirmation mail.
+
 = 1.15.0 =
 * New: Contact Form 7 importer. Flinkform > Import from CF7 turns each CF7 form into a Flinkform form (fields, labels, notification and confirmation mail, success message), stores it as a synced pattern and switches every page that used it. Preview with a traffic light first, undo per form, CF7 itself is never changed.
 * New: five starter templates when you insert a form: contact, callback request, three-step project inquiry, appointment request and newsletter sign-up, each with a consent field.
@@ -271,6 +276,9 @@ WordPress 6.5 or higher and PHP 8.1 or higher. Flinkform uses modern WordPress A
 The complete release history is in `changelog.txt`, shipped with the plugin and available at https://github.com/dennisbuchwald/Flinkform/blob/main/changelog.txt
 
 == Upgrade Notice ==
+
+= 1.15.1 =
+New Flinkform icon and a notice for the Flinkform Pro Black Week offer. No changes to your forms.
 
 = 1.15.0 =
 New: Contact Form 7 importer, starter templates, submissions trash and a mail status per submission. Emails now show option labels instead of internal values.
