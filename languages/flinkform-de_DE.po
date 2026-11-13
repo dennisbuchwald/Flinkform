@@ -351,12 +351,32 @@ msgid "Show submissions whose mail failed"
 msgstr "Einsendungen mit fehlgeschlagener Mail anzeigen"
 
 #. translators: %s: number of unread submissions.
-#: includes/Admin/Menu.php:126
+#: includes/Admin/Menu.php:144
 #, php-format
 msgid "%s unread submission"
 msgid_plural "%s unread submissions"
 msgstr[0] "%s ungelesene Einsendung"
 msgstr[1] "%s ungelesene Einsendungen"
+
+#: includes/Admin/PromoNotice.php:123
+msgid "Black Week: Flinkform Pro at 50% off the first year"
+msgstr "Black Week: Flinkform Pro im ersten Jahr 50 % günstiger"
+
+#: includes/Admin/PromoNotice.php:124
+msgid "Payments, file uploads, webhooks, SMTP and newsletter sign-ups for your forms. Until 30 November every annual plan costs half in the first year, for example 29.50 € instead of 59 € for one website. 14-day money-back guarantee."
+msgstr "Zahlungen, Datei-Uploads, Webhooks, SMTP und Newsletter-Anmeldungen für deine Formulare. Bis 30. November kostet jeder Jahresplan im ersten Jahr nur die Hälfte, zum Beispiel 29,50 € statt 59 € für eine Website. 14 Tage Geld zurück."
+
+#: includes/Admin/PromoNotice.php:127 includes/Admin/Upsell.php:157
+msgid "(opens flinkform.de in a new tab)"
+msgstr "(öffnet flinkform.de in einem neuen Tab)"
+
+#: includes/Admin/PromoNotice.php:127
+msgid "See the offer"
+msgstr "Angebot ansehen"
+
+#: includes/Admin/PromoNotice.php:129
+msgid "Don't show again"
+msgstr "Nicht mehr anzeigen"
 
 #: includes/Admin/SubmissionsListTable.php:75 src/shared/default-label.js:42
 msgid "Date"
@@ -613,10 +633,6 @@ msgstr "Pro"
 #: includes/Admin/Upsell.php:155
 msgid "Export CSV"
 msgstr "CSV exportieren"
-
-#: includes/Admin/Upsell.php:157
-msgid "(opens flinkform.de in a new tab)"
-msgstr "(öffnet flinkform.de in einem neuen Tab)"
 
 #: includes/Admin/Upsell.php:171
 msgid "Forms, all 13 field types, multi-step, conditional logic"

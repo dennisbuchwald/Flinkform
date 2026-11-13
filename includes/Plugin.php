@@ -120,6 +120,9 @@ final class Plugin {
 			// Pro hints where the feature would be used (1.15.0); switches
 			// itself off when Pro is active or the filter says so.
 			( new Admin\Upsell() )->register();
+			// Black Week 2026 offer (1.15.1): dates are hard-coded, outside
+			// them the class registers nothing.
+			( new Admin\PromoNotice() )->register();
 			// Contact Form 7 → Flinkform (1.15.0). Page and notice only
 			// appear while CF7 forms exist in the database.
 			( new Admin\Cf7ImportPage() )->register();
