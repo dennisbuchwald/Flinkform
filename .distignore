@@ -49,3 +49,6 @@ Thumbs.db
 .gitkeep
 /tests
 /tools
+
+# Local working files (screenshots, drafts), never part of the plugin
+Claude outputs
