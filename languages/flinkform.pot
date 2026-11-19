@@ -361,24 +361,52 @@ msgid_plural "%s unread submissions"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin/PromoNotice.php:123
-msgid "Black Week: Flinkform Pro at 50% off the first year"
+#: includes/Admin/PromoNotice.php:206
+msgid "Black Week: Flinkform Pro for 29.50 € instead of 59 € in the first year"
 msgstr ""
 
-#: includes/Admin/PromoNotice.php:124
-msgid "Payments, file uploads, webhooks, SMTP and newsletter sign-ups for your forms. Until 30 November every annual plan costs half in the first year, for example 29.50 € instead of 59 € for one website. 14-day money-back guarantee."
+#. translators: %s: number of submissions on this site.
+#: includes/Admin/PromoNotice.php:208
+#, php-format
+msgid "Your forms have already collected %s submission on this site. Pro gets more out of every one:"
+msgid_plural "Your forms have already collected %s submissions on this site. Pro gets more out of every one:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/PromoNotice.php:209
+msgid "Pro gets more out of every form:"
 msgstr ""
 
-#: includes/Admin/PromoNotice.php:127 includes/Admin/Upsell.php:157
-msgid "(opens flinkform.de in a new tab)"
+#: includes/Admin/PromoNotice.php:210
+msgid "Every email arrives: sent through your own mail server (SMTP) instead of landing in spam."
 msgstr ""
 
-#: includes/Admin/PromoNotice.php:127
-msgid "See the offer"
+#: includes/Admin/PromoNotice.php:211
+msgid "Get paid in the form: card, SEPA, Apple Pay and Google Pay through Stripe."
 msgstr ""
 
-#: includes/Admin/PromoNotice.php:129
-msgid "Don't show again"
+#: includes/Admin/PromoNotice.php:212
+msgid "Prices calculate themselves: calculation fields for quotes, bookings and order forms."
+msgstr ""
+
+#: includes/Admin/PromoNotice.php:213
+msgid "No more copying by hand: file uploads, CSV export, webhooks to Zapier, Make or n8n, sign-ups straight into Brevo, Mailchimp or CleverReach."
+msgstr ""
+
+#: includes/Admin/PromoNotice.php:214
+msgid "Need none of it? Your purchase still helps: Flinkform comes from a small agency in Heilbronn, and every licence keeps the free plugin free and in active development. Thank you!"
+msgstr ""
+
+#. translators: %s: number of days until the offer ends.
+#: includes/Admin/PromoNotice.php:216
+#, php-format
+msgid "Only %s day left, for every annual plan. Not convinced? 14 days money back, no questions asked."
+msgid_plural "Only %s days left, for every annual plan. Not convinced? 14 days money back, no questions asked."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/PromoNotice.php:217
+msgid "Get Pro for 29.50 €"
 msgstr ""
 
 #: includes/Admin/SubmissionsListTable.php:75 src/shared/default-label.js:42
@@ -635,6 +663,10 @@ msgstr ""
 
 #: includes/Admin/Upsell.php:155
 msgid "Export CSV"
+msgstr ""
+
+#: includes/Admin/Upsell.php:157
+msgid "(opens flinkform.de in a new tab)"
 msgstr ""
 
 #: includes/Admin/Upsell.php:171

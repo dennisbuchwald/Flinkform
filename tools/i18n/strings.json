@@ -882,5 +882,57 @@
   "Don't show again": [
     "Nicht mehr anzeigen",
     "Nicht mehr anzeigen"
+  ],
+  "Black Week: Flinkform Pro for 29.50 € instead of 59 € in the first year": [
+    "Black Week: Flinkform Pro für 29,50 € statt 59 € im ersten Jahr",
+    "Black Week: Flinkform Pro für 29,50 € statt 59 € im ersten Jahr"
+  ],
+  "Pro gets more out of every form:": [
+    "Mit Pro holst du mehr aus jedem Formular:",
+    "Mit Pro holen Sie mehr aus jedem Formular:"
+  ],
+  "Every email arrives: sent through your own mail server (SMTP) instead of landing in spam.": [
+    "Jede Mail kommt an: Versand über deinen eigenen Mailserver (SMTP) statt im Spam-Ordner.",
+    "Jede Mail kommt an: Versand über Ihren eigenen Mailserver (SMTP) statt im Spam-Ordner."
+  ],
+  "Get paid in the form: card, SEPA, Apple Pay and Google Pay through Stripe.": [
+    "Geld direkt im Formular: Karte, SEPA, Apple Pay und Google Pay über Stripe.",
+    "Geld direkt im Formular: Karte, SEPA, Apple Pay und Google Pay über Stripe."
+  ],
+  "Prices calculate themselves: calculation fields for quotes, bookings and order forms.": [
+    "Preise rechnen sich selbst: Rechenfelder für Angebote, Buchungen und Bestellformulare.",
+    "Preise rechnen sich selbst: Rechenfelder für Angebote, Buchungen und Bestellformulare."
+  ],
+  "No more copying by hand: file uploads, CSV export, webhooks to Zapier, Make or n8n, sign-ups straight into Brevo, Mailchimp or CleverReach.": [
+    "Schluss mit Abtippen: Datei-Uploads, CSV-Export, Webhooks an Zapier, Make oder n8n, Anmeldungen direkt in Brevo, Mailchimp oder CleverReach.",
+    "Schluss mit Abtippen: Datei-Uploads, CSV-Export, Webhooks an Zapier, Make oder n8n, Anmeldungen direkt in Brevo, Mailchimp oder CleverReach."
+  ],
+  "Need none of it? Your purchase still helps: Flinkform comes from a small agency in Heilbronn, and every licence keeps the free plugin free and in active development. Thank you!": [
+    "Brauchst du nichts davon? Dein Kauf hilft trotzdem: Flinkform kommt von einer kleinen Agentur aus Heilbronn, und jede Lizenz hält das kostenlose Plugin kostenlos und in aktiver Entwicklung. Danke dir!",
+    "Brauchen Sie nichts davon? Ihr Kauf hilft trotzdem: Flinkform kommt von einer kleinen Agentur aus Heilbronn, und jede Lizenz hält das kostenlose Plugin kostenlos und in aktiver Entwicklung. Vielen Dank!"
+  ],
+  "Get Pro for 29.50 €": [
+    "Pro für 29,50 € holen",
+    "Pro für 29,50 € sichern"
+  ],
+  "Your forms have already collected %s submission on this site. Pro gets more out of every one:": [
+    [
+      "Deine Formulare haben auf dieser Seite schon %s Anfrage eingesammelt. Mit Pro holst du aus jeder mehr heraus:",
+      "Deine Formulare haben auf dieser Seite schon %s Anfragen eingesammelt. Mit Pro holst du aus jeder mehr heraus:"
+    ],
+    [
+      "Ihre Formulare haben auf dieser Seite schon %s Anfrage eingesammelt. Mit Pro holen Sie aus jeder mehr heraus:",
+      "Ihre Formulare haben auf dieser Seite schon %s Anfragen eingesammelt. Mit Pro holen Sie aus jeder mehr heraus:"
+    ]
+  ],
+  "Only %s day left, for every annual plan. Not convinced? 14 days money back, no questions asked.": [
+    [
+      "Nur noch %s Tag, für alle Jahrespläne. Nicht überzeugt? 14 Tage Geld zurück, ohne Begründung.",
+      "Nur noch %s Tage, für alle Jahrespläne. Nicht überzeugt? 14 Tage Geld zurück, ohne Begründung."
+    ],
+    [
+      "Nur noch %s Tag, für alle Jahrespläne. Nicht überzeugt? 14 Tage Geld zurück, ohne Begründung.",
+      "Nur noch %s Tage, für alle Jahrespläne. Nicht überzeugt? 14 Tage Geld zurück, ohne Begründung."
+    ]
   ]
 }

@@ -100,6 +100,85 @@ final class PromoNotice {
 	}
 
 	/**
+	 * Whole days left until END, counted up (the last day says "1 day").
+	 *
+	 * @param int|null $now Unix time, for tests.
+	 * @return int
+	 */
+	public static function days_left( ?int $now = null ): int {
+		$now = $now ?? time();
+		return max( 1, (int) ceil( ( self::END - $now ) / DAY_IN_SECONDS ) );
+	}
+
+	/**
+	 * All submissions on this site, cached for an hour. Local data only,
+	 * nothing leaves the site.
+	 *
+	 * @return int
+	 */
+	private static function submission_count(): int {
+		$count = get_transient( 'flinkform_promo_total' );
+		if ( false === $count ) {
+			$count = ( new \Flinkform\Submissions\Repository() )->count();
+			set_transient( 'flinkform_promo_total', $count, HOUR_IN_SECONDS );
+		}
+		return (int) $count;
+	}
+
+	/**
+	 * Translate, falling back to the .mo shipped in languages/.
+	 *
+	 * WordPress prefers the language pack from translate.wordpress.org over
+	 * the bundled file. A site that has not fetched the pack for this
+	 * release yet shows a new string in English, although the plugin ships
+	 * the German one. A campaign that runs for two weeks cannot wait for
+	 * that, so strings the loaded translation does not know are looked up
+	 * in the bundled file.
+	 *
+	 * @param string      $single Text (or singular).
+	 * @param string|null $plural Plural, for _n().
+	 * @param int         $n      Number, for _n().
+	 * @return string
+	 */
+	public static function t( string $single, ?string $plural = null, int $n = 1 ): string {
+		// phpcs:disable WordPress.WP.I18n -- dynamic strings, all literals are listed in the POT via the calls in render().
+		$out = null === $plural ? __( $single, 'flinkform' ) : _n( $single, $plural, $n, 'flinkform' );
+		// phpcs:enable
+		$original = null === $plural || 1 === $n ? $single : $plural;
+		if ( $out !== $original && $out !== $single ) {
+			return $out;
+		}
+		$mo = self::bundled_mo();
+		if ( ! $mo ) {
+			return $out;
+		}
+		$fallback = null === $plural ? $mo->translate( $single ) : $mo->translate_plural( $single, $plural, $n );
+		return ( '' !== (string) $fallback ) ? (string) $fallback : $out;
+	}
+
+	/**
+	 * The bundled .mo for the current locale, or null.
+	 *
+	 * @return \MO|null
+	 */
+	private static function bundled_mo() {
+		static $cache = [];
+		$locale = determine_locale();
+		if ( array_key_exists( $locale, $cache ) ) {
+			return $cache[ $locale ];
+		}
+		$cache[ $locale ] = null;
+		$file             = FLINKFORM_PLUGIN_DIR . 'languages/flinkform-' . $locale . '.mo';
+		if ( 'en_US' !== $locale && is_readable( $file ) && class_exists( '\MO' ) ) {
+			$mo = new \MO();
+			if ( $mo->import_from_file( $file ) ) {
+				$cache[ $locale ] = $mo;
+			}
+		}
+		return $cache[ $locale ];
+	}
+
+	/**
 	 * The notice.
 	 *
 	 * @return void
@@ -118,15 +197,52 @@ final class PromoNotice {
 			),
 			self::ACTION
 		);
+		$days  = self::days_left();
+		$total = self::submission_count();
+
+		// The literal calls below are never executed; they put every string
+		// into the POT for xgettext. self::t() does the real lookup.
+		if ( false ) { // phpcs:ignore Generic.CodeAnalysis.UnconditionalIfStatement.Found
+			__( 'Black Week: Flinkform Pro for 29.50 € instead of 59 € in the first year', 'flinkform' );
+			/* translators: %s: number of submissions on this site. */
+			_n( 'Your forms have already collected %s submission on this site. Pro gets more out of every one:', 'Your forms have already collected %s submissions on this site. Pro gets more out of every one:', 2, 'flinkform' );
+			__( 'Pro gets more out of every form:', 'flinkform' );
+			__( 'Every email arrives: sent through your own mail server (SMTP) instead of landing in spam.', 'flinkform' );
+			__( 'Get paid in the form: card, SEPA, Apple Pay and Google Pay through Stripe.', 'flinkform' );
+			__( 'Prices calculate themselves: calculation fields for quotes, bookings and order forms.', 'flinkform' );
+			__( 'No more copying by hand: file uploads, CSV export, webhooks to Zapier, Make or n8n, sign-ups straight into Brevo, Mailchimp or CleverReach.', 'flinkform' );
+			__( 'Need none of it? Your purchase still helps: Flinkform comes from a small agency in Heilbronn, and every licence keeps the free plugin free and in active development. Thank you!', 'flinkform' );
+			/* translators: %s: number of days until the offer ends. */
+			_n( 'Only %s day left, for every annual plan. Not convinced? 14 days money back, no questions asked.', 'Only %s days left, for every annual plan. Not convinced? 14 days money back, no questions asked.', 2, 'flinkform' );
+			__( 'Get Pro for 29.50 €', 'flinkform' );
+		}
+
+		$intro = $total >= 10
+			? sprintf( self::t( 'Your forms have already collected %s submission on this site. Pro gets more out of every one:', 'Your forms have already collected %s submissions on this site. Pro gets more out of every one:', $total ), number_format_i18n( $total ) )
+			: self::t( 'Pro gets more out of every form:' );
+		$benefits = [
+			self::t( 'Every email arrives: sent through your own mail server (SMTP) instead of landing in spam.' ),
+			self::t( 'Get paid in the form: card, SEPA, Apple Pay and Google Pay through Stripe.' ),
+			self::t( 'Prices calculate themselves: calculation fields for quotes, bookings and order forms.' ),
+			self::t( 'No more copying by hand: file uploads, CSV export, webhooks to Zapier, Make or n8n, sign-ups straight into Brevo, Mailchimp or CleverReach.' ),
+		];
 		?>
 		<div class="notice notice-info is-dismissible flinkform-promo" data-flinkform-promo="<?php echo esc_attr( wp_create_nonce( self::ACTION ) ); ?>">
-			<p><strong><?php esc_html_e( 'Black Week: Flinkform Pro at 50% off the first year', 'flinkform' ); ?></strong></p>
-			<p><?php esc_html_e( 'Payments, file uploads, webhooks, SMTP and newsletter sign-ups for your forms. Until 30 November every annual plan costs half in the first year, for example 29.50 € instead of 59 € for one website. 14-day money-back guarantee.', 'flinkform' ); ?></p>
+			<p><strong><?php echo esc_html( self::t( 'Black Week: Flinkform Pro for 29.50 € instead of 59 € in the first year' ) ); ?></strong></p>
+			<p><?php echo esc_html( $intro ); ?></p>
+			<ul style="list-style:disc;margin:0 0 0 1.5em">
+				<?php foreach ( $benefits as $benefit ) : ?>
+					<?php [ $lead, $rest ] = array_pad( explode( ':', $benefit, 2 ), 2, '' ); ?>
+					<li><?php if ( '' !== $rest ) : ?><strong><?php echo esc_html( $lead ); ?>:</strong><?php echo esc_html( $rest ); ?><?php else : ?><?php echo esc_html( $benefit ); ?><?php endif; ?></li>
+				<?php endforeach; ?>
+			</ul>
+			<p><?php echo esc_html( self::t( 'Need none of it? Your purchase still helps: Flinkform comes from a small agency in Heilbronn, and every licence keeps the free plugin free and in active development. Thank you!' ) ); ?></p>
+			<p><?php echo esc_html( sprintf( self::t( 'Only %s day left, for every annual plan. Not convinced? 14 days money back, no questions asked.', 'Only %s days left, for every annual plan. Not convinced? 14 days money back, no questions asked.', $days ), number_format_i18n( $days ) ) ); ?></p>
 			<p>
 				<a class="button button-primary" href="<?php echo esc_url( self::url() ); ?>" target="_blank" rel="noopener">
-					<?php esc_html_e( 'See the offer', 'flinkform' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens flinkform.de in a new tab)', 'flinkform' ); ?></span>
+					<?php echo esc_html( self::t( 'Get Pro for 29.50 €' ) ); ?><span class="screen-reader-text"> <?php echo esc_html( self::t( '(opens flinkform.de in a new tab)' ) ); ?></span>
 				</a>
-				<a class="flinkform-promo__dismiss" href="<?php echo esc_url( $dismiss ); ?>" style="margin-left:12px"><?php esc_html_e( 'Don\'t show again', 'flinkform' ); ?></a>
+				<a class="flinkform-promo__dismiss" href="<?php echo esc_url( $dismiss ); ?>" style="margin-left:12px"><?php echo esc_html( self::t( 'Don\'t show again' ) ); ?></a>
 			</p>
 		</div>
 		<script>
