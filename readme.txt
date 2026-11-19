@@ -4,7 +4,7 @@ Tags: contact form, kontaktformular, dsgvo, block editor, multi step form
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.15.1
+Stable tag: 1.15.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -201,6 +201,10 @@ WordPress 6.5 or higher and PHP 8.1 or higher. Flinkform uses modern WordPress A
 
 == Changelog ==
 
+= 1.15.2 =
+* Changed: the Black Week notice says what Pro does for your forms, shows the price and the days left, and mentions how many submissions your forms have collected (counted on your site, nothing is sent anywhere).
+* Fix: the notice now shows in German even before WordPress has fetched the updated language pack.
+
 = 1.15.1 =
 * New: the new Flinkform mark as block icon and admin menu icon.
 * New: a notice for the Flinkform Pro Black Week offer (until 30 November 2026, admins only, can be dismissed for good, never shown when Pro is active or `flinkform_show_pro_upsell` is false).
@@ -276,6 +280,9 @@ WordPress 6.5 or higher and PHP 8.1 or higher. Flinkform uses modern WordPress A
 The complete release history is in `changelog.txt`, shipped with the plugin and available at https://github.com/dennisbuchwald/Flinkform/blob/main/changelog.txt
 
 == Upgrade Notice ==
+
+= 1.15.2 =
+Clearer Black Week notice, now in German right away. No changes to your forms.
 
 = 1.15.1 =
 New Flinkform icon and a notice for the Flinkform Pro Black Week offer. No changes to your forms.
